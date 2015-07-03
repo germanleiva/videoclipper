@@ -7,10 +7,12 @@
 //
 
 import UIKit
-
+import CoreData
 class ProjectVC: UIViewController {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
+	
+	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	
 	@IBOutlet weak var containerView: UITableView!
 //	var addButton = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -48,13 +50,23 @@ class ProjectVC: UIViewController {
 	}
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {
-		let i = self.project!.name
-		let j = self.project!.storyLines.count + 1
-		let storyLine = StoryLine("StoryLine \(i)-\(j)")
-		self.project!.storyLines.append(storyLine)
-		storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E01"))
-//		storyLine.elements.append(StoryElement("V P\(i)-S\(j) E02"))
-//		storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E03"))
-		self.tableController!.reloadData(storyLine)
+		let j = self.project!.storyLines!.count + 1
+		
+		let storyLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+		storyLine.name = "StoryLine \(j)"
+
+		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
+		storyLines?.addObject(storyLine)
+
+		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: context) as! Slate
+		firstSlate.name = "TC \(j)"
+		storyLine.elements = [firstSlate]
+		
+		do {
+			try context.save()
+			self.tableController!.reloadData(storyLine)
+		} catch {
+			print("Couldn't save the new story line: \(error)")
+		}
 	}
 }

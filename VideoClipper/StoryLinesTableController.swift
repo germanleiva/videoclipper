@@ -7,8 +7,10 @@
 //
 
 import UIKit
-import AVFoundation
 import MobileCoreServices
+import AVFoundation
+import CoreData
+import MediaPlayer
 
 class NonRotatingUIImagePickerController : UIImagePickerController {
 	override func shouldAutorotate() -> Bool {
@@ -24,10 +26,12 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	var selectedIndexPathForCollectionView:NSIndexPath?
 	var selectedIndexPath:NSIndexPath?
 	
-	let captureSession = AVCaptureSession()
+	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+	
+//	let captureSession = AVCaptureSession()
  
 	// If we find a device we'll store it here for later use
-	var captureDevice : AVCaptureDevice?
+//	var captureDevice : AVCaptureDevice?
 
 	var currentStoryLine:StoryLine? = nil
 	
@@ -56,41 +60,39 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 
 	}
 	
-	@IBAction func recordTapped(sender:UIBarButtonItem) {
-		self.currentStoryLine = self.project?.storyLines[sender.tag]
+	func recordTapped(sender:UITableViewCell) {
+		let indexPath = self.tableView.indexPathForCell(sender)
+		self.currentStoryLine = self.project?.storyLines![indexPath!.section] as! StoryLine
 		
 //		if self.captureDevice != nil {
 //			beginSession()
 //		}
 		
 		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
-			
-			
 			print("captureVideoPressed and camera available.")
 			
 			let imagePicker = UIImagePickerController()
 //			let imagePicker = NonRotatingUIImagePickerController()
 
-			
 //			imagePicker.modalPresentationStyle = UIModalPresentationStyle.FormSheet
 			
 			imagePicker.delegate = self
 			imagePicker.sourceType = .Camera;
 			imagePicker.mediaTypes = [String(kUTTypeMovie)]
 			imagePicker.allowsEditing = true
+			imagePicker.videoQuality = UIImagePickerControllerQualityType.TypeHigh
 			
-			let overlay = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
-			overlay.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
 			let imageWarning = UIImageView(image: UIImage(named:"verticalVideoWarning"))
-			overlay.addSubview(imageWarning)
-			imageWarning.center = overlay.center
-			imagePicker.cameraOverlayView = overlay
-
+			imagePicker.cameraOverlayView = imageWarning
+			imageWarning.hidden = true
 			imagePicker.showsCameraControls = true
 			
 			NSNotificationCenter.defaultCenter().addObserverForName("UIDeviceOrientationDidChangeNotification", object: nil, queue: NSOperationQueue.mainQueue(), usingBlock: { (notification) -> Void in
 				let orientation = UIDevice.currentDevice().orientation
-				overlay.hidden = orientation.isLandscape || orientation.isFlat
+				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
+				if !imageWarning.hidden {
+					imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
+				}
 			})
 			
 //			let value = UIInterfaceOrientation.LandscapeRight.rawValue
@@ -98,16 +100,13 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 
 			self.presentViewController(imagePicker, animated: true, completion: { () -> Void in
 				let orientation = UIDevice.currentDevice().orientation
-				overlay.hidden = orientation.isLandscape || orientation.isFlat
 				imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
+				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
 			})
 			
-		}
-			
-		else {
+		} else {
 			print("Camera not available.")
 		}
-
 	}
 	
 	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
@@ -117,59 +116,96 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 		let tempImage = info[UIImagePickerControllerMediaURL] as! NSURL
-		let pathString = tempImage.relativePath
+		let pathString = tempImage.relativePath!
 		self.dismissViewControllerAnimated(true, completion: {})
 		
-		UISaveVideoAtPathToSavedPhotosAlbum(pathString!, self, nil, nil)
-		
-		let newVideo = VideoClip("V\(self.currentStoryLine!.elements.count)",path: pathString!)
-		self.currentStoryLine?.elements.append(newVideo)
-		self.tableView.reloadSections(NSIndexSet(index: self.project!.storyLines.indexOf(self.currentStoryLine!)!), withRowAnimation: UITableViewRowAnimation.Right)
-		self.currentStoryLine = nil
-		
-		// Retreive the managedObjectContext from AppDelegate
-		let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-		
-		// Print it to the console
-		print(managedObjectContext)
+		UISaveVideoAtPathToSavedPhotosAlbum(pathString, self, "video:didFinishSavingWithError:contextInfo:", nil)
 	}
 	
-	func beginSession() {
+	func video(videoPath: String, didFinishSavingWithError error: NSError, contextInfo info: UnsafeMutablePointer<Void>) {
+		let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: context) as! VideoClip
+		newVideo.name = "V\(self.currentStoryLine!.elements!.count)"
+		newVideo.path = videoPath
+		
+		let asset1 = AVURLAsset(URL: NSURL(fileURLWithPath: videoPath), options: nil)
+		let generate1 = AVAssetImageGenerator(asset: asset1)
+		generate1.appliesPreferredTrackTransform = true
 		do {
-			try self.captureSession.addInput(AVCaptureDeviceInput(device: self.captureDevice))
-			if let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession) {
-				let recordVC = self.storyboard?.instantiateViewControllerWithIdentifier("recordVC")
-				recordVC!.view.layer.addSublayer(previewLayer)
-				previewLayer.frame = recordVC!.view.layer.frame
-				self.captureSession.startRunning()
-				self.presentViewController(recordVC!, animated: true, completion: { () -> Void in
-					print("Presenting recording layer")
-				})
-			}
+			let oneRef = try generate1.copyCGImageAtTime(CMTimeMake(1, 2), actualTime: nil)
+			let oneImage = UIImage(CGImage: oneRef)
+			let imageData = NSData(data: UIImagePNGRepresentation(oneImage)!)
+			newVideo.thumbnail = imageData
 		} catch {
-			print("error: \(error)")
+			print("Couldn't generate thumbnail for video: \(error)")
 		}
+
+		let elements = self.currentStoryLine!.mutableOrderedSetValueForKey("elements")
+		elements.addObject(newVideo)
 		
+		do {
+			try context.save()
+			
+			let currentStoryLineIndex = self.project?.storyLines?.indexOfObject(self.currentStoryLine!)
+			
+			self.tableView.reloadSections(NSIndexSet(index: currentStoryLineIndex!), withRowAnimation: UITableViewRowAnimation.Right)
+			self.currentStoryLine = nil
+		} catch {
+			print("Couldn't save new video in the DB")
+			print(error)
+		}
 	}
 	
-	@IBAction func playTapped(sender:UIBarButtonItem) {
-		let storyLine = self.project?.storyLines[sender.tag]
+//	func beginSession() {
+//		do {
+//			try self.captureSession.addInput(AVCaptureDeviceInput(device: self.captureDevice))
+//			if let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession) {
+//				let recordVC = self.storyboard?.instantiateViewControllerWithIdentifier("recordVC")
+//				recordVC!.view.layer.addSublayer(previewLayer)
+//				previewLayer.frame = recordVC!.view.layer.frame
+//				self.captureSession.startRunning()
+//				self.presentViewController(recordVC!, animated: true, completion: { () -> Void in
+//					print("Presenting recording layer")
+//				})
+//			}
+//		} catch {
+//			print("error: \(error)")
+//		}
+//	}
+	
+	func playTapped(sender:UITableViewCell) {
+		let indexPath = self.tableView.indexPathForCell(sender)
+		let storyLine = self.project?.storyLines![indexPath!.section] as! StoryLine
 		print("playTapped \(storyLine)")
 	}
 	
-	@IBAction func exportTapped(sender:UIBarButtonItem) {
-		let storyLine = self.project?.storyLines[sender.tag]
+	func exportTapped(sender:UITableViewCell) {
+		let indexPath = self.tableView.indexPathForCell(sender)
+		let storyLine = self.project?.storyLines![indexPath!.section] as! StoryLine
 		print("exportTapped \(storyLine)")
 	}
 	
-	@IBAction func trashTapped(sender:UIBarButtonItem) {
-		let storyLine = self.project?.storyLines[sender.tag]
-		print("trashTapped \(storyLine)")
+	func trashTapped(sender:UITableViewCell) {
+		let indexPath = self.tableView.indexPathForCell(sender)!
+		let storyLine = self.project?.storyLines![indexPath.section] as! StoryLine
+		print("trashTapped \(storyLine) - \(indexPath)")
+		
+		let alertController = UIAlertController(title: "Are you sure?", message: "This cannot be undone but your video files will remain in the Photo Library", preferredStyle: UIAlertControllerStyle.Alert)
+
+		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+			print("deletion cancelled")
+		}))
+		
+		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+			self.deleteStoryLine(indexPath)
+		}))
+		
+		self.presentViewController(alertController, animated: true, completion: nil)
+		
 	}
 	
 	func reloadData(addedObject:StoryLine? = nil) {
 		if let object = addedObject {
-			let section = self.project?.storyLines.indexOf(object)
+			let section = self.project?.storyLines!.indexOfObject(object)
 			self.tableView.insertSections(NSIndexSet(index: section!), withRowAnimation: UITableViewRowAnimation.Bottom)
 			self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section!), atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
 		}
@@ -177,11 +213,22 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	}
 	
 	func isSlateStoryElement(indexPath:NSIndexPath) -> Bool {
-		return indexPath.section == 0
+		return indexPath.item == 0
 	}
 	
 	func deleteStoryLine(indexPath:NSIndexPath) {
-		self.project?.storyLines.removeAtIndex(indexPath.section)
+		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
+		storyLines?.removeObjectAtIndex(indexPath.section)
+
+		do {
+			try context.save()
+			//			tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+			self.tableView.beginUpdates()
+			self.tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Left)
+			self.tableView.endUpdates()
+		} catch {
+			print("Couldn't delete story line: \(error)")
+		}
 	}
 	
 	override func didReceiveMemoryWarning() {
@@ -192,7 +239,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	// MARK: - Table view data source
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return self.project!.storyLines.count
+		return self.project!.storyLines!.count
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -202,10 +249,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier("StoryLineCell", forIndexPath: indexPath) as! StoryLineCell
 		cell.selectionStyle = UITableViewCellSelectionStyle.None
-		cell.selectedBackgroundView?.backgroundColor = UIColor.clearColor()
-		cell.recordButton.tag = indexPath.section
-		cell.playButton.tag = indexPath.section
-		cell.exportButton.tag = indexPath.section
+//		cell.selectedBackgroundView?.backgroundColor = UIColor.clearColor()
 		
 //		toggleCellSelection(cell,indexPath)
 		return cell
@@ -231,16 +275,14 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	}
 	
 	// Override to support editing the table view.
-	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-		if editingStyle == .Delete {
-			// Delete the row from the data source
-			self.deleteStoryLine(indexPath)
-//			tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-			tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
-		} else if editingStyle == .Insert {
-			// Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-		}
-	}
+//	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+//		if editingStyle == .Delete {
+//			// Delete the row from the data source
+//			self.deleteStoryLine(indexPath)
+//		} else if editingStyle == .Insert {
+//			// Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+//		}
+//	}
 	
 	/*
 	// Override to support rearranging the table view.
@@ -266,15 +308,15 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 //		return UITableViewCellEditingStyle.Delete
 //	}
 	
-	@available(iOS 8.0, *)
-	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-		let addVideo = UITableViewRowAction(style: UITableViewRowActionStyle.Destructive, title: "Delete") { action, index in
-			print("add Video tapped")
-		}
+//	@available(iOS 8.0, *)
+//	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+//		let addVideo = UITableViewRowAction(style: UITableViewRowActionStyle.Destructive, title: "Delete") { action, index in
+//			print("add Video tapped")
+//		}
 //		addVideo.backgroundColor = UIColor.orangeColor()
-		
-		return [addVideo]
-	}
+//		
+//		return [addVideo]
+//	}
 	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 //		let previousPath = self.selectedIndexPath
@@ -306,10 +348,10 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 	// Get the new view controller using segue.destinationViewController.
 	// Pass the selected object to the new view controller.
-		if segue.identifier == "toElementVC" {
-			let elementVC = segue.destinationViewController as! ElementVC
-			elementVC.project = self.project
-			elementVC.elementIndex = self.selectedIndexPathForCollectionView
+		if segue.identifier == "toVideoVC" {
+			let elementVC = segue.destinationViewController as! VideoVC
+//			elementVC.project = self.project
+//			elementVC.elementIndex = self.selectedIndexPathForCollectionView
 		}
 	}
 	
@@ -318,17 +360,22 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	}
 	
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.project!.storyLines[collectionView.tag].elements.count
+		let storyLine = self.project!.storyLines![collectionView.tag] as! StoryLine
+		return storyLine.elements!.count
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+		let storyLine = self.project!.storyLines![collectionView.tag] as! StoryLine
 		if isSlateStoryElement(indexPath) {
+			let slateElement = storyLine.elements![indexPath.item] as! Slate
 			//First item is a Slate
 			let slateCell = collectionView.dequeueReusableCellWithReuseIdentifier("SlateCollectionCell", forIndexPath: indexPath) as! SlateCollectionCell
-			slateCell.label!.text = self.project!.storyLines[collectionView.tag].elements[indexPath.item].name
+			slateCell.label!.text = slateElement.name
 			return slateCell
 		}
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
+		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
+		videoCell.thumbnail?.image = UIImage(data: videoElement.thumbnail!)
 		return videoCell
 	}
 	
@@ -338,7 +385,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			//Open the Slate editor
 			self.performSegueWithIdentifier("toSlateVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
 		} else {
-			self.performSegueWithIdentifier("toElementVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
+			self.performSegueWithIdentifier("toVideoVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
 		}
 	}
 

@@ -2,7 +2,7 @@
 //  VideoClip+CoreDataProperties.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 02/07/15.
+//  Created by German Leiva on 03/07/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 //  Delete this file and regenerate it using "Create NSManagedObject Subclass…"
@@ -15,5 +15,6 @@ import CoreData
 extension VideoClip {
 
     @NSManaged var path: String?
+    @NSManaged var thumbnail: NSData?
 
 }

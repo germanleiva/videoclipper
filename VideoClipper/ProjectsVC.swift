@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
-class ProjectsVC: UIViewController, UITableViewDataSource {
+class ProjectsVC: UIViewController, UITableViewDataSource, NSFetchedResultsControllerDelegate {
+	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 	var projects = [Project]()
-	
+
 	@IBOutlet weak var tableView: UITableView!
 	
 	let TO_PROJECT_VC_SEGUE = "toProjectVC"
@@ -19,26 +21,11 @@ class ProjectsVC: UIViewController, UITableViewDataSource {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-//		for i in 1...10 {
-//			let newProject = Project("P\(i)")
-//			self.projects.append(newProject)
-//			for j in 1...i*2 {
-//				let storyLine = StoryLine("StoryLine \(i)-\(j)")
-//				newProject.storyLines.append(storyLine)
-//				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E01"))
-////				storyLine.elements.append(StoryElement("V P\(i)-S\(j) E02"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E03"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E04"))
-////				storyLine.elements.append(StoryElement("V P\(i)-S\(j) E05"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E06"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E07"))
-////				storyLine.elements.append(StoryElement("V P\(i)-S\(j) E08"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E09"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E10"))
-////				storyLine.elements.append(StoryElement("V P\(i)-S\(j) E11"))
-////				storyLine.elements.append(StoryElement("TC P\(i)-S\(j) E12"))
-//			}
-//		}
+		do {
+			self.projects = try context.executeFetchRequest(NSFetchRequest(entityName: "Project")) as! [Project]
+		} catch {
+			print("Data base error while retrieving projects: \(error)")
+		}
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,11 +48,26 @@ class ProjectsVC: UIViewController, UITableViewDataSource {
 		}
 	}
 	@IBAction func plusPressed(sender: UIButton) {
-		let newProject = Project("Project Nro.\(self.projects.count+1)")
+		let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
+		newProject.name = "Project Nro.\(self.projects.count+1)"
+		let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+		firstStoryLine.name = "My first story line"
+		
+		newProject.storyLines = [firstStoryLine]
+
+		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: context) as! Slate
+		firstSlate.name = "TC 0"
+		firstStoryLine.elements = [firstSlate]
+
+		do {
+			try context.save()
+		} catch {
+			print(error)
+		}
+		
+		print(newProject)
 		self.projects.append(newProject)
-		let firstStoryLine = StoryLine("My first story line")
-		newProject.storyLines.append(firstStoryLine)
-		firstStoryLine.elements.append(StoryElement("TC \(self.projects.count)"))
+		
 		self.tableView.reloadData()
 //		let newSection = self.projects.count-1
 //		self.collectionView?.insertSections(NSIndexSet(index: newSection))

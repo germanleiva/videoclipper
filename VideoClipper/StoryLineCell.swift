@@ -12,11 +12,6 @@ class StoryLineCell: UITableViewCell {
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolbar: UIToolbar!
 	
-	@IBOutlet weak var recordButton: UIBarButtonItem!
-	@IBOutlet weak var playButton: UIBarButtonItem!
-	@IBOutlet weak var exportButton: UIBarButtonItem!
-	@IBOutlet weak var trashButton: UIBarButtonItem!
-	
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -27,4 +22,28 @@ class StoryLineCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+	
+	@IBAction func playTapped(sender:UIBarButtonItem) {
+		let tableView = self.superview!.superview as! UITableView!
+		let target = tableView.dataSource as! StoryLinesTableController
+		target.playTapped(self)
+	}
+	
+	@IBAction func exportTapped(sender:UIBarButtonItem) {
+		let tableView = self.superview!.superview as! UITableView!
+		let target = tableView.dataSource as! StoryLinesTableController
+		target.exportTapped(self)
+	}
+	
+	@IBAction func trashTapped(sender:UIBarButtonItem) {
+		let tableView = self.superview!.superview as! UITableView!
+		let target = tableView.dataSource as! StoryLinesTableController
+		target.trashTapped(self)
+	}
+	
+	@IBAction func recordTapped(sender:UIBarButtonItem) {
+		let tableView = self.superview!.superview as! UITableView!
+		let target = tableView.dataSource as! StoryLinesTableController
+		target.recordTapped(self)
+	}
 }

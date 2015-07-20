@@ -13,5 +13,11 @@ import CoreData
 class StoryElement: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-
+	func isVideo() -> Bool {
+		return false
+	}
+	
+	func isSlate() -> Bool {
+		return false
+	}
 }

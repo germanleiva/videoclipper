@@ -179,9 +179,12 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="176" height="99"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
-                                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plusButton" translatesAutoresizingMaskIntoConstraints="NO" id="jwm-FW-JaT">
+                                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="blackbox" translatesAutoresizingMaskIntoConstraints="NO" id="jwm-FW-JaT">
                                                                 <rect key="frame" x="0.0" y="0.0" width="176" height="99"/>
                                                             </imageView>
+                                                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Tjl-Xt-o6s">
+                                                                <rect key="frame" x="70" y="31" width="37" height="37"/>
+                                                            </activityIndicatorView>
                                                         </subviews>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </view>
@@ -189,10 +192,13 @@
                                                         <constraint firstItem="jwm-FW-JaT" firstAttribute="top" secondItem="tMx-5g-fVi" secondAttribute="top" id="4tZ-D6-JCw"/>
                                                         <constraint firstItem="jwm-FW-JaT" firstAttribute="leading" secondItem="tMx-5g-fVi" secondAttribute="leading" id="8UL-JX-Fl4"/>
                                                         <constraint firstAttribute="bottom" secondItem="jwm-FW-JaT" secondAttribute="bottom" id="8fT-C2-RqI"/>
+                                                        <constraint firstItem="Tjl-Xt-o6s" firstAttribute="centerX" secondItem="jwm-FW-JaT" secondAttribute="centerX" id="F1A-p6-cPc"/>
                                                         <constraint firstAttribute="trailing" secondItem="jwm-FW-JaT" secondAttribute="trailing" id="ZL5-tU-VyH"/>
+                                                        <constraint firstItem="Tjl-Xt-o6s" firstAttribute="centerY" secondItem="jwm-FW-JaT" secondAttribute="centerY" id="kLQ-9Y-GZn"/>
                                                     </constraints>
                                                     <size key="customSize" width="176" height="99"/>
                                                     <connections>
+                                                        <outlet property="loader" destination="Tjl-Xt-o6s" id="tzL-Uc-19e"/>
                                                         <outlet property="thumbnail" destination="jwm-FW-JaT" id="Njv-gV-cXb"/>
                                                     </connections>
                                                 </collectionViewCell>
@@ -227,45 +233,11 @@
                     </tableView>
                     <connections>
                         <segue destination="IbS-bj-HKR" kind="show" identifier="toSlateVC" id="Gce-AW-BdC"/>
-                        <segue destination="Zuv-8e-iEF" kind="show" identifier="toVideoVC" id="TPb-bE-iCs"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W4z-tX-9Ij" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2903" y="537"/>
-        </scene>
-        <!--VideoVC-->
-        <scene sceneID="f11-b1-lv6">
-            <objects>
-                <viewController id="Zuv-8e-iEF" customClass="VideoVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="3Fv-yf-1AY"/>
-                        <viewControllerLayoutGuide type="bottom" id="jwV-6k-DX1"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="dTq-8x-Ec1">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I'm a video player" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y1f-50-I3f">
-                                <rect key="frame" x="234" y="289" width="133" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="Y1f-50-I3f" firstAttribute="centerX" secondItem="dTq-8x-Ec1" secondAttribute="centerX" id="BcH-Yz-ZcA"/>
-                            <constraint firstItem="Y1f-50-I3f" firstAttribute="centerY" secondItem="dTq-8x-Ec1" secondAttribute="centerY" id="hwR-qx-Wob"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="HPf-Hq-ew7"/>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="p5d-rZ-qDl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3661" y="537"/>
         </scene>
         <!--SlateVC-->
         <scene sceneID="QS4-oc-rRK">
@@ -281,13 +253,13 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jfr-Mu-juV">
                                 <rect key="frame" x="150" y="64" width="300" height="169"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="jfr-Mu-juV" secondAttribute="height" multiplier="16:9" id="JFt-tQ-mco"/>
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="jfr-Mu-juV" firstAttribute="top" secondItem="e4f-XP-brD" secondAttribute="bottom" id="FqI-jN-11B"/>
                             <constraint firstItem="jfr-Mu-juV" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="IHn-Wj-f0C"/>
@@ -378,6 +350,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="plusButton" width="50" height="50"/>
+        <image name="blackbox" width="18" height="18"/>
     </resources>
 </document>

@@ -8,6 +8,6 @@
 
 import UIKit
 
-class StoryElementCollectionCell: UICollectionViewCell {
+class StoryElementCollectionCell: DraggableCollectionViewCell {
 	    
 }

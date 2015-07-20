@@ -13,5 +13,8 @@ import CoreData
 class Slate: StoryElement {
 
 // Insert code here to add functionality to your managed object subclass
-
+	
+	override func isSlate() -> Bool {
+		return true
+	}
 }

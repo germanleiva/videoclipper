@@ -4,7 +4,16 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="storyLines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryLine" inverseName="project" inverseEntity="StoryLine" syncable="YES"/>
     </entity>
-    <entity name="Slate" representedClassName="Slate" parentEntity="StoryElement" syncable="YES"/>
+    <entity name="Slate" representedClassName="Slate" parentEntity="StoryElement" syncable="YES">
+        <relationship name="widgets" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryElement" syncable="YES"/>
+    </entity>
+    <entity name="SlateElement" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="positionX" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="positionY" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    </entity>
     <entity name="StoryElement" representedClassName="StoryElement" isAbstract="YES" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="storyLine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryLine" inverseName="elements" inverseEntity="StoryLine" syncable="YES"/>
@@ -20,9 +29,10 @@
     </entity>
     <elements>
         <element name="Project" positionX="-360" positionY="-75" width="128" height="75"/>
-        <element name="Slate" positionX="117" positionY="216" width="128" height="45"/>
+        <element name="Slate" positionX="117" positionY="216" width="128" height="60"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
         <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="90"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="75"/>
+        <element name="SlateElement" positionX="-153" positionY="81" width="128" height="120"/>
     </elements>
 </model>

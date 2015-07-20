@@ -13,5 +13,9 @@ import CoreData
 class StoryLine: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-
+	func videos() -> [VideoClip] {
+		return self.elements!.filter({ (eachElement) -> Bool in
+			return (eachElement as! StoryElement).isVideo()
+		}) as! [VideoClip]
+	}
 }

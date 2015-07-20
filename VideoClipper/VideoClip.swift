@@ -8,10 +8,25 @@
 
 import Foundation
 import CoreData
+import AVFoundation
 
 @objc(VideoClip)
 class VideoClip: StoryElement {
 
+	var asset:AVAsset? = nil
 // Insert code here to add functionality to your managed object subclass
-
+	override func isVideo() -> Bool {
+		return true
+	}
+	
+	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+		super.init(entity: entity, insertIntoManagedObjectContext: context)
+		if let path = self.path {
+			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
+				//Nothing
+				print("Asset keys loaded")
+			}
+		}
+	}
 }

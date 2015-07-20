@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
 		A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4664ABD1B444BA80095B27D /* Main.storyboard */; };
 		A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */; };
@@ -54,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A4664AB61B444BA80095B27D /* VideoClipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoClipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4664AB91B444BA80095B27D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A4664ABE1B444BA80095B27D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				A4664AF41B452D680095B27D /* VideoCollectionCell.swift */,
 				A4664AF51B452D680095B27D /* SlateVC.swift */,
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
+				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -260,6 +263,7 @@
 				TargetAttributes = {
 					A4664AB51B444BA80095B27D = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = NJZSW7J9AZ;
 					};
 					A4664ACC1B444BA90095B27D = {
 						CreatedOnToolsVersion = 7.0;
@@ -336,6 +340,7 @@
 				A4A5F7B31B453C3F0090E98A /* StoryLine+CoreDataProperties.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
+				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
 				A4A5F7B21B453C3F0090E98A /* StoryLine.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,
@@ -419,8 +424,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -435,9 +442,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -464,8 +473,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -474,8 +485,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -486,6 +499,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -498,6 +513,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

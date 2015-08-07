@@ -2,7 +2,7 @@
 //  Project+CoreDataProperties.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 02/07/15.
+//  Created by German Leiva on 30/07/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 //  Delete this file and regenerate it using "Create NSManagedObject Subclass…"
@@ -15,6 +15,7 @@ import CoreData
 extension Project {
 
     @NSManaged var name: String?
+    @NSManaged var createdAt: NSDate?
     @NSManaged var storyLines: NSOrderedSet?
 
 }

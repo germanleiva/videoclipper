@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8118.17" systemVersion="14D136" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8118.17" systemVersion="14E46" minimumToolsVersion="Automatic">
     <entity name="Project" representedClassName="Project" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="storyLines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryLine" inverseName="project" inverseEntity="StoryLine" syncable="YES"/>
     </entity>
     <entity name="Slate" representedClassName="Slate" parentEntity="StoryElement" syncable="YES">
-        <relationship name="widgets" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryElement" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="SlateElement" inverseName="slate" inverseEntity="SlateElement" syncable="YES"/>
     </entity>
-    <entity name="SlateElement" syncable="YES">
+    <entity name="SlateElement" representedClassName="SlateElement" syncable="YES">
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="positionX" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="positionY" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="slate" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Slate" inverseName="widgets" inverseEntity="Slate" syncable="YES"/>
     </entity>
     <entity name="StoryElement" representedClassName="StoryElement" isAbstract="YES" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -20,6 +24,7 @@
     </entity>
     <entity name="StoryLine" representedClassName="StoryLine" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shouldHide" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryElement" inverseName="storyLine" inverseEntity="StoryElement" syncable="YES"/>
         <relationship name="project" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="storyLines" inverseEntity="Project" syncable="YES"/>
     </entity>
@@ -28,11 +33,11 @@
         <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Project" positionX="-360" positionY="-75" width="128" height="75"/>
-        <element name="Slate" positionX="117" positionY="216" width="128" height="60"/>
+        <element name="Project" positionX="-360" positionY="-75" width="128" height="90"/>
+        <element name="Slate" positionX="117" positionY="216" width="128" height="90"/>
+        <element name="SlateElement" positionX="-153" positionY="81" width="128" height="135"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
-        <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="90"/>
+        <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="75"/>
-        <element name="SlateElement" positionX="-153" positionY="81" width="128" height="120"/>
     </elements>
 </model>

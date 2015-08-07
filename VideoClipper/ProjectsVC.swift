@@ -9,20 +9,37 @@
 import UIKit
 import CoreData
 
-class ProjectsVC: UIViewController, UITableViewDataSource, NSFetchedResultsControllerDelegate {
-	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-	var projects = [Project]()
+let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
+class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate {
+	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+	var isNewProject = false
+	var horribleFix = false
+	
 	@IBOutlet weak var tableView: UITableView!
 	
-	let TO_PROJECT_VC_SEGUE = "toProjectVC"
+	var fetchedResultsController: NSFetchedResultsController? = nil
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+		// Do any additional setup after loading the view.
+		let projectsFetchRequest = NSFetchRequest(entityName: "Project")
+		let primarySortDescriptor = NSSortDescriptor(key: "createdAt", ascending: true)
+		//		let secondarySortDescriptor = NSSortDescriptor(key: "commonName", ascending: true)
+		projectsFetchRequest.sortDescriptors = [primarySortDescriptor/*, secondarySortDescriptor*/]
+		
+		self.fetchedResultsController = NSFetchedResultsController(
+			fetchRequest: projectsFetchRequest,
+			managedObjectContext: self.context,
+			sectionNameKeyPath: nil,
+			cacheName: nil)
+		
+		self.fetchedResultsController!.delegate = self
+		
 		do {
-			self.projects = try context.executeFetchRequest(NSFetchRequest(entityName: "Project")) as! [Project]
+			try self.fetchedResultsController!.performFetch()
+//			self.projects = try context.executeFetchRequest(NSFetchRequest(entityName: "Project")) as! [Project]
 		} catch {
 			print("Data base error while retrieving projects: \(error)")
 		}
@@ -33,30 +50,43 @@ class ProjectsVC: UIViewController, UITableViewDataSource, NSFetchedResultsContr
         // Dispose of any resources that can be recreated.
     }
 	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+			self.tableView.deselectRowAtIndexPath(selectedIndexPath, animated: true)
+		}
+	}
+	
 	// MARK: - Navigation
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		// Get the new view controller using [segue destinationViewController].
 		// Pass the selected object to the new view controller.
-
+		
 		if (segue.identifier == TO_PROJECT_VC_SEGUE) {
 			let projectVC = segue.destinationViewController as! ProjectVC
 //			projectVC.useLayoutToLayoutNavigationTransitions = true
 			if let selectedIndex = self.tableView.indexPathForSelectedRow {
-				projectVC.project = self.projects[selectedIndex.row]
+				projectVC.project = self.fetchedResultsController!.objectAtIndexPath(selectedIndex) as? Project
 			}
+			
+			projectVC.isNewProject = self.isNewProject
+			self.isNewProject = false
 		}
 	}
+	
 	@IBAction func plusPressed(sender: UIButton) {
-		let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
-		newProject.name = "Project Nro.\(self.projects.count+1)"
-		let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
-		firstStoryLine.name = "My first story line"
+		let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: self.context) as! Project
+
+		newProject.name = "Unnamed"
+		newProject.createdAt = NSDate()
+		let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: self.context) as! StoryLine
+//		firstStoryLine.name = "My first story line"
 		
 		newProject.storyLines = [firstStoryLine]
 
-		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: context) as! Slate
-		firstSlate.name = "TC 0"
+		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: self.context) as! Slate
+//		firstSlate.name = "TC 0"
 		firstStoryLine.elements = [firstSlate]
 
 		do {
@@ -66,25 +96,105 @@ class ProjectsVC: UIViewController, UITableViewDataSource, NSFetchedResultsContr
 		}
 		
 		print(newProject)
-		self.projects.append(newProject)
 		
-		self.tableView.reloadData()
-//		let newSection = self.projects.count-1
-//		self.collectionView?.insertSections(NSIndexSet(index: newSection))
-//		self.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forRow: 0, inSection: newSection), atScrollPosition: .Bottom, animated: true)
+		self.tableView.selectRowAtIndexPath(self.fetchedResultsController!.indexPathForObject(newProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
+
+		self.isNewProject = true
+		self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
 	}
 
 	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return 1
+//		return 1
+		if let sections = self.fetchedResultsController!.sections {
+			return sections.count
+		}
+		return 0
 	}
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return self.projects.count
+//		return self.projects.count
+		if let sections = fetchedResultsController!.sections {
+			let currentSection = sections[section] as NSFetchedResultsSectionInfo
+			return currentSection.numberOfObjects
+		}
+		
+		return 0
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell =  tableView.dequeueReusableCellWithIdentifier("ProjectTableCell", forIndexPath: indexPath) as! ProjectTableCell
-		cell.mainLabel.text = self.projects[indexPath.row].name
+		let cell =  tableView.dequeueReusableCellWithIdentifier("ProjectTableCell", forIndexPath: indexPath)
+		
+		self.configureCell(cell, indexPath: indexPath)
+		
 		return cell
+	}
+	
+	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		return true
+	}
+	
+	func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+		if (editingStyle == UITableViewCellEditingStyle.Delete) {
+			// handle delete (by removing the data from your array and updating the tableview)
+			print("Delete project tapped")
+			
+			let projectToDelete = self.fetchedResultsController!.objectAtIndexPath(indexPath)
+			self.context.deleteObject(projectToDelete)
+			
+			do {
+				try self.context.save()
+			} catch {
+				print("Couldn't delete project \(projectToDelete): \(error)")
+			}
+
+		}
+	}
+	
+	func configureCell(aCell:UITableViewCell,indexPath:NSIndexPath) {
+		let cell = aCell as! ProjectTableCell
+		let project = self.fetchedResultsController!.objectAtIndexPath(indexPath) as! Project
+		
+		cell.mainLabel.text = project.name
+	}
+	
+	//- MARK: Fetch results delegate
+	func controllerWillChangeContent(controller: NSFetchedResultsController) {
+		self.tableView.beginUpdates()
+	}
+	
+	func controllerDidChangeContent(controller: NSFetchedResultsController) {
+		self.tableView.endUpdates()
+	}
+
+	func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+		switch(type) {
+			case .Insert:
+				self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: UITableViewRowAnimation.Fade)
+			case .Delete:
+				self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: UITableViewRowAnimation.Fade)
+			default:
+				print("Not managed didChangeSection")
+		}
+	}
+	
+	func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+		switch(type) {
+			case .Insert:
+				if !self.horribleFix {
+					self.tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+				}
+				self.horribleFix = false
+			case .Update:
+//				self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+				self.horribleFix = true
+				self.configureCell(self.tableView.cellForRowAtIndexPath(indexPath!)!,indexPath: indexPath!)
+			case .Move:
+				self.tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+				self.tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+			case .Delete:
+				self.tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+//			default:
+//				print("Not managed didChangeObject for change type \(type)")
+		}
 	}
 }

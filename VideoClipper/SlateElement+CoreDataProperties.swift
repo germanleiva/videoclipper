@@ -1,5 +1,5 @@
 //
-//  Slate+CoreDataProperties.swift
+//  SlateElement+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 20/07/15.
@@ -12,10 +12,13 @@
 import Foundation
 import CoreData
 
-extension Slate {
+extension SlateElement {
 
-	@NSManaged var widgets: NSOrderedSet?
-	@NSManaged var snapshot: NSData?
-	@NSManaged var duration: NSNumber?
+    @NSManaged var content: String?
+    @NSManaged var height: NSNumber?
+    @NSManaged var distanceXFromCenter: NSNumber?
+    @NSManaged var distanceYFromCenter: NSNumber?
+    @NSManaged var width: NSNumber?
+    @NSManaged var slate: Slate?
 
 }

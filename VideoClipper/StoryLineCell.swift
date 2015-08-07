@@ -11,7 +11,11 @@ import UIKit
 class StoryLineCell: UITableViewCell {
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolbar: UIToolbar!
+	@IBOutlet weak var overlay: UIView!
 	
+	@IBOutlet weak var eyeButton: UIBarButtonItem!
+	@IBOutlet weak var trashButton: UIBarButtonItem!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -45,5 +49,11 @@ class StoryLineCell: UITableViewCell {
 		let tableView = self.superview!.superview as! UITableView!
 		let target = tableView.dataSource as! StoryLinesTableController
 		target.recordTapped(self)
+	}
+	
+	@IBAction func toogleTapped(sender:UIBarButtonItem) {
+		let tableView = self.superview!.superview as! UITableView!
+		let target = tableView.dataSource as! StoryLinesTableController
+		target.toggleTapped(self)
 	}
 }

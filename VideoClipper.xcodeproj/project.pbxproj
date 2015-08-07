@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
+		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
+		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
+		A44094E81B5CE6250061AF97 /* Slate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */; };
+		A44094E91B5CE6250061AF97 /* Slate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* Slate.swift */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
+		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
 		A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4664ABD1B444BA80095B27D /* Main.storyboard */; };
 		A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */; };
@@ -24,14 +30,13 @@
 		A4664AFF1B452D680095B27D /* SlateCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF31B452D680095B27D /* SlateCollectionCell.swift */; };
 		A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF41B452D680095B27D /* VideoCollectionCell.swift */; };
 		A4664B011B452D680095B27D /* SlateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF51B452D680095B27D /* SlateVC.swift */; };
-		A4A5F7AC1B453C3F0090E98A /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A21B453C3F0090E98A /* Project.swift */; };
-		A4A5F7AD1B453C3F0090E98A /* Project+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A31B453C3F0090E98A /* Project+CoreDataProperties.swift */; };
-		A4A5F7AE1B453C3F0090E98A /* Slate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A41B453C3F0090E98A /* Slate.swift */; };
-		A4A5F7AF1B453C3F0090E98A /* Slate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A51B453C3F0090E98A /* Slate+CoreDataProperties.swift */; };
+		A481EFD31B5D42940051ED93 /* SlateElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */; };
+		A481EFD41B5D42940051ED93 /* SlateElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* SlateElement.swift */; };
 		A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A61B453C3F0090E98A /* StoryElement.swift */; };
 		A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */; };
-		A4A5F7B21B453C3F0090E98A /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A81B453C3F0090E98A /* StoryLine.swift */; };
-		A4A5F7B31B453C3F0090E98A /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A91B453C3F0090E98A /* StoryLine+CoreDataProperties.swift */; };
+		A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */; };
+		A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */; };
+		A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F341B6A1BE400D86E99 /* Project.swift */; };
 		A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46621B46B54100A12267 /* VideoVC.swift */; };
 		A4FF46661B46B6B100A12267 /* VideoClip+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */; };
 		A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46651B46B6B100A12267 /* VideoClip.swift */; };
@@ -55,7 +60,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
+		A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
+		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
+		A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Slate+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A44094E71B5CE6250061AF97 /* Slate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slate.swift; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
+		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
+		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
+		A44CE8F41B600B5300953B7F /* VideoHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoHelper.h; sourceTree = "<group>"; };
 		A4664AB61B444BA80095B27D /* VideoClipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoClipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4664AB91B444BA80095B27D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A4664ABE1B444BA80095B27D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -78,14 +92,14 @@
 		A4664AF31B452D680095B27D /* SlateCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateCollectionCell.swift; sourceTree = "<group>"; };
 		A4664AF41B452D680095B27D /* VideoCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCollectionCell.swift; sourceTree = "<group>"; };
 		A4664AF51B452D680095B27D /* SlateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateVC.swift; sourceTree = "<group>"; };
-		A4A5F7A21B453C3F0090E98A /* Project.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
-		A4A5F7A31B453C3F0090E98A /* Project+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Project+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		A4A5F7A41B453C3F0090E98A /* Slate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slate.swift; sourceTree = "<group>"; };
-		A4A5F7A51B453C3F0090E98A /* Slate+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Slate+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SlateElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A481EFD21B5D42940051ED93 /* SlateElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateElement.swift; sourceTree = "<group>"; };
 		A4A5F7A61B453C3F0090E98A /* StoryElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElement.swift; sourceTree = "<group>"; };
 		A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		A4A5F7A81B453C3F0090E98A /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
-		A4A5F7A91B453C3F0090E98A /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4BC7F301B6906B100D86E99 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Project+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4BC7F341B6A1BE400D86E99 /* Project.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		A4FF46621B46B54100A12267 /* VideoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoVC.swift; sourceTree = "<group>"; };
 		A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VideoClip+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4FF46651B46B6B100A12267 /* VideoClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClip.swift; sourceTree = "<group>"; };
@@ -116,6 +130,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */ = {
+			isa = PBXGroup;
+			children = (
+				A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */,
+				A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */,
+			);
+			path = "ALAssetsLibrary-CustomPhotoAlbum";
+			sourceTree = "<group>";
+		};
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
@@ -139,11 +162,15 @@
 		A4664AB81B444BA80095B27D /* VideoClipper */ = {
 			isa = PBXGroup;
 			children = (
+				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
+				A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */,
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
 				A4664AEB1B452D680095B27D /* ProjectVC.swift */,
 				A4664AED1B452D680095B27D /* StoryLinesTableController.swift */,
+				A44CE8F21B600B2E00953B7F /* VideoHelper.m */,
+				A44CE8F41B600B5300953B7F /* VideoHelper.h */,
 				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
 				A4664AF11B452D680095B27D /* StoryLineCell.swift */,
 				A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */,
@@ -157,6 +184,7 @@
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
 				A4664AC81B444BA80095B27D /* Info.plist */,
 				A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */,
+				A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */,
 			);
 			path = VideoClipper;
 			sourceTree = "<group>";
@@ -182,18 +210,29 @@
 		A4664B0D1B4539510095B27D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A4A5F7A21B453C3F0090E98A /* Project.swift */,
-				A4A5F7A31B453C3F0090E98A /* Project+CoreDataProperties.swift */,
-				A4A5F7A81B453C3F0090E98A /* StoryLine.swift */,
-				A4A5F7A91B453C3F0090E98A /* StoryLine+CoreDataProperties.swift */,
+				A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */,
+				A4BC7F341B6A1BE400D86E99 /* Project.swift */,
 				A4A5F7A61B453C3F0090E98A /* StoryElement.swift */,
 				A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */,
-				A4A5F7A41B453C3F0090E98A /* Slate.swift */,
-				A4A5F7A51B453C3F0090E98A /* Slate+CoreDataProperties.swift */,
+				A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */,
+				A42BDD551B67EF97003CA999 /* StoryLine.swift */,
+				A44094E71B5CE6250061AF97 /* Slate.swift */,
+				A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */,
+				A481EFD21B5D42940051ED93 /* SlateElement.swift */,
+				A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */,
 				A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */,
 				A4FF46651B46B6B100A12267 /* VideoClip.swift */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				A4BC7F301B6906B100D86E99 /* MBProgressHUD.h */,
+				A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */,
+			);
+			path = MBProgressHUD;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,6 +297,7 @@
 		A4664AAE1B444BA80095B27D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Germán Leiva";
 				TargetAttributes = {
@@ -329,27 +369,32 @@
 			files = (
 				A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */,
 				A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */,
-				A4A5F7AF1B453C3F0090E98A /* Slate+CoreDataProperties.swift in Sources */,
 				A4664B011B452D680095B27D /* SlateVC.swift in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
+				A481EFD41B5D42940051ED93 /* SlateElement.swift in Sources */,
 				A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */,
+				A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
-				A4A5F7B31B453C3F0090E98A /* StoryLine+CoreDataProperties.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
-				A4A5F7B21B453C3F0090E98A /* StoryLine.swift in Sources */,
+				A44094E91B5CE6250061AF97 /* Slate.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
+				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
+				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
+				A481EFD31B5D42940051ED93 /* SlateElement+CoreDataProperties.swift in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,
-				A4A5F7AD1B453C3F0090E98A /* Project+CoreDataProperties.swift in Sources */,
 				A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */,
+				A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */,
+				A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */,
 				A4664AFF1B452D680095B27D /* SlateCollectionCell.swift in Sources */,
-				A4A5F7AC1B453C3F0090E98A /* Project.swift in Sources */,
-				A4A5F7AE1B453C3F0090E98A /* Slate.swift in Sources */,
 				A4FF46661B46B6B100A12267 /* VideoClip+CoreDataProperties.swift in Sources */,
+				A44094E81B5CE6250061AF97 /* Slate+CoreDataProperties.swift in Sources */,
+				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
+				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,6 +544,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
@@ -506,6 +552,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -513,6 +562,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
@@ -520,6 +570,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};

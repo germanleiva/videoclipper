@@ -2,7 +2,7 @@
 //  Project.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 02/07/15.
+//  Created by German Leiva on 30/07/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 

@@ -2,7 +2,7 @@
 //  Slate.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 02/07/15.
+//  Created by German Leiva on 20/07/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 
@@ -13,8 +13,12 @@ import CoreData
 class Slate: StoryElement {
 
 // Insert code here to add functionality to your managed object subclass
-	
 	override func isSlate() -> Bool {
 		return true
+	}
+	
+	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+		super.init(entity: entity, insertIntoManagedObjectContext: context)
+		self.duration = 3
 	}
 }

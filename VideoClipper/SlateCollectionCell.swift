@@ -10,7 +10,9 @@ import UIKit
 
 class SlateCollectionCell: StoryElementCollectionCell {
     	@IBOutlet weak var label:UILabel?
-	
+	@IBOutlet weak var thumbnail:UIImageView?
+
+
 	/*
 	// Only override drawRect: if you perform custom drawing.
 	// An empty implementation adversely affects performance during animation.

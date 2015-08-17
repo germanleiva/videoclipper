@@ -10,7 +10,11 @@ import UIKit
 
 class ProjectTableCell: UITableViewCell {
 
-	@IBOutlet weak var mainLabel: UILabel!
+	@IBOutlet var mainLabel: UILabel!
+	@IBOutlet var linesLabel: UILabel!
+	@IBOutlet var videosLabel: UILabel!
+	@IBOutlet var updatedAtLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

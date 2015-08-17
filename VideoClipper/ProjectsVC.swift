@@ -77,9 +77,11 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 	
 	@IBAction func plusPressed(sender: UIButton) {
 		let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: self.context) as! Project
-
-		newProject.name = "Unnamed"
 		newProject.createdAt = NSDate()
+
+		let dateString = NSDateFormatter.localizedStringFromDate(newProject.createdAt!, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
+
+		newProject.name = "Project \(dateString)"
 		let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: self.context) as! StoryLine
 //		firstStoryLine.name = "My first story line"
 		
@@ -155,6 +157,27 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 		let project = self.fetchedResultsController!.objectAtIndexPath(indexPath) as! Project
 		
 		cell.mainLabel.text = project.name
+		
+		let storyLineCount = project.storyLines!.count
+		cell.linesLabel.text = "\(storyLineCount) line"
+		if storyLineCount == 1 {
+			cell.linesLabel.text = cell.linesLabel.text!.stringByAppendingString("s")
+		}
+		
+		let videoCount = project.videosCount()
+		cell.videosLabel.text = "\(videoCount) video"
+		if videoCount == 1 {
+			cell.videosLabel.text = cell.videosLabel.text!.stringByAppendingString("s")
+		}
+		
+		var dateString = ""
+		
+		if let aDate = project.updatedAt {
+			dateString = NSDateFormatter.localizedStringFromDate(aDate, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
+		}
+		
+		cell.updatedAtLabel.text = dateString
+
 	}
 	
 	//- MARK: Fetch results delegate

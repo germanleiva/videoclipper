@@ -18,8 +18,23 @@ class StoryLineCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        // Initialization code		
+		let tapGesture = UITapGestureRecognizer(target: self, action: "collectionViewTapped:")
+		tapGesture.numberOfTapsRequired = 1
+		
+		self.collectionView.backgroundView = UIView(frame:self.collectionView.bounds)
+		
+		self.collectionView.backgroundView!.addGestureRecognizer(tapGesture)
+		tapGesture.delegate = self
     }
+	
+	func collectionViewTapped(gesture:UITapGestureRecognizer) {
+		let tableView = self.superview?.superview as! UITableView
+		let indexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
+		tableView.delegate?.tableView?(tableView, willSelectRowAtIndexPath: indexPath)
+		tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+		tableView.delegate?.tableView?(tableView, didSelectRowAtIndexPath: indexPath)
+	}
 
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -27,33 +42,33 @@ class StoryLineCell: UITableViewCell {
         // Configure the view for the selected state
     }
 	
-	@IBAction func playTapped(sender:UIBarButtonItem) {
-		let tableView = self.superview!.superview as! UITableView!
-		let target = tableView.dataSource as! StoryLinesTableController
-		target.playTapped(self)
-	}
+//	@IBAction func playTapped(sender:UIBarButtonItem) {
+//		let tableView = self.superview!.superview as! UITableView!
+//		let target = tableView.dataSource as! StoryLinesTableController
+//		target.playTapped(self)
+//	}
+//	
+//	@IBAction func exportTapped(sender:UIBarButtonItem) {
+//		let tableView = self.superview!.superview as! UITableView!
+//		let target = tableView.dataSource as! StoryLinesTableController
+//		target.exportTapped(self)
+//	}
+//	
+//	@IBAction func trashTapped(sender:UIBarButtonItem) {
+//		let tableView = self.superview!.superview as! UITableView!
+//		let target = tableView.dataSource as! StoryLinesTableController
+//		target.trashTapped(self)
+//	}
+//	
+//	@IBAction func recordTapped(sender:UIBarButtonItem) {
+//		let tableView = self.superview!.superview as! UITableView!
+//		let target = tableView.dataSource as! StoryLinesTableController
+//		target.recordTapped(self)
+//	}
 	
-	@IBAction func exportTapped(sender:UIBarButtonItem) {
-		let tableView = self.superview!.superview as! UITableView!
-		let target = tableView.dataSource as! StoryLinesTableController
-		target.exportTapped(self)
-	}
-	
-	@IBAction func trashTapped(sender:UIBarButtonItem) {
-		let tableView = self.superview!.superview as! UITableView!
-		let target = tableView.dataSource as! StoryLinesTableController
-		target.trashTapped(self)
-	}
-	
-	@IBAction func recordTapped(sender:UIBarButtonItem) {
-		let tableView = self.superview!.superview as! UITableView!
-		let target = tableView.dataSource as! StoryLinesTableController
-		target.recordTapped(self)
-	}
-	
-	@IBAction func toogleTapped(sender:UIBarButtonItem) {
-		let tableView = self.superview!.superview as! UITableView!
-		let target = tableView.dataSource as! StoryLinesTableController
-		target.toggleTapped(self)
-	}
+//	@IBAction func toogleTapped(sender:UIBarButtonItem) {
+//		let tableView = self.superview!.superview as! UITableView!
+//		let target = tableView.dataSource as! StoryLinesTableController
+//		target.toggleTapped(self)
+//	}
 }

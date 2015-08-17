@@ -34,12 +34,16 @@ func ==(lhs: TextWidget, rhs: TextWidget) -> Bool {
 	return lhs.textView == rhs.textView
 }
 
-let empty_text = "Text"
+let EMPTY_TEXT = "Text"
+let TEXT_INITIAL_WIDTH = CGFloat(100)
+let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class SlateVC: UIViewController, UITextViewDelegate {
+class SlateVC: UIViewController, UITextViewDelegate, UIGestureRecognizerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var discardButton:UIBarButtonItem?
 	@IBOutlet weak var duration:UILabel?
+	
+	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
 	
@@ -52,9 +56,9 @@ class SlateVC: UIViewController, UITextViewDelegate {
 
         // Do any additional setup after loading the view.
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
-	}
-	
-	override func viewWillAppear(animated: Bool) {
+//	}
+//	
+//	override func viewWillAppear(animated: Bool) {
 		for eachSlateElement in self.slate!.widgets! {
 			let element = eachSlateElement as! SlateElement
 			self.addTextInput(element.content!, initialFrame: element.initialRect(),model: element)
@@ -67,41 +71,26 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		self.changesDetected = false
 	}
 	
-	@IBAction func saveButtonPressed(sender: AnyObject?) {
-		self.saveCanvas()
-		self.dismissViewControllerAnimated(true, completion: nil)
-	}
-	
-	@IBAction func doneButtonPressed(sender:AnyObject?) {
-		if self.changesDetected {
-			let alert = UIAlertController(title: "Do you want to save your changes", message: "Do you want to discard the changes made on the Slate?", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-				self.dismissViewControllerAnimated(true, completion: nil)
-			}))
-			alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-			}))
-			self.presentViewController(alert, animated: true, completion: nil)
-		} else {
-			self.dismissViewControllerAnimated(true, completion: nil)
-		}
-	}
-	
 	func saveCanvas() {
-		let overlayView = UIView(frame: UIScreen.mainScreen().bounds)
-		overlayView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-		let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-		activityIndicator.center = overlayView.center
-		overlayView.addSubview(activityIndicator)
-		activityIndicator.startAnimating()
-		self.navigationController!.view.addSubview(overlayView)
+//		let overlayView = UIView(frame: UIScreen.mainScreen().bounds)
+//		overlayView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+//		let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+//		activityIndicator.center = overlayView.center
+//		overlayView.addSubview(activityIndicator)
+//		activityIndicator.startAnimating()
+//		self.navigationController!.view.addSubview(overlayView)
+//		
+		let deactivatedWidgets = deactivateHandlers(self.textWidgets)
 		
-		deactivateHandlers(self.textWidgets)
-		
+		/* Capture the screen shoot at native resolution */
+		UIGraphicsBeginImageContextWithOptions(self.canvas!.bounds.size, self.canvas!.opaque, UIScreen.mainScreen().scale)
+		self.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
+
 		for eachTextWidget in self.textWidgets {
 			let widgetsOnSlate = self.slate?.mutableOrderedSetValueForKey("widgets")
 			let widget = eachTextWidget.model!
 			
-			if eachTextWidget.textView!.text == empty_text {
+			if eachTextWidget.textView!.text == EMPTY_TEXT {
 				widget.content = ""
 			} else {
 				widget.content = eachTextWidget.textView!.text
@@ -115,9 +104,6 @@ class SlateVC: UIViewController, UITextViewDelegate {
 			widgetsOnSlate?.addObject(widget)
 		}
 		
-		/* Capture the screen shoot at native resolution */
-		UIGraphicsBeginImageContextWithOptions(self.canvas!.bounds.size, self.canvas!.opaque, UIScreen.mainScreen().scale)
-		self.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
 		let screenshot = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 		
@@ -132,9 +118,13 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		
 		self.slate?.snapshot = UIImagePNGRepresentation(img)
 		
+		for eachDeactivatedWidget in deactivatedWidgets {
+			activateHandlers(eachDeactivatedWidget)
+		}
+		
 		do {
 			try self.context.save()
-			overlayView.removeFromSuperview()
+//			overlayView.removeFromSuperview()
 			self.changesDetected = false
 		} catch {
 			print("Couldn't save the canvas on the DB: \(error)")
@@ -143,14 +133,13 @@ class SlateVC: UIViewController, UITextViewDelegate {
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
 		let newModel = NSEntityDescription.insertNewObjectForEntityForName("SlateElement", inManagedObjectContext: self.context) as! SlateElement
-		let newTextWidget = self.addTextInput(
+		/*let newTextWidget = */self.addTextInput(
 			"",
 			initialFrame: CGRectZero,
 			model: newModel
 		)
 		
-		print("Created \(newTextWidget)")
-		
+		self.saveCanvas()
 		self.changesDetected = true
 	}
 	
@@ -180,7 +169,7 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		
 		var effectiveFrame = initialFrame
 		if initialFrame == CGRectZero {
-			effectiveFrame = CGRect(x: 0,y: 0,width: 50,height: 30)
+			effectiveFrame = CGRect(x: 0,y: 0,width: TEXT_INITIAL_WIDTH,height: TEXT_INITIAL_WIDTH)
 		}
 		
 		textWidget.textView = UITextView(frame: effectiveFrame)
@@ -198,7 +187,7 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		
 		textWidget.textView!.layer.borderColor = UIColor.blackColor().CGColor
 		if content.isEmpty {
-			textWidget.textView!.text = empty_text
+			textWidget.textView!.text = EMPTY_TEXT
 			textWidget.textView!.textColor = UIColor.lightGrayColor()
 		} else {
 			textWidget.textView!.text = content
@@ -219,14 +208,18 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		textWidget.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(textWidget.leftHandler!)
 		
-		textWidget.leftHandler?.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "leftPanning:"))
+		let leftPanningRecognizer = UIPanGestureRecognizer(target: self, action: "leftPanning:")
+		textWidget.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
+		leftPanningRecognizer.delegate = self
 		
 		textWidget.rightHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
 		textWidget.rightHandler!.backgroundColor = UIColor.redColor()
 		textWidget.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(textWidget.rightHandler!)
 		
-		textWidget.rightHandler?.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "rightPanning:"))
+		let rightPanningRecognizer = UIPanGestureRecognizer(target: self, action: "rightPanning:")
+		textWidget.rightHandler?.addGestureRecognizer(rightPanningRecognizer)
+		rightPanningRecognizer.delegate = self
 		
 		textWidget.leftHandler!.addConstraint(NSLayoutConstraint(item: textWidget.leftHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
 		textWidget.leftHandler!.addConstraint(NSLayoutConstraint(item: textWidget.leftHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
@@ -236,10 +229,10 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		textWidget.textViewWidthConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: effectiveFrame.size.width)
 		textWidget.textView!.addConstraint(textWidget.textViewWidthConstraint)
 		
-		textWidget.textViewMinWidthConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 50)
+		textWidget.textViewMinWidthConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_WIDTH)
 		textWidget.textView!.addConstraint(textWidget.textViewMinWidthConstraint)
 		
-		textWidget.textViewMinHeightConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 30)
+		textWidget.textViewMinHeightConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_HEIGHT)
 		textWidget.textView!.addConstraint(textWidget.textViewMinHeightConstraint)
 		
 //		textWidget.textView!.addConstraint(NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: textWidget.textView!, attribute: NSLayoutAttribute.Height, multiplier: 16/9, constant: 0))
@@ -304,6 +297,9 @@ class SlateVC: UIViewController, UITextViewDelegate {
 				print("textview panning cancelled")
 			case UIGestureRecognizerState.Failed:
 				print("textview panning failed")
+			case UIGestureRecognizerState.Ended:
+//				print("textview panning ended <=====")
+				self.saveCanvas()
 			default:
 				print("not handled textview state \(sender.state)")
 			}
@@ -347,6 +343,9 @@ class SlateVC: UIViewController, UITextViewDelegate {
 			print("\(handlerId) panning cancelled")
 		case UIGestureRecognizerState.Failed:
 			print("\(handlerId) panning failed")
+		case UIGestureRecognizerState.Ended:
+//			print("\(handlerId) panning ended <========")
+			self.saveCanvas()
 		default:
 			print("\(handlerId) not handled state \(sender.state)")
 		}
@@ -366,27 +365,34 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		//		}
 	}
 	
-	func deactivateHandlers(textWidgets:[TextWidget]) -> Void {
+	func deactivateHandlers(textWidgets:[TextWidget]) -> [TextWidget] {
+		var deactivatedTextWidgets = [TextWidget]()
 		for aTextWidget in textWidgets {
 			aTextWidget.textView!.editable = false
 			aTextWidget.textView!.selectable = false
 			aTextWidget.tapGesture!.enabled = true
 			
 			//		UIView.animateWithDuration(0.3) { () -> Void in
-			aTextWidget.leftHandler!.hidden = true
-			aTextWidget.rightHandler!.hidden = true
-			aTextWidget.textView!.layer.borderWidth = 0.0
+			if !aTextWidget.leftHandler!.hidden || !aTextWidget.rightHandler!.hidden {
+				deactivatedTextWidgets.append(aTextWidget)
+				aTextWidget.leftHandler!.hidden = true
+				aTextWidget.rightHandler!.hidden = true
+				aTextWidget.textView!.layer.borderWidth = 0.0
+			}
 			//		}
 		}
+		return deactivatedTextWidgets
 	}
 	
-	//- Mark: Text View Delegate
+	//- MARK: Text View Delegate
 	func textViewDidEndEditing(textView: UITextView) {
 		deactivateHandlers([findTextWidget(textView)!])
 		if textView.text.isEmpty {
-			textView.text = empty_text
+			textView.text = EMPTY_TEXT
 			textView.textColor = UIColor.lightGrayColor()
 		}
+//		print("textViewDidEndEditing <====")
+		self.saveCanvas()
 	}
 	
 	func textViewDidBeginEditing(textView: UITextView) {
@@ -398,4 +404,10 @@ class SlateVC: UIViewController, UITextViewDelegate {
 		}
 		
 	}
+	
+	//- MARK: Gesture Recognizer Delegate
+	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+		return otherGestureRecognizer.view!.isDescendantOfView(self.canvas!)
+	}
+
 }

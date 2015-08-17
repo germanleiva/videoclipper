@@ -10,10 +10,19 @@ import UIKit
 import CoreData
 import AVKit
 
-class ProjectVC: UIViewController, UITextFieldDelegate {
+class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
+	var secondaryController:SecondaryViewController?
 	var isNewProject = false
+	var currentLineIndexPath:NSIndexPath? = nil
+	var currentLine:StoryLine? = nil
+	let primaryControllerCompactWidth = CGFloat(192+10)
+
+	@IBOutlet var primaryViewWidthConstraint:NSLayoutConstraint!
+	@IBOutlet var secondaryViewWidthConstraint:NSLayoutConstraint!
+
+	@IBOutlet weak var verticalToolbar: UIView!
 	
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	@IBOutlet weak var titleTextField: UITextField!
@@ -40,12 +49,36 @@ class ProjectVC: UIViewController, UITextFieldDelegate {
 //		self.view.addConstraint(NSLayoutConstraint(item: self.addButton, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
 //		self.view.addConstraint(NSLayoutConstraint(item: self.addButton, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Bottom, multiplier: 1, constant: 200))
 		self.titleTextField!.text = self.project!.name
+		
+		self.primaryViewWidthConstraint!.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width
+		
+		self.view.layoutIfNeeded()
+		
+		let tapGesture = UITapGestureRecognizer(target: self, action: "tapOnPrimaryView:")
+		
+		self.tableController!.tableView.backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: self.tableController!.tableView.frame.size.width, height: self.tableController!.tableView.frame.size.height))
+		self.tableController!.tableView.backgroundView?.backgroundColor = UIColor.clearColor()
+		self.tableController!.tableView.backgroundView!.addGestureRecognizer(tapGesture)
+		
+		self.secondaryViewWidthConstraint.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width - self.primaryControllerCompactWidth
+	}
+	
+	func tapOnPrimaryView(recognizer:UITapGestureRecognizer) {
+		if self.tableController!.isCompact {
+			self.expandPrimaryControler(true)
+		}
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+
+	}
+	
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
 		if self.isNewProject {
 			self.titleTextField!.becomeFirstResponder()
+			self.titleTextField.selectAll(nil)
 			self.isNewProject = false
 		}
 	}
@@ -56,9 +89,15 @@ class ProjectVC: UIViewController, UITextFieldDelegate {
     }
 
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-		if segue.identifier == "containerSegue" {
+		if segue.identifier == "primaryContainerSegue" {
 			self.tableController = segue.destinationViewController as? StoryLinesTableController
 			self.tableController!.project = self.project
+			self.tableController!.delegate = self
+		}
+		if segue.identifier == "secondaryContainerSegue" {
+			self.secondaryController = segue.destinationViewController as? SecondaryViewController
+//			self.secondaryController!.view.layer.borderColor = UIColor.blackColor().CGColor
+//			self.secondaryController!.view.layer.borderWidth = 0.3
 		}
 	}
 	
@@ -136,4 +175,67 @@ class ProjectVC: UIViewController, UITextFieldDelegate {
 		textField.resignFirstResponder()
 		return true
 	}
+	
+	func primaryController(primaryController: StoryLinesTableController, didSelectLine line: StoryLine!, withElement: StoryElement?, rowIndexPath: NSIndexPath?) {
+
+		if let element = withElement {
+			if self.tableController!.isCompact {
+				//We need to expand if we tap on the selected item or we need to change the line if it is different
+				if rowIndexPath! == self.currentLineIndexPath! {
+					//We need to expand
+					self.expandPrimaryControler(true)
+				} else {
+					//We only need to change line that happens at the end
+				}
+			} else {
+				//We need to shrink and show the selected item
+				self.expandPrimaryControler(false)
+			}
+		}
+		
+		self.currentLine = line
+		self.currentLineIndexPath = rowIndexPath
+		self.secondaryController!.line = line
+	}
+	
+	func expandPrimaryControler(shouldHideSecondaryView:Bool) {
+		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth
+		self.view.insertSubview(self.verticalToolbar, aboveSubview: self.secondaryController!.view)
+//		let shouldHideSecondaryView = self.primaryViewWidthConstraint?.constant == primaryWidth
+		if shouldHideSecondaryView {
+			primaryControllerCurrentWidth = self.view.frame.size.width - self.verticalToolbar.frame.size.width
+		} else {
+			//			self.secondaryController!.view.hidden = false
+		}
+		
+		self.tableController?.isCompact = !shouldHideSecondaryView
+		
+		
+		self.view.layoutIfNeeded()
+		//		self.view.setNeedsUpdateConstraints()
+		
+		self.primaryViewWidthConstraint!.constant = primaryControllerCurrentWidth
+		
+		UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			self.view.layoutIfNeeded()
+			}) { (completed) -> Void in
+				if (completed) {
+					//					self.secondaryController!.view.hidden = shouldHideSecondaryView
+				}
+		}
+
+	}
+	
+	@IBAction func captureForLineTapped(sender:AnyObject?) {
+		self.tableController!.recordTapped(sender,storyLine: self.currentLine!)
+	}
+	
+	@IBAction func deleteForLineTapped(sender:AnyObject?) {
+		self.tableController!.trashTapped(sender,storyLine: self.currentLine!)
+	}
+	
+	@IBAction func playForLineTapped(sender:AnyObject?) {
+		self.tableController!.playTapped(sender,storyLine: self.currentLine!)
+	}
+
 }

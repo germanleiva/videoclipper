@@ -16,6 +16,7 @@ extension Project {
 
     @NSManaged var name: String?
     @NSManaged var createdAt: NSDate?
+	@NSManaged var updatedAt: NSDate?
     @NSManaged var storyLines: NSOrderedSet?
 
 }

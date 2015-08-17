@@ -5,3 +5,6 @@
 #import "VideoHelper.h"
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"
 #import "MBProgressHUD.h"
+
+#import "AVPlayerItem+THAdditions.h"
+#import "THPlaybackView.h"

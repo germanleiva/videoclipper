@@ -34,10 +34,16 @@ struct Bundle {
 }
 var bundle : Bundle?
 
+protocol PrimaryControllerDelegate {
+	func primaryController(primaryController:StoryLinesTableController,didSelectLine line:StoryLine!, withElement:StoryElement?, rowIndexPath:NSIndexPath?)
+}
+
 class StoryLinesTableController: UITableViewController, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate {
 	var project:Project? = nil
 	var selectedIndexPathForCollectionView:NSIndexPath?
-	var selectedIndexPath:NSIndexPath?
+	var selectedLineIndexPath:NSIndexPath?
+	
+	var delegate:PrimaryControllerDelegate? = nil
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 	
@@ -54,11 +60,13 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 
 	var progressBar:MBProgressHUD? = nil
 	
+	var isCompact = false
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		// Uncomment the following line to preserve selection between presentations
-		// self.clearsSelectionOnViewWillAppear = false
+		 self.clearsSelectionOnViewWillAppear = false
 		
 		// Uncomment the following line to display an Edit button in the navigation bar for this view controller.
 		// self.navigationItem.rightBarButtonItem = self.editButtonItem()
@@ -69,8 +77,6 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		longPressGestureRecogniser.delegate = self
 		
 		self.view.addGestureRecognizer(longPressGestureRecogniser)
-
-		//For the custom Photo Album
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -79,6 +85,11 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			let cell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: self.selectedIndexPathForCollectionView!.section)) as! StoryLineCell
 			cell.collectionView.reloadItemsAtIndexPaths([NSIndexPath(forRow: self.selectedIndexPathForCollectionView!.item, inSection: 0)])
 			self.selectedIndexPathForCollectionView = nil
+		}
+		
+		if self.selectedLineIndexPath == nil {
+			self.selectedLineIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+			self.tableView.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.None)
 		}
 	}
 	
@@ -99,9 +110,10 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		}
 	}
 	
-	func recordTapped(sender:UITableViewCell) {
-		let indexPath = self.tableView.indexPathForCell(sender)
-		self.currentStoryLine = self.project!.storyLines![indexPath!.section] as? StoryLine
+	func recordTapped(sender:AnyObject?,storyLine:StoryLine) {
+//		let indexPath = self.tableView.indexPathForCell(sender)
+//		self.currentStoryLine = self.project!.storyLines![indexPath!.section] as? StoryLine
+		self.currentStoryLine = storyLine
 		
 		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
 			print("captureVideoPressed and camera available.")
@@ -226,9 +238,9 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		storyLineCell.collectionView.insertItemsAtIndexPaths([newVideoCellIndexPath])
 	}
 	
-	func playTapped(sender:UITableViewCell) {
-		let indexPath = self.tableView.indexPathForCell(sender)
-		let storyLine = self.project?.storyLines![indexPath!.section] as! StoryLine
+	func playTapped(sender:AnyObject?,storyLine:StoryLine) {
+//		let indexPath = self.tableView.indexPathForCell(sender)
+//		let storyLine = self.project?.storyLines![indexPath!.section] as! StoryLine
 		print("playTapped \(storyLine)")
 		
 		let (composition,videoComposition) = self.createComposition(storyLine.elements!)
@@ -423,17 +435,19 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		})
 	}
 	
-	func trashTapped(sender:UITableViewCell) {
-		let indexPath = self.tableView.indexPathForCell(sender)!
-		let storyLine = self.project?.storyLines![indexPath.section] as! StoryLine
-		print("trashTapped \(storyLine) - \(indexPath)")
+	func trashTapped(sender:AnyObject?,storyLine:StoryLine) {
+//		let indexPath = self.tableView.indexPathForCell(sender)!
+//		let storyLine = self.project?.storyLines![indexPath.section] as! StoryLine
+//		print("trashTapped \(storyLine) - \(indexPath)")
+		
+		let indexPath = NSIndexPath(forRow: 0, inSection: self.project!.storyLines!.indexOfObject(storyLine))
 		
 		if storyLine.elements!.count == 0 {
 			self.deleteStoryLine(indexPath)
 			return
 		}
 		
-		let alertController = UIAlertController(title: "Are you sure?", message: "This cannot be undone but your video files will remain in your Photo Album", preferredStyle: UIAlertControllerStyle.Alert)
+		let alertController = UIAlertController(title: "Do you want to delete this line?", message: "Once deleted, your video clips will remain in your Photo Album", preferredStyle: UIAlertControllerStyle.Alert)
 
 		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
 			self.deleteStoryLine(indexPath)
@@ -449,8 +463,12 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	func reloadData(addedObject:StoryLine? = nil) {
 		if let object = addedObject {
 			let section = self.project?.storyLines!.indexOfObject(object)
+			let indexPath = NSIndexPath(forRow: 0, inSection: section!)
+			self.tableView.beginUpdates()
 			self.tableView.insertSections(NSIndexSet(index: section!), withRowAnimation: UITableViewRowAnimation.Bottom)
-			self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section!), atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
+			self.tableView.endUpdates()
+			self.selectRowAtIndexPath(indexPath,animated: true)
+			return
 		}
 		self.tableView.reloadData()
 	}
@@ -480,7 +498,8 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			*/
 			self.tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Left)
 			self.tableView.endUpdates()
-			self.tableView.reloadData()
+			self.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: max(indexPath.section - 1,0)), animated: true)
+//			self.tableView.reloadData()
 		} catch {
 			print("Couldn't delete story line: \(error)")
 		}
@@ -504,18 +523,18 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier("StoryLineCell", forIndexPath: indexPath) as! StoryLineCell
 		
-		cell.selectionStyle = UITableViewCellSelectionStyle.None
+//		cell.selectionStyle = UITableViewCellSelectionStyle.None
 		
-		let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
+//		let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
 		
-		if storyLine.shouldHide!.boolValue {
-			//In order to hide the line we need to show the overlay
-			cell.overlay!.hidden = false
-			cell.eyeButton.tintColor = UIColor.grayColor()
-		} else {
-			cell.overlay!.hidden = true
-			cell.eyeButton.tintColor = self.tableView.tintColor
-		}
+//		if storyLine.shouldHide!.boolValue {
+//			//In order to hide the line we need to show the overlay
+//			cell.overlay!.hidden = false
+//			cell.eyeButton.tintColor = UIColor.grayColor()
+//		} else {
+//			cell.overlay!.hidden = true
+//			cell.eyeButton.tintColor = self.tableView.tintColor
+//		}
 //		cell.selectedBackgroundView?.backgroundColor = UIColor.clearColor()
 		
 //		toggleCellSelection(cell,indexPath)
@@ -589,7 +608,9 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 //		let previousPath = self.selectedIndexPath
-		self.selectedIndexPath = indexPath
+		self.selectedLineIndexPath = indexPath
+		let line = self.project!.storyLines![indexPath.section] as! StoryLine
+		self.delegate!.primaryController(self, didSelectLine: line, withElement:nil, rowIndexPath: indexPath)
 //		if let previousPath	= previousPath {
 //			if let oldCell = tableView.cellForRowAtIndexPath(previousPath){
 //				toggleCellSelection(oldCell as! StoryLineCell,previousPath)
@@ -602,7 +623,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	}
 	
 	func toggleCellSelection(cell:StoryLineCell,_ indexPath:NSIndexPath) {
-		if indexPath == self.selectedIndexPath {
+		if indexPath == self.selectedLineIndexPath {
 			cell.toolbar.hidden = false
 			cell.collectionView.userInteractionEnabled = true
 		} else {
@@ -708,23 +729,38 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		return videoCell
 	}
 	
+	func selectRowAtIndexPath(indexPath:NSIndexPath,animated:Bool) {
+		self.tableView.delegate!.tableView?(tableView, willSelectRowAtIndexPath: indexPath)
+		var scrollPosition = UITableViewScrollPosition.None
+		if animated {
+			scrollPosition = UITableViewScrollPosition.Middle
+		}
+		self.tableView.selectRowAtIndexPath(indexPath, animated:animated, scrollPosition: scrollPosition)
+		self.tableView.delegate!.tableView?(tableView, didSelectRowAtIndexPath: indexPath)
+	}
+	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		let indexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
+		
 		self.selectedIndexPathForCollectionView = NSIndexPath(forItem: indexPath.item, inSection: collectionView.tag)
 		let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
-		if isSlateStoryElement(indexPath,storyLine: self.project!.storyLines![collectionView.tag] as! StoryLine) {
-			//Open the Slate editor
-			self.performSegueWithIdentifier("toSlateVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
-		} else {
-//			self.performSegueWithIdentifier("toVideoVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
-			let playerVC = AVPlayerViewController()
-			let video = line.elements![self.selectedIndexPathForCollectionView!.item] as! VideoClip
-			let url = NSURL(string: video.path!)
-			playerVC.player = AVPlayer(URL: url!)
-			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-				print("Player presented")
-				playerVC.player?.play()
-			})
-		}
+//		if isSlateStoryElement(indexPath,storyLine: line) {
+//			//Open the Slate editor
+//			self.performSegueWithIdentifier("toSlateVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
+//		} else {
+////			self.performSegueWithIdentifier("toVideoVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
+//			let playerVC = AVPlayerViewController()
+//			let video = line.elements![self.selectedIndexPathForCollectionView!.item] as! VideoClip
+//			let url = NSURL(string: video.path!)
+//			playerVC.player = AVPlayer(URL: url!)
+//			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
+//				print("Player presented")
+//				playerVC.player?.play()
+//			})
+//		}
+		let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
+		self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: indexPath)
+		self.tableView.selectRowAtIndexPath(indexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
 	}
 	
 	//MARK: - reordering of collection view cells
@@ -849,15 +885,16 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 				//					}
 				
 				//To delete story elements by dropping on the trash icon of the cell
-				if let storyLineCellIndexPath = self.tableView.indexPathForRowAtPoint(dragPointOnCanvas) {
-				let storyLineCell = self.tableView.cellForRowAtIndexPath(storyLineCellIndexPath) as! StoryLineCell
+//				if let storyLineCellIndexPath = self.tableView.indexPathForRowAtPoint(dragPointOnCanvas) {
+//				let storyLineCell = self.tableView.cellForRowAtIndexPath(storyLineCellIndexPath) as! StoryLineCell
 				
-					let trashButtonView = storyLineCell.trashButton.valueForKey("view")
-					if (CGRectContainsPoint(trashButtonView!.frame, dragPointOnCanvas)) {
-						print("We should have deleted the story element")
-					}
+//					let trashButtonView = storyLineCell.trashButton.valueForKey("view")
+//					if (CGRectContainsPoint(trashButtonView!.frame, dragPointOnCanvas)) {
+//						print("We should have deleted the story element")
+//					}
 				
-				self.bundle = nil
+					self.bundle = nil
+//				}
 			}
 		}
 	}

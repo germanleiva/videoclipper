@@ -26,6 +26,10 @@ class StoryLineCell: UITableViewCell {
 		
 		self.collectionView.backgroundView!.addGestureRecognizer(tapGesture)
 		tapGesture.delegate = self
+		
+		let bgColorView = UIView()
+		bgColorView.backgroundColor = UIColor(red: 253/255, green: 253/255, blue: 150/255, alpha: 1)
+		self.selectedBackgroundView = bgColorView
     }
 	
 	func collectionViewTapped(gesture:UITapGestureRecognizer) {

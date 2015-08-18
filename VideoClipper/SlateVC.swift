@@ -38,7 +38,7 @@ let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class SlateVC: UIViewController, UITextViewDelegate, UIGestureRecognizerDelegate {
+class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var discardButton:UIBarButtonItem?
 	@IBOutlet weak var duration:UILabel?
@@ -47,10 +47,13 @@ class SlateVC: UIViewController, UITextViewDelegate, UIGestureRecognizerDelegate
 	
 	var changesDetected = false
 	
-	var slate:Slate? = nil
 	var textWidgets = [TextWidget]()
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
+	var slate: Slate? {
+		return self.element as? Slate
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -129,6 +132,26 @@ class SlateVC: UIViewController, UITextViewDelegate, UIGestureRecognizerDelegate
 		} catch {
 			print("Couldn't save the canvas on the DB: \(error)")
 		}
+	}
+	
+	@IBAction func deleteSelectedWidget(sender:UIButton) {
+		let selectedTextWidgets = self.textWidgets.filter { (eachTextWidget) -> Bool in
+			return !eachTextWidget.leftHandler!.hidden
+		}
+
+		self.deleteTextWidget(selectedTextWidgets.first!)
+	}
+	
+	func deleteTextWidget(aTextWidget:TextWidget) {
+		aTextWidget.textView?.removeFromSuperview()
+		aTextWidget.leftHandler?.removeFromSuperview()
+		aTextWidget.rightHandler?.removeFromSuperview()
+		
+		let modelWidgets = self.slate?.mutableOrderedSetValueForKey("widgets")
+		modelWidgets?.removeObject(aTextWidget.model!)
+		
+		self.textWidgets.removeAtIndex(self.textWidgets.indexOf(aTextWidget)!)
+		self.saveCanvas()
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {

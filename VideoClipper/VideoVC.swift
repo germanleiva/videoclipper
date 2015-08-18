@@ -11,11 +11,9 @@ import UIKit
 let STATUS_KEYPATH  = "status"
 let VIDEO_SIZE = CGSize(width: 1280, height: 720)
 
-
-class VideoVC: UIViewController {
-	var asset:AVAsset?
-	@IBOutlet var playbackView:THPlaybackView?
-	@IBOutlet var playButton:UIButton? = nil
+class VideoVC: StoryElementVC {
+	@IBOutlet var playbackView:THPlaybackView!
+	@IBOutlet var playButton:UIButton!
 
 	var player:AVPlayer? = nil
 	var playerItem:AVPlayerItem? = nil
@@ -23,29 +21,32 @@ class VideoVC: UIViewController {
 	
 	let myContext = UnsafeMutablePointer<Void>()
 
+	var video:VideoClip? {
+		return self.element as? VideoClip
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
 
-		self.autoplayContent = true
 //		self.player = AVPlayer(playerItem: nil)
-		self.playerItem = AVPlayerItem(asset: self.asset!)
-		self.player = AVPlayer(playerItem: self.playerItem!)
-		self.playbackView?.player = self.player
+		self.player = AVPlayer()
+		self.playbackView!.player = self.player
 
 //		self.view.bringSubviewToFront(self.loadingView)
+
+    }
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)) { () -> Void in
 			self.autoplayContent = false
+			self.playerItem = AVPlayerItem(asset: self.video!.asset!)
 			self.prepareToPlay()
 		}
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
+	}
+	
     /*
     // MARK: - Navigation
 
@@ -63,17 +64,13 @@ class VideoVC: UIViewController {
 		self.player!.rate = 0
 		self.playerItem = playerItem
 		self.playButton!.selected = true
-		if (self.playerItem != nil) {
-			self.prepareToPlay()
-		} else {
-			print("Player item is nil.  Nothing to play.");
-		}
+		self.prepareToPlay()
 	}
 	
 	func prepareToPlay() {
 		self.player!.replaceCurrentItemWithPlayerItem(self.playerItem)
 		
-		self.playerItem!.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: myContext)
+		self.playerItem!.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: self.myContext)
 		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerItemDidReachEnd:", name: AVPlayerItemDidPlayToEndTimeNotification, object: self.playerItem)
 	
@@ -82,17 +79,22 @@ class VideoVC: UIViewController {
 //		}
 	}
 	
-	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-		if context == myContext {
+	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change:
+		[String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+		if context == self.myContext {
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
 				if self.autoplayContent {
 					self.player!.play()
 				} else {
 					self.stopPlayback()
 				}
-				self.playerItem!.removeObserver(self, forKeyPath: STATUS_KEYPATH)
+				
+				self.playerItem!.removeObserver(self, forKeyPath: STATUS_KEYPATH, context: self.myContext)
 			})
-		}
+		} else {
+			super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+			}
+		
 	}
 
 	// MAARK: Transport Actions
@@ -107,8 +109,8 @@ class VideoVC: UIViewController {
 			self.player!.rate = 0
 			sender!.selected = false
 		} else {
+			self.playPlayerItem(self.playerItem!)
 			sender!.selected = true
-			self.player!.play()
 		}
 	}
 	

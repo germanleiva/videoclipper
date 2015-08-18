@@ -10,12 +10,13 @@ import UIKit
 import CoreData
 import AVKit
 
-class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate {
+class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
 	var secondaryController:SecondaryViewController?
 	var isNewProject = false
 	var currentLineIndexPath:NSIndexPath? = nil
+	var currentItemIndexPath:NSIndexPath? = nil
 	var currentLine:StoryLine? = nil
 	let primaryControllerCompactWidth = CGFloat(192+10)
 
@@ -96,6 +97,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 		if segue.identifier == "secondaryContainerSegue" {
 			self.secondaryController = segue.destinationViewController as? SecondaryViewController
+			self.secondaryController!.delegate = self
 //			self.secondaryController!.view.layer.borderColor = UIColor.blackColor().CGColor
 //			self.secondaryController!.view.layer.borderWidth = 0.3
 		}
@@ -176,16 +178,31 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		return true
 	}
 	
+	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) {
+		//When the secondary view controller shows a particular element I need to update the primary controller to scroll to the same element in the current line
+		
+		let storyLine = self.project!.storyLines![self.currentLineIndexPath!.section] as! StoryLine
+		let itemIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
+
+		if self.currentItemIndexPath! != itemIndexPath {
+			self.currentItemIndexPath = itemIndexPath
+			self.tableController!.scrollToElement(self.currentItemIndexPath!,inLineIndex:self.currentLineIndexPath!)
+		}
+	}
+	
 	func primaryController(primaryController: StoryLinesTableController, didSelectLine line: StoryLine!, withElement: StoryElement?, rowIndexPath: NSIndexPath?) {
 
+		var itemIndexPath:NSIndexPath? = nil
 		if let element = withElement {
+			itemIndexPath = NSIndexPath(forItem: line.elements!.indexOfObject(element), inSection: 0)
+
 			if self.tableController!.isCompact {
 				//We need to expand if we tap on the selected item or we need to change the line if it is different
 				if rowIndexPath! == self.currentLineIndexPath! {
 					//We need to expand
 					self.expandPrimaryControler(true)
 				} else {
-					//We only need to change line that happens at the end
+					//We only need to change line, that happens at the end
 				}
 			} else {
 				//We need to shrink and show the selected item
@@ -196,6 +213,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.currentLine = line
 		self.currentLineIndexPath = rowIndexPath
 		self.secondaryController!.line = line
+		
+		if itemIndexPath != nil && itemIndexPath != self.currentItemIndexPath {
+			self.currentItemIndexPath = itemIndexPath
+			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:rowIndexPath!)
+			self.secondaryController!.scrollToElement(withElement)
+		}
+
 	}
 	
 	func expandPrimaryControler(shouldHideSecondaryView:Bool) {
@@ -221,6 +245,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			}) { (completed) -> Void in
 				if (completed) {
 					//					self.secondaryController!.view.hidden = shouldHideSecondaryView
+					if shouldHideSecondaryView {
+						self.currentItemIndexPath = nil
+					}
 				}
 		}
 

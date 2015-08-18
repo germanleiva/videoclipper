@@ -652,7 +652,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			let slateVC = navigation.viewControllers.first as! SlateVC
 			let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
 
-			slateVC.slate = line.elements![self.selectedIndexPathForCollectionView!.item] as? Slate
+			slateVC.element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
 
 		}
 	}
@@ -740,8 +740,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		let indexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
-		
+		let rowIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
 		self.selectedIndexPathForCollectionView = NSIndexPath(forItem: indexPath.item, inSection: collectionView.tag)
 		let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
 //		if isSlateStoryElement(indexPath,storyLine: line) {
@@ -759,8 +758,8 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 //			})
 //		}
 		let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
-		self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: indexPath)
-		self.tableView.selectRowAtIndexPath(indexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
+		self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: rowIndexPath)
+		self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
 	}
 	
 	//MARK: - reordering of collection view cells
@@ -983,6 +982,11 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 				theCollectionView.scrollRectToVisible(nextPageRect, animated: true)
 			}
 		}
+	}
+	
+	func scrollToElement(itemIndexPath:NSIndexPath,inLineIndex indexPath:NSIndexPath) {
+		let lineCell = self.tableView.cellForRowAtIndexPath(indexPath) as! StoryLineCell
+		lineCell.collectionView.scrollToItemAtIndexPath(itemIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
 	}
 
 }

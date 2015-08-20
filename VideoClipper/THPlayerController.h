@@ -22,27 +22,13 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
+@import UIKit;
+@import AVFoundation;
 
-#import "THPlaybackView.h"
-#import <AVFoundation/AVFoundation.h>
+@interface THPlayerController : NSObject
 
-@implementation THPlaybackView
+- (id)initWithAsset:(AVAsset *)asset;
 
-+ (Class)layerClass {
-	return [AVPlayerLayer class];
-}
-
-- (void)awakeFromNib {
-	self.backgroundColor = [UIColor blackColor];
-}
-
-- (AVPlayer *)player {
-	return [(AVPlayerLayer *)[self layer] player];
-}
-
-- (void)setPlayer:(AVPlayer *)player {
-	[(AVPlayerLayer *)[self layer] setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-	[(AVPlayerLayer *)[self layer] setPlayer:player];
-}
+@property (strong, nonatomic, readonly) UIView *view;
 
 @end

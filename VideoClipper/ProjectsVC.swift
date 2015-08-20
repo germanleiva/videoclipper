@@ -131,27 +131,6 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 		return cell
 	}
 	
-	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-		return true
-	}
-	
-	func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-		if (editingStyle == UITableViewCellEditingStyle.Delete) {
-			// handle delete (by removing the data from your array and updating the tableview)
-			print("Delete project tapped")
-			
-			let projectToDelete = self.fetchedResultsController!.objectAtIndexPath(indexPath)
-			self.context.deleteObject(projectToDelete)
-			
-			do {
-				try self.context.save()
-			} catch {
-				print("Couldn't delete project \(projectToDelete): \(error)")
-			}
-
-		}
-	}
-	
 	func configureCell(aCell:UITableViewCell,indexPath:NSIndexPath) {
 		let cell = aCell as! ProjectTableCell
 		let project = self.fetchedResultsController!.objectAtIndexPath(indexPath) as! Project
@@ -180,6 +159,42 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
 	}
 	
+	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+		let duplicate = UITableViewRowAction(style: .Default, title: "Duplicate") { action, index in
+			print("duplicate button tapped")
+		}
+		duplicate.backgroundColor = UIColor.orangeColor()
+		
+		let delete = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
+			print("delete button tapped")
+//			if (editingStyle == UITableViewCellEditingStyle.Delete) {
+				// handle delete (by removing the data from your array and updating the tableview)
+				print("Delete project tapped")
+				
+				let projectToDelete = self.fetchedResultsController!.objectAtIndexPath(index)
+				self.context.deleteObject(projectToDelete)
+				
+				do {
+					try self.context.save()
+				} catch {
+					print("Couldn't delete project \(projectToDelete): \(error)")
+				}
+				
+//			}
+		}
+		delete.backgroundColor = UIColor.redColor()
+		
+		return [duplicate, delete]
+	}
+	
+	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		return true
+	}
+	
+	func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+		// you need to implement this method too or you can't swipe to display the actions
+	}
+
 	//- MARK: Fetch results delegate
 	func controllerWillChangeContent(controller: NSFetchedResultsController) {
 		self.tableView.beginUpdates()

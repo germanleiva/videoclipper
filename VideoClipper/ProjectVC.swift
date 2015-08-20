@@ -19,6 +19,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	var currentItemIndexPath:NSIndexPath? = nil
 	var currentLine:StoryLine? = nil
 	let primaryControllerCompactWidth = CGFloat(192+10)
+	
+	@IBOutlet var trashForElement:UIButton!
 
 	@IBOutlet var primaryViewWidthConstraint:NSLayoutConstraint!
 	@IBOutlet var secondaryViewWidthConstraint:NSLayoutConstraint!
@@ -233,7 +235,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 		
 		self.tableController?.isCompact = !shouldHideSecondaryView
-		
+		self.trashForElement!.enabled = self.tableController!.isCompact
 		
 		self.view.layoutIfNeeded()
 		//		self.view.setNeedsUpdateConstraints()
@@ -251,6 +253,15 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 				}
 		}
 
+	}
+	
+	
+	@IBAction func deleteForElementTapped(sender:AnyObject?) {
+		let alert = UIAlertController(title: "Deleted element", message: "Imagine that we deleted this element", preferredStyle: UIAlertControllerStyle.Alert)
+		alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+			alert.dismissViewControllerAnimated(true, completion: nil)
+		}))
+		self.presentViewController(alert, animated: true, completion: nil)
 	}
 	
 	@IBAction func captureForLineTapped(sender:AnyObject?) {

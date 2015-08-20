@@ -24,7 +24,8 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 			return self._line
 		}
 		set(newValue) {
-			if self._line != newValue {
+			//I removed this because even if we are setting the same line, the elements of that line could have been modified
+//			if self._line != newValue {
 				self._line = newValue
 				self.viewControllers = [StoryElementVC]()
 				
@@ -49,7 +50,7 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 					
 					self.pageViewController?.setViewControllers([self.viewControllers.first!], direction: .Forward, animated: false, completion: nil)
 				}
-			}
+//			}
 		}
 	}
 	

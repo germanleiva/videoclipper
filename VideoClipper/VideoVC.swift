@@ -8,10 +8,38 @@
 
 import UIKit
 
-let STATUS_KEYPATH  = "status"
-let VIDEO_SIZE = CGSize(width: 1280, height: 720)
 
 class VideoVC: StoryElementVC {
+	
+	var customPlayerView: UIView!
+	
+	var controller:THPlayerController? = nil
+	
+	var video:VideoClip? {
+		return self.element as? VideoClip
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		self.controller = THPlayerController(asset: self.video!.asset!)
+
+		self.customPlayerView = self.controller!.view
+		
+		self.customPlayerView!.translatesAutoresizingMaskIntoConstraints = false
+		self.view.addSubview(self.customPlayerView)
+
+//		self.view.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
+		self.view.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
+		self.view.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0))
+//		self.view.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Width, multiplier: 1, constant: 0))
+//		self.customPlayerView.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.customPlayerView, attribute: NSLayoutAttribute.Width, multiplier: 16/9, constant: 0))
+		
+		self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("|-10-[player]-10-|", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: ["player" : self.customPlayerView]))
+	}
+	/*
+	let STATUS_KEYPATH  = "status"
+	let VIDEO_SIZE = CGSize(width: 1280, height: 720)
+
 	@IBOutlet var playbackView:THPlaybackView!
 	@IBOutlet var playButton:UIButton!
 
@@ -119,6 +147,6 @@ class VideoVC: StoryElementVC {
 		self.player!.seekToTime(kCMTimeZero)
 		self.playButton!.selected = false
 	}
-
+*/
 
 }

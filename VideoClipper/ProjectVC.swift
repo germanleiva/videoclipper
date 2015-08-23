@@ -180,12 +180,16 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		return true
 	}
 	
-	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) {
+	func secondaryViewController(controller: SecondaryViewController, didUpdateElement element:StoryElement) -> Void {
+		self.tableController!.reloadData()
+	}
+	
+	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) -> Void {
 		//When the secondary view controller shows a particular element I need to update the primary controller to scroll to the same element in the current line
 		
 		let storyLine = self.project!.storyLines![self.currentLineIndexPath!.section] as! StoryLine
 		let itemIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
-
+		
 		if self.currentItemIndexPath! != itemIndexPath {
 			self.currentItemIndexPath = itemIndexPath
 			self.tableController!.scrollToElement(self.currentItemIndexPath!,inLineIndex:self.currentLineIndexPath!)

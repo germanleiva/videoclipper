@@ -456,6 +456,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			return
 		}
 		self.tableView.reloadData()
+		self.tableView.selectRowAtIndexPath(self.selectedLineIndexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
 	}
 	
 	func isSlateStoryElement(indexPath:NSIndexPath,storyLine:StoryLine) -> Bool {
@@ -802,7 +803,8 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		if !self.tableView.editing {
 			let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
 			self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: rowIndexPath)
-			self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
+			self.selectRowAtIndexPath(rowIndexPath, animated: false)
+//			self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
 		}
 	}
 	

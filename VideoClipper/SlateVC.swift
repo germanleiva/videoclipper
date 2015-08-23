@@ -40,6 +40,7 @@ let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
 class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
+	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
 
 	
@@ -51,6 +52,8 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 	var textWidgets = [TextWidget]()
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
+	var editingTextView:UITextView? = nil
+	
 	var slate: Slate? {
 		return self.element as? Slate
 	}
@@ -101,6 +104,42 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		self.updateDurationButtonText(Int(self.slate!.duration!))
 		
 		self.changesDetected = false
+		
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+	}
+	
+	func keyboardWillShow(notification:NSNotification) {
+		// Animate the current view out of the way
+		//		if (self.view.frame.origin.y >= 0) {
+		//			self.setViewMovedUp(true)
+		//		} else if (self.view.frame.origin.y < 0) {
+		//			self.setViewMovedUp(false)
+		//		}
+		if self.editingTextView == nil {
+			return
+		}
+		
+		if let info = notification.userInfo {
+			let keyboardSize = info[UIKeyboardFrameBeginUserInfoKey]!.CGRectValue.size
+			let textFieldOrigin = self.view.convertPoint(self.editingTextView!.frame.origin, fromView: self.editingTextView!.superview)
+			let textFieldHeight = self.editingTextView!.frame.size.height
+			var visibleRect = self.view.frame
+			visibleRect.size.height -= keyboardSize.height
+			if (!CGRectContainsPoint(visibleRect, textFieldOrigin)){
+				let scrollPoint = CGPoint(x: 0.0, y: textFieldOrigin.y - visibleRect.size.height + textFieldHeight)
+				self.scrollView!.setContentOffset(scrollPoint, animated: true)
+			}
+		}
+	}
+	
+	func keyboardWillHide(notification:NSNotification) {
+		//		if (self.view.frame.origin.y >= 0) {
+		//			self.setViewMovedUp(true)
+		//		} else if (self.view.frame.origin.y < 0) {
+		//			self.setViewMovedUp(false)
+		//		}
+		self.scrollView!.setContentOffset(CGPointZero, animated: true)
 	}
 	
 	func saveCanvas() {
@@ -158,6 +197,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			try self.context.save()
 //			overlayView.removeFromSuperview()
 			self.changesDetected = false
+			self.delegate!.storyElementVC(self, elementChanged: self.slate!)
 		} catch {
 			print("Couldn't save the canvas on the DB: \(error)")
 		}
@@ -428,6 +468,12 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		}
 //		print("textViewDidEndEditing <====")
 		self.saveCanvas()
+		self.editingTextView = nil
+	}
+	
+	func textViewShouldBeginEditing(textView: UITextView) -> Bool {
+		self.editingTextView = textView
+		return true
 	}
 	
 	func textViewDidBeginEditing(textView: UITextView) {
@@ -435,7 +481,6 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			textView.text = nil
 			textView.textColor = UIColor.blackColor()
 		}
-		
 	}
 	
 	//- MARK: Gesture Recognizer Delegate

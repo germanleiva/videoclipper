@@ -8,17 +8,19 @@
 
 import UIKit
 
-protocol SecondaryViewControllerDelegate {
-	func secondaryViewController(controller:SecondaryViewController,didShowStoryElement element:StoryElement)
+protocol SecondaryViewControllerDelegate : NSObjectProtocol {
+	func secondaryViewController(controller:SecondaryViewController, didShowStoryElement element:StoryElement)
+	func secondaryViewController(controller:SecondaryViewController, didUpdateElement element:StoryElement)
 }
 
-class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, StoryElementVCDelegate {
 	var pageViewController:UIPageViewController?
 	var delegate:SecondaryViewControllerDelegate? = nil
 	
 	var currentIndex:Int = 0
 //	var nextIndex:Int = 0
 	private var _line: StoryLine? = nil
+	
 	var line:StoryLine? {
 		get {
 			return self._line
@@ -44,7 +46,7 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 							videoVC.element = element
 							newVC = videoVC
 						}
-						
+						newVC?.delegate = self
 						self.viewControllers.append(newVC!)
 					}
 					
@@ -55,6 +57,10 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 	}
 	
 	var viewControllers = [StoryElementVC]()
+	
+	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement){
+		self.delegate?.secondaryViewController(self, didUpdateElement: element)
+	}
 	
     override func viewDidLoad() {
         super.viewDidLoad()

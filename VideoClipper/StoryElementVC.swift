@@ -8,8 +8,13 @@
 
 import UIKit
 
+protocol StoryElementVCDelegate {
+	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement)
+}
+
 class StoryElementVC: UIViewController {
 	var element:StoryElement? = nil
+	var delegate:StoryElementVCDelegate? = nil
 	
     override func viewDidLoad() {
         super.viewDidLoad()

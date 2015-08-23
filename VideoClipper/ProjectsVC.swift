@@ -160,13 +160,12 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 	}
 	
 	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-		let duplicate = UITableViewRowAction(style: .Default, title: "Duplicate") { action, index in
-			print("duplicate button tapped")
+		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
+			print("Clone button tapped")
 		}
-		duplicate.backgroundColor = UIColor.orangeColor()
+		cloneAction.backgroundColor = UIColor.orangeColor()
 		
-		let delete = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
-			print("delete button tapped")
+		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
 //			if (editingStyle == UITableViewCellEditingStyle.Delete) {
 				// handle delete (by removing the data from your array and updating the tableview)
 				print("Delete project tapped")
@@ -182,9 +181,9 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 				
 //			}
 		}
-		delete.backgroundColor = UIColor.redColor()
+		deleteAction.backgroundColor = UIColor.redColor()
 		
-		return [duplicate, delete]
+		return [deleteAction,cloneAction]
 	}
 	
 	func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {

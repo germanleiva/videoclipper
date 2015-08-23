@@ -52,6 +52,7 @@
 		A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */; };
 		A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */; };
 		A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F341B6A1BE400D86E99 /* Project.swift */; };
+		A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */; };
 		A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46621B46B54100A12267 /* VideoVC.swift */; };
 		A4FF46661B46B6B100A12267 /* VideoClip+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */; };
 		A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46651B46B6B100A12267 /* VideoClip.swift */; };
@@ -142,6 +143,7 @@
 		A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Project+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4BC7F341B6A1BE400D86E99 /* Project.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationPickerController.swift; sourceTree = "<group>"; };
 		A4FF46621B46B54100A12267 /* VideoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoVC.swift; sourceTree = "<group>"; };
 		A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VideoClip+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4FF46651B46B6B100A12267 /* VideoClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClip.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
 				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
 				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
+				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -493,6 +496,7 @@
 				A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,
+				A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */,
 				A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */,
 				A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */,
 				A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */,

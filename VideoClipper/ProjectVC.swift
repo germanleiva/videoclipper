@@ -268,10 +268,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.recordTapped(sender,storyLine: self.currentLine!)
 	}
 	
-	@IBAction func deleteForLineTapped(sender:AnyObject?) {
-		self.tableController!.trashTapped(sender,storyLine: self.currentLine!)
-	}
-	
 	@IBAction func playForLineTapped(sender:AnyObject?) {
 		self.tableController!.playTapped(sender,storyLine: self.currentLine!)
 	}

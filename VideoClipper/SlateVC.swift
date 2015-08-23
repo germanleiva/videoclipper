@@ -38,11 +38,12 @@ let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
+class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
-	@IBOutlet weak var discardButton:UIBarButtonItem?
-	@IBOutlet weak var duration:UILabel?
+	@IBOutlet weak var durationButton:UIButton?
+
 	
+	var durationPopover:UIPopoverController?
 	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
@@ -52,6 +53,34 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 
 	var slate: Slate? {
 		return self.element as? Slate
+	}
+	
+	@IBAction func showDurationPopOver(sender:AnyObject?){
+		if self.durationPopover == nil {
+			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
+			durationController.delegate = self
+			self.durationPopover = UIPopoverController(contentViewController: durationController)
+			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
+			self.durationPopover!.delegate = self
+			self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
+		}
+	}
+	
+	func updateDurationButtonText(newDuration:Int){
+		self.durationButton!.setTitle("\(newDuration) s", forState: UIControlState.Normal)
+	}
+	
+	func durationPickerController(controller: DurationPickerController, didValueChange newValue: Int) {
+		self.updateDurationButtonText(newValue)
+		self.slate!.duration = newValue
+	}
+	
+	func popoverControllerDidDismissPopover(popoverController: UIPopoverController) {
+		do {
+			try self.context.save()
+		} catch {
+			print("Couldn't save the new duration of the slate on the DB: \(error)")
+		}
 	}
 	
     override func viewDidLoad() {
@@ -69,8 +98,8 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
 		self.deactivateHandlers(self.textWidgets)
 
-		self.duration!.text = "\(self.slate!.duration!.description) s"
-
+		self.updateDurationButtonText(Int(self.slate!.duration!))
+		
 		self.changesDetected = false
 	}
 	
@@ -165,22 +194,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 		self.saveCanvas()
 		self.changesDetected = true
 	}
-	
-	@IBAction func stepperChanged(sender:UIStepper){
-		let newDuration = Int(sender.value)
-		self.duration!.text = "\(newDuration.description) s"
-		
-		self.slate!.duration = newDuration
-	}
-	
-	@IBAction func stepperTouchUp(sender:UIStepper) {
-		do {
-			try self.context.save()
-		} catch {
-			print("Couldn't save the new duration of the slate on the DB: \(error)")
-		}
-	}
-	
+
 	override func viewDidLayoutSubviews() {
 		for eachTextWidget in self.textWidgets {
 			eachTextWidget.textView?.contentOffset = CGPointZero
@@ -342,8 +356,6 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 	}
 	
 	func panningAHandler(sender:UIPanGestureRecognizer,factor:CGFloat,handlerView:UIView!, _ textWidget:TextWidget) {
-		self.discardButton?.enabled = true
-
 		var handlerId = "left"
 		if handlerView == 1 {
 			handlerId = "right"
@@ -419,8 +431,6 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate {
 	}
 	
 	func textViewDidBeginEditing(textView: UITextView) {
-		self.discardButton?.enabled = true
-
 		if textView.textColor == UIColor.lightGrayColor() {
 			textView.text = nil
 			textView.textColor = UIColor.blackColor()

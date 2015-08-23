@@ -62,6 +62,16 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	var isCompact = false
 	
+	let longPress: UILongPressGestureRecognizer = {
+		let recognizer = UILongPressGestureRecognizer()
+		return recognizer
+	}()
+	
+	var sourceIndexPath: NSIndexPath? = nil
+	var snapshot: UIView? = nil
+	
+	var shouldSelectRowAfterDelete = false
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -71,7 +81,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		// Uncomment the following line to display an Edit button in the navigation bar for this view controller.
 		// self.navigationItem.rightBarButtonItem = self.editButtonItem()
 		
-		let longPressGestureRecogniser = UILongPressGestureRecognizer(target: self, action: "handleGesture:")
+		let longPressGestureRecogniser = UILongPressGestureRecognizer(target: self, action: "handleLongPressGesture:")
 		
 		longPressGestureRecogniser.minimumPressDuration = 0.15
 		longPressGestureRecogniser.delegate = self
@@ -435,31 +445,6 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		})
 	}
 	
-	func trashTapped(sender:AnyObject?,storyLine:StoryLine) {
-//		let indexPath = self.tableView.indexPathForCell(sender)!
-//		let storyLine = self.project?.storyLines![indexPath.section] as! StoryLine
-//		print("trashTapped \(storyLine) - \(indexPath)")
-		
-		let indexPath = NSIndexPath(forRow: 0, inSection: self.project!.storyLines!.indexOfObject(storyLine))
-		
-		if storyLine.elements!.count == 0 {
-			self.deleteStoryLine(indexPath)
-			return
-		}
-		
-		let alertController = UIAlertController(title: "Do you want to delete this line?", message: "Once deleted, your video clips will remain in your Photo Album", preferredStyle: UIAlertControllerStyle.Alert)
-
-		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-			self.deleteStoryLine(indexPath)
-		}))
-		
-		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-			print("deletion cancelled")
-		}))
-		
-		self.presentViewController(alertController, animated: true, completion: nil)
-	}
-	
 	func reloadData(addedObject:StoryLine? = nil) {
 		if let object = addedObject {
 			let section = self.project?.storyLines!.indexOfObject(object)
@@ -480,8 +465,18 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	func deleteStoryLine(indexPath:NSIndexPath) {
 		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
-		storyLines?.removeObjectAtIndex(indexPath.section)
-
+//		let previousSelectedLineWasDeleted = self.selectedLineIndexPath! == indexPath
+		
+		//This needs to be here because the context.save() takes times and it will be too late to update shouldSelectRowAfterDelete
+		self.shouldSelectRowAfterDelete = false
+		storyLines!.removeObjectAtIndex(indexPath.section)
+		
+		if indexPath.section <= self.selectedLineIndexPath!.section {
+			//This means that the selected line goes up
+			self.selectedLineIndexPath = NSIndexPath(forRow: 0, inSection: max(self.selectedLineIndexPath!.section - 1,0))
+		} else {
+			self.selectedLineIndexPath = NSIndexPath(forRow: 0, inSection: min(self.selectedLineIndexPath!.section,storyLines!.count - 1))
+		}
 		do {
 			try context.save()
 			self.tableView.beginUpdates()
@@ -498,8 +493,8 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			*/
 			self.tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Left)
 			self.tableView.endUpdates()
-			self.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: max(indexPath.section - 1,0)), animated: true)
-//			self.tableView.reloadData()
+			self.tableView.reloadData()
+			self.selectRowAtIndexPath(self.selectedLineIndexPath!, animated: true)
 		} catch {
 			print("Couldn't delete story line: \(error)")
 		}
@@ -556,10 +551,57 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		cell.collectionView.reloadData()
 	}
 	
+	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
+			print("Clone button tapped")
+		}
+		cloneAction.backgroundColor = UIColor.orangeColor()
+		
+		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, indexPath in
+			let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
+
+			if storyLine.elements!.count == 0 {
+				self.deleteStoryLine(indexPath)
+				return
+			}
+			
+			let alertController = UIAlertController(title: "Delete line", message: "Videos will remain in your Photo Album. Do you want to delete this line?", preferredStyle: UIAlertControllerStyle.Alert)
+			
+			alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+				self.deleteStoryLine(indexPath)
+			}))
+			
+			alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+				print("deletion cancelled")
+			}))
+			
+			self.presentViewController(alertController, animated: true, completion: nil)
+		}
+		deleteAction.backgroundColor = UIColor.redColor()
+		
+		return [deleteAction,cloneAction]
+	}
+	
+	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+		// you need to implement this method too or you can't swipe to display the actions
+	}
+	
 	// Override to support conditional editing of the table view.
 	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
 		// Return false if you do not want the specified item to be editable.
 		return true
+	}
+	
+	override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+		self.shouldSelectRowAfterDelete = true
+	}
+	
+	override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+		if self.shouldSelectRowAfterDelete {
+			self.shouldSelectRowAfterDelete = false
+			
+			self.selectRowAtIndexPath(self.selectedLineIndexPath!, animated: true)
+		}
 	}
 	
 	// Override to support editing the table view.
@@ -596,7 +638,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 //		return UITableViewCellEditingStyle.Delete
 //	}
 	
-//	@available(iOS 8.0, *)
+
 //	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
 //		let addVideo = UITableViewRowAction(style: UITableViewRowActionStyle.Destructive, title: "Delete") { action, index in
 //			print("add Video tapped")
@@ -757,9 +799,11 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 //				playerVC.player?.play()
 //			})
 //		}
-		let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
-		self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: rowIndexPath)
-		self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
+		if !self.tableView.editing {
+			let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
+			self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: rowIndexPath)
+			self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
+		}
 	}
 	
 	//MARK: - reordering of collection view cells
@@ -774,35 +818,40 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
 		
-		if let aCanvas = self.view {
-			let pointPressedInCanvas = gestureRecognizer.locationInView(aCanvas)
+		if let theView = self.view {
+			let pointPressedInView = gestureRecognizer.locationInView(theView)
 			
-			if let aCollectionView = self.collectionViewForDraggingPoint(pointPressedInCanvas) {
+			if let aCollectionView = self.collectionViewForDraggingPoint(pointPressedInView) {
 			
-				for cell in aCollectionView.visibleCells() as [UICollectionViewCell] {
-					
-					let cellInCanvasFrame = aCanvas.convertRect(cell.frame, fromView: aCollectionView)
-					
-					if CGRectContainsPoint(cellInCanvasFrame, pointPressedInCanvas ) {
+				if !self.isCompact {
+					for cell in aCollectionView.visibleCells() as [UICollectionViewCell] {
 						
-						let representationImage = cell.snapshotViewAfterScreenUpdates(true)
-						representationImage.frame = cellInCanvasFrame
+						let cellInViewFrame = theView.convertRect(cell.frame, fromView: aCollectionView)
 						
-						let offset = CGPointMake(pointPressedInCanvas.x - cellInCanvasFrame.origin.x, pointPressedInCanvas.y - cellInCanvasFrame.origin.y)
-						
-						let indexPath : NSIndexPath = aCollectionView.indexPathForCell(cell as UICollectionViewCell)!
-						
-						self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage, currentIndexPath: indexPath, collectionView: aCollectionView)
-						
-						break
+						if CGRectContainsPoint(cellInViewFrame, pointPressedInView ) {
+							
+							let representationImage = cell.snapshotViewAfterScreenUpdates(true)
+							representationImage.frame = cellInViewFrame
+							
+							let offset = CGPointMake(pointPressedInView.x - cellInViewFrame.origin.x, pointPressedInView.y - cellInViewFrame.origin.y)
+							
+							let indexPath : NSIndexPath = aCollectionView.indexPathForCell(cell as UICollectionViewCell)!
+							
+							self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage, currentIndexPath: indexPath, collectionView: aCollectionView)
+							
+							return true
+						}
 					}
 				}
+				
+				print("gestureRecognizerShouldBegin FOR ROW")
+				return true
 			}
 		}
-		return (self.bundle != nil)
+		return false
 	}
 	
-	func handleGesture(gesture: UILongPressGestureRecognizer) -> Void {
+	func handleLongPressGesture(gesture: UILongPressGestureRecognizer) -> Void {
 		
 		if let bundle = self.bundle {
 			
@@ -895,6 +944,105 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 					self.bundle = nil
 //				}
 			}
+		} else {
+			let state: UIGestureRecognizerState = gesture.state;
+			let location = gesture.locationInView(self.tableView)
+			let indexPath = self.tableView.indexPathForRowAtPoint(location)
+			if indexPath == nil {
+				return
+			}
+			
+			switch (state) {
+				
+			case UIGestureRecognizerState.Began:
+				sourceIndexPath = indexPath;
+				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
+				snapshot = customSnapshotFromView(cell)
+				
+				var center = cell.center
+				snapshot?.center = center
+				snapshot?.alpha = 0.0
+				tableView.addSubview(snapshot!)
+				
+				UIView.animateWithDuration(0.25, animations: { () -> Void in
+					center.y = location.y
+					self.snapshot?.center = center
+					self.snapshot?.transform = CGAffineTransformMakeScale(1.05, 1.05)
+					self.snapshot?.alpha = 0.98
+					cell.alpha = 0.0
+					cell.hidden = true
+				})
+				
+			case UIGestureRecognizerState.Changed:
+				var center: CGPoint = snapshot!.center
+				center.y = location.y
+				snapshot?.center = center
+				
+				// Is destination valid and is it different from source?
+				if indexPath != sourceIndexPath {
+					// ... update data source.
+					self.moveStoryLine(sourceIndexPath!, toIndexPath: indexPath!)
+//					 ... move the rows.
+//					tableView.moveRowAtIndexPath(sourceIndexPath!, toIndexPath: indexPath!)
+					self.tableView.moveSection(sourceIndexPath!.section, toSection: indexPath!.section)
+//					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)
+					// ... and update source so it is in sync with UI changes.
+					sourceIndexPath = indexPath;
+				}
+				
+			default:
+				// Clean up.
+				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
+				cell.alpha = 0.0
+				cell.hidden = false
+				UIView.animateWithDuration(0.25, animations: { () -> Void in
+					self.snapshot?.center = cell.center
+					self.snapshot?.transform = CGAffineTransformIdentity
+					self.snapshot?.alpha = 0.0
+					// Undo fade out.
+					cell.alpha = 1.0
+					
+					}, completion: { (finished) in
+//						self.tableView.reloadRowsAtIndexPaths([self.sourceIndexPath!], withRowAnimation: UITableViewRowAnimation.None)
+						self.tableView.reloadData()
+						self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
+						self.sourceIndexPath = nil
+						self.snapshot?.removeFromSuperview()
+						self.snapshot = nil;
+				})
+				break
+			}
+		}
+	}
+	
+	func customSnapshotFromView(inputView: UIView) -> UIView {
+		
+		// Make an image from the input view.
+		UIGraphicsBeginImageContextWithOptions(inputView.bounds.size, false, 0)
+		inputView.layer.renderInContext(UIGraphicsGetCurrentContext())
+		let image = UIGraphicsGetImageFromCurrentImageContext()
+		UIGraphicsEndImageContext();
+		
+		// Create an image view.
+		let snapshot = UIImageView(image: image)
+		snapshot.layer.masksToBounds = false
+		snapshot.layer.cornerRadius = 0.0
+		snapshot.layer.shadowOffset = CGSize(width: -5.0, height: 0.0)
+		snapshot.layer.shadowRadius = 5.0
+		snapshot.layer.shadowOpacity = 0.4
+		
+		return snapshot
+	}
+
+	func moveStoryLine(fromIndexPath:NSIndexPath, toIndexPath:NSIndexPath){
+		let fromStoryLine = self.project!.storyLines![fromIndexPath.section] as! StoryLine
+		let fromStoryLines = fromStoryLine.project!.mutableOrderedSetValueForKey("storyLines")
+		fromStoryLines.moveObjectsAtIndexes(NSIndexSet(index: fromIndexPath.section), toIndex: toIndexPath.section)
+		
+		do {
+			try context.save()
+		} catch {
+			print("Couldn't reorder lines: \(error)")
 		}
 	}
 	
@@ -974,7 +1122,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 				
 				dispatch_after(delayTime, dispatch_get_main_queue(), {
 					self.animating = false
-					self.handleGesture(gestureRecognizer)
+					self.handleLongPressGesture(gestureRecognizer)
 				});
 				
 				self.animating = true

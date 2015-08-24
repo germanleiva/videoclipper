@@ -204,7 +204,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 			if self.tableController!.isCompact {
 				//We need to expand if we tap on the selected item or we need to change the line if it is different
-				if rowIndexPath! == self.currentLineIndexPath! {
+				if itemIndexPath == self.currentItemIndexPath && rowIndexPath! == self.currentLineIndexPath! {
 					//We need to expand
 					self.expandPrimaryControler(true)
 				} else {

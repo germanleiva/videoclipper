@@ -161,24 +161,36 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 	
 	func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
-			print("Clone button tapped")
+			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
+			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
+				alert.dismissViewControllerAnimated(true, completion: nil)
+			}))
+			self.presentViewController(alert, animated: true, completion: nil)
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		
 		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
 //			if (editingStyle == UITableViewCellEditingStyle.Delete) {
 				// handle delete (by removing the data from your array and updating the tableview)
-				print("Delete project tapped")
-				
-				let projectToDelete = self.fetchedResultsController!.objectAtIndexPath(index)
-				self.context.deleteObject(projectToDelete)
-				
-				do {
-					try self.context.save()
-				} catch {
-					print("Couldn't delete project \(projectToDelete): \(error)")
-				}
-				
+				let alert = UIAlertController(title: "Delete project", message: "The videos will remain in your Photo Album. Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.Alert)
+				alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (ACTION) -> Void in
+					let projectToDelete = self.fetchedResultsController!.objectAtIndexPath(index)
+					self.context.deleteObject(projectToDelete)
+					
+					do {
+						try self.context.save()
+						defer {
+							alert.dismissViewControllerAnimated(true, completion: nil)
+						}
+					} catch {
+						print("Couldn't delete project \(projectToDelete): \(error)")
+					}
+
+				}))
+				alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+					alert.dismissViewControllerAnimated(true, completion: nil)
+				}))
+				self.presentViewController(alert, animated: true, completion: nil)
 //			}
 		}
 		deleteAction.backgroundColor = UIColor.redColor()

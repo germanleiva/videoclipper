@@ -554,7 +554,11 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
-			print("Clone button tapped")
+			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
+			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
+				alert.dismissViewControllerAnimated(true, completion: nil)
+			}))
+			self.presentViewController(alert, animated: true, completion: nil)
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		
@@ -803,8 +807,9 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		if !self.tableView.editing {
 			let element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
 			self.delegate!.primaryController(self, didSelectLine: line,withElement:element, rowIndexPath: rowIndexPath)
-			self.selectRowAtIndexPath(rowIndexPath, animated: false)
-//			self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
+//			self.selectRowAtIndexPath(rowIndexPath, animated: false)
+			self.selectedLineIndexPath = rowIndexPath
+			self.tableView.selectRowAtIndexPath(rowIndexPath, animated:false, scrollPosition: UITableViewScrollPosition.None)
 		}
 	}
 	

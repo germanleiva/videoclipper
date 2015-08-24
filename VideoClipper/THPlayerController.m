@@ -126,8 +126,8 @@ static const NSString *PlayerItemStatusContext;
                 // Set the video title.
 //                [self.transport setTitle:self.asset.title];                 // 4
 				
-                [self.player play];                                         // 5
-                
+//                [self.player play];                                         // 5
+				
                 [self loadMediaOptions];
                 [self generateThumbnails];
                 

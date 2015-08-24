@@ -202,8 +202,7 @@
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
-				A4AAF6A41B8B4A3C006391DE /* Fabric.framework */,
-				A4AAF6A51B8B4A3C006391DE /* Crashlytics.framework */,
+				A4AAF6A81B8B4C80006391DE /* Frameworks */,
 				A4664AB81B444BA80095B27D /* VideoClipper */,
 				A4664AD01B444BA90095B27D /* VideoClipperTests */,
 				A4664ADB1B444BA90095B27D /* VideoClipperUITests */,
@@ -344,6 +343,15 @@
 				A4940DB41B8324400052B0A2 /* THPlayerView.m */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		A4AAF6A81B8B4C80006391DE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A4AAF6A41B8B4A3C006391DE /* Fabric.framework */,
+				A4AAF6A51B8B4A3C006391DE /* Crashlytics.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */ = {

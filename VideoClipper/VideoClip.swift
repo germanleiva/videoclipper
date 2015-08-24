@@ -25,7 +25,7 @@ class VideoClip: StoryElement {
 			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
 			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
 				//Nothing
-				print("Asset keys loaded")
+//				print("Asset keys loaded")
 			}
 		}
 	}

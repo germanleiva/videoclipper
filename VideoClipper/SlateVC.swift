@@ -252,6 +252,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		}
 		
 		textWidget.textView = UITextView(frame: effectiveFrame)
+		textWidget.textView!.backgroundColor = UIColor.clearColor()
 		textWidget.textView!.delegate = self
 		textWidget.textView!.font = UIFont.systemFontOfSize(25)
 		textWidget.textView!.textAlignment = NSTextAlignment.Center
@@ -367,11 +368,15 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 				activateHandlers(pannedTextWidget)
 			case UIGestureRecognizerState.Changed:
 //				print("textview panning began")
-				let translation = sender.translationInView(pannedTextWidget.textView)
-				pannedTextWidget.textViewCenterXConstraint.constant += translation.x
-				pannedTextWidget.textViewCenterYConstraint.constant += translation.y
+//				let location = sender.locationInView(self.canvas)
 				
-				sender.setTranslation(CGPointZero, inView: pannedTextWidget.textView)
+				let translation = sender.translationInView(pannedTextWidget.textView)
+				if CGRectContainsRect(self.canvas!.frame,CGRectOffset(pannedTextWidget.textView!.frame, translation.x, translation.y)) {
+					pannedTextWidget.textViewCenterXConstraint.constant += translation.x
+					pannedTextWidget.textViewCenterYConstraint.constant += translation.y
+					sender.setTranslation(CGPointZero, inView: pannedTextWidget.textView)
+				}
+				
 			case UIGestureRecognizerState.Cancelled:
 				print("textview panning cancelled")
 			case UIGestureRecognizerState.Failed:

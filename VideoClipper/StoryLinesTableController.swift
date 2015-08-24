@@ -851,7 +851,7 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 					}
 				}
 				
-				print("gestureRecognizerShouldBegin FOR ROW")
+//				print("gestureRecognizerShouldBegin FOR ROW")
 				return true
 			}
 		}

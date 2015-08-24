@@ -325,14 +325,14 @@
                                 <state key="normal" title="Undo"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8x-js-bpn">
-                                <rect key="frame" x="231" y="107" width="33" height="33"/>
+                                <rect key="frame" x="201" y="107" width="33" height="33"/>
                                 <state key="normal" image="icon-type"/>
                                 <connections>
                                     <action selector="addCenteredTextInput:" destination="IbS-bj-HKR" eventType="touchUpInside" id="ddU-y4-eDa"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lzs-KQ-gSO">
-                                <rect key="frame" x="337" y="107" width="33" height="33"/>
+                                <rect key="frame" x="367" y="107" width="33" height="33"/>
                                 <state key="normal" image="icon-trash"/>
                                 <connections>
                                     <action selector="deleteSelectedWidget:" destination="IbS-bj-HKR" eventType="touchUpInside" id="trK-qs-qjy"/>
@@ -354,7 +354,7 @@
                         <color key="backgroundColor" red="0.80000001192092896" green="0.80000001192092896" blue="0.80000001192092896" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="TzP-G1-yFU" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="2NV-EJ-0SJ"/>
-                            <constraint firstItem="TzP-G1-yFU" firstAttribute="leading" secondItem="F8x-js-bpn" secondAttribute="trailing" constant="20" id="5Bx-cd-7ou"/>
+                            <constraint firstItem="TzP-G1-yFU" firstAttribute="leading" secondItem="F8x-js-bpn" secondAttribute="trailing" constant="50" id="5Bx-cd-7ou"/>
                             <constraint firstItem="Lzs-KQ-gSO" firstAttribute="bottom" secondItem="zSw-vK-PXg" secondAttribute="bottom" id="8zh-EX-2v6"/>
                             <constraint firstItem="plO-zN-T3u" firstAttribute="leading" secondItem="Gs1-LF-5XS" secondAttribute="leading" id="BcE-uW-zo8"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="Dv2-vY-cbE"/>
@@ -368,7 +368,7 @@
                             <constraint firstItem="AvL-Nj-YyN" firstAttribute="top" secondItem="Gs1-LF-5XS" secondAttribute="bottom" constant="17" id="fLX-yd-9hE"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Gs1-LF-5XS" secondAttribute="trailing" constant="10" id="jmb-YA-C9h"/>
                             <constraint firstItem="whV-Vq-JaQ" firstAttribute="trailing" secondItem="Gs1-LF-5XS" secondAttribute="trailing" id="mrv-kB-vs6"/>
-                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="leading" secondItem="TzP-G1-yFU" secondAttribute="trailing" constant="20" id="oPM-FZ-BYp"/>
+                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="leading" secondItem="TzP-G1-yFU" secondAttribute="trailing" constant="50" id="oPM-FZ-BYp"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="leading" secondItem="Lmj-n3-BFu" secondAttribute="leadingMargin" constant="10" id="pOz-7a-5wP"/>
                             <constraint firstItem="plO-zN-T3u" firstAttribute="top" secondItem="Gs1-LF-5XS" secondAttribute="bottom" constant="17" id="wUg-DS-zgD"/>
                         </constraints>

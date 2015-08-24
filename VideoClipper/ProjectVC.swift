@@ -75,6 +75,21 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 
+		if self.currentLine == nil && self.currentLineIndexPath == nil && self.currentItemIndexPath == nil {
+			self.currentLine = self.project?.storyLines?.firstObject as? StoryLine
+			self.currentLineIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+		} else {
+			if self.currentLine == nil {
+				print("WEIRD currentLine")
+			}
+			if self.currentLineIndexPath == nil {
+				print("WEIRD currentLineIndexPath")
+			}
+			if self.currentItemIndexPath == nil {
+				print("WEIRD currentItemIndexPath")
+			}
+		}
 	}
 	
 	override func viewDidAppear(animated: Bool) {

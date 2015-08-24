@@ -12,8 +12,8 @@
 		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
-		A44094E81B5CE6250061AF97 /* Slate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */; };
-		A44094E91B5CE6250061AF97 /* Slate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* Slate.swift */; };
+		A44094E81B5CE6250061AF97 /* TitleCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E61B5CE6250061AF97 /* TitleCard+CoreDataProperties.swift */; };
+		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
@@ -29,11 +29,11 @@
 		A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AEF1B452D680095B27D /* ProjectTableCell.swift */; };
 		A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF11B452D680095B27D /* StoryLineCell.swift */; };
 		A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */; };
-		A4664AFF1B452D680095B27D /* SlateCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF31B452D680095B27D /* SlateCollectionCell.swift */; };
+		A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */; };
 		A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF41B452D680095B27D /* VideoCollectionCell.swift */; };
-		A4664B011B452D680095B27D /* SlateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF51B452D680095B27D /* SlateVC.swift */; };
-		A481EFD31B5D42940051ED93 /* SlateElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */; };
-		A481EFD41B5D42940051ED93 /* SlateElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* SlateElement.swift */; };
+		A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF51B452D680095B27D /* TitleCardVC.swift */; };
+		A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */; };
+		A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* TextWidget.swift */; };
 		A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */; };
 		A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DA91B83229B0052B0A2 /* THPlayerController.m */; };
 		A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DAF1B8322C80052B0A2 /* THThumbnail.m */; };
@@ -85,8 +85,8 @@
 		A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
 		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
-		A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Slate+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		A44094E71B5CE6250061AF97 /* Slate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slate.swift; sourceTree = "<group>"; };
+		A44094E61B5CE6250061AF97 /* TitleCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TitleCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -110,11 +110,11 @@
 		A4664AEF1B452D680095B27D /* ProjectTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectTableCell.swift; sourceTree = "<group>"; };
 		A4664AF11B452D680095B27D /* StoryLineCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLineCell.swift; sourceTree = "<group>"; };
 		A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementCollectionCell.swift; sourceTree = "<group>"; };
-		A4664AF31B452D680095B27D /* SlateCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateCollectionCell.swift; sourceTree = "<group>"; };
+		A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCardCollectionCell.swift; sourceTree = "<group>"; };
 		A4664AF41B452D680095B27D /* VideoCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCollectionCell.swift; sourceTree = "<group>"; };
-		A4664AF51B452D680095B27D /* SlateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateVC.swift; sourceTree = "<group>"; };
-		A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SlateElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		A481EFD21B5D42940051ED93 /* SlateElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlateElement.swift; sourceTree = "<group>"; };
+		A4664AF51B452D680095B27D /* TitleCardVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCardVC.swift; sourceTree = "<group>"; };
+		A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TextWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A481EFD21B5D42940051ED93 /* TextWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextWidget.swift; sourceTree = "<group>"; };
 		A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondaryViewController.swift; sourceTree = "<group>"; };
 		A4940DA81B83229B0052B0A2 /* THPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THPlayerController.h; sourceTree = "<group>"; };
 		A4940DA91B83229B0052B0A2 /* THPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THPlayerController.m; sourceTree = "<group>"; };
@@ -236,10 +236,10 @@
 				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
 				A4664AF11B452D680095B27D /* StoryLineCell.swift */,
 				A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */,
-				A4664AF31B452D680095B27D /* SlateCollectionCell.swift */,
+				A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */,
 				A4664AF41B452D680095B27D /* VideoCollectionCell.swift */,
 				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
-				A4664AF51B452D680095B27D /* SlateVC.swift */,
+				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
 				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
 				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
@@ -281,10 +281,10 @@
 				A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */,
 				A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */,
 				A42BDD551B67EF97003CA999 /* StoryLine.swift */,
-				A44094E71B5CE6250061AF97 /* Slate.swift */,
-				A44094E61B5CE6250061AF97 /* Slate+CoreDataProperties.swift */,
-				A481EFD21B5D42940051ED93 /* SlateElement.swift */,
-				A481EFD11B5D42940051ED93 /* SlateElement+CoreDataProperties.swift */,
+				A44094E71B5CE6250061AF97 /* TitleCard.swift */,
+				A44094E61B5CE6250061AF97 /* TitleCard+CoreDataProperties.swift */,
+				A481EFD21B5D42940051ED93 /* TextWidget.swift */,
+				A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */,
 				A4FF46641B46B6B100A12267 /* VideoClip+CoreDataProperties.swift */,
 				A4FF46651B46B6B100A12267 /* VideoClip.swift */,
 			);
@@ -516,7 +516,7 @@
 			files = (
 				A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */,
 				A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */,
-				A4664B011B452D680095B27D /* SlateVC.swift in Sources */,
+				A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */,
 				A4940DC61B8324D80052B0A2 /* THNotifications.m in Sources */,
 				A4940DCE1B83270C0052B0A2 /* THSubtitleViewController.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
@@ -524,7 +524,7 @@
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
-				A481EFD41B5D42940051ED93 /* SlateElement.swift in Sources */,
+				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
 				A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */,
 				A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
@@ -537,22 +537,22 @@
 				A4940DB51B8324400052B0A2 /* THPlayerView.m in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
 				A4940DC01B8324A00052B0A2 /* THFilmstripView.m in Sources */,
-				A44094E91B5CE6250061AF97 /* Slate.swift in Sources */,
+				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
 				A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */,
 				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
 				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
-				A481EFD31B5D42940051ED93 /* SlateElement+CoreDataProperties.swift in Sources */,
+				A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */,
 				A4940DB91B8324590052B0A2 /* THOverlayView.m in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,
 				A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */,
 				A4940DC91B8326FC0052B0A2 /* UIView+THAdditions.m in Sources */,
 				A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */,
 				A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */,
-				A4664AFF1B452D680095B27D /* SlateCollectionCell.swift in Sources */,
+				A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */,
 				A4FF46661B46B6B100A12267 /* VideoClip+CoreDataProperties.swift in Sources */,
 				A4940DD11B8327210052B0A2 /* NSTimer+Additions.m in Sources */,
-				A44094E81B5CE6250061AF97 /* Slate+CoreDataProperties.swift in Sources */,
+				A44094E81B5CE6250061AF97 /* TitleCard+CoreDataProperties.swift in Sources */,
 				A4940DBD1B8324890052B0A2 /* AVAsset+THAdditions.m in Sources */,
 				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
 				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,

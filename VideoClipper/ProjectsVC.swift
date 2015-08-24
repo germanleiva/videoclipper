@@ -92,7 +92,7 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 		firstStoryLine.elements = [firstTitleCard]
 		
 		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
-		let widget = NSEntityDescription.insertNewObjectForEntityForName("TitleCardElement", inManagedObjectContext: self.context) as! TitleCardElement
+		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
 		widget.content = firstTitleCard.name
 		widget.distanceXFromCenter = 0
 		widget.distanceYFromCenter = 0

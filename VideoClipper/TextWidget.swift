@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 import UIKit
 
-@objc(TitleCardElement)
-class TitleCardElement: NSManagedObject {
+@objc(TextWidget)
+class TextWidget: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 	func initialRect() -> CGRect {

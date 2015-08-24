@@ -12,7 +12,7 @@
 import Foundation
 import CoreData
 
-extension TitleCardElement {
+extension TextWidget {
 
     @NSManaged var content: String?
     @NSManaged var height: NSNumber?

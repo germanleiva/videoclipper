@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-struct TextWidget {
+struct TextWidgetStruct {
 	var textViewMinWidthConstraint: NSLayoutConstraint!
 	var textViewMinHeightConstraint: NSLayoutConstraint!
 	var textViewWidthConstraint: NSLayoutConstraint!
@@ -20,17 +20,17 @@ struct TextWidget {
 	var rightHandler:UIView?
 	var textView:UITextView?
 	
-	var model:TitleCardElement?
+	var model:TextWidget?
 	
 	var tapGesture:UITapGestureRecognizer?
 
 }
 
-extension TextWidget: Equatable {}
+extension TextWidgetStruct: Equatable {}
 
 // MARK: Equatable
 
-func ==(lhs: TextWidget, rhs: TextWidget) -> Bool {
+func ==(lhs: TextWidgetStruct, rhs: TextWidgetStruct) -> Bool {
 	return lhs.textView == rhs.textView
 }
 
@@ -49,7 +49,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	var changesDetected = false
 	
-	var textWidgets = [TextWidget]()
+	var textWidgets = [TextWidgetStruct]()
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
 	var editingTextView:UITextView? = nil
@@ -97,7 +97,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //	
 //	override func viewWillAppear(animated: Bool) {
 		for eachTitleCardElement in self.titleCard!.widgets! {
-			let element = eachTitleCardElement as! TitleCardElement
+			let element = eachTitleCardElement as! TextWidget
 			self.addTextInput(element.content!, initialFrame: element.initialRect(),model: element)
 		}
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
@@ -214,7 +214,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.deleteTextWidget(selectedTextWidgets.first!)
 	}
 	
-	func deleteTextWidget(aTextWidget:TextWidget) {
+	func deleteTextWidget(aTextWidget:TextWidgetStruct) {
 		aTextWidget.textView?.removeFromSuperview()
 		aTextWidget.leftHandler?.removeFromSuperview()
 		aTextWidget.rightHandler?.removeFromSuperview()
@@ -227,7 +227,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
-		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TitleCardElement", inManagedObjectContext: self.context) as! TitleCardElement
+		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
 		newModel.fontSize = 25
 		/*let newTextWidget = */self.addTextInput(
 			"",
@@ -245,8 +245,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func addTextInput(content:String, initialFrame:CGRect, model:TitleCardElement) -> TextWidget {
-		var textWidget = TextWidget()
+	func addTextInput(content:String, initialFrame:CGRect, model:TextWidget) -> TextWidgetStruct {
+		var textWidget = TextWidgetStruct()
 		
 		var effectiveFrame = initialFrame
 		if initialFrame == CGRectZero {
@@ -354,7 +354,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		deactivateHandlers(self.textWidgets)
 	}
 	
-	func findTextWidget(aView:UIView) -> TextWidget? {
+	func findTextWidget(aView:UIView) -> TextWidgetStruct? {
 		return self.textWidgets.filter { (eachWidget) -> Bool in
 			return eachWidget.textView == aView || eachWidget.leftHandler == aView || eachWidget.rightHandler == aView
 		}.first
@@ -404,7 +404,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func panningAHandler(sender:UIPanGestureRecognizer,factor:CGFloat,handlerView:UIView!, _ textWidget:TextWidget) {
+	func panningAHandler(sender:UIPanGestureRecognizer,factor:CGFloat,handlerView:UIView!, _ textWidget:TextWidgetStruct) {
 		var handlerId = "left"
 		if handlerView == 1 {
 			handlerId = "right"
@@ -435,7 +435,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func activateHandlers(textWidget:TextWidget){
+	func activateHandlers(textWidget:TextWidgetStruct){
 		deactivateHandlers(self.textWidgets.filter { $0 != textWidget })
 
 		textWidget.textView!.editable = true
@@ -449,8 +449,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		//		}
 	}
 	
-	func deactivateHandlers(textWidgets:[TextWidget]) -> [TextWidget] {
-		var deactivatedTextWidgets = [TextWidget]()
+	func deactivateHandlers(textWidgets:[TextWidgetStruct]) -> [TextWidgetStruct] {
+		var deactivatedTextWidgets = [TextWidgetStruct]()
 		for aTextWidget in textWidgets {
 			aTextWidget.textView!.editable = false
 			aTextWidget.textView!.selectable = false

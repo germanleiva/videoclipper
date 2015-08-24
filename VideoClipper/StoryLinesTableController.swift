@@ -178,13 +178,13 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 			pathURL,
 			toAlbum: albumName,
 			completion: { (assetURL, error) -> Void in
-				let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as! VideoClip
-				newVideo.name = "V\(self.currentStoryLine!.elements!.count)"
-				newVideo.path = assetURL.absoluteString
-				newVideo.asset = AVAsset(URL: assetURL)
+				let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+				newVideo!.name = "V\(self.currentStoryLine!.elements!.count)"
+				newVideo!.path = assetURL.absoluteString
+				newVideo!.asset = AVAsset(URL: assetURL)
 
 				let elements = self.currentStoryLine!.mutableOrderedSetValueForKey("elements")
-				elements.addObject(newVideo)
+				elements.addObject(newVideo!)
 
 				do {
 					defer {
@@ -241,11 +241,13 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 //		}
 	}
 	
-	func insertVideoElement(newElement:VideoClip,storyLine:StoryLine) {
-		let currentStoryLineIndex = self.project?.storyLines?.indexOfObject(storyLine)
-		let storyLineCell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: currentStoryLineIndex!)) as! StoryLineCell
-		let newVideoCellIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(newElement), inSection: 0)
+	func insertVideoElement(newElement:VideoClip?,storyLine:StoryLine) {
+		let currentStoryLineIndexPath = NSIndexPath(forRow: 0, inSection: self.project!.storyLines!.indexOfObject(storyLine))
+		let storyLineCell = self.tableView.cellForRowAtIndexPath(currentStoryLineIndexPath) as! StoryLineCell
+		let newVideoCellIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(newElement!), inSection: 0)
 		storyLineCell.collectionView.insertItemsAtIndexPaths([newVideoCellIndexPath])
+		storyLineCell.collectionView.scrollToItemAtIndexPath(newVideoCellIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
+		self.delegate?.primaryController(self, didSelectLine: storyLine, withElement: newElement, rowIndexPath: currentStoryLineIndexPath)
 	}
 	
 	func playTapped(sender:AnyObject?,storyLine:StoryLine) {

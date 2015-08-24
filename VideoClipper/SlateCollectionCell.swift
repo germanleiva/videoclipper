@@ -1,5 +1,5 @@
 //
-//  SlateCollectionCell.swift
+//  TitleCardCollectionCell.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 29/06/15.
@@ -8,8 +8,8 @@
 
 import UIKit
 
-class SlateCollectionCell: StoryElementCollectionCell {
-    	@IBOutlet weak var label:UILabel?
+class TitleCardCollectionCell: StoryElementCollectionCell {
+	@IBOutlet weak var label:UILabel?
 	@IBOutlet weak var thumbnail:UIImageView?
 
 

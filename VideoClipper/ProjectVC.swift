@@ -129,9 +129,21 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
 		storyLines?.addObject(storyLine)
 
-		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: context) as! Slate
-		firstSlate.name = "TC \(j)"
-		storyLine.elements = [firstSlate]
+		let firstTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
+		firstTitleCard.name = "Untitled"
+		storyLine.elements = [firstTitleCard]
+		
+		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
+		let widget = NSEntityDescription.insertNewObjectForEntityForName("TitleCardElement", inManagedObjectContext: self.context) as! TitleCardElement
+		widget.content = firstTitleCard.name
+		widget.distanceXFromCenter = 0
+		widget.distanceYFromCenter = 0
+		widget.width = 500
+		widget.height = 50
+		widget.fontSize = 60
+		widgetsOnTitleCard.addObject(widget)
+		
+		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
 		
 		do {
 			try context.save()
@@ -244,6 +256,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func expandPrimaryControler(shouldHideSecondaryView:Bool) {
+		self.titleTextField.resignFirstResponder()
+		
 		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth
 		self.view.insertSubview(self.verticalToolbar, aboveSubview: self.secondaryController!.view)
 //		let shouldHideSecondaryView = self.primaryViewWidthConstraint?.constant == primaryWidth

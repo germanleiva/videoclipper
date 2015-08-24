@@ -1,5 +1,5 @@
 //
-//  SlateElement+CoreDataProperties.swift
+//  TitleCardElement+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 20/07/15.
@@ -12,13 +12,14 @@
 import Foundation
 import CoreData
 
-extension SlateElement {
+extension TitleCardElement {
 
     @NSManaged var content: String?
     @NSManaged var height: NSNumber?
     @NSManaged var distanceXFromCenter: NSNumber?
     @NSManaged var distanceYFromCenter: NSNumber?
-    @NSManaged var width: NSNumber?
-    @NSManaged var slate: Slate?
+	@NSManaged var width: NSNumber?
+	@NSManaged var fontSize: NSNumber?
+    @NSManaged var titleCard: TitleCard?
 
 }

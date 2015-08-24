@@ -1,5 +1,5 @@
 //
-//  Slate.swift
+//  TitleCard.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 20/07/15.
@@ -9,11 +9,11 @@
 import Foundation
 import CoreData
 
-@objc(Slate)
-class Slate: StoryElement {
+@objc(TitleCard)
+class TitleCard: StoryElement {
 
 // Insert code here to add functionality to your managed object subclass
-	override func isSlate() -> Bool {
+	override func isTitleCard() -> Bool {
 		return true
 	}
 }

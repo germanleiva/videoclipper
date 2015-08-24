@@ -1,5 +1,5 @@
 //
-//  SlateElement.swift
+//  TitleCardElement.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 20/07/15.
@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 import UIKit
 
-@objc(SlateElement)
-class SlateElement: NSManagedObject {
+@objc(TitleCardElement)
+class TitleCardElement: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 	func initialRect() -> CGRect {

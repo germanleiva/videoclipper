@@ -36,10 +36,10 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 						//I need to create the VC
 						var newVC:StoryElementVC? = nil
 						let element = self._line?.elements![index] as! StoryElement
-						if element.isSlate() {
-							let slateVC = self.storyboard?.instantiateViewControllerWithIdentifier("slateController") as! SlateVC
-							slateVC.element = element
-							newVC = slateVC
+						if element.isTitleCard() {
+							let titleCardVC = self.storyboard?.instantiateViewControllerWithIdentifier("titleCardController") as! TitleCardVC
+							titleCardVC.element = element
+							newVC = titleCardVC
 						} else {
 							//We assume that the element is a video
 							let videoVC = self.storyboard?.instantiateViewControllerWithIdentifier("videoController") as! VideoVC

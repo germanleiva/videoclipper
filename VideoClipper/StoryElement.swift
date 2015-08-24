@@ -17,7 +17,7 @@ class StoryElement: NSManagedObject {
 		return false
 	}
 	
-	func isSlate() -> Bool {
+	func isTitleCard() -> Bool {
 		return false
 	}
 }

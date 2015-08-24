@@ -159,7 +159,7 @@
                                                 <inset key="sectionInset" minX="5" minY="0.0" maxX="5" maxY="0.0"/>
                                             </collectionViewFlowLayout>
                                             <cells>
-                                                <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SlateCollectionCell" id="SmF-rg-v9V" customClass="SlateCollectionCell" customModule="VideoClipper" customModuleProvider="target">
+                                                <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TitleCardCollectionCell" id="SmF-rg-v9V" customClass="TitleCardCollectionCell" customModule="VideoClipper" customModuleProvider="target">
                                                     <rect key="frame" x="5" y="3" width="182" height="103"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -277,10 +277,10 @@
             </objects>
             <point key="canvasLocation" x="3633" y="1328"/>
         </scene>
-        <!--SlateVC-->
+        <!--Title CardVC-->
         <scene sceneID="QS4-oc-rRK">
             <objects>
-                <viewController storyboardIdentifier="slateController" id="IbS-bj-HKR" customClass="SlateVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="titleCardController" id="IbS-bj-HKR" customClass="TitleCardVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="e4f-XP-brD"/>
                         <viewControllerLayoutGuide type="bottom" id="zHt-XW-yPb"/>

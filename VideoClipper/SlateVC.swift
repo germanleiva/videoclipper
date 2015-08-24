@@ -1,5 +1,5 @@
 //
-//  SlateVC.swift
+//  TitleCardVC.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 29/06/15.
@@ -20,7 +20,7 @@ struct TextWidget {
 	var rightHandler:UIView?
 	var textView:UITextView?
 	
-	var model:SlateElement?
+	var model:TitleCardElement?
 	
 	var tapGesture:UITapGestureRecognizer?
 
@@ -38,7 +38,7 @@ let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate {
+class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
@@ -54,8 +54,8 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 
 	var editingTextView:UITextView? = nil
 	
-	var slate: Slate? {
-		return self.element as? Slate
+	var titleCard: TitleCard? {
+		return self.element as? TitleCard
 	}
 	
 	@IBAction func showDurationPopOver(sender:AnyObject?){
@@ -67,7 +67,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			self.durationPopover!.delegate = self
 		}
 		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
-		durationPickerController.currentValue = Int(self.slate!.duration!)
+		durationPickerController.currentValue = Int(self.titleCard!.duration!)
 		self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
 	}
 	
@@ -77,14 +77,14 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 	
 	func durationPickerController(controller: DurationPickerController, didValueChange newValue: Int) {
 		self.updateDurationButtonText(newValue)
-		self.slate!.duration = newValue
+		self.titleCard!.duration = newValue
 	}
 	
 	func popoverControllerDidDismissPopover(popoverController: UIPopoverController) {
 		do {
 			try self.context.save()
 		} catch {
-			print("Couldn't save the new duration of the slate on the DB: \(error)")
+			print("Couldn't save the new duration of the titleCard on the DB: \(error)")
 		}
 	}
 	
@@ -96,14 +96,14 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 //	}
 //	
 //	override func viewWillAppear(animated: Bool) {
-		for eachSlateElement in self.slate!.widgets! {
-			let element = eachSlateElement as! SlateElement
+		for eachTitleCardElement in self.titleCard!.widgets! {
+			let element = eachTitleCardElement as! TitleCardElement
 			self.addTextInput(element.content!, initialFrame: element.initialRect(),model: element)
 		}
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
 		self.deactivateHandlers(self.textWidgets)
 
-		self.updateDurationButtonText(Int(self.slate!.duration!))
+		self.updateDurationButtonText(Int(self.titleCard!.duration!))
 		
 		self.changesDetected = false
 		
@@ -160,7 +160,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		self.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
 
 		for eachTextWidget in self.textWidgets {
-			let widgetsOnSlate = self.slate?.mutableOrderedSetValueForKey("widgets")
+			let widgetsOnTitleCard = self.titleCard?.mutableOrderedSetValueForKey("widgets")
 			let widget = eachTextWidget.model!
 			
 			if eachTextWidget.textView!.text == EMPTY_TEXT {
@@ -173,8 +173,9 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			widget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
 			widget.width = eachTextWidget.textView!.frame.size.width
 			widget.height = eachTextWidget.textView!.frame.size.height
+			widget.fontSize = eachTextWidget.textView!.font!.pointSize
 			
-			widgetsOnSlate?.addObject(widget)
+			widgetsOnTitleCard?.addObject(widget)
 		}
 		
 		let screenshot = UIGraphicsGetImageFromCurrentImageContext()
@@ -189,7 +190,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		let img = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 		
-		self.slate?.snapshot = UIImagePNGRepresentation(img)
+		self.titleCard?.snapshot = UIImagePNGRepresentation(img)
 		
 		for eachDeactivatedWidget in deactivatedWidgets {
 			activateHandlers(eachDeactivatedWidget)
@@ -199,7 +200,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			try self.context.save()
 //			overlayView.removeFromSuperview()
 			self.changesDetected = false
-			self.delegate!.storyElementVC(self, elementChanged: self.slate!)
+			self.delegate!.storyElementVC(self, elementChanged: self.titleCard!)
 		} catch {
 			print("Couldn't save the canvas on the DB: \(error)")
 		}
@@ -218,7 +219,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		aTextWidget.leftHandler?.removeFromSuperview()
 		aTextWidget.rightHandler?.removeFromSuperview()
 		
-		let modelWidgets = self.slate?.mutableOrderedSetValueForKey("widgets")
+		let modelWidgets = self.titleCard?.mutableOrderedSetValueForKey("widgets")
 		modelWidgets?.removeObject(aTextWidget.model!)
 		
 		self.textWidgets.removeAtIndex(self.textWidgets.indexOf(aTextWidget)!)
@@ -226,7 +227,8 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
-		let newModel = NSEntityDescription.insertNewObjectForEntityForName("SlateElement", inManagedObjectContext: self.context) as! SlateElement
+		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TitleCardElement", inManagedObjectContext: self.context) as! TitleCardElement
+		newModel.fontSize = 25
 		/*let newTextWidget = */self.addTextInput(
 			"",
 			initialFrame: CGRectZero,
@@ -243,7 +245,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		}
 	}
 	
-	func addTextInput(content:String, initialFrame:CGRect, model:SlateElement) -> TextWidget {
+	func addTextInput(content:String, initialFrame:CGRect, model:TitleCardElement) -> TextWidget {
 		var textWidget = TextWidget()
 		
 		var effectiveFrame = initialFrame
@@ -254,7 +256,7 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 		textWidget.textView = UITextView(frame: effectiveFrame)
 		textWidget.textView!.backgroundColor = UIColor.clearColor()
 		textWidget.textView!.delegate = self
-		textWidget.textView!.font = UIFont.systemFontOfSize(25)
+		textWidget.textView!.font = UIFont.systemFontOfSize(CGFloat(model.fontSize!))
 		textWidget.textView!.textAlignment = NSTextAlignment.Center
 		textWidget.textView!.editable = false
 		textWidget.textView!.selectable = false

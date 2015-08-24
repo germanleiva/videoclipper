@@ -1,5 +1,5 @@
 //
-//  Slate+CoreDataProperties.swift
+//  TitleCard+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 20/07/15.
@@ -12,7 +12,7 @@
 import Foundation
 import CoreData
 
-extension Slate {
+extension TitleCard {
 
 	@NSManaged var widgets: NSOrderedSet?
 	@NSManaged var snapshot: NSData?

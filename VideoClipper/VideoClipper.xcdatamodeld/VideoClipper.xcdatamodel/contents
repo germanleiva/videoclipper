@@ -6,19 +6,6 @@
         <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="storyLines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryLine" inverseName="project" inverseEntity="StoryLine" syncable="YES"/>
     </entity>
-    <entity name="Slate" representedClassName="Slate" parentEntity="StoryElement" syncable="YES">
-        <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
-        <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
-        <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="SlateElement" inverseName="slate" inverseEntity="SlateElement" syncable="YES"/>
-    </entity>
-    <entity name="SlateElement" representedClassName="SlateElement" syncable="YES">
-        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="slate" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Slate" inverseName="widgets" inverseEntity="Slate" syncable="YES"/>
-    </entity>
     <entity name="StoryElement" representedClassName="StoryElement" isAbstract="YES" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="storyLine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryLine" inverseName="elements" inverseEntity="StoryLine" syncable="YES"/>
@@ -29,14 +16,28 @@
         <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryElement" inverseName="storyLine" inverseEntity="StoryElement" syncable="YES"/>
         <relationship name="project" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="storyLines" inverseEntity="Project" syncable="YES"/>
     </entity>
+    <entity name="TitleCard" representedClassName="TitleCard" parentEntity="StoryElement" syncable="YES">
+        <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
+        <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TitleCardElement" inverseName="titleCard" inverseEntity="TitleCardElement" syncable="YES"/>
+    </entity>
+    <entity name="TitleCardElement" representedClassName="TitleCardElement" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fontSize" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>
+    </entity>
     <entity name="VideoClip" representedClassName="VideoClip" parentEntity="StoryElement" syncable="YES">
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
     </entity>
     <elements>
         <element name="Project" positionX="-360" positionY="-75" width="128" height="105"/>
-        <element name="Slate" positionX="117" positionY="216" width="128" height="90"/>
-        <element name="SlateElement" positionX="-153" positionY="81" width="128" height="135"/>
+        <element name="TitleCard" positionX="117" positionY="216" width="128" height="90"/>
+        <element name="TitleCardElement" positionX="-153" positionY="81" width="128" height="150"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
         <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="75"/>

@@ -282,15 +282,15 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 				let eachVideo = eachElement as! VideoClip
 				asset = eachVideo.asset
 				assetDuration = asset!.duration
-			} else if (eachElement as! StoryElement).isSlate() {
-				let eachSlate = eachElement as! Slate
+			} else if (eachElement as! StoryElement).isTitleCard() {
+				let eachTitleCard = eachElement as! TitleCard
 				
-				if eachSlate.snapshot == nil {
+				if eachTitleCard.snapshot == nil {
 					continue;
 				}
-				let slateScreenshoot = UIImage(data:eachSlate.snapshot!)
-				asset = videoHelper.writeImageAsMovie(slateScreenshoot,duration:eachSlate.duration!)
-				assetDuration = CMTimeMake(Int64(eachSlate.duration!.intValue), 1)
+				let titleCardScreenshoot = UIImage(data:eachTitleCard.snapshot!)
+				asset = videoHelper.writeImageAsMovie(titleCardScreenshoot,duration:eachTitleCard.duration!)
+				assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
 			}
 			
 			let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
@@ -459,9 +459,9 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		self.tableView.selectRowAtIndexPath(self.selectedLineIndexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
 	}
 	
-	func isSlateStoryElement(indexPath:NSIndexPath,storyLine:StoryLine) -> Bool {
+	func isTitleCardStoryElement(indexPath:NSIndexPath,storyLine:StoryLine) -> Bool {
 		let storyElement = storyLine.elements![indexPath.item] as! StoryElement
-		return storyElement.isSlate()
+		return storyElement.isTitleCard()
 	}
 	
 	func deleteStoryLine(indexPath:NSIndexPath) {
@@ -694,12 +694,12 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 ////			elementVC.elementIndex = self.selectedIndexPathForCollectionView
 //		}
 		
-		if segue.identifier == "toSlateVC" {
+		if segue.identifier == "toTitleCardVC" {
 			let navigation = segue.destinationViewController as! UINavigationController
-			let slateVC = navigation.viewControllers.first as! SlateVC
+			let titleCardVC = navigation.viewControllers.first as! TitleCardVC
 			let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
 
-			slateVC.element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
+			titleCardVC.element = line.elements![self.selectedIndexPathForCollectionView!.item] as! StoryElement
 
 		}
 	}
@@ -715,17 +715,17 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let storyLine = self.project!.storyLines![collectionView.tag] as! StoryLine
-		if isSlateStoryElement(indexPath,storyLine: storyLine) {
-			let slateElement = storyLine.elements![indexPath.item] as! Slate
-			//First item is a Slate
-			let slateCell = collectionView.dequeueReusableCellWithReuseIdentifier("SlateCollectionCell", forIndexPath: indexPath) as! SlateCollectionCell
-			if let snapshot = slateElement.snapshot {
-				slateCell.thumbnail!.image = UIImage(data: snapshot)
-				slateCell.label!.text = ""
+		if isTitleCardStoryElement(indexPath,storyLine: storyLine) {
+			let titleCardElement = storyLine.elements![indexPath.item] as! TitleCard
+			//First item is a TitleCard
+			let titleCardCell = collectionView.dequeueReusableCellWithReuseIdentifier("TitleCardCollectionCell", forIndexPath: indexPath) as! TitleCardCollectionCell
+			if let snapshot = titleCardElement.snapshot {
+				titleCardCell.thumbnail!.image = UIImage(data: snapshot)
+				titleCardCell.label!.text = ""
 			} else {
-				slateCell.label!.text = slateElement.name
+				titleCardCell.label!.text = titleCardElement.name
 			}
-			return slateCell
+			return titleCardCell
 		}
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
@@ -790,9 +790,9 @@ class StoryLinesTableController: UITableViewController, UICollectionViewDataSour
 		let rowIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
 		self.selectedIndexPathForCollectionView = NSIndexPath(forItem: indexPath.item, inSection: collectionView.tag)
 		let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
-//		if isSlateStoryElement(indexPath,storyLine: line) {
-//			//Open the Slate editor
-//			self.performSegueWithIdentifier("toSlateVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
+//		if isTitleCardStoryElement(indexPath,storyLine: line) {
+//			//Open the TitleCard editor
+//			self.performSegueWithIdentifier("toTitleCardVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
 //		} else {
 ////			self.performSegueWithIdentifier("toVideoVC", sender: collectionView.cellForItemAtIndexPath(indexPath))
 //			let playerVC = AVPlayerViewController()

@@ -81,15 +81,27 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 
 		let dateString = NSDateFormatter.localizedStringFromDate(newProject.createdAt!, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
 
-		newProject.name = "Project \(dateString)"
+		newProject.name = "Project created on \(dateString)"
 		let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: self.context) as! StoryLine
 //		firstStoryLine.name = "My first story line"
 		
 		newProject.storyLines = [firstStoryLine]
 
-		let firstSlate = NSEntityDescription.insertNewObjectForEntityForName("Slate", inManagedObjectContext: self.context) as! Slate
-//		firstSlate.name = "TC 0"
-		firstStoryLine.elements = [firstSlate]
+		let firstTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: self.context) as! TitleCard
+		firstTitleCard.name = "Untitled"
+		firstStoryLine.elements = [firstTitleCard]
+		
+		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
+		let widget = NSEntityDescription.insertNewObjectForEntityForName("TitleCardElement", inManagedObjectContext: self.context) as! TitleCardElement
+		widget.content = firstTitleCard.name
+		widget.distanceXFromCenter = 0
+		widget.distanceYFromCenter = 0
+		widget.width = 500
+		widget.height = 50
+		widget.fontSize = 60
+		widgetsOnTitleCard.addObject(widget)
+		
+		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
 
 		do {
 			try context.save()
@@ -139,13 +151,13 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 		
 		let storyLineCount = project.storyLines!.count
 		cell.linesLabel.text = "\(storyLineCount) line"
-		if storyLineCount == 1 {
+		if storyLineCount != 1 {
 			cell.linesLabel.text = cell.linesLabel.text!.stringByAppendingString("s")
 		}
 		
 		let videoCount = project.videosCount()
 		cell.videosLabel.text = "\(videoCount) video"
-		if videoCount == 1 {
+		if videoCount != 1 {
 			cell.videosLabel.text = cell.videosLabel.text!.stringByAppendingString("s")
 		}
 		

@@ -18,10 +18,15 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
 	var delegate:DurationPickerControllerDelegate? = nil
 	
 	@IBOutlet weak var pickerView: UIPickerView!
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
 		let index = self.values.indexOf(self.currentValue)
 		self.pickerView.selectRow(index!, inComponent: 0, animated: true)
 	}
@@ -30,7 +35,6 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
 
     /*
     // MARK: - Navigation

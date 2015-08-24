@@ -65,8 +65,10 @@ class SlateVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, 
 			self.durationPopover = UIPopoverController(contentViewController: durationController)
 			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
 			self.durationPopover!.delegate = self
-			self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
 		}
+		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
+		durationPickerController.currentValue = Int(self.slate!.duration!)
+		self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
 	}
 	
 	func updateDurationButtonText(newDuration:Int){

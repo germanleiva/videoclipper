@@ -16,9 +16,4 @@ class Slate: StoryElement {
 	override func isSlate() -> Bool {
 		return true
 	}
-	
-	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-		super.init(entity: entity, insertIntoManagedObjectContext: context)
-		self.duration = 3
-	}
 }

@@ -26,6 +26,7 @@
         <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>
     </entity>
     <entity name="TitleCard" representedClassName="TitleCard" parentEntity="StoryElement" syncable="YES">
+        <attribute name="backgroundColor" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
         <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
         <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
@@ -36,10 +37,10 @@
     </entity>
     <elements>
         <element name="Project" positionX="-360" positionY="-75" width="128" height="105"/>
-        <element name="TitleCard" positionX="117" positionY="216" width="128" height="90"/>
-        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="148"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
         <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
+        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="148"/>
+        <element name="TitleCard" positionX="117" positionY="216" width="128" height="105"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="75"/>
     </elements>
 </model>

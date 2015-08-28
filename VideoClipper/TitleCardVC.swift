@@ -38,11 +38,10 @@ let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate {
+class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate, ColorPickerViewControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
-
 	
 	var durationPopover:UIPopoverController?
 	var scheduledTimer:NSTimer? = nil
@@ -109,6 +108,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+		
+		self.canvas!.backgroundColor = self.titleCard!.backgroundColor as? UIColor
+		self.colorButton.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 	}
 	
 	func keyboardWillShow(notification:NSNotification) {
@@ -497,4 +499,32 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		return otherGestureRecognizer.view!.isDescendantOfView(self.canvas!)
 	}
 
+	//- MARK: Color picking
+	@IBOutlet var colorButton: UIButton!
+	
+	// Generate popover on button press
+	@IBAction func colorButtonPressed(sender: UIButton?) {
+		
+		let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("colorPickerPopover") as! ColorPickerViewController
+		popoverVC.modalPresentationStyle = .Popover
+		popoverVC.preferredContentSize = CGSizeMake(284, 446)
+		if let popoverController = popoverVC.popoverPresentationController {
+			popoverController.sourceView = sender
+			popoverController.sourceRect = sender!.bounds
+			popoverController.permittedArrowDirections = .Any
+//			popoverController.delegate = self
+			popoverVC.delegate = self
+		}
+		presentViewController(popoverVC, animated: true, completion: nil)
+	}
+	
+	func didPickColor(color: UIColor) {
+		self.colorButton.backgroundColor = color
+		self.canvas!.backgroundColor = color
+		
+		self.titleCard!.backgroundColor = color
+		
+		self.saveCanvas()
+	}
+	
 }

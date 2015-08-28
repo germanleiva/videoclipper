@@ -16,12 +16,17 @@ class ProjectsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, 
 	var isNewProject = false
 	var horribleFix = false
 	
+	@IBOutlet var addProjectButton: UIButton!
+	
 	@IBOutlet weak var tableView: UITableView!
 	
 	var fetchedResultsController: NSFetchedResultsController? = nil
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+
+		self.addProjectButton.layer.borderWidth = 0.4
+		self.addProjectButton.layer.borderColor = UIColor.grayColor().CGColor
 
 		// Do any additional setup after loading the view.
 		let projectsFetchRequest = NSFetchRequest(entityName: "Project")

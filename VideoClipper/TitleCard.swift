@@ -16,4 +16,9 @@ class TitleCard: StoryElement {
 	override func isTitleCard() -> Bool {
 		return true
 	}
+	
+	override func awakeFromInsert() {
+		super.awakeFromInsert()
+		self.backgroundColor = UIColor.whiteColor()
+	}
 }

@@ -15,9 +15,14 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	var tableController:StoryLinesTableController?
 	var secondaryController:SecondaryViewController?
 	var isNewProject = false
-	var currentLineIndexPath:NSIndexPath? = nil
+	var currentLineIndexPath:NSIndexPath? {
+		get {
+			return self.tableController!.selectedLinePath
+		}
+	}
+	@IBOutlet var addNewLineButton:UIButton!
 	var currentItemIndexPath:NSIndexPath? = nil
-	var currentLine:StoryLine? = nil
+
 	let primaryControllerCompactWidth = CGFloat(192+10)
 	
 	@IBOutlet var trashForElement:UIButton!
@@ -35,7 +40,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-
+		self.addNewLineButton.layer.borderWidth = 0.4
+		self.addNewLineButton.layer.borderColor = UIColor.grayColor().CGColor
         // Uncomment the following line to preserve selection between presentations
 //         self.clearsSelectionOnViewWillAppear = false
 
@@ -75,21 +81,18 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 
-		if self.currentLine == nil && self.currentLineIndexPath == nil && self.currentItemIndexPath == nil {
-			self.currentLine = self.project?.storyLines?.firstObject as? StoryLine
-			self.currentLineIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+		if self.currentItemIndexPath == nil {
 			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-		} else {
-			if self.currentLine == nil {
-				print("WEIRD currentLine")
-			}
-			if self.currentLineIndexPath == nil {
-				print("WEIRD currentLineIndexPath")
-			}
-			if self.currentItemIndexPath == nil {
-				print("WEIRD currentItemIndexPath")
-			}
 		}
+		
+		let defaults = NSUserDefaults.standardUserDefaults()
+
+		var autocorrectionType = UITextAutocorrectionType.Default
+		if defaults.boolForKey("keyboardAutocompletionOff") {
+			autocorrectionType = .No
+		}
+		
+		self.titleTextField.autocorrectionType = autocorrectionType
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -147,7 +150,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		
 		do {
 			try context.save()
-			self.tableController!.reloadData(storyLine)
+			self.tableController!.addStoryLine(storyLine)
 		} catch {
 			print("Couldn't save the new story line: \(error)")
 		}
@@ -208,30 +211,28 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func secondaryViewController(controller: SecondaryViewController, didUpdateElement element:StoryElement) -> Void {
-		self.tableController!.reloadData()
+		self.tableController!.updateElement(element)
 	}
 	
 	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) -> Void {
 		//When the secondary view controller shows a particular element I need to update the primary controller to scroll to the same element in the current line
 		
-		let storyLine = self.project!.storyLines![self.currentLineIndexPath!.section] as! StoryLine
+		let storyLine = element.storyLine as! StoryLine
 		let itemIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
 		
 		if self.currentItemIndexPath! != itemIndexPath {
 			self.currentItemIndexPath = itemIndexPath
-			self.tableController!.scrollToElement(self.currentItemIndexPath!,inLineIndex:self.currentLineIndexPath!)
+			self.tableController!.scrollToElement(itemIndexPath,inLineIndex:self.currentLineIndexPath!)
 		}
 	}
 	
-	func primaryController(primaryController: StoryLinesTableController, didSelectLine line: StoryLine!, withElement: StoryElement?, rowIndexPath: NSIndexPath?) {
+	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?,line:StoryLine?, lineIndexPath: NSIndexPath?) {
+		let previousLineIndexPath = self.currentLineIndexPath
 
-		var itemIndexPath:NSIndexPath? = nil
-		if let element = withElement {
-			itemIndexPath = NSIndexPath(forItem: line.elements!.indexOfObject(element), inSection: 0)
-
+		if let _ = element {
 			if self.tableController!.isCompact {
 				//We need to expand if we tap on the selected item or we need to change the line if it is different
-				if itemIndexPath == self.currentItemIndexPath && rowIndexPath! == self.currentLineIndexPath! {
+				if itemIndexPath == self.currentItemIndexPath && lineIndexPath! == previousLineIndexPath! {
 					//We need to expand
 					self.expandPrimaryControler(true)
 				} else {
@@ -243,14 +244,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			}
 		}
 		
-		self.currentLine = line
-		self.currentLineIndexPath = rowIndexPath
 		self.secondaryController!.line = line
 		
 		if itemIndexPath != nil && itemIndexPath != self.currentItemIndexPath {
 			self.currentItemIndexPath = itemIndexPath
-			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:rowIndexPath!)
-			self.secondaryController!.scrollToElement(withElement)
+			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:lineIndexPath!)
+			self.secondaryController!.scrollToElement(element)
 		}
 
 	}
@@ -288,7 +287,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	}
 	
-	
 	@IBAction func deleteForElementTapped(sender:AnyObject?) {
 		let alert = UIAlertController(title: "Deleted element", message: "Imagine that we deleted this element", preferredStyle: UIAlertControllerStyle.Alert)
 		alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
@@ -298,11 +296,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	@IBAction func captureForLineTapped(sender:AnyObject?) {
-		self.tableController!.recordTapped(sender,storyLine: self.currentLine!)
+		self.tableController!.recordTappedOnSelectedLine(sender)
 	}
 	
 	@IBAction func playForLineTapped(sender:AnyObject?) {
-		self.tableController!.playTapped(sender,storyLine: self.currentLine!)
+		self.tableController!.playTappedOnSelectedLine(sender)
 	}
 
 }

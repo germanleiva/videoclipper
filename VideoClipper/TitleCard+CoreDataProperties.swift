@@ -2,7 +2,7 @@
 //  TitleCard+CoreDataProperties.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 20/07/15.
+//  Created by German Leiva on 28/08/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 //  Delete this file and regenerate it using "Create NSManagedObject Subclass…"
@@ -14,8 +14,9 @@ import CoreData
 
 extension TitleCard {
 
-	@NSManaged var widgets: NSOrderedSet?
-	@NSManaged var snapshot: NSData?
-	@NSManaged var duration: NSNumber?
+    @NSManaged var duration: NSNumber?
+    @NSManaged var snapshot: NSData?
+    @NSManaged var backgroundColor: NSObject
+    @NSManaged var widgets: NSOrderedSet?
 
 }

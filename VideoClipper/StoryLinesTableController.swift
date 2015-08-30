@@ -54,8 +54,6 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 	
 	let videoHelper = VideoHelper()
 	
-	let albumName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
-
 	var progressBar:MBProgressHUD? = nil
 	
 	var isCompact = false
@@ -167,34 +165,33 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 		let library = ALAssetsLibrary()
 		let pathURL = NSURL(fileURLWithPath: pathString)
 
-		library.saveVideo(
-			pathURL,
-			toAlbum: albumName,
-			completion: { (assetURL, error) -> Void in
-				let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
-				newVideo!.path = assetURL.absoluteString
-				newVideo!.asset = AVAsset(URL: assetURL)
-
-				let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
-				elements.addObject(newVideo!)
-
-				do {
-					defer {
-						//If we need a "finally"
-
-					}
-					try self.context.save()
-					
-					self.insertVideoElementInCurrentLine(newVideo)
-				} catch {
-					print("Couldn't save new video in the DB")
-					print(error)
-				}
-			}) { (error) -> Void in
-				print("Couldn't save the video on the photos album: \(error)")
+//		library.saveVideo is used to save on an album
+		library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
+			if errorOnSaving != nil {
+				print("Couldn't save the video on the photos album: \(errorOnSaving)")
 				return
 			}
+			let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+			//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
+			newVideo!.path = assetURL.absoluteString
+			newVideo!.asset = AVAsset(URL: assetURL)
+			
+			let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
+			elements.addObject(newVideo!)
+			
+			do {
+				defer {
+					//If we need a "finally"
+					
+				}
+				try self.context.save()
+				
+				self.insertVideoElementInCurrentLine(newVideo)
+			} catch {
+				print("Couldn't save new video in the DB")
+				print(error)
+			}
+		}
 	}
 	
 	func insertVideoElementInCurrentLine(newElement:VideoClip?) {
@@ -365,12 +362,16 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 	func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
 		let library = ALAssetsLibrary()
 
+		let appName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
+		let albumName = "\(appName) (exported)"
 		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(outputURL) {
 			library.saveVideo(
 				outputURL,
 				toAlbum: albumName,
 				completion: { (savedURL, writingToPhotosAlbumError) -> Void in
 					print("We wrote the video to saved photos successfully!!!")
+
+					UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
 
 				}) { (error) -> Void in
 					print("Couldn't export the video: \(error)")

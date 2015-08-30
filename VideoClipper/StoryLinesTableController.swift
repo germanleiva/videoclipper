@@ -306,7 +306,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 		
 		exportSession!.videoComposition = videoComposition
 		
-		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mp4")
+		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
 		
 		do {
 			try NSFileManager.defaultManager().removeItemAtPath(filePath!)
@@ -317,7 +317,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 		}
 		
 		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
-		exportSession!.outputFileType = AVFileTypeMPEG4
+		exportSession!.outputFileType = AVFileTypeQuickTimeMovie
+		exportSession!.metadata =
 		
 		print("Starting exportAsynchronouslyWithCompletionHandler")
 		

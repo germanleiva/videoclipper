@@ -17,7 +17,7 @@
 	NSString *documentsDirectory = [NSHomeDirectory()
 									stringByAppendingPathComponent:@"Documents"];
 	
-//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"image_to_video_temp_file.mp4"];
+//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"image_to_video_temp_file.mov"];
 	
 	NSString *path = nil;
 	NSUInteger count = 0;
@@ -25,7 +25,7 @@
 		NSString *numberString = count > 0 ?
 		[NSString stringWithFormat:@"%li", (unsigned long) count] : @"";
 		NSString *fileNameString =
-		[NSString stringWithFormat:@"image_to_video_temp_file-%@.mp4", numberString];
+		[NSString stringWithFormat:@"image_to_video_temp_file-%@.mov", numberString];
 		path = [documentsDirectory stringByAppendingPathComponent:fileNameString];
 		count++;
 	} while ([[NSFileManager defaultManager] fileExistsAtPath:path]);
@@ -37,7 +37,7 @@
 	CGSize size = image.size;
 	
 	AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:pathURL
-														   fileType:AVFileTypeMPEG4
+														   fileType:AVFileTypeQuickTimeMovie
 															  error:&error];
 	if (error) {
 		NSLog(@"There was a problem while creating the AVAssetWriter: %@",error.localizedDescription);
@@ -158,7 +158,7 @@
 		NSString *numberString = count > 0 ?
 		[NSString stringWithFormat:@"%li", (unsigned long) count] : @"";
 		NSString *fileNameString =
-		[NSString stringWithFormat:@"image_to_video_temp_file-%@.mp4", numberString];
+		[NSString stringWithFormat:@"image_to_video_temp_file-%@.mov", numberString];
 		path = [documentsDirectory stringByAppendingPathComponent:fileNameString];
 		count++;
 	} while ([[NSFileManager defaultManager] fileExistsAtPath:path]);

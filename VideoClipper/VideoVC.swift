@@ -26,6 +26,7 @@ class VideoVC: StoryElementVC {
 		self.customPlayerView = self.controller!.view
 		
 		self.customPlayerView!.translatesAutoresizingMaskIntoConstraints = false
+//		return
 		self.view.addSubview(self.customPlayerView)
 
 //		self.view.addConstraint(NSLayoutConstraint(item: self.customPlayerView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))

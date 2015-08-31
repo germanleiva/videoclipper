@@ -85,6 +85,7 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		self.swipeGesture!.numberOfTouchesRequired = 1
 		self.swipeGesture!.delegate = self
 		self.view.addGestureRecognizer(self.swipeGesture!)
+		
     }
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {

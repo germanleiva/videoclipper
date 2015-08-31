@@ -8,6 +8,6 @@
 #import "MBProgressHUD.h"
 
 #import "AVPlayerItem+THAdditions.h"
-//#import "THPlaybackView.h"
 
 #import "THPlayerController.h"
+#import "AAPLTimedAnnotationWriter.h"

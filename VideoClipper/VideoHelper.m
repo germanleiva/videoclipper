@@ -8,6 +8,7 @@
 
 
 #import "VideoHelper.h"
+#import <CoreMedia/CMMetadata.h>
 
 @implementation VideoHelper
 
@@ -60,6 +61,36 @@
 	NSParameterAssert([videoWriter canAddInput:writerInput]);
 	[videoWriter addInput:writerInput];
 	
+	//TIMED METADATA
+//	AVMutableMetadataItem *titleCardMetadata = [AVMutableMetadataItem metadataItem];
+//	titleCardMetadata.identifier = AVMetadataIdentifierQuickTimeUserDataChapter;
+//	titleCardMetadata.dataType = (__bridge NSString *)kCMMetadataBaseDataType_UTF8;
+//	titleCardMetadata.locale = [NSLocale currentLocale];
+//	titleCardMetadata.value = @"Capitulo X";
+//	titleCardMetadata.extraAttributes = nil;
+//	titleCardMetadata.extendedLanguageTag = @"en-FR";
+//	
+//	CMTime cursorTime = kCMTimeZero;
+////	CMTime timeRange = CMTimeMake(seconds.intValue, 1);
+//	CMTime timeRange = kCMTimeInvalid;
+//	AVTimedMetadataGroup *metadataGroup = [[AVTimedMetadataGroup alloc] initWithItems:@[titleCardMetadata] timeRange:CMTimeRangeMake(cursorTime, timeRange)];
+//	
+//	CMFormatDescriptionRef metadataFormatDescription = [metadataGroup copyFormatDescription];
+//
+//	if (error) {
+//		NSLog(@"TODO MAL %@",error.localizedDescription);
+//	}
+//	
+//	AVAssetWriterInput *assetWriterMetadataIn = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeMetadata outputSettings:nil sourceFormatHint:metadataFormatDescription];
+//	AVAssetWriterInputMetadataAdaptor *assetWriterMetadataAdaptor = [AVAssetWriterInputMetadataAdaptor assetWriterInputMetadataAdaptorWithAssetWriterInput:assetWriterMetadataIn];
+//	assetWriterMetadataIn.expectsMediaDataInRealTime = YES;
+//
+//	[assetWriterMetadataIn addTrackAssociationWithTrackOfInput:writerInput type:AVTrackAssociationTypeMetadataReferent];
+//
+//	[videoWriter addInput:assetWriterMetadataIn];
+	
+	//TIMED METADATA
+	
 	//Start a session:
 	[videoWriter startWriting];
 	[videoWriter startSessionAtSourceTime:kCMTimeZero];
@@ -86,6 +117,9 @@
 		}
 	}
 	
+//	BOOL success = [assetWriterMetadataAdaptor appendTimedMetadataGroup:metadataGroup];
+//	NSLog(@"Added TIMED METADATA %@",success?@"SUCCESSFULLY":@"UNSUCCESFULLY");
+	
 	//Finish the session:
 	[writerInput markAsFinished];
 	[videoWriter endSessionAtSourceTime:CMTimeMake(duration, 1)];
@@ -94,9 +128,11 @@
 	}];
 
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:pathURL options:@{AVURLAssetPreferPreciseDurationAndTimingKey:@YES}];
-	[asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
+	[asset loadValuesAsynchronouslyForKeys:@[@"duration",@"metadata"] completionHandler:^{
 		NSLog(@"Duration loaded on AVAsset");
 	}];
+	
+//	CFRelease(metadataFormatDescription);
 
 	return asset;
 }

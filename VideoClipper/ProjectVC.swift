@@ -179,7 +179,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			}
 		}
 		
-		let (composition,videoComposition) = self.tableController!.createComposition(NSOrderedSet(array: elements))
+		let (composition,videoComposition,_) = self.tableController!.createComposition(NSOrderedSet(array: elements))
 		
 		let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
 		item.videoComposition = videoComposition

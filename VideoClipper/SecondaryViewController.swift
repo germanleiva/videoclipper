@@ -89,7 +89,9 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 		if gestureRecognizer == self.swipeGesture! {
-			return self.currentIndex == 0
+			let firstPageVC = self.viewControllerAtIndex(0) as! TitleCardVC
+			let canvasRect = self.view.convertRect(firstPageVC.canvas!.frame, fromView:firstPageVC.canvas)
+			return self.currentIndex == 0 && !CGRectContainsPoint(canvasRect, gestureRecognizer.locationInView(self.view))
 		} else {
 			print("WAT?")
 			return true

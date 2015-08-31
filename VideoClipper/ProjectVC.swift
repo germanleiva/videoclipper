@@ -70,11 +70,27 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.tableView.backgroundView!.addGestureRecognizer(tapGesture)
 		
 		self.secondaryViewWidthConstraint.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width - self.primaryControllerCompactWidth
+		
+		let swipeLeft = UISwipeGestureRecognizer(target: self, action: "swipedLeft:")
+		swipeLeft.numberOfTouchesRequired = 1
+		swipeLeft.direction = .Left
+		self.verticalToolbar!.addGestureRecognizer(swipeLeft)
+	}
+	
+	func swipedLeft(sender:UISwipeGestureRecognizer) {
+		if self.currentItemIndexPath == nil {
+			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+		}
+
+		let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
+		let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
+		
+		self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
 	}
 	
 	func tapOnPrimaryView(recognizer:UITapGestureRecognizer) {
 		if self.tableController!.isCompact {
-			self.expandPrimaryControler(true)
+			self.expandPrimaryController(true)
 		}
 	}
 	
@@ -211,7 +227,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func secondaryViewController(controller: SecondaryViewController, didReachLeftMargin: Int) {
-		self.expandPrimaryControler(true)
+		self.expandPrimaryController(true)
 	}
 	
 	func secondaryViewController(controller: SecondaryViewController, didUpdateElement element:StoryElement) -> Void {
@@ -234,17 +250,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		let previousLineIndexPath = self.currentLineIndexPath
 
 		if let _ = element {
-			if self.tableController!.isCompact {
-				//We need to expand if we tap on the selected item or we need to change the line if it is different
-				if itemIndexPath == self.currentItemIndexPath && lineIndexPath! == previousLineIndexPath! {
-					//We need to expand
-					self.expandPrimaryControler(true)
-				} else {
-					//We only need to change line, that happens at the end
-				}
-			} else {
+			if !self.tableController!.isCompact {
 				//We need to shrink and show the selected item
-				self.expandPrimaryControler(false)
+				self.expandPrimaryController(false)
 			}
 		}
 		
@@ -254,11 +262,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			self.currentItemIndexPath = itemIndexPath
 			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:lineIndexPath!)
 			self.secondaryController!.scrollToElement(element)
+		} else {
+			self.secondaryController!.pageViewController?.reloadInputViews()
 		}
 
 	}
 	
-	func expandPrimaryControler(shouldHideSecondaryView:Bool) {
+	func expandPrimaryController(shouldHideSecondaryView:Bool) {
 		self.titleTextField.resignFirstResponder()
 		
 		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth

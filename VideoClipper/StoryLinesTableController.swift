@@ -589,12 +589,12 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 //		let previousPath = self.selectedIndexPath
-		let line = self.project!.storyLines![indexPath.section] as! StoryLine
-		var element:StoryElement? = nil
-		if let itemPath = self.selectedItemPath {
-			element = line.elements![itemPath.item] as? StoryElement
-		}
-		self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: self.selectedItemPath, line: line, lineIndexPath: indexPath)
+//		let line = self.project!.storyLines![indexPath.section] as! StoryLine
+//		var element:StoryElement? = nil
+//		if let itemPath = self.selectedItemPath {
+//			element = line.elements![itemPath.item] as? StoryElement
+//		}
+//		self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: self.selectedItemPath, line: line, lineIndexPath: indexPath)
 		self.selectedLinePath = indexPath
 	}
 	
@@ -675,12 +675,18 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		let rowIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
+		let lineIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
 		self.selectedItemPath = NSIndexPath(forItem: indexPath.item, inSection: 0)
-//		let line = self.project!.storyLines![self.selectedIndexPathForCollectionView!.section] as! StoryLine
 
 		if !self.tableView.editing {
-			self.selectRowAtIndexPath(rowIndexPath, animated: false)
+			self.selectRowAtIndexPath(lineIndexPath, animated: false)
+
+			let line = self.project!.storyLines![lineIndexPath.section] as! StoryLine
+			var element:StoryElement? = nil
+			if let itemPath = self.selectedItemPath {
+				element = line.elements![itemPath.item] as? StoryElement
+			}
+			self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: self.selectedItemPath, line: line, lineIndexPath: lineIndexPath)
 		}
 	}
 	

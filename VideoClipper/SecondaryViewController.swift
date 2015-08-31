@@ -11,13 +11,17 @@ import UIKit
 protocol SecondaryViewControllerDelegate : NSObjectProtocol {
 	func secondaryViewController(controller:SecondaryViewController, didShowStoryElement element:StoryElement)
 	func secondaryViewController(controller:SecondaryViewController, didUpdateElement element:StoryElement)
+	func secondaryViewController(controller:SecondaryViewController, didReachLeftMargin: Int)
+
 }
 
-class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, StoryElementVCDelegate {
+class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, StoryElementVCDelegate, UIGestureRecognizerDelegate {
 	var pageViewController:UIPageViewController?
 	var delegate:SecondaryViewControllerDelegate? = nil
+	var swipeGesture:UISwipeGestureRecognizer? = nil
+
+	var currentIndex = 0
 	
-	var currentIndex:Int = 0
 //	var nextIndex:Int = 0
 	private var _line: StoryLine? = nil
 	
@@ -76,7 +80,25 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		layer.shadowPath = UIBezierPath(rect: layer.bounds).CGPath
 		
 //		self.view.clipsToBounds = false
+		self.swipeGesture = UISwipeGestureRecognizer(target: self, action: "swipedRight:");
+		self.swipeGesture!.direction = UISwipeGestureRecognizerDirection.Right
+		self.swipeGesture!.numberOfTouchesRequired = 1
+		self.swipeGesture!.delegate = self
+		self.view.addGestureRecognizer(self.swipeGesture!)
     }
+	
+	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+		if gestureRecognizer == self.swipeGesture! {
+			return self.currentIndex == 0
+		} else {
+			print("WAT?")
+			return true
+		}
+	}
+	
+	func swipedRight(sender:UISwipeGestureRecognizer) {
+		self.delegate?.secondaryViewController(self, didReachLeftMargin: self.currentIndex)
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

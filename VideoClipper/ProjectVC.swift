@@ -210,6 +210,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		return true
 	}
 	
+	func secondaryViewController(controller: SecondaryViewController, didReachLeftMargin: Int) {
+		self.expandPrimaryControler(true)
+	}
+	
 	func secondaryViewController(controller: SecondaryViewController, didUpdateElement element:StoryElement) -> Void {
 		self.tableController!.updateElement(element)
 	}

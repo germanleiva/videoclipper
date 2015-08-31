@@ -46,6 +46,7 @@
 		A4940DCD1B83270C0052B0A2 /* THSubtitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4940DCA1B83270C0052B0A2 /* THSubtitleView.xib */; };
 		A4940DCE1B83270C0052B0A2 /* THSubtitleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DCC1B83270C0052B0A2 /* THSubtitleViewController.m */; };
 		A4940DD11B8327210052B0A2 /* NSTimer+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DD01B8327210052B0A2 /* NSTimer+Additions.m */; };
+		A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */; };
 		A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A61B453C3F0090E98A /* StoryElement.swift */; };
 		A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */; };
 		A4AAF6A61B8B4A3C006391DE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AAF6A41B8B4A3C006391DE /* Fabric.framework */; };
@@ -142,6 +143,7 @@
 		A4940DCC1B83270C0052B0A2 /* THSubtitleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THSubtitleViewController.m; sourceTree = "<group>"; };
 		A4940DCF1B8327210052B0A2 /* NSTimer+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Additions.h"; sourceTree = "<group>"; };
 		A4940DD01B8327210052B0A2 /* NSTimer+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+Additions.m"; sourceTree = "<group>"; };
+		A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		A4A5F7A61B453C3F0090E98A /* StoryElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElement.swift; sourceTree = "<group>"; };
 		A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4AAF6A41B8B4A3C006391DE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
 				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
+				A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */,
 				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
 				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
 				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
@@ -574,6 +577,7 @@
 				A4940DBD1B8324890052B0A2 /* AVAsset+THAdditions.m in Sources */,
 				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
 				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,
+				A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

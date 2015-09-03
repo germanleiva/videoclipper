@@ -128,7 +128,7 @@ static const NSString *PlayerItemStatusContext;
 				
 //                [self.player play];                                         // 5
 				
-                [self loadMediaOptions];
+//                [self loadMediaOptions];
                 [self generateThumbnails];
                 
             } else {
@@ -141,20 +141,20 @@ static const NSString *PlayerItemStatusContext;
     }
 }
 
-- (void)loadMediaOptions {
-    NSString *mc = AVMediaCharacteristicLegible;                            // 1
-    AVMediaSelectionGroup *group =
-        [self.asset mediaSelectionGroupForMediaCharacteristic:mc];          // 2
-    if (group) {
-        NSMutableArray *subtitles = [NSMutableArray array];                 // 3
-        for (AVMediaSelectionOption *option in group.options) {
-            [subtitles addObject:option.displayName];
-        }
-        [self.transport setSubtitles:subtitles];                            // 4
-    } else {
-        [self.transport setSubtitles:nil];
-    }
-}
+//- (void)loadMediaOptions {
+//    NSString *mc = AVMediaCharacteristicLegible;                            // 1
+//    AVMediaSelectionGroup *group =
+//        [self.asset mediaSelectionGroupForMediaCharacteristic:mc];          // 2
+//    if (group) {
+//        NSMutableArray *subtitles = [NSMutableArray array];                 // 3
+//        for (AVMediaSelectionOption *option in group.options) {
+//            [subtitles addObject:option.displayName];
+//        }
+//        [self.transport setSubtitles:subtitles];                            // 4
+//    } else {
+//        [self.transport setSubtitles:nil];
+//    }
+//}
 
 - (void)subtitleSelected:(NSString *)subtitle {
     NSString *mc = AVMediaCharacteristicLegible;

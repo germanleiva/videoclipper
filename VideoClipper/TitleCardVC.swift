@@ -212,8 +212,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let selectedTextWidgets = self.textWidgets.filter { (eachTextWidget) -> Bool in
 			return !eachTextWidget.leftHandler!.hidden
 		}
-
-		self.deleteTextWidget(selectedTextWidgets.first!)
+		
+		//There will be only one for now
+		for eachSelectedTextWidget in selectedTextWidgets {
+			self.deleteTextWidget(eachSelectedTextWidget)
+		}
 	}
 	
 	func deleteTextWidget(aTextWidget:TextWidgetStruct) {
@@ -525,6 +528,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.titleCard!.backgroundColor = color
 		
 		self.saveCanvas()
+	}
+	
+	override func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {
+		let canvasRect = self.view.convertRect(self.canvas!.frame, fromView:self.canvas)
+		return !CGRectContainsPoint(canvasRect, locationInView)
 	}
 	
 }

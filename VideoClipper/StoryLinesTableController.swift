@@ -171,26 +171,31 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 				print("Couldn't save the video on the photos album: \(errorOnSaving)")
 				return
 			}
-			let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-			//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
-			newVideo!.path = assetURL.absoluteString
-			newVideo!.asset = AVAsset(URL: assetURL)
-			
-			let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
-			elements.addObject(newVideo!)
-			
-			do {
-				defer {
-					//If we need a "finally"
-					
-				}
-				try self.context.save()
+			self.createNewVideoForAssetURL(assetURL)
+		}
+	}
+	
+	func createNewVideoForAssetURL(assetURL:NSURL) {
+		let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+		//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
+		newVideo!.path = assetURL.absoluteString
+		newVideo!.asset = AVAsset(URL: assetURL)
+		newVideo!.asset!.loadValuesAsynchronouslyForKeys(["duration","tracks"], completionHandler: nil)
+		
+		let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
+		elements.addObject(newVideo!)
+		
+		do {
+			defer {
+				//If we need a "finally"
 				
-				self.insertVideoElementInCurrentLine(newVideo)
-			} catch {
-				print("Couldn't save new video in the DB")
-				print(error)
 			}
+			try self.context.save()
+			
+			self.insertVideoElementInCurrentLine(newVideo)
+		} catch {
+			print("Couldn't save new video in the DB")
+			print(error)
 		}
 	}
 	

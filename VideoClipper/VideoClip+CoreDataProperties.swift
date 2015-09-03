@@ -16,5 +16,4 @@ extension VideoClip {
 
     @NSManaged var path: String?
     @NSManaged var thumbnail: NSData?
-
 }

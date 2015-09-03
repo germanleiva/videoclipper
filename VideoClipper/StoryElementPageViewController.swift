@@ -1,32 +1,20 @@
 //
-//  StoryElementVC.swift
+//  StoryElementPageViewController.swift
 //  VideoClipper
 //
-//  Created by German Leiva on 17/08/15.
+//  Created by German Leiva on 02/09/15.
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 
 import UIKit
 
-protocol StoryElementVCDelegate {
-	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement)
-}
+class StoryElementPageViewController: UIPageViewController, UIScrollViewDelegate {
 
-class StoryElementVC: UIViewController {
-	var element:StoryElement? = nil
-	var delegate:StoryElementVCDelegate? = nil
-	
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
 
     /*
     // MARK: - Navigation
@@ -37,8 +25,6 @@ class StoryElementVC: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-	func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {
-		preconditionFailure("This method must be overridden")
-	}
-
+	
+	
 }

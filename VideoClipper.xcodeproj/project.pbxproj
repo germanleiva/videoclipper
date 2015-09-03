@@ -13,6 +13,7 @@
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
+		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
@@ -58,6 +59,19 @@
 		A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */; };
 		A4D095B51B9094B1008F4316 /* colorPalette.plist in Resources */ = {isa = PBXBuildFile; fileRef = A4D095B41B9094B1008F4316 /* colorPalette.plist */; };
 		A4D095B71B90A3F4008F4316 /* TitleCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D095B61B90A3F4008F4316 /* TitleCard+CoreDataProperties.swift */; };
+		A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */; };
+		A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */; };
+		A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC41B973F0F00839F28 /* ELCAsset.m */; };
+		A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC61B973F0F00839F28 /* ELCAssetCell.m */; };
+		A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CCA1B973F0F00839F28 /* ELCAssetTablePicker.m */; };
+		A4DA9CDC1B973F0F00839F28 /* ELCConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CCC1B973F0F00839F28 /* ELCConsole.m */; };
+		A4DA9CDD1B973F0F00839F28 /* ELCImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CCE1B973F0F00839F28 /* ELCImagePickerController.m */; };
+		A4DA9CDE1B973F0F00839F28 /* ELCOverlayImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CD11B973F0F00839F28 /* ELCOverlayImageView.m */; };
+		A4DA9CDF1B973F0F00839F28 /* ELCAlbumPickerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD31B973F0F00839F28 /* ELCAlbumPickerController.xib */; };
+		A4DA9CE01B973F0F00839F28 /* ELCAssetPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD41B973F0F00839F28 /* ELCAssetPicker.xib */; };
+		A4DA9CE11B973F0F00839F28 /* ELCAssetTablePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD51B973F0F00839F28 /* ELCAssetTablePicker.xib */; };
+		A4DA9CE21B973F0F00839F28 /* Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD61B973F0F00839F28 /* Overlay.png */; };
+		A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD71B973F0F00839F28 /* Overlay@2x.png */; };
 		A4E759BB1B9083120076D250 /* SettingsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E759BA1B9083120076D250 /* SettingsTableController.swift */; };
 		A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */; };
 		A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46621B46B54100A12267 /* VideoVC.swift */; };
@@ -91,6 +105,7 @@
 		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
+		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -157,6 +172,29 @@
 		A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		A4D095B41B9094B1008F4316 /* colorPalette.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = colorPalette.plist; sourceTree = "<group>"; };
 		A4D095B61B90A3F4008F4316 /* TitleCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TitleCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementPageViewController.swift; sourceTree = "<group>"; };
+		A4DA9CC11B973F0F00839F28 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
+		A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAlbumPickerController.m; sourceTree = "<group>"; };
+		A4DA9CC31B973F0F00839F28 /* ELCAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAsset.h; sourceTree = "<group>"; };
+		A4DA9CC41B973F0F00839F28 /* ELCAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAsset.m; sourceTree = "<group>"; };
+		A4DA9CC51B973F0F00839F28 /* ELCAssetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetCell.h; sourceTree = "<group>"; };
+		A4DA9CC61B973F0F00839F28 /* ELCAssetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAssetCell.m; sourceTree = "<group>"; };
+		A4DA9CC71B973F0F00839F28 /* ELCAssetPickerFilterDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetPickerFilterDelegate.h; sourceTree = "<group>"; };
+		A4DA9CC81B973F0F00839F28 /* ELCAssetSelectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetSelectionDelegate.h; sourceTree = "<group>"; };
+		A4DA9CC91B973F0F00839F28 /* ELCAssetTablePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAssetTablePicker.h; sourceTree = "<group>"; };
+		A4DA9CCA1B973F0F00839F28 /* ELCAssetTablePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAssetTablePicker.m; sourceTree = "<group>"; };
+		A4DA9CCB1B973F0F00839F28 /* ELCConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCConsole.h; sourceTree = "<group>"; };
+		A4DA9CCC1B973F0F00839F28 /* ELCConsole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCConsole.m; sourceTree = "<group>"; };
+		A4DA9CCD1B973F0F00839F28 /* ELCImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCImagePickerController.h; sourceTree = "<group>"; };
+		A4DA9CCE1B973F0F00839F28 /* ELCImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCImagePickerController.m; sourceTree = "<group>"; };
+		A4DA9CCF1B973F0F00839F28 /* ELCImagePickerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCImagePickerHeader.h; sourceTree = "<group>"; };
+		A4DA9CD01B973F0F00839F28 /* ELCOverlayImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCOverlayImageView.h; sourceTree = "<group>"; };
+		A4DA9CD11B973F0F00839F28 /* ELCOverlayImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCOverlayImageView.m; sourceTree = "<group>"; };
+		A4DA9CD31B973F0F00839F28 /* ELCAlbumPickerController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAlbumPickerController.xib; sourceTree = "<group>"; };
+		A4DA9CD41B973F0F00839F28 /* ELCAssetPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAssetPicker.xib; sourceTree = "<group>"; };
+		A4DA9CD51B973F0F00839F28 /* ELCAssetTablePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ELCAssetTablePicker.xib; sourceTree = "<group>"; };
+		A4DA9CD61B973F0F00839F28 /* Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Overlay.png; sourceTree = "<group>"; };
+		A4DA9CD71B973F0F00839F28 /* Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Overlay@2x.png"; sourceTree = "<group>"; };
 		A4E759BA1B9083120076D250 /* SettingsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableController.swift; sourceTree = "<group>"; };
 		A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationPickerController.swift; sourceTree = "<group>"; };
 		A4FF46621B46B54100A12267 /* VideoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoVC.swift; sourceTree = "<group>"; };
@@ -236,6 +274,7 @@
 		A4664AB81B444BA80095B27D /* VideoClipper */ = {
 			isa = PBXGroup;
 			children = (
+				A4DA9CC01B973F0F00839F28 /* ELCImagePicker */,
 				A404A52B1B81189800B82B29 /* THFoundation */,
 				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
 				A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */,
@@ -256,10 +295,12 @@
 				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
 				A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */,
+				A44121111B96048500BBB020 /* FilmstripView.swift */,
 				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
 				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
 				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
+				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -380,6 +421,43 @@
 			path = MBProgressHUD;
 			sourceTree = "<group>";
 		};
+		A4DA9CC01B973F0F00839F28 /* ELCImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				A4DA9CC11B973F0F00839F28 /* ELCAlbumPickerController.h */,
+				A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */,
+				A4DA9CC31B973F0F00839F28 /* ELCAsset.h */,
+				A4DA9CC41B973F0F00839F28 /* ELCAsset.m */,
+				A4DA9CC51B973F0F00839F28 /* ELCAssetCell.h */,
+				A4DA9CC61B973F0F00839F28 /* ELCAssetCell.m */,
+				A4DA9CC71B973F0F00839F28 /* ELCAssetPickerFilterDelegate.h */,
+				A4DA9CC81B973F0F00839F28 /* ELCAssetSelectionDelegate.h */,
+				A4DA9CC91B973F0F00839F28 /* ELCAssetTablePicker.h */,
+				A4DA9CCA1B973F0F00839F28 /* ELCAssetTablePicker.m */,
+				A4DA9CCB1B973F0F00839F28 /* ELCConsole.h */,
+				A4DA9CCC1B973F0F00839F28 /* ELCConsole.m */,
+				A4DA9CCD1B973F0F00839F28 /* ELCImagePickerController.h */,
+				A4DA9CCE1B973F0F00839F28 /* ELCImagePickerController.m */,
+				A4DA9CCF1B973F0F00839F28 /* ELCImagePickerHeader.h */,
+				A4DA9CD01B973F0F00839F28 /* ELCOverlayImageView.h */,
+				A4DA9CD11B973F0F00839F28 /* ELCOverlayImageView.m */,
+				A4DA9CD21B973F0F00839F28 /* Resources */,
+			);
+			path = ELCImagePicker;
+			sourceTree = "<group>";
+		};
+		A4DA9CD21B973F0F00839F28 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A4DA9CD31B973F0F00839F28 /* ELCAlbumPickerController.xib */,
+				A4DA9CD41B973F0F00839F28 /* ELCAssetPicker.xib */,
+				A4DA9CD51B973F0F00839F28 /* ELCAssetTablePicker.xib */,
+				A4DA9CD61B973F0F00839F28 /* Overlay.png */,
+				A4DA9CD71B973F0F00839F28 /* Overlay@2x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -488,8 +566,13 @@
 			files = (
 				A4664AC71B444BA80095B27D /* LaunchScreen.storyboard in Resources */,
 				A4664AC41B444BA80095B27D /* Assets.xcassets in Resources */,
+				A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */,
 				A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */,
 				A4940DBA1B8324590052B0A2 /* THOverlayView.xib in Resources */,
+				A4DA9CDF1B973F0F00839F28 /* ELCAlbumPickerController.xib in Resources */,
+				A4DA9CE01B973F0F00839F28 /* ELCAssetPicker.xib in Resources */,
+				A4DA9CE21B973F0F00839F28 /* Overlay.png in Resources */,
+				A4DA9CE11B973F0F00839F28 /* ELCAssetTablePicker.xib in Resources */,
 				A4D095B51B9094B1008F4316 /* colorPalette.plist in Resources */,
 				A4940DCD1B83270C0052B0A2 /* THSubtitleView.xib in Resources */,
 			);
@@ -535,20 +618,27 @@
 				A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */,
 				A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */,
 				A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */,
+				A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */,
 				A4940DC61B8324D80052B0A2 /* THNotifications.m in Sources */,
 				A4940DCE1B83270C0052B0A2 /* THSubtitleViewController.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
+				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
+				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
 				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
 				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
+				A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */,
 				A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */,
 				A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */,
+				A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,
 				A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */,
+				A4DA9CDC1B973F0F00839F28 /* ELCConsole.m in Sources */,
 				A4CECB731B9464A100D8B342 /* AAPLTimedAnnotationWriter.m in Sources */,
+				A4DA9CDE1B973F0F00839F28 /* ELCOverlayImageView.m in Sources */,
 				A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */,
 				A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */,
 				A4D095B71B90A3F4008F4316 /* TitleCard+CoreDataProperties.swift in Sources */,
@@ -563,6 +653,8 @@
 				A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */,
 				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
 				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
+				A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */,
+				A4DA9CDD1B973F0F00839F28 /* ELCImagePickerController.m in Sources */,
 				A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */,
 				A4940DB91B8324590052B0A2 /* THOverlayView.m in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,

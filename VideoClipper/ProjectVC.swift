@@ -9,8 +9,11 @@
 import UIKit
 import CoreData
 import AVKit
+import AssetsLibrary
+import Photos
+import MobileCoreServices
 
-class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate {
+class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate, ELCImagePickerControllerDelegate {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
 	var secondaryController:SecondaryViewController?
@@ -82,10 +85,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
 		}
 
-		let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
-		let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
-		
-		self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
+		if !self.tableController!.isCompact {
+			let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
+			let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
+			
+			self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
+		}
 	}
 	
 	func tapOnPrimaryView(recognizer:UITapGestureRecognizer) {
@@ -313,8 +318,74 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.recordTappedOnSelectedLine(sender)
 	}
 	
+	@IBAction func importForLineTapped(sender:AnyObject?) {
+		print("Long press selector triggered")
+		
+		
+		let picker = ELCImagePickerController(imagePicker: ())
+		
+				
+		picker.maximumImagesCount = 100 //Set the maximum number of images to select to 100
+		picker.returnsOriginalImage = true //Only return the fullScreenImage, not the fullResolutionImage
+		picker.returnsImage = true //Return UIimage if YES. If NO, only return asset location information
+		picker.onOrder = true //For multiple image selection, display and return order of selected images
+		picker.mediaTypes = [kUTTypeMovie] //Support only movie types
+					
+		picker.imagePickerDelegate = self
+		
+//		let picker = UIImagePickerController()
+//		picker.delegate = self
+//		picker.allowsEditing = false
+//		picker.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+//		picker.mediaTypes = [String(kUTTypeMovie)]
+//		picker.videoQuality = UIImagePickerControllerQualityType.TypeIFrame1280x720
+
+		self.presentViewController(picker, animated: true, completion: nil)
+	}
+	
+	func elcImagePickerController(picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [AnyObject]!) {
+		picker.dismissViewControllerAnimated(true, completion: nil)
+
+		for dict in info as! [[String:AnyObject]] {
+			if dict[UIImagePickerControllerMediaType] as! String == ALAssetTypeVideo {
+				let fileURL = dict[UIImagePickerControllerReferenceURL] as! NSURL
+//				let pathString = fileURL.relativePath!
+
+//				self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
+				self.tableController!.createNewVideoForAssetURL(fileURL)
+
+				print(dict)
+			}
+		}
+	}
+	
+	func elcImagePickerControllerDidCancel(picker: ELCImagePickerController!) {
+		picker.dismissViewControllerAnimated(true, completion: nil)
+	}
+	
+	//MARK: imagePickerControllerDelegate
+	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+		let fileURL = info[UIImagePickerControllerMediaURL] as! NSURL
+		let pathString = fileURL.relativePath!
+//		let library = ALAssetsLibrary()
+		
+//		library.assetForURL(NSURL(fileURLWithPath: pathString), resultBlock: { (alAsset) -> Void in
+//			let representation = alAsset.defaultRepresentation()
+		picker.dismissViewControllerAnimated(true, completion: nil)
+
+			self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
+
+//			}) { (error) -> Void in
+//				print("Couldn't open Asset from Photo Album: \(error)")
+//				picker.dismissViewControllerAnimated(true, completion: nil)
+//		}
+		
+	}
+	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+		picker.dismissViewControllerAnimated(true, completion: nil)
+	}
+	
 	@IBAction func playForLineTapped(sender:AnyObject?) {
 		self.tableController!.playTappedOnSelectedLine(sender)
 	}
-
 }

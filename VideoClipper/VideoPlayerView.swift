@@ -23,11 +23,14 @@ class VideoPlayerView: UIView {
 	}
 	
 	var player: AVPlayer {
-		let playerLayer = layer as! AVPlayerLayer
-		if playerLayer.player == nil {
-			playerLayer.player = AVPlayer()
+		get {
+			let playerLayer = layer as! AVPlayerLayer
+			return playerLayer.player!
 		}
-		return playerLayer.player!
+		set(newValue) {
+			let playerLayer = layer as! AVPlayerLayer
+			playerLayer.player = newValue
+		}
 	}
 
 }

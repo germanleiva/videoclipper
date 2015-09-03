@@ -18,9 +18,13 @@ protocol SecondaryViewControllerDelegate : NSObjectProtocol {
 class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, StoryElementVCDelegate, UIGestureRecognizerDelegate {
 	var pageViewController:UIPageViewController?
 	var delegate:SecondaryViewControllerDelegate? = nil
-	var swipeGesture:UISwipeGestureRecognizer? = nil
 
-	var currentIndex = 0
+	var currentIndex = 0 {
+		didSet {
+			self.pageControl.currentPage = self.currentIndex
+		}
+	}
+	@IBOutlet var pageControl:UIPageControl!
 	
 //	var nextIndex:Int = 0
 	private var _line: StoryLine? = nil
@@ -55,6 +59,7 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 					}
 					
 					self.pageViewController?.setViewControllers([self.viewControllers.first!], direction: .Forward, animated: false, completion: nil)
+					self.pageControl.numberOfPages = self.viewControllers.count
 				}
 //			}
 		}
@@ -80,27 +85,57 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		layer.shadowPath = UIBezierPath(rect: layer.bounds).CGPath
 		
 //		self.view.clipsToBounds = false
-		self.swipeGesture = UISwipeGestureRecognizer(target: self, action: "swipedRight:");
-		self.swipeGesture!.direction = UISwipeGestureRecognizerDirection.Right
-		self.swipeGesture!.numberOfTouchesRequired = 1
-		self.swipeGesture!.delegate = self
-		self.view.addGestureRecognizer(self.swipeGesture!)
+		let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: "swipedRight:")
+		swipeRightGesture.direction = UISwipeGestureRecognizerDirection.Right
+		swipeRightGesture.numberOfTouchesRequired = 1
+		swipeRightGesture.delegate = self
+		self.view.addGestureRecognizer(swipeRightGesture)
 		
+		let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: "swipedLeft:")
+		swipeLeftGesture.direction = UISwipeGestureRecognizerDirection.Left
+		swipeLeftGesture.numberOfTouchesRequired = 1
+		swipeLeftGesture.delegate = self
+		self.view.addGestureRecognizer(swipeLeftGesture)
     }
 	
+	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+		let currentVC = self.viewControllerAtIndex(self.currentIndex)
+		return currentVC.shouldRecognizeSwiping(gestureRecognizer.locationInView(currentVC.view))
+	}
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-		if gestureRecognizer == self.swipeGesture! {
-			let firstPageVC = self.viewControllerAtIndex(0) as! TitleCardVC
-			let canvasRect = self.view.convertRect(firstPageVC.canvas!.frame, fromView:firstPageVC.canvas)
-			return self.currentIndex == 0 && !CGRectContainsPoint(canvasRect, gestureRecognizer.locationInView(self.view))
+		return false
+	}
+	
+	@IBAction func pageControlValueChanged(sender:UIPageControl) {
+		if sender.currentPage > self.currentIndex {
+			self.swipedLeft(nil)
 		} else {
-			print("WAT?")
-			return true
+			self.swipedRight(nil)
 		}
 	}
 	
-	func swipedRight(sender:UISwipeGestureRecognizer) {
-		self.delegate?.secondaryViewController(self, didReachLeftMargin: self.currentIndex)
+	func swipedRight(sender:UISwipeGestureRecognizer?) {
+		let currentVC = self.viewControllerAtIndex(self.currentIndex)
+		if let leftVC = self.pageViewController(self.pageViewController!, viewControllerBeforeViewController: currentVC) {
+			self.pageViewController!.setViewControllers([leftVC], direction: UIPageViewControllerNavigationDirection.Reverse, animated: true, completion: { (finished) -> Void in
+				self.updateCurrentIndex()
+				print("Current index \(self.currentIndex)")
+			})
+		} else {
+			if self.currentIndex == 0 {
+				self.delegate?.secondaryViewController(self, didReachLeftMargin: self.currentIndex)
+			}
+		}
+	}
+	
+	func swipedLeft(sender:UISwipeGestureRecognizer?) {
+		let currentVC = self.viewControllerAtIndex(self.currentIndex)
+		if let rightVC = self.pageViewController(self.pageViewController!, viewControllerAfterViewController: currentVC) {
+			self.pageViewController!.setViewControllers([rightVC], direction: UIPageViewControllerNavigationDirection.Forward, animated: true, completion: { (finished) -> Void in
+				self.updateCurrentIndex()
+				print("Current index \(self.currentIndex)")
+			})
+		}
 	}
 
     override func didReceiveMemoryWarning() {
@@ -130,8 +165,14 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		
 		if segue.identifier == "pageControllerSegue" {
 			self.pageViewController = segue.destinationViewController as? UIPageViewController
-			self.pageViewController!.dataSource = self
+//			self.pageViewController!.dataSource = self
 			self.pageViewController!.delegate = self
+			
+			for view in self.pageViewController!.view!.subviews {
+				if view.isKindOfClass(UIScrollView.self) {
+					(view as! UIScrollView).scrollEnabled = false
+				}
+			}
 		}
     }
 	
@@ -160,25 +201,25 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		return self.viewControllers[nextIndex]
 	}
 
+	//not used
 	func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
 		return self.viewControllers.count
 	}
 	
+	//not used
 	func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
 		return self.currentIndex
 	}
-	
-//	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
-//		self.nextIndex = self.indexOfViewController(pendingViewControllers.first!)!
-//	}
-	
+
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
 		if completed {
-//			self.currentIndex = 0
-			let currentVC = self.pageViewController?.viewControllers?.first as! StoryElementVC
-			self.currentIndex = self.indexOfViewController(currentVC)!
-			self.delegate?.secondaryViewController(self, didShowStoryElement: currentVC.element!)
+			updateCurrentIndex()
 		}
-//		self.nextIndex = 0
+	}
+	
+	func updateCurrentIndex(){
+		let currentVC = self.pageViewController?.viewControllers?.first as! StoryElementVC
+		self.currentIndex = self.indexOfViewController(currentVC)!
+		self.delegate?.secondaryViewController(self, didShowStoryElement: currentVC.element!)
 	}
 }

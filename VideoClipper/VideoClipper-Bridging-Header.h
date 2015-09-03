@@ -6,8 +6,10 @@
 #import "VideoHelper.h"
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"
 #import "MBProgressHUD.h"
+#import "ELCImagePickerController.h"
 
 #import "AVPlayerItem+THAdditions.h"
 
 #import "THPlayerController.h"
+#import "THThumbnail.h"
 #import "AAPLTimedAnnotationWriter.h"

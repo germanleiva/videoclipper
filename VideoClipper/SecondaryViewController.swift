@@ -119,7 +119,6 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		if let leftVC = self.pageViewController(self.pageViewController!, viewControllerBeforeViewController: currentVC) {
 			self.pageViewController!.setViewControllers([leftVC], direction: UIPageViewControllerNavigationDirection.Reverse, animated: true, completion: { (finished) -> Void in
 				self.updateCurrentIndex()
-				print("Current index \(self.currentIndex)")
 			})
 		} else {
 			if self.currentIndex == 0 {
@@ -133,7 +132,6 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		if let rightVC = self.pageViewController(self.pageViewController!, viewControllerAfterViewController: currentVC) {
 			self.pageViewController!.setViewControllers([rightVC], direction: UIPageViewControllerNavigationDirection.Forward, animated: true, completion: { (finished) -> Void in
 				self.updateCurrentIndex()
-				print("Current index \(self.currentIndex)")
 			})
 		}
 	}

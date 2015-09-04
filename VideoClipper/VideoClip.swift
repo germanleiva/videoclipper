@@ -29,4 +29,15 @@ class VideoClip: StoryElement {
 			}
 		}
 	}
+	
+	
+	func findById(id:Int)->TagMark? {
+		let results = self.tags!.filter { (eachTag) -> Bool in
+			return (eachTag as! TagMark).objectID.hash == id
+		}
+		if !results.isEmpty {
+			return results.first as? TagMark
+		}
+		return nil
+	}
 }

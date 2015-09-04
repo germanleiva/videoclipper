@@ -1,5 +1,5 @@
 //
-//  VideoClip+CoreDataProperties.swift
+//  TagMark+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 03/09/15.
@@ -12,10 +12,10 @@
 import Foundation
 import CoreData
 
-extension VideoClip {
+extension TagMark {
 
-    @NSManaged var path: String?
-    @NSManaged var thumbnail: NSData?
-    @NSManaged var tags: NSOrderedSet?
+    @NSManaged var time: NSNumber?
+    @NSManaged var color: NSObject?
+    @NSManaged var video: VideoClip?
 
 }

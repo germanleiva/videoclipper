@@ -35,6 +35,8 @@
 		A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */; };
 		A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* TextWidget.swift */; };
 		A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */; };
+		A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B161B9C5F240091D607 /* KPCameraButton.m */; };
+		A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B181B9C63A10091D607 /* CaptureVC.swift */; };
 		A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DA91B83229B0052B0A2 /* THPlayerController.m */; };
 		A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DAF1B8322C80052B0A2 /* THThumbnail.m */; };
 		A4940DB51B8324400052B0A2 /* THPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DB41B8324400052B0A2 /* THPlayerView.m */; };
@@ -137,6 +139,9 @@
 		A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TextWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A481EFD21B5D42940051ED93 /* TextWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextWidget.swift; sourceTree = "<group>"; };
 		A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondaryViewController.swift; sourceTree = "<group>"; };
+		A48F8B151B9C5F240091D607 /* KPCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPCameraButton.h; sourceTree = "<group>"; };
+		A48F8B161B9C5F240091D607 /* KPCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPCameraButton.m; sourceTree = "<group>"; };
+		A48F8B181B9C63A10091D607 /* CaptureVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureVC.swift; sourceTree = "<group>"; };
 		A4940DA81B83229B0052B0A2 /* THPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THPlayerController.h; sourceTree = "<group>"; };
 		A4940DA91B83229B0052B0A2 /* THPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THPlayerController.m; sourceTree = "<group>"; };
 		A4940DAE1B8322C80052B0A2 /* THThumbnail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THThumbnail.h; sourceTree = "<group>"; };
@@ -278,6 +283,7 @@
 		A4664AB81B444BA80095B27D /* VideoClipper */ = {
 			isa = PBXGroup;
 			children = (
+				A48F8B141B9C5F180091D607 /* KPCCameraButton */,
 				A4DA9CC01B973F0F00839F28 /* ELCImagePicker */,
 				A404A52B1B81189800B82B29 /* THFoundation */,
 				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
@@ -305,6 +311,7 @@
 				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
 				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
+				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -353,6 +360,15 @@
 				A4F057AC1B98A42E008FB9D0 /* TagMark.swift */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		A48F8B141B9C5F180091D607 /* KPCCameraButton */ = {
+			isa = PBXGroup;
+			children = (
+				A48F8B151B9C5F240091D607 /* KPCameraButton.h */,
+				A48F8B161B9C5F240091D607 /* KPCameraButton.m */,
+			);
+			name = KPCCameraButton;
 			sourceTree = "<group>";
 		};
 		A4940DAB1B83229F0052B0A2 /* VideoPlayer */ = {
@@ -636,8 +652,10 @@
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
 				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
 				A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */,
+				A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */,
 				A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */,
 				A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */,
+				A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */,
 				A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,

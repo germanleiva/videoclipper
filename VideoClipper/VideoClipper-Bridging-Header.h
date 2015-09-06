@@ -7,6 +7,7 @@
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"
 #import "MBProgressHUD.h"
 #import "ELCImagePickerController.h"
+#import "KPCameraButton.h"
 
 #import "AVPlayerItem+THAdditions.h"
 

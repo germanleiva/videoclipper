@@ -535,8 +535,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8nt-VJ-yhx">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="131" width="600" height="338"/>
                                 <color key="backgroundColor" red="0.98730026545308647" green="1" blue="0.37865547588076887" alpha="1" colorSpace="calibratedRGB"/>
+                                <gestureRecognizers/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="8nt-VJ-yhx" secondAttribute="height" multiplier="16:9" id="OTb-Pp-bhw"/>
+                                </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="7IG-Pb-jzD" appends="YES" id="rEC-Qj-Jgl"/>
+                                </connections>
                             </view>
                             <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jm3-Ha-A9m">
                                 <rect key="frame" x="500" y="0.0" width="100" height="600"/>
@@ -637,11 +644,11 @@
                                 </variation>
                             </view>
                             <view alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Qm-ze-Rsp">
-                                <rect key="frame" x="5" y="8" width="182" height="128"/>
+                                <rect key="frame" x="68" y="40" width="39" height="75"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstAttribute="trailing" secondItem="cAE-1c-Yb9" secondAttribute="trailing" constant="10" id="Cnn-K1-Dil"/>
@@ -650,13 +657,19 @@
                             <constraint firstAttribute="trailing" secondItem="8nt-VJ-yhx" secondAttribute="trailing" id="GLK-FI-OFz"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="HcS-li-IpB"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="Pro-kz-D5c"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="jm3-Ha-A9m" secondAttribute="bottom" id="Qf4-w6-NAg"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="W68-gH-TEL"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerY" secondItem="hDy-EF-rcF" secondAttribute="centerY" id="aXc-wr-QEM"/>
                             <constraint firstItem="MPX-Zb-VS1" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="cN8-si-tE5"/>
+                            <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="cQZ-WO-aXm"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="dwb-19-Lxp"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" constant="100" id="efW-Fa-Abc"/>
                             <constraint firstAttribute="trailing" secondItem="jm3-Ha-A9m" secondAttribute="trailing" id="gPU-cN-IrY"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="iFl-z6-Yt9"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="width" secondItem="hDy-EF-rcF" secondAttribute="width" id="iVA-FQ-MXJ"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="MPX-Zb-VS1" secondAttribute="bottom" id="jPr-De-rIt"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="height" secondItem="hDy-EF-rcF" secondAttribute="height" id="jyZ-nM-fJs"/>
                             <constraint firstItem="MPX-Zb-VS1" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="n3g-PN-9p0"/>
                             <constraint firstItem="fMb-3u-ivD" firstAttribute="top" secondItem="cAE-1c-Yb9" secondAttribute="bottom" constant="80" id="oif-KU-6Rv"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerX" secondItem="h8j-WV-yjo" secondAttribute="centerX" id="oyb-Ct-hya"/>
@@ -667,9 +680,16 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="GLK-FI-OFz"/>
+                                <exclude reference="HcS-li-IpB"/>
+                                <exclude reference="W68-gH-TEL"/>
+                                <exclude reference="jyZ-nM-fJs"/>
+                                <exclude reference="pqy-PL-EGR"/>
                                 <exclude reference="oyb-Ct-hya"/>
                                 <exclude reference="s9E-h6-aM7"/>
                                 <exclude reference="wgR-Jx-uC2"/>
+                                <exclude reference="cQZ-WO-aXm"/>
+                                <exclude reference="dwb-19-Lxp"/>
                             </mask>
                         </variation>
                     </view>
@@ -678,17 +698,24 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="ghostButton" destination="fMb-3u-ivD" id="vmf-ac-qpt"/>
                         <outlet property="leftPanel" destination="MPX-Zb-VS1" id="one-tt-orb"/>
+                        <outlet property="previewView" destination="8nt-VJ-yhx" id="EH2-Uo-Hy7"/>
+                        <outlet property="previewViewWidthConstraint" destination="iVA-FQ-MXJ" id="4sf-dW-dwK"/>
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>
                         <outlet property="shutterButton" destination="cAE-1c-Yb9" id="BkS-Sz-Qr7"/>
                         <outlet property="shutterLock" destination="bgI-zh-lHz" id="rrB-jo-3vm"/>
                         <outlet property="videoClipThumbnail" destination="9Qm-ze-Rsp" id="9co-gP-txs"/>
-                        <outlet property="videoLayer" destination="8nt-VJ-yhx" id="H9I-qL-iXV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuf-Mm-ONK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="7IG-Pb-jzD">
+                    <connections>
+                        <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3136" y="470"/>
         </scene>

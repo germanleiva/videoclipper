@@ -8,6 +8,7 @@
 #import "MBProgressHUD.h"
 #import "ELCImagePickerController.h"
 #import "KPCameraButton.h"
+#import "PBJVision.h"
 
 #import "AVPlayerItem+THAdditions.h"
 

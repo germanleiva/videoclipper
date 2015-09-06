@@ -38,7 +38,7 @@ protocol PrimaryControllerDelegate {
 	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?, line:StoryLine?, lineIndexPath: NSIndexPath?)
 }
 
-class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate {
+class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
 	var project:Project? = nil
 	var selectedItemPath:NSIndexPath?
 	var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
@@ -116,7 +116,26 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, U
 		}
 	}
 	
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String) {
+		let library = ALAssetsLibrary()
+		let pathURL = NSURL(fileURLWithPath: pathString)
+		
+		//		library.saveVideo is used to save on an album
+		library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
+			if errorOnSaving != nil {
+				print("Couldn't save the video on the photos album: \(errorOnSaving)")
+				return
+			}
+			self.createNewVideoForAssetURL(assetURL)
+		}
+	}
+	
 	func recordTappedOnSelectedLine(sender:AnyObject?) {
+		let captureController = self.storyboard!.instantiateViewControllerWithIdentifier("captureController") as! CaptureVC
+		captureController.delegate = self
+		self.presentViewController(captureController, animated: true, completion: nil)
+		return
+		
 		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
 			print("captureVideoPressed and camera available.")
 			

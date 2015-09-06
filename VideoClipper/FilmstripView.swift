@@ -31,7 +31,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		}
 	}*/
 	
-	var thumbnails = [THThumbnail]()
+	var thumbnails = [Thumbnail]()
 	var panGesture:UIPanGestureRecognizer? = nil
 	@IBOutlet var scrubber:UIView!
 
@@ -160,14 +160,14 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		}
 		
 		var imageCount = times.count
-		var images = [THThumbnail]()
+		var images = [Thumbnail]()
 		var errorFound = false
 		
 		imageGenerator.generateCGImagesAsynchronouslyForTimes(times) { (requestedTime, imageRef, actualTime, result, error) -> Void in
 			if result == AVAssetImageGeneratorResult.Succeeded {
 				let image = UIImage(CGImage: imageRef!)
 				
-				let thumbnail = THThumbnail(image:image,time:actualTime)
+				let thumbnail = Thumbnail(image:image,time:actualTime)
 				images.append(thumbnail)
 			} else {
 				print("Error: \(error!.localizedDescription)")

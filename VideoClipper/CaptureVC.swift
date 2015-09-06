@@ -10,6 +10,12 @@ import UIKit
 import GLKit
 
 let keyShutterLockEnabled = "shutterLockEnabled"
+let keyGhostDisabled = "keyGhostDisabled"
+let keyExpandedCaptureEnabled = "keyExpandedCaptureEnabled"
+
+protocol CaptureVCDelegate {
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String)
+}
 
 class CaptureVC: UIViewController, PBJVisionDelegate {
 	var isRecording = false
@@ -33,13 +39,23 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	var previewViewHeightConstraint:NSLayoutConstraint? = nil
 	@IBOutlet var previewViewWidthConstraint:NSLayoutConstraint!
 	var shouldUpdatePreviewLayerFrame = false
+	
+	var delegate:CaptureVCDelegate? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
 		let defaults = NSUserDefaults.standardUserDefaults()
-		self.shutterLock!.on = defaults.boolForKey(keyShutterLockEnabled)
+		self.shutterLock.on = defaults.boolForKey(keyShutterLockEnabled)
+		
+		if defaults.boolForKey(keyExpandedCaptureEnabled) {
+			self.expandPreview()
+		}
+		
+		if !defaults.boolForKey(keyGhostDisabled) {
+			self.ghostPressed(self.ghostButton)
+		}
 		
 		self.updateShutterLabel(self.shutterLock!.on)
 		
@@ -48,46 +64,46 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		self.recordingIndicator.layer.cornerRadius = self.recordingIndicator.frame.size.width / 2
 		self.recordingIndicator.layer.masksToBounds = true
-    }
+	}
 	
-	func toggleCaptureView(shouldShow:Bool) {
-		if shouldShow {
-			UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				self.leftPanel.alpha = 0
-				self.rightPanel.alpha = 0
-				}, completion: { (completed) -> Void in
+	func captureModeOn() {
+		UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			self.leftPanel.alpha = 0
+			self.rightPanel.alpha = 0
+			}, completion: { (completed) -> Void in
+				self.recordingIndicator.alpha = 0
+				
+				let options:UIViewAnimationOptions = [.Autoreverse,.Repeat]
+				//						self.previewView.backgroundColor = UIColor.orangeColor()
+				UIView.animateWithDuration(0.5, delay: 0, options: options, animations: { () -> Void in
+					self.recordingIndicator.alpha = 1.0
+					}, completion: nil)
+		})
+	}
+	
+	func captureModeOff(){
+		let copiedView = self.previewView.snapshotViewAfterScreenUpdates(true)
+		self.view.insertSubview(copiedView, aboveSubview: self.leftPanel)
+		
+		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			copiedView.frame = self.videoClipThumbnail.frame
+			}, completion: { (completed) -> Void in
+				UIView.animateWithDuration(0.3, delay: 1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+					copiedView.alpha = 0
+					}, completion: { (finished) -> Void in
+						copiedView.removeFromSuperview()
+				})
+				
+				UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+					self.leftPanel.alpha = 0.7
+					self.rightPanel.alpha = 0.7
 					self.recordingIndicator.alpha = 0
 					
-					let options:UIViewAnimationOptions = [.Autoreverse,.Repeat]
-					//						self.previewView.backgroundColor = UIColor.orangeColor()
-					UIView.animateWithDuration(0.5, delay: 0, options: options, animations: { () -> Void in
-						self.recordingIndicator.alpha = 1.0
-						}, completion: nil)
-			})
-		} else {
-			let copiedView = self.previewView.snapshotViewAfterScreenUpdates(true)
-			self.view.insertSubview(copiedView, aboveSubview: self.leftPanel)
-			
-			UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				copiedView.frame = self.videoClipThumbnail.frame
-				}, completion: { (completed) -> Void in
-					UIView.animateWithDuration(0.3, delay: 1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-						copiedView.alpha = 0
-						}, completion: { (finished) -> Void in
-							copiedView.removeFromSuperview()
-					})
-					
-					UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-						self.leftPanel.alpha = 0.7
-						self.rightPanel.alpha = 0.7
-						self.recordingIndicator.alpha = 0
-						
-						}, completion: { (completed) -> Void in
-							self.recordingIndicator.layer.removeAllAnimations()
-					})
-					
-			})
-		}
+					}, completion: { (completed) -> Void in
+						self.recordingIndicator.layer.removeAllAnimations()
+				})
+				
+		})
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -145,37 +161,56 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		}
 	}
 	
-	@IBAction func doubleTapOnPreviewView(recognizer:UITapGestureRecognizer) {
+	@IBAction func doubleTapOnPreviewView(recognizer:UITapGestureRecognizer?) {
+		let defaults = NSUserDefaults.standardUserDefaults()
 		if self.previewViewHeightConstraint == nil || self.previewViewWidthConstraint.active {
-			if self.previewViewHeightConstraint == nil {
-				self.previewViewHeightConstraint = NSLayoutConstraint(item: self.previewView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0)
-				self.view.addConstraint(self.previewViewHeightConstraint!)
-			} else {
-				self.previewViewHeightConstraint!.active = true
-			}
-			self.previewViewWidthConstraint.active = false
+			self.expandPreview()
+			defaults.setBool(true, forKey: keyExpandedCaptureEnabled)
 		} else {
 			self.previewViewHeightConstraint!.active = false
 			self.previewViewWidthConstraint.active = true
+			
+			defaults.setBool(false, forKey: keyExpandedCaptureEnabled)
 		}
+		defaults.synchronize()
 		self.shouldUpdatePreviewLayerFrame = true
+	}
+	
+	func expandPreview() {
+		if self.previewViewHeightConstraint == nil {
+			self.previewViewHeightConstraint = NSLayoutConstraint(item: self.previewView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0)
+			self.view.addConstraint(self.previewViewHeightConstraint!)
+		} else {
+			self.previewViewHeightConstraint!.active = true
+		}
+		self.previewViewWidthConstraint.active = false
 	}
 
 	@IBAction func donePressed(sender:UIButton) {
+//		let window = UIApplication.sharedApplication().delegate!.window!
+//
+//		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
+
+		self.endCapture()
 		self.dismissViewControllerAnimated(true, completion: nil)
 	}
 	
 	@IBAction func ghostPressed(sender: UIButton) {
 		sender.selected = !sender.selected
+		
+		let defaults = NSUserDefaults.standardUserDefaults()
+		defaults.setBool(!sender.selected, forKey: keyGhostDisabled)
+		defaults.synchronize()
+		
 		var ghostTintColor = UIColor.whiteColor()
 		if sender.selected {
 			ghostTintColor = self.shutterButton.tintColor
 		}
 		UIView.animateWithDuration(0.2) { () -> Void in
-			sender.tintColor = ghostTintColor
+			self.ghostButton.tintColor = ghostTintColor
 		}
 		
-		if (self.isRecording/*_recording*/) {
+		if (self.isRecording) {
 			self.effectsViewController!.view.hidden = !sender.selected;
 		}
 	}
@@ -199,6 +234,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			} else {
 				self.resumeCapture()
 			}
+			captureModeOn()
 		}
 	}
 	
@@ -214,15 +250,18 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 				} else {
 					self.resumeCapture()
 				}
+				captureModeOn()
 			} else {
 				self.shutterButton.setTitle("Tap", forState: UIControlState.Normal)
 				self.shutterButton.cameraButtonMode = .VideoReady
 //				self.isRecording = false
 				self.pauseCapture()
+				captureModeOff()
 			}
 		} else {
 //			self.isRecording = false
 			self.pauseCapture()
+			captureModeOff()
 		}
 	}
 	
@@ -286,7 +325,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		vision.focusMode = PBJFocusMode.ContinuousAutoFocus
 		vision.outputFormat = PBJOutputFormat.Widescreen
 		vision.videoRenderingEnabled = true
-		vision.additionalCompressionProperties = [AVVideoProfileLevelKey : AVVideoProfileLevelH264Baseline30] // AVVideoProfileLevelKey requires specific captureSessionPreset
+		vision.captureSessionPreset = AVCaptureSessionPreset1920x1080
+		vision.additionalCompressionProperties = [AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel] // AVVideoProfileLevelKey requires specific captureSessionPreset
 		
 		// specify a maximum duration with the following property
 		// vision.maximumCaptureDuration = CMTimeMakeWithSeconds(5, 600); // ~ 5 seconds
@@ -464,11 +504,10 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		self.currentVideo = videoDict
 		
-		let videoPath = self.currentVideo![PBJVisionVideoPathKey]
+		let videoPath = self.currentVideo![PBJVisionVideoPathKey] as! String
 		
-		print("WTF \(videoPath)")
-		print("")
 		
+		self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: videoPath)
 		//
 		//	if (error && [error.domain isEqual:PBJVisionErrorDomain] && error.code == PBJVisionErrorCancelled) {
 		//	NSLog(@"recording session cancelled");

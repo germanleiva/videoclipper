@@ -10,8 +10,8 @@
 #import "KPCameraButton.h"
 #import "PBJVision.h"
 
-#import "AVPlayerItem+THAdditions.h"
+//#import "AVPlayerItem+THAdditions.h"
 
-#import "THPlayerController.h"
-#import "THThumbnail.h"
+//#import "THPlayerController.h"
+//#import "THThumbnail.h"
 #import "AAPLTimedAnnotationWriter.h"

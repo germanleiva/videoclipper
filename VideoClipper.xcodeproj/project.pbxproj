@@ -37,18 +37,6 @@
 		A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */; };
 		A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B161B9C5F240091D607 /* KPCameraButton.m */; };
 		A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B181B9C63A10091D607 /* CaptureVC.swift */; };
-		A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DA91B83229B0052B0A2 /* THPlayerController.m */; };
-		A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DAF1B8322C80052B0A2 /* THThumbnail.m */; };
-		A4940DB51B8324400052B0A2 /* THPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DB41B8324400052B0A2 /* THPlayerView.m */; };
-		A4940DB91B8324590052B0A2 /* THOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DB71B8324590052B0A2 /* THOverlayView.m */; };
-		A4940DBA1B8324590052B0A2 /* THOverlayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4940DB81B8324590052B0A2 /* THOverlayView.xib */; };
-		A4940DBD1B8324890052B0A2 /* AVAsset+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DBC1B8324890052B0A2 /* AVAsset+THAdditions.m */; };
-		A4940DC01B8324A00052B0A2 /* THFilmstripView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DBF1B8324A00052B0A2 /* THFilmstripView.m */; };
-		A4940DC61B8324D80052B0A2 /* THNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DC51B8324D80052B0A2 /* THNotifications.m */; };
-		A4940DC91B8326FC0052B0A2 /* UIView+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DC81B8326FC0052B0A2 /* UIView+THAdditions.m */; };
-		A4940DCD1B83270C0052B0A2 /* THSubtitleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4940DCA1B83270C0052B0A2 /* THSubtitleView.xib */; };
-		A4940DCE1B83270C0052B0A2 /* THSubtitleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DCC1B83270C0052B0A2 /* THSubtitleViewController.m */; };
-		A4940DD11B8327210052B0A2 /* NSTimer+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = A4940DD01B8327210052B0A2 /* NSTimer+Additions.m */; };
 		A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */; };
 		A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A61B453C3F0090E98A /* StoryElement.swift */; };
 		A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */; };
@@ -148,29 +136,6 @@
 		A48F8B151B9C5F240091D607 /* KPCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPCameraButton.h; sourceTree = "<group>"; };
 		A48F8B161B9C5F240091D607 /* KPCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPCameraButton.m; sourceTree = "<group>"; };
 		A48F8B181B9C63A10091D607 /* CaptureVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureVC.swift; sourceTree = "<group>"; };
-		A4940DA81B83229B0052B0A2 /* THPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THPlayerController.h; sourceTree = "<group>"; };
-		A4940DA91B83229B0052B0A2 /* THPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THPlayerController.m; sourceTree = "<group>"; };
-		A4940DAE1B8322C80052B0A2 /* THThumbnail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THThumbnail.h; sourceTree = "<group>"; };
-		A4940DAF1B8322C80052B0A2 /* THThumbnail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THThumbnail.m; sourceTree = "<group>"; };
-		A4940DB11B83241B0052B0A2 /* THTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THTransport.h; sourceTree = "<group>"; };
-		A4940DB31B8324400052B0A2 /* THPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THPlayerView.h; sourceTree = "<group>"; };
-		A4940DB41B8324400052B0A2 /* THPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THPlayerView.m; sourceTree = "<group>"; };
-		A4940DB61B8324590052B0A2 /* THOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THOverlayView.h; sourceTree = "<group>"; };
-		A4940DB71B8324590052B0A2 /* THOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THOverlayView.m; sourceTree = "<group>"; };
-		A4940DB81B8324590052B0A2 /* THOverlayView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = THOverlayView.xib; sourceTree = "<group>"; };
-		A4940DBB1B8324890052B0A2 /* AVAsset+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVAsset+THAdditions.h"; sourceTree = "<group>"; };
-		A4940DBC1B8324890052B0A2 /* AVAsset+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAsset+THAdditions.m"; sourceTree = "<group>"; };
-		A4940DBE1B8324A00052B0A2 /* THFilmstripView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THFilmstripView.h; sourceTree = "<group>"; };
-		A4940DBF1B8324A00052B0A2 /* THFilmstripView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THFilmstripView.m; sourceTree = "<group>"; };
-		A4940DC41B8324D80052B0A2 /* THNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THNotifications.h; sourceTree = "<group>"; };
-		A4940DC51B8324D80052B0A2 /* THNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THNotifications.m; sourceTree = "<group>"; };
-		A4940DC71B8326FC0052B0A2 /* UIView+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+THAdditions.h"; sourceTree = "<group>"; };
-		A4940DC81B8326FC0052B0A2 /* UIView+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+THAdditions.m"; sourceTree = "<group>"; };
-		A4940DCA1B83270C0052B0A2 /* THSubtitleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = THSubtitleView.xib; sourceTree = "<group>"; };
-		A4940DCB1B83270C0052B0A2 /* THSubtitleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THSubtitleViewController.h; sourceTree = "<group>"; };
-		A4940DCC1B83270C0052B0A2 /* THSubtitleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THSubtitleViewController.m; sourceTree = "<group>"; };
-		A4940DCF1B8327210052B0A2 /* NSTimer+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Additions.h"; sourceTree = "<group>"; };
-		A4940DD01B8327210052B0A2 /* NSTimer+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+Additions.m"; sourceTree = "<group>"; };
 		A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		A4A5F7A61B453C3F0090E98A /* StoryElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElement.swift; sourceTree = "<group>"; };
 		A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -259,7 +224,6 @@
 			children = (
 				A4CECB711B9464A100D8B342 /* AAPLTimedAnnotationWriter.h */,
 				A4CECB721B9464A100D8B342 /* AAPLTimedAnnotationWriter.m */,
-				A4940DAB1B83229F0052B0A2 /* VideoPlayer */,
 				A404A52C1B8118AA00B82B29 /* AVPlayerItem+THAdditions.h */,
 				A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */,
 			);
@@ -386,60 +350,6 @@
 				A48F8B161B9C5F240091D607 /* KPCameraButton.m */,
 			);
 			name = KPCCameraButton;
-			sourceTree = "<group>";
-		};
-		A4940DAB1B83229F0052B0A2 /* VideoPlayer */ = {
-			isa = PBXGroup;
-			children = (
-				A4940DC41B8324D80052B0A2 /* THNotifications.h */,
-				A4940DC51B8324D80052B0A2 /* THNotifications.m */,
-				A4940DBB1B8324890052B0A2 /* AVAsset+THAdditions.h */,
-				A4940DBC1B8324890052B0A2 /* AVAsset+THAdditions.m */,
-				A4940DCF1B8327210052B0A2 /* NSTimer+Additions.h */,
-				A4940DD01B8327210052B0A2 /* NSTimer+Additions.m */,
-				A4940DC71B8326FC0052B0A2 /* UIView+THAdditions.h */,
-				A4940DC81B8326FC0052B0A2 /* UIView+THAdditions.m */,
-				A4940DB21B8324370052B0A2 /* Views */,
-				A4940DAD1B8322BE0052B0A2 /* Models */,
-				A4940DAC1B8322B50052B0A2 /* Controllers */,
-			);
-			name = VideoPlayer;
-			sourceTree = "<group>";
-		};
-		A4940DAC1B8322B50052B0A2 /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				A4940DA81B83229B0052B0A2 /* THPlayerController.h */,
-				A4940DA91B83229B0052B0A2 /* THPlayerController.m */,
-				A4940DCA1B83270C0052B0A2 /* THSubtitleView.xib */,
-				A4940DCB1B83270C0052B0A2 /* THSubtitleViewController.h */,
-				A4940DCC1B83270C0052B0A2 /* THSubtitleViewController.m */,
-			);
-			name = Controllers;
-			sourceTree = "<group>";
-		};
-		A4940DAD1B8322BE0052B0A2 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				A4940DAE1B8322C80052B0A2 /* THThumbnail.h */,
-				A4940DAF1B8322C80052B0A2 /* THThumbnail.m */,
-				A4940DB11B83241B0052B0A2 /* THTransport.h */,
-			);
-			name = Models;
-			sourceTree = "<group>";
-		};
-		A4940DB21B8324370052B0A2 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				A4940DBE1B8324A00052B0A2 /* THFilmstripView.h */,
-				A4940DBF1B8324A00052B0A2 /* THFilmstripView.m */,
-				A4940DB61B8324590052B0A2 /* THOverlayView.h */,
-				A4940DB71B8324590052B0A2 /* THOverlayView.m */,
-				A4940DB81B8324590052B0A2 /* THOverlayView.xib */,
-				A4940DB31B8324400052B0A2 /* THPlayerView.h */,
-				A4940DB41B8324400052B0A2 /* THPlayerView.m */,
-			);
-			name = Views;
 			sourceTree = "<group>";
 		};
 		A4AAF6A81B8B4C80006391DE /* Frameworks */ = {
@@ -634,13 +544,11 @@
 				A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */,
 				A4D0AB971B9CB8D4002C0BD9 /* Shader.vsh in Resources */,
 				A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */,
-				A4940DBA1B8324590052B0A2 /* THOverlayView.xib in Resources */,
 				A4DA9CDF1B973F0F00839F28 /* ELCAlbumPickerController.xib in Resources */,
 				A4DA9CE01B973F0F00839F28 /* ELCAssetPicker.xib in Resources */,
 				A4DA9CE21B973F0F00839F28 /* Overlay.png in Resources */,
 				A4DA9CE11B973F0F00839F28 /* ELCAssetTablePicker.xib in Resources */,
 				A4D095B51B9094B1008F4316 /* colorPalette.plist in Resources */,
-				A4940DCD1B83270C0052B0A2 /* THSubtitleView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,8 +594,6 @@
 				A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */,
 				A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */,
 				A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */,
-				A4940DC61B8324D80052B0A2 /* THNotifications.m in Sources */,
-				A4940DCE1B83270C0052B0A2 /* THSubtitleViewController.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
 				A4D0AB941B9CB8D4002C0BD9 /* PBJVision.m in Sources */,
 				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
@@ -710,17 +616,13 @@
 				A4CECB731B9464A100D8B342 /* AAPLTimedAnnotationWriter.m in Sources */,
 				A4D0AB951B9CB8D4002C0BD9 /* PBJVisionUtilities.m in Sources */,
 				A4DA9CDE1B973F0F00839F28 /* ELCOverlayImageView.m in Sources */,
-				A4940DB01B8322C80052B0A2 /* THThumbnail.m in Sources */,
-				A4940DAA1B83229B0052B0A2 /* THPlayerController.m in Sources */,
 				A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */,
 				A4F057B01B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift in Sources */,
 				A4D095B71B90A3F4008F4316 /* TitleCard+CoreDataProperties.swift in Sources */,
 				A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */,
 				A4D0AB931B9CB8D4002C0BD9 /* PBJMediaWriter.m in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
-				A4940DB51B8324400052B0A2 /* THPlayerView.m in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
-				A4940DC01B8324A00052B0A2 /* THFilmstripView.m in Sources */,
 				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
 				A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */,
@@ -730,16 +632,12 @@
 				A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */,
 				A4DA9CDD1B973F0F00839F28 /* ELCImagePickerController.m in Sources */,
 				A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */,
-				A4940DB91B8324590052B0A2 /* THOverlayView.m in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,
 				A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */,
-				A4940DC91B8326FC0052B0A2 /* UIView+THAdditions.m in Sources */,
 				A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */,
 				A4E759BB1B9083120076D250 /* SettingsTableController.swift in Sources */,
 				A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */,
 				A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */,
-				A4940DD11B8327210052B0A2 /* NSTimer+Additions.m in Sources */,
-				A4940DBD1B8324890052B0A2 /* AVAsset+THAdditions.m in Sources */,
 				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
 				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,
 				A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */,

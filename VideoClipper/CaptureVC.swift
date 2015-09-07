@@ -29,7 +29,19 @@ class VideoSegmentThumbnail {
 class CaptureVC: UIViewController, PBJVisionDelegate {
 	var isRecording = false
 	var timer:NSTimer? = nil
+	var currentLine:StoryLine? = nil {
+		didSet {
+			for eachElement in self.currentLine!.elements! {
+				if (eachElement as! StoryElement).isTitleCard() {
+					self.currentTitleCard = eachElement as! TitleCard
+					return
+				}
+			}
+		}
+	}
 	
+	var currentTitleCard:TitleCard? = nil
+	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
 	var segmentThumbnails = [VideoSegmentThumbnail]()
 	
@@ -76,6 +88,10 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		self.recordingIndicator.layer.cornerRadius = self.recordingIndicator.frame.size.width / 2
 		self.recordingIndicator.layer.masksToBounds = true
+		
+		if let snapshot = self.currentTitleCard?.snapshot {
+			self.titleCardPlaceholder.addSubview(UIImageView(image: UIImage(data: snapshot)))
+		}
 	}
 	
 	func captureModeOn() {

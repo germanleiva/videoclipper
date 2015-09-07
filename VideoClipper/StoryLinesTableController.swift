@@ -133,6 +133,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	func recordTappedOnSelectedLine(sender:AnyObject?) {
 		let captureController = self.storyboard!.instantiateViewControllerWithIdentifier("captureController") as! CaptureVC
 		captureController.delegate = self
+		captureController.currentLine = self.currentStoryLine()
 		self.presentViewController(captureController, animated: true, completion: nil)
 		return
 		

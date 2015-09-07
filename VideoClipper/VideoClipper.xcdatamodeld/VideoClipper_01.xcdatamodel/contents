@@ -16,6 +16,11 @@
         <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryElement" inverseName="storyLine" inverseEntity="StoryElement" syncable="YES"/>
         <relationship name="project" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="storyLines" inverseEntity="Project" syncable="YES"/>
     </entity>
+    <entity name="TagMark" representedClassName="TagMark" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="tags" inverseEntity="VideoClip" syncable="YES"/>
+    </entity>
     <entity name="TextWidget" representedClassName="TextWidget" syncable="YES">
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
@@ -26,6 +31,7 @@
         <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>
     </entity>
     <entity name="TitleCard" representedClassName="TitleCard" parentEntity="StoryElement" syncable="YES">
+        <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
         <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
         <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
@@ -33,13 +39,15 @@
     <entity name="VideoClip" representedClassName="VideoClip" parentEntity="StoryElement" syncable="YES">
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TagMark" inverseName="video" inverseEntity="TagMark" syncable="YES"/>
     </entity>
     <elements>
         <element name="Project" positionX="-360" positionY="-75" width="128" height="105"/>
-        <element name="TitleCard" positionX="117" positionY="216" width="128" height="90"/>
-        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="148"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
         <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
-        <element name="VideoClip" positionX="304" positionY="201" width="128" height="75"/>
+        <element name="TagMark" positionX="-153" positionY="81" width="128" height="90"/>
+        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="148"/>
+        <element name="TitleCard" positionX="117" positionY="216" width="128" height="105"/>
+        <element name="VideoClip" positionX="304" positionY="201" width="128" height="90"/>
     </elements>
 </model>

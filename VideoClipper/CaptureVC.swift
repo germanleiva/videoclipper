@@ -33,7 +33,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		didSet {
 			for eachElement in self.currentLine!.elements! {
 				if (eachElement as! StoryElement).isTitleCard() {
-					self.currentTitleCard = eachElement as! TitleCard
+					self.currentTitleCard = eachElement as? TitleCard
 					return
 				}
 			}
@@ -90,7 +90,10 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		self.recordingIndicator.layer.masksToBounds = true
 		
 		if let snapshot = self.currentTitleCard?.snapshot {
-			self.titleCardPlaceholder.addSubview(UIImageView(image: UIImage(data: snapshot)))
+			let imageView = UIImageView(image: UIImage(data: snapshot))
+			imageView.frame = CGRect(x: 0, y: 0, width: self.titleCardPlaceholder.frame.width, height: self.titleCardPlaceholder.frame.height)
+			self.titleCardPlaceholder.addSubview(imageView)
+			
 		}
 	}
 	
@@ -103,9 +106,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 			self.leftPanel.alpha = 0
 			self.rightPanel.alpha = 0
-			for eachThumbnail in self.segmentThumbnails {
-				eachThumbnail.snapshot.alpha = 0
-			}
+			self.segmentThumbnailsPlaceholder.alpha = 0
+			self.titleCardPlaceholder.alpha = 0
 			}, completion: { (completed) -> Void in
 				self.recordingIndicator.alpha = 0
 				
@@ -140,9 +142,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			self.leftPanel.alpha = 0.7
 			self.rightPanel.alpha = 0.7
 			self.recordingIndicator.alpha = 0
-			for eachThumbnail in self.segmentThumbnails {
-				eachThumbnail.snapshot.alpha = 1
-			}
+			self.segmentThumbnailsPlaceholder!.alpha = 1
+			self.titleCardPlaceholder!.alpha = 1
 			}, completion: { (completed) -> Void in
 				if completed {
 					currentSnapshot.removeFromSuperview()

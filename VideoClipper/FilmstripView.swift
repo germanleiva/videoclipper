@@ -15,6 +15,57 @@ protocol FilmstripViewDelegate {
 	func filmstrip(filmstripView:FilmstripView,didEndScrubbing percentage:Float)
 }
 
+class TrimmerThumbView:UIView {
+	var color:UIColor
+	var isRight:Bool
+	
+	required init?(coder aDecoder: NSCoder) {
+		self.color = UIColor.blackColor()
+		self.isRight = false
+		super.init(coder: aDecoder)
+	}
+	
+	init(frame:CGRect,color:UIColor,isRight:Bool) {
+		self.color = color
+		self.isRight = isRight
+		super.init(frame:frame)
+	}
+	
+	override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+		let relativeFrame = self.bounds
+		let hitTestEdgeInsets = UIEdgeInsets(top: 0, left: -30, bottom: 0, right: -30)
+		let hitFrame = UIEdgeInsetsInsetRect(relativeFrame, hitTestEdgeInsets)
+		return CGRectContainsPoint(hitFrame, point)
+	}
+
+	override func drawRect(rect: CGRect) {
+		// Drawing code
+
+		//// Frames
+		let bubbleFrame = self.bounds
+
+		//// Rounded Rectangle Drawing
+		let roundedRectangleRect = CGRect(x: CGRectGetMinX(bubbleFrame), y: CGRectGetMinY(bubbleFrame), width: CGRectGetWidth(bubbleFrame), height: CGRectGetHeight(bubbleFrame))
+		var roundingCorners:UIRectCorner = [.TopLeft,.BottomLeft]
+		if self.isRight {
+			roundingCorners = [.TopRight,.BottomRight]
+		}
+		let roundedRectanglePath = UIBezierPath(roundedRect: roundedRectangleRect, byRoundingCorners: roundingCorners, cornerRadii: CGSize(width: 3, height: 3))
+
+		roundedRectanglePath.closePath()
+		self.color.setFill()
+		roundedRectanglePath.fill()
+
+
+		let decoratingRect = CGRect(x: CGRectGetMinX(bubbleFrame)+CGRectGetWidth(bubbleFrame)/2.5, y: CGRectGetMinY(bubbleFrame)+CGRectGetHeight(bubbleFrame)/4, width: 1.5, height: CGRectGetHeight(bubbleFrame)/2)
+		let decoratingPath = UIBezierPath(roundedRect: decoratingRect, byRoundingCorners: [.TopLeft,.BottomLeft,.BottomRight], cornerRadii: CGSize(width: 1, height: 1))
+		
+		decoratingPath.closePath()
+		UIColor(white: 1, alpha: 0.5).setFill()
+		decoratingPath.fill()
+	}
+}
+
 class FilmstripView: UIView, UIGestureRecognizerDelegate {
 
     /*
@@ -34,7 +85,28 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	var thumbnails = [Thumbnail]()
 	var panGesture:UIPanGestureRecognizer? = nil
 	@IBOutlet var scrubber:UIView!
-
+	
+	//TRIMMER
+	var durationInSeconds = CGFloat(0)
+	var frameView:UIView!
+	var topBorder:UIView!
+	var bottomBorder:UIView!
+	var overlayWidth = CGFloat(0)
+	var leftOverlayView:UIView!
+	var rightOverlayView:UIView!
+	var leftThumbView:UIView!
+	var rightThumbView:UIView!
+	var rightStartPoint = CGPointZero
+	var leftStartPoint = CGPointZero
+	
+	let thumbWidth = CGFloat(10)
+	let maxLength = CGFloat(15)
+	let minLength = CGFloat(3)
+	var widthPerSecond = CGFloat(0)
+	
+	var startTime = CGFloat(0)
+	var endTime = CGFloat(0)
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		self.initialize()
@@ -57,7 +129,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		super.awakeFromNib()
 		self.panGesture = UIPanGestureRecognizer(target: self, action: "pannedScrubber:")
 		self.panGesture?.delegate = self
-		self.scrubber.addGestureRecognizer(self.panGesture!)
+//		self.scrubber.addGestureRecognizer(self.panGesture!)
 	}
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -114,6 +186,8 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			self.insertSubview(button, belowSubview: self.scrubber)
 			currentX += imageSize.width
 		}
+		
+		self.setupTrimmer()
 	}
 	
 	func imageButtonTapped(sender:UIButton?) {
@@ -147,6 +221,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * 2,height:0)
 		
 		let duration = asset.duration
+		self.durationInSeconds = CGFloat(CMTimeGetSeconds(duration))
 		
 		var times = [NSValue]()
 		
@@ -183,5 +258,151 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 				})
 			}
 		}
+	}
+	
+	//-MARK: Trimmer
+	func setupTrimmer() {
+		self.frameView = UIView(frame: CGRect(x: thumbWidth, y: 0, width: self.frame.width, height: self.frame.height))
+		
+		self.frameView.layer.masksToBounds = true
+		self.addSubview(self.frameView)
+		
+		self.frameView.translatesAutoresizingMaskIntoConstraints = false
+		self.addConstraint(NSLayoutConstraint(item: self.frameView, attribute: NSLayoutAttribute.TrailingMargin, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.TrailingMargin, multiplier: 1, constant: 0))
+		self.addConstraint(NSLayoutConstraint(item: self.frameView, attribute: NSLayoutAttribute.LeadingMargin, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.LeadingMargin, multiplier: 1, constant: 0))
+		self.addConstraint(NSLayoutConstraint(item: self.frameView, attribute: NSLayoutAttribute.TopMargin, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.TopMargin, multiplier: 1, constant: 0))
+		self.addConstraint(NSLayoutConstraint(item: self.frameView, attribute: NSLayoutAttribute.BottomMargin, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.BottomMargin, multiplier: 1, constant: 0))
+		
+		//add border
+		let themeColor = UIColor.orangeColor()
+		self.topBorder = UIView()
+		self.topBorder.backgroundColor = themeColor
+		self.addSubview(self.topBorder)
+		
+		self.bottomBorder = UIView()
+		self.bottomBorder.backgroundColor = themeColor
+		self.addSubview(self.bottomBorder)
+		
+		// width for left and right overlay views
+		let screenWidth = CGRectGetWidth(self.frame) - 2*thumbWidth // quick fix to make up for the width of thumb views
+		
+		let duration = self.durationInSeconds
+		let frameViewFrameWidth = (duration / maxLength) * screenWidth
+		self.widthPerSecond = frameViewFrameWidth / duration
+
+		// width for left and right overlay views
+		self.overlayWidth = CGRectGetWidth(self.frame) - (minLength * widthPerSecond)
+		
+		// add left overlay view
+		self.leftOverlayView = UIView(frame: CGRect(x: thumbWidth - self.overlayWidth, y: 0, width: self.overlayWidth, height: CGRectGetHeight(self.frameView.frame)))
+			
+		let leftThumbFrame = CGRect(x:self.overlayWidth-thumbWidth,y: 0, width: thumbWidth, height: CGRectGetHeight(self.frameView.frame))
+
+		self.leftThumbView = TrimmerThumbView(frame: leftThumbFrame, color: themeColor, isRight: false)
+		self.leftThumbView.layer.masksToBounds = true
+
+		self.leftOverlayView.addSubview(self.leftThumbView)
+		self.leftOverlayView.userInteractionEnabled = true
+
+		let leftPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: "moveLeftOverlayView:")
+		self.leftOverlayView.addGestureRecognizer(leftPanGestureRecognizer)
+		self.leftOverlayView.backgroundColor = UIColor(white: 0, alpha: 0.8)
+		self.addSubview(self.leftOverlayView)
+
+		// add right overlay view
+		var rightViewFrameX = CGRectGetWidth(self.frame) - thumbWidth
+		
+		if CGRectGetWidth(self.frameView.frame) < CGRectGetWidth(self.frame) {
+			rightViewFrameX = CGRectGetMaxX(self.frameView.frame)
+		}
+		
+		self.rightOverlayView = UIView(frame: CGRect(x: rightViewFrameX, y: 0, width: self.overlayWidth, height: CGRectGetHeight(self.frameView.frame)))
+			
+		self.rightThumbView = TrimmerThumbView(frame: CGRect(x: 0, y: 0, width: thumbWidth, height: CGRectGetHeight(self.frameView.frame)), color: themeColor, isRight: true)
+
+		self.rightThumbView.layer.masksToBounds = true
+		self.rightOverlayView.addSubview(self.rightThumbView)
+		self.rightOverlayView.userInteractionEnabled = true
+		
+		let rightPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: "moveRightOverlayView:")
+		self.rightOverlayView.addGestureRecognizer(rightPanGestureRecognizer)
+		self.rightOverlayView.backgroundColor = UIColor(white: 0, alpha: 0.8)
+		self.addSubview(self.rightOverlayView)
+		
+		self.updateBorderFrames()
+		self.notifyDelegate()
+	}
+	
+	func updateBorderFrames() {
+		let height = CGFloat(1)
+		self.topBorder.frame = CGRect(x: CGRectGetMaxX(self.leftOverlayView.frame), y: 0, width: CGRectGetMinX(self.rightOverlayView.frame)-CGRectGetMaxX(self.leftOverlayView.frame), height: height)
+		self.bottomBorder.frame = CGRect(x: CGRectGetMaxX(self.leftOverlayView.frame), y: CGRectGetHeight(self.frameView.frame)-height, width: CGRectGetMinX(self.rightOverlayView.frame)-CGRectGetMaxX(self.leftOverlayView.frame), height: height)
+	}
+	
+	func moveLeftOverlayView(gesture:UIPanGestureRecognizer) {
+		switch (gesture.state) {
+			case UIGestureRecognizerState.Began:
+				self.leftStartPoint = gesture.locationInView(self)
+			case UIGestureRecognizerState.Changed:
+				let point = gesture.locationInView(self)
+		
+				let deltaX = point.x - self.leftStartPoint.x
+		
+				var center = self.leftOverlayView.center
+				center.x += deltaX
+				var newLeftViewMidX = center.x
+				let maxWidth = CGRectGetMinX(self.rightOverlayView.frame) - (self.minLength * self.widthPerSecond);
+				let newLeftViewMinX = newLeftViewMidX - self.overlayWidth/2
+				if (newLeftViewMinX < self.thumbWidth - self.overlayWidth) {
+					newLeftViewMidX = self.thumbWidth - self.overlayWidth + self.overlayWidth/2;
+				} else if (newLeftViewMinX + self.overlayWidth > maxWidth) {
+					newLeftViewMidX = maxWidth - self.overlayWidth / 2
+				}
+		
+				self.leftOverlayView.center = CGPointMake(newLeftViewMidX, self.leftOverlayView.center.y)
+				self.leftStartPoint = point
+				self.updateBorderFrames()
+				self.notifyDelegate()
+			default:
+				break
+		}
+	}
+	
+	func moveRightOverlayView(gesture:UIPanGestureRecognizer) {
+		switch (gesture.state) {
+			case UIGestureRecognizerState.Began:
+				self.rightStartPoint = gesture.locationInView(self)
+			case UIGestureRecognizerState.Changed:
+				let point = gesture.locationInView(self)
+	
+				let deltaX = point.x - self.rightStartPoint.x
+				
+				var center = self.rightOverlayView.center
+				center.x += deltaX
+				var newRightViewMidX = center.x
+				let minX = CGRectGetMaxX(self.leftOverlayView.frame) + self.minLength * self.widthPerSecond
+				var maxX = CGRectGetMaxX(self.frameView.frame)
+				if self.durationInSeconds <= self.maxLength + 0.5 {
+						maxX = CGRectGetWidth(self.frame) - self.thumbWidth
+				}
+				if (newRightViewMidX - self.overlayWidth/2 < minX) {
+					newRightViewMidX = minX + self.overlayWidth/2
+				} else if (newRightViewMidX - self.overlayWidth/2 > maxX) {
+					newRightViewMidX = maxX + self.overlayWidth/2
+				}
+				
+				self.rightOverlayView.center = CGPoint(x: newRightViewMidX, y: self.rightOverlayView.center.y)
+				self.rightStartPoint = point
+				self.updateBorderFrames()
+				self.notifyDelegate()
+			default:
+				break
+		}
+	}
+	
+	func notifyDelegate() {
+	self.startTime = CGRectGetMaxX(self.leftOverlayView.frame) / self.widthPerSecond - self.thumbWidth / self.widthPerSecond
+	self.endTime = CGRectGetMinX(self.rightOverlayView.frame) / self.widthPerSecond - self.thumbWidth / self.widthPerSecond
+//	[self.delegate trimmerView:self didChangeLeftPosition:self.startTime rightPosition:self.endTime];
 	}
 }

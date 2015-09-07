@@ -1,5 +1,5 @@
 //
-//  TitleCard+CoreDataProperties.swift
+//  ImageWidget+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by German Leiva on 07/09/15.
@@ -12,12 +12,12 @@
 import Foundation
 import CoreData
 
-extension TitleCard {
+extension ImageWidget {
 
-    @NSManaged var backgroundColor: NSObject?
-    @NSManaged var duration: NSNumber?
-    @NSManaged var snapshot: NSData?
-    @NSManaged var widgets: NSOrderedSet?
-    @NSManaged var images: NSOrderedSet?
+    @NSManaged var image: NSObject?
+    @NSManaged var distanceXFromCenter: NSNumber?
+    @NSManaged var distanceYFromCenter: NSNumber?
+    @NSManaged var height: NSNumber?
+    @NSManaged var width: NSNumber?
 
 }

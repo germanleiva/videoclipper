@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import MobileCoreServices
 
 struct TextWidgetStruct {
 	var textViewMinWidthConstraint: NSLayoutConstraint!
@@ -38,7 +39,14 @@ let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
-class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate, ColorPickerViewControllerDelegate {
+extension UIGestureRecognizer {
+	func cancel() {
+		self.enabled = false
+		self.enabled = true
+	}
+}
+
+class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
@@ -49,13 +57,21 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var changesDetected = false
 	
 	var textWidgets = [TextWidgetStruct]()
+
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
 	var editingTextView:UITextView? = nil
 	
+	@IBOutlet var deleteButton: UIButton!
+	
 	var titleCard: TitleCard? {
 		return self.element as? TitleCard
 	}
+	
+	var currentlySelectedImageWidget:ImageWidget? = nil
+	
+	var importImagePopover:UIPopoverController? = nil
+	var shouldDismissPicker = false
 	
 	@IBAction func showDurationPopOver(sender:AnyObject?){
 		if self.durationPopover == nil {
@@ -86,19 +102,42 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			print("Couldn't save the new duration of the titleCard on the DB: \(error)")
 		}
 	}
+	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
+		let cameraButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Camera, target: self, action: "takePicture:")
+		let navigationBar = navigationController.navigationBar
+		if let topItem = navigationBar.topItem {
+			topItem.leftBarButtonItem = cameraButton
+		}
+	}
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		let imagePicker = UIImagePickerController()
+		imagePicker.delegate = self
+		imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
+		imagePicker.mediaTypes = [String(kUTTypeImage)]
+		imagePicker.allowsEditing = false
+		
+		
+		self.importImagePopover = UIPopoverController(contentViewController: imagePicker)
+		self.importImagePopover!.delegate = self
 
         // Do any additional setup after loading the view.
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
 //	}
 //	
 //	override func viewWillAppear(animated: Bool) {
+		for eachTitleCardElement in self.titleCard!.images! {
+			let imageWidget = eachTitleCardElement as! ImageWidget
+			self.addImageWidget(imageWidget)
+		}
+		
 		for eachTitleCardElement in self.titleCard!.widgets! {
 			let element = eachTitleCardElement as! TextWidget
 			self.addTextInput(element.content!, initialFrame: element.initialRect(),model: element)
 		}
+		
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
 		self.deactivateHandlers(self.textWidgets)
 
@@ -111,6 +150,126 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		self.canvas!.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 		self.colorButton.backgroundColor = self.titleCard!.backgroundColor as? UIColor
+	}
+	
+	func addImageWidget(imageWidget:ImageWidget) {
+		let imageView = UIImageView(image: imageWidget.image as? UIImage)
+		imageView.translatesAutoresizingMaskIntoConstraints = false
+		
+		imageWidget.imageView = imageView
+		imageView.userInteractionEnabled = true
+		
+		let panGesture = UIPanGestureRecognizer(target: self, action: "pannedImageView:")
+//		panGesture.delegate = self
+		imageView.addGestureRecognizer(panGesture)
+		
+		let pinchGesture = UIPinchGestureRecognizer(target: self, action: "pinchedImageView:")
+//		pinchGesture.delegate = self
+		imageView.addGestureRecognizer(pinchGesture)
+		
+		if let width = imageWidget.width {
+			imageWidget.widthConstraint = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: CGFloat(width))
+		}
+		if let height = imageWidget.height {
+			imageWidget.heightConstraint = NSLayoutConstraint(item: imageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: CGFloat(height))
+		}
+		if let distanceX = imageWidget.distanceXFromCenter {
+			imageWidget.centerXConstraint = NSLayoutConstraint(item: self.canvas!, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: imageWidget.imageView, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: CGFloat(distanceX))
+		}
+		if let distanceY = imageWidget.distanceYFromCenter {
+			imageWidget.centerYConstraint = NSLayoutConstraint(item: self.canvas!, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: imageWidget.imageView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: CGFloat(distanceY))
+		}
+		
+		if let firstTextWidget =  self.textWidgets.first {
+			self.canvas!.insertSubview(imageView, belowSubview: firstTextWidget.textView!)
+		} else {
+			self.canvas!.insertSubview(imageView, atIndex: 0)
+		}
+
+		
+		self.view.addConstraint(imageWidget.widthConstraint)
+		self.view.addConstraint(imageWidget.heightConstraint)
+		self.view.addConstraint(imageWidget.centerXConstraint)
+		self.view.addConstraint(imageWidget.centerYConstraint)
+	}
+	
+	func findImageWidgetForView(view:UIView) -> ImageWidget? {
+		for each in self.titleCard!.images! {
+			let eachImageWidget = each as! ImageWidget
+			if eachImageWidget.imageView == view {
+				return eachImageWidget
+			}
+		}
+		return nil
+	}
+	
+	func pannedImageView(recognizer:UIPanGestureRecognizer) {
+		if let imageWidget = self.findImageWidgetForView(recognizer.view!) {
+			if recognizer.state == .Began {
+				self.deleteButton.enabled = true
+				self.currentlySelectedImageWidget = imageWidget
+				return
+			} else if recognizer.state == .Changed {
+				if self.currentlySelectedImageWidget == nil {
+					recognizer.cancel()
+					return
+				}
+				let translation = recognizer.translationInView(self.canvas!)
+				imageWidget.centerXConstraint.constant -= translation.x
+				imageWidget.centerYConstraint.constant -= translation.y
+				recognizer.setTranslation(CGPointZero, inView: self.canvas!)
+			} else {
+				if self.currentlySelectedImageWidget != nil {
+					//This means that the element was not deleted
+					imageWidget.distanceXFromCenter = imageWidget.centerXConstraint.constant
+					imageWidget.distanceYFromCenter = imageWidget.centerYConstraint.constant
+				}
+				
+				self.currentlySelectedImageWidget = nil
+				self.deleteButton.enabled = false
+				self.saveCanvas()
+			}
+		}
+		
+	}
+	
+	func pinchedImageView(recognizer:UIPinchGestureRecognizer) {
+		if let imageWidget = self.findImageWidgetForView(recognizer.view!) {
+			let imageView = recognizer.view!
+			if recognizer.state == .Began {
+				self.currentlySelectedImageWidget = imageWidget
+				self.deleteButton.enabled = true
+				imageWidget.lastScale = 1
+				return
+			} else if recognizer.state == .Changed {
+				if self.currentlySelectedImageWidget == nil {
+					recognizer.cancel()
+					return
+				}
+				
+				let scale = 1.0 - (imageWidget.lastScale - recognizer.scale)
+				
+//				let currentTransform = imageView.transform
+//				let newTransform = CGAffineTransformScale(currentTransform, scale, scale);
+//				
+//				imageView.transform = newTransform
+				
+				imageWidget.lastScale = recognizer.scale
+				
+				imageWidget.widthConstraint.constant = imageView.frame.width * scale
+				imageWidget.heightConstraint.constant = imageView.frame.height * scale
+			} else {
+				if self.currentlySelectedImageWidget != nil {
+					//This means that the element was not deleted
+					imageWidget.width = imageWidget.widthConstraint.constant
+					imageWidget.height = imageWidget.heightConstraint.constant
+				}
+				self.currentlySelectedImageWidget = nil
+				self.deleteButton.enabled = false
+
+				self.saveCanvas()
+			}
+		}
 	}
 	
 	func keyboardWillShow(notification:NSNotification) {
@@ -216,6 +375,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		//There will be only one for now
 		for eachSelectedTextWidget in selectedTextWidgets {
 			self.deleteTextWidget(eachSelectedTextWidget)
+		}
+		
+		if let imageWidgetToDelete = self.currentlySelectedImageWidget {
+			imageWidgetToDelete.imageView.removeFromSuperview()
+			let images = self.titleCard?.mutableOrderedSetValueForKey("images")
+			images?.removeObject(imageWidgetToDelete)
+			
+			self.saveCanvas()
 		}
 	}
 	
@@ -442,6 +609,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	func activateHandlers(textWidget:TextWidgetStruct){
 		deactivateHandlers(self.textWidgets.filter { $0 != textWidget })
+		self.deleteButton.enabled = true
 
 		textWidget.textView!.editable = true
 		textWidget.textView!.selectable = true
@@ -455,6 +623,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func deactivateHandlers(textWidgets:[TextWidgetStruct]) -> [TextWidgetStruct] {
+		self.deleteButton.enabled = false
+
 		var deactivatedTextWidgets = [TextWidgetStruct]()
 		for aTextWidget in textWidgets {
 			aTextWidget.textView!.editable = false
@@ -498,6 +668,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	//- MARK: Gesture Recognizer Delegate
+//	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+//		return true
+//	}
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 		return otherGestureRecognizer.view!.isDescendantOfView(self.canvas!)
 	}
@@ -519,6 +692,73 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			popoverVC.delegate = self
 		}
 		presentViewController(popoverVC, animated: true, completion: nil)
+	}
+	
+	@IBAction func importImagePressed(sender: UIButton?) {
+		if self.importImagePopover!.popoverVisible {
+			self.importImagePopover!.dismissPopoverAnimated(true)
+		} else {
+			if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.SavedPhotosAlbum) {
+				self.importImagePopover!.presentPopoverFromRect(sender!.frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Up, animated: true)
+			}
+		}
+	}
+	
+	func takePicture(sender:AnyObject?) {
+		self.importImagePopover?.dismissPopoverAnimated(true)
+		
+		let picker = UIImagePickerController()
+		picker.delegate = self
+//		picker.allowsEditing = true
+		picker.sourceType = UIImagePickerControllerSourceType.Camera
+		
+		self.presentViewController(picker, animated: true) { () -> Void in
+			self.shouldDismissPicker = true
+		}
+	}
+	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+		self.importImagePopover?.dismissPopoverAnimated(true)
+
+		picker.presentingViewController
+		let mediaType = info[UIImagePickerControllerMediaType] as! String
+
+//		[self dismissModalViewControllerAnimated:YES];
+		if mediaType == String(kUTTypeImage) {
+			let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+			
+			if self.shouldDismissPicker {
+				UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+			}
+			
+			let newImageWidget = NSEntityDescription.insertNewObjectForEntityForName("ImageWidget", inManagedObjectContext: self.context) as! ImageWidget
+			newImageWidget.image = image
+			newImageWidget.distanceXFromCenter = 0
+			newImageWidget.distanceYFromCenter = 0
+			newImageWidget.width = image.size.width * 0.1
+			newImageWidget.height = image.size.height * 0.1
+			
+			let titleCardImages = self.titleCard!.mutableOrderedSetValueForKey("images")
+			titleCardImages.addObject(newImageWidget)
+			
+			do {
+				try self.context.save()
+				self.addImageWidget(newImageWidget)
+				if shouldDismissPicker {
+					picker.dismissViewControllerAnimated(true, completion: { () -> Void in
+						self.shouldDismissPicker = false
+					})
+				}
+			} catch {
+				print("Couldn't create image widget: \(error)")
+			}
+		}
+	}
+	
+	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+		picker.dismissViewControllerAnimated(true) { () -> Void in
+			self.shouldDismissPicker = false
+			self.importImagePopover?.dismissPopoverAnimated(true)
+		}
 	}
 	
 	func didPickColor(color: UIColor) {

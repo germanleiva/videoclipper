@@ -17,17 +17,29 @@ protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String)
 }
 
+class VideoSegmentThumbnail {
+	var snapshot:UIView
+	var time:Float64
+	init(snapshot:UIView,time:Float64) {
+		self.snapshot = snapshot
+		self.time = time
+	}
+}
+
 class CaptureVC: UIViewController, PBJVisionDelegate {
 	var isRecording = false
+	var timer:NSTimer? = nil
+	
+	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
+	var segmentThumbnails = [VideoSegmentThumbnail]()
+	
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
 	
 	@IBOutlet weak var previewView: UIView!
 	@IBOutlet weak var rightPanel: UIView!
 	@IBOutlet weak var leftPanel: UIView!
-	
-	@IBOutlet weak var videoClipThumbnail: UIView!
-	
+		
 	@IBOutlet weak var shutterButton: KPCameraButton!
 	@IBOutlet weak var ghostButton: UIButton!
 	@IBOutlet weak var shutterLock: UISwitch!
@@ -67,43 +79,92 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	}
 	
 	func captureModeOn() {
+		let queue = dispatch_queue_create("fr.lri.exsitu.QueueVideoClipper", nil)
+		dispatch_async(queue) { () -> Void in
+			self.startTimer()
+		};
+		
 		UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 			self.leftPanel.alpha = 0
 			self.rightPanel.alpha = 0
+			for eachThumbnail in self.segmentThumbnails {
+				eachThumbnail.snapshot.alpha = 0
+			}
 			}, completion: { (completed) -> Void in
 				self.recordingIndicator.alpha = 0
 				
 				let options:UIViewAnimationOptions = [.Autoreverse,.Repeat]
-				//						self.previewView.backgroundColor = UIColor.orangeColor()
 				UIView.animateWithDuration(0.5, delay: 0, options: options, animations: { () -> Void in
 					self.recordingIndicator.alpha = 1.0
 					}, completion: nil)
 		})
 	}
 	
+	func startTimer() {
+		self.timer?.invalidate()
+		self.timer = NSTimer(timeInterval: 0.5, target: self, selector: "updateRecordingLabel", userInfo: nil, repeats: true)
+		NSRunLoop.mainRunLoop().addTimer(self.timer!, forMode: NSRunLoopCommonModes)
+	}
+	
+	func stopTimer() {
+		self.timer?.invalidate()
+		self.timer = nil;
+		
+	}
+	
 	func captureModeOff(){
-		let copiedView = self.previewView.snapshotViewAfterScreenUpdates(true)
-		self.view.insertSubview(copiedView, aboveSubview: self.leftPanel)
+		self.stopTimer()
+		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(true)
+		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: PBJVision.sharedInstance().capturedVideoSeconds)
+		self.view.addSubview(currentSnapshot)
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			copiedView.frame = self.videoClipThumbnail.frame
+			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
+
+			self.leftPanel.alpha = 0.7
+			self.rightPanel.alpha = 0.7
+			self.recordingIndicator.alpha = 0
+			for eachThumbnail in self.segmentThumbnails {
+				eachThumbnail.snapshot.alpha = 1
+			}
 			}, completion: { (completed) -> Void in
-				UIView.animateWithDuration(0.3, delay: 1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					copiedView.alpha = 0
-					}, completion: { (finished) -> Void in
-						copiedView.removeFromSuperview()
-				})
-				
-				UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					self.leftPanel.alpha = 0.7
-					self.rightPanel.alpha = 0.7
-					self.recordingIndicator.alpha = 0
-					
-					}, completion: { (completed) -> Void in
-						self.recordingIndicator.layer.removeAllAnimations()
-				})
-				
+				if completed {
+					currentSnapshot.removeFromSuperview()
+					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
+					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
+					self.segmentThumbnails.append(videoSegmentThumbnail)
+					self.recordingIndicator.layer.removeAllAnimations()
+				}
 		})
+	}
+	
+	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
+		if let lastSegment = self.segmentThumbnails.last {
+			let view = lastSegment.snapshot
+			
+			//PBJVision does not support remove one segment so we remove the whole thing
+			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
+				if eachSnapshot.snapshot !== lastSegment.snapshot {
+					eachSnapshot.snapshot.removeFromSuperview()
+				}
+			}
+			
+			UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 3, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+					view.center = CGPoint(x: view.center.x + view.frame.width, y: view.center.y)
+				}, completion: { (completed) -> Void in
+					if completed {
+						//Remove last segment from PBJVision not supported yet
+						PBJVision.sharedInstance().cancelVideoCapture()
+						self.effectsViewController?.view.removeFromSuperview()
+						self.createGhostController()
+						
+						self.recordingTime.text = "00:00:00"
+	//					self.segmentThumbnails.removeLast()
+						self.segmentThumbnails.removeAll()
+						view.removeFromSuperview()
+					}
+			})
+		}
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -118,18 +179,9 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			self.previewView.layer.insertSublayer(self.previewLayer!, below: self.rightPanel.layer)
 			
 			// ghost effect
-			self.effectsViewController = GLKViewController()
-			self.effectsViewController!.preferredFramesPerSecond = 60
+			self.createGhostController()
 			
-			let view = self.effectsViewController!.view as! GLKView
-			let viewFrame = self.previewView.bounds
-			view.frame = viewFrame
-			view.context = PBJVision.sharedInstance().context
-			view.contentScaleFactor = UIScreen.mainScreen().scale
-			view.alpha = 0.5
-			view.hidden = true
 			PBJVision.sharedInstance().presentationFrame = self.previewView.frame
-			self.previewView.addSubview(self.effectsViewController!.view)
 			
 			if PBJVision.sharedInstance().supportsVideoFrameRate(120) {
 				// set faster frame rate
@@ -140,6 +192,20 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			self.previewLayer!.frame = self.previewView.bounds
 			self.shouldUpdatePreviewLayerFrame = false
 		}
+	}
+	
+	func createGhostController() {
+		self.effectsViewController = GLKViewController()
+		self.effectsViewController!.preferredFramesPerSecond = 60
+		
+		let view = self.effectsViewController!.view as! GLKView
+		let viewFrame = self.previewView.bounds
+		view.frame = viewFrame
+		view.context = PBJVision.sharedInstance().context
+		view.contentScaleFactor = UIScreen.mainScreen().scale
+		view.alpha = 0.5
+		view.hidden = true
+		self.previewView.addSubview(self.effectsViewController!.view)
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -153,11 +219,21 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		PBJVision.sharedInstance().stopPreview()
 	}
 	
+	func updateRecordingLabel() {
+		let time = Int(PBJVision.sharedInstance().capturedVideoSeconds)
+		let hours = (time / 3600)
+		let minutes = (time / 60) % 60
+		let seconds = time % 60
+		
+		let timeString = String(format: "%0.2d:%0.2d:%0.2d",hours,minutes,seconds)
+		self.recordingTime.text = timeString;
+	}
+	
 	func updateShutterLabel(isLocked:Bool) {
 		if isLocked {
-			self.shutterButton.setTitle("Tap", forState: UIControlState.Normal)
+			self.shutterButton.setTitle("Tap", forState: .Normal)
 		} else {
-			self.shutterButton.setTitle("Hold", forState: UIControlState.Normal)
+			self.shutterButton.setTitle("Hold", forState: .Normal)
 		}
 	}
 	

@@ -318,6 +318,22 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.recordTappedOnSelectedLine(sender)
 	}
 	
+	@IBAction func doubleTapOnVerticalBar(sender:AnyObject?) {
+		if self.currentItemIndexPath == nil {
+			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+		}
+		
+		if !self.tableController!.isCompact {
+			let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
+			let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
+			
+			self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
+		} else {
+			self.expandPrimaryController(true)
+		}
+		
+	}
+	
 	@IBAction func importForLineTapped(sender:AnyObject?) {
 		print("Long press selector triggered")
 		

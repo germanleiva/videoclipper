@@ -589,10 +589,10 @@
                                 </constraints>
                             </view>
                             <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MPX-Zb-VS1">
-                                <rect key="frame" x="0.0" y="0.0" width="192" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="200" height="600"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f7a-Fw-T3a">
-                                        <rect key="frame" x="0.0" y="539" width="192" height="36"/>
+                                        <rect key="frame" x="0.0" y="539" width="200" height="36"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <state key="normal" title="Use"/>
                                         <connections>
@@ -604,7 +604,7 @@
                                 <constraints>
                                     <constraint firstItem="f7a-Fw-T3a" firstAttribute="centerX" secondItem="MPX-Zb-VS1" secondAttribute="centerX" id="T7C-9m-HjB"/>
                                     <constraint firstAttribute="bottom" secondItem="f7a-Fw-T3a" secondAttribute="bottom" constant="25" id="gsn-t1-Q34"/>
-                                    <constraint firstAttribute="width" constant="192" id="m6x-n1-nUw"/>
+                                    <constraint firstAttribute="width" constant="200" id="m6x-n1-nUw"/>
                                     <constraint firstItem="f7a-Fw-T3a" firstAttribute="width" secondItem="MPX-Zb-VS1" secondAttribute="width" id="ocO-qs-Isp"/>
                                 </constraints>
                             </view>
@@ -643,18 +643,29 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <view alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Qm-ze-Rsp">
-                                <rect key="frame" x="68" y="40" width="39" height="75"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Qm-ze-Rsp">
+                                <rect key="frame" x="5" y="5" width="182" height="102"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="182" id="WgY-Pp-nsE"/>
+                                    <constraint firstAttribute="width" secondItem="9Qm-ze-Rsp" secondAttribute="height" multiplier="16:9" id="pC1-Jc-zjT"/>
+                                </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="Kug-Vd-I1B" appends="YES" id="4o3-fX-sda"/>
+                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="9Qm-ze-Rsp" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" constant="5" id="9e2-At-lJg"/>
+                            <constraint firstItem="9Qm-ze-Rsp" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" constant="5" id="9q4-KG-gr5"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstAttribute="trailing" secondItem="cAE-1c-Yb9" secondAttribute="trailing" constant="10" id="Cnn-K1-Dil"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="centerX" secondItem="cAE-1c-Yb9" secondAttribute="centerX" id="DdA-je-uZK"/>
                             <constraint firstItem="cAE-1c-Yb9" firstAttribute="top" secondItem="bgI-zh-lHz" secondAttribute="bottom" constant="80" id="FuZ-K8-TVt"/>
                             <constraint firstAttribute="trailing" secondItem="8nt-VJ-yhx" secondAttribute="trailing" id="GLK-FI-OFz"/>
+                            <constraint firstItem="9Qm-ze-Rsp" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" constant="5" id="GS6-bB-mac"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="HcS-li-IpB"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="Pro-kz-D5c"/>
@@ -670,6 +681,7 @@
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="width" secondItem="hDy-EF-rcF" secondAttribute="width" id="iVA-FQ-MXJ"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="MPX-Zb-VS1" secondAttribute="bottom" id="jPr-De-rIt"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="height" secondItem="hDy-EF-rcF" secondAttribute="height" id="jyZ-nM-fJs"/>
+                            <constraint firstItem="9Qm-ze-Rsp" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" constant="5" id="kMN-C9-iTf"/>
                             <constraint firstItem="MPX-Zb-VS1" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="n3g-PN-9p0"/>
                             <constraint firstItem="fMb-3u-ivD" firstAttribute="top" secondItem="cAE-1c-Yb9" secondAttribute="bottom" constant="80" id="oif-KU-6Rv"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerX" secondItem="h8j-WV-yjo" secondAttribute="centerX" id="oyb-Ct-hya"/>
@@ -677,9 +689,13 @@
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="pqy-PL-EGR"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="top" secondItem="LEr-qt-z1o" secondAttribute="bottom" constant="8" id="s9E-h6-aM7"/>
                             <constraint firstAttribute="trailingMargin" secondItem="cAE-1c-Yb9" secondAttribute="trailing" constant="10" id="wgR-Jx-uC2"/>
+                            <constraint firstItem="9Qm-ze-Rsp" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" constant="5" id="xa8-eX-8c2"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="9e2-At-lJg"/>
+                                <exclude reference="9q4-KG-gr5"/>
+                                <exclude reference="GS6-bB-mac"/>
                                 <exclude reference="GLK-FI-OFz"/>
                                 <exclude reference="HcS-li-IpB"/>
                                 <exclude reference="W68-gH-TEL"/>
@@ -705,9 +721,9 @@
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>
+                        <outlet property="segmentThumbnailsPlaceholder" destination="9Qm-ze-Rsp" id="0Wy-DD-fHQ"/>
                         <outlet property="shutterButton" destination="cAE-1c-Yb9" id="BkS-Sz-Qr7"/>
                         <outlet property="shutterLock" destination="bgI-zh-lHz" id="rrB-jo-3vm"/>
-                        <outlet property="videoClipThumbnail" destination="9Qm-ze-Rsp" id="9co-gP-txs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuf-Mm-ONK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -716,6 +732,11 @@
                         <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
                     </connections>
                 </tapGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="Kug-Vd-I1B">
+                    <connections>
+                        <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="FOy-Bh-Rw4"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3136" y="470"/>
         </scene>
@@ -964,9 +985,13 @@
                                     <constraint firstItem="4s4-AP-UZd" firstAttribute="top" secondItem="oUK-rP-zy7" secondAttribute="bottom" constant="50" id="o6u-aW-7ia"/>
                                     <constraint firstItem="oUK-rP-zy7" firstAttribute="top" secondItem="ebE-b7-2kl" secondAttribute="bottom" constant="50" id="pkg-a6-9Nw"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="Zpj-gR-BhM" appends="YES" id="pQW-LI-HtG"/>
+                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="i6V-ob-0f2" firstAttribute="width" secondItem="8xU-TI-nOK" secondAttribute="width" id="3A8-tv-SPb"/>
                             <constraint firstItem="nQi-w3-Jbb" firstAttribute="top" secondItem="7pH-g7-kGs" secondAttribute="bottom" id="6cW-jc-T8f"/>
@@ -1037,6 +1062,11 @@
                         <action selector="importForLineTapped:" destination="d93-I1-5WA" id="NbP-Fq-Aj9"/>
                     </connections>
                 </pongPressGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="Zpj-gR-BhM">
+                    <connections>
+                        <action selector="doubleTapOnVerticalBar:" destination="d93-I1-5WA" id="taY-8p-1Ia"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2195" y="537"/>
         </scene>

@@ -167,7 +167,11 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			}
 			
 			UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 3, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					view.center = CGPoint(x: view.center.x + view.frame.width, y: view.center.y)
+					var factor = CGFloat(1)
+					if recognizer.direction == .Left {
+						factor = CGFloat(-1)
+					}
+					view.center = CGPoint(x: view.center.x + factor * view.frame.width, y: view.center.y)
 				}, completion: { (completed) -> Void in
 					if completed {
 						//Remove last segment from PBJVision not supported yet

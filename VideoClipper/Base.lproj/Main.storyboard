@@ -753,6 +753,7 @@
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="Kug-Vd-I1B" appends="YES" id="4o3-fX-sda"/>
+                                    <outletCollection property="gestureRecognizers" destination="GCT-2P-srr" appends="YES" id="gbH-rs-iFc"/>
                                 </connections>
                             </view>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3bf-bD-zie">
@@ -847,6 +848,11 @@
                 <swipeGestureRecognizer direction="right" id="Kug-Vd-I1B">
                     <connections>
                         <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="FOy-Bh-Rw4"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="GCT-2P-srr">
+                    <connections>
+                        <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="XuC-le-qPc"/>
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
@@ -1056,11 +1062,10 @@
                                 <rect key="frame" x="550" y="0.0" width="50" height="600"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oUK-rP-zy7">
-                                        <rect key="frame" x="0.0" y="275" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="175" width="50" height="50"/>
                                         <gestureRecognizers/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="I81-pu-3gZ"/>
-                                            <constraint firstAttribute="height" constant="50" id="pLH-Dm-DCl"/>
+                                            <constraint firstAttribute="height" constant="50" id="arp-Ot-u4v"/>
                                         </constraints>
                                         <state key="normal" image="icon-plus"/>
                                         <connections>
@@ -1071,36 +1076,24 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4s4-AP-UZd">
                                         <rect key="frame" x="0.0" y="375" width="50" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="Ia5-dj-U4X"/>
-                                            <constraint firstAttribute="height" constant="50" id="YSH-mc-a27"/>
+                                            <constraint firstAttribute="height" constant="50" id="nOa-d8-Tho"/>
                                         </constraints>
                                         <state key="normal" image="icon-play"/>
                                         <connections>
                                             <action selector="playForLineTapped:" destination="d93-I1-5WA" eventType="touchUpInside" id="JCs-rt-Lmx"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ebE-b7-2kl">
-                                        <rect key="frame" x="0.0" y="175" width="50" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="gJM-ch-Nol"/>
-                                            <constraint firstAttribute="width" constant="50" id="zbc-uj-V1o"/>
-                                        </constraints>
-                                        <state key="normal" image="icon-trash"/>
-                                        <connections>
-                                            <action selector="deleteForElementTapped:" destination="d93-I1-5WA" eventType="touchUpInside" id="16r-P5-Dht"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.53265219213811932" green="0.6658394462656666" blue="0.95949317226890751" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="tintColor" red="0.066666666666666666" green="0.47843137254901963" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="centerY" secondItem="7pH-g7-kGs" secondAttribute="centerY" constant="100" id="8aE-ST-cWu"/>
                                     <constraint firstAttribute="width" constant="50" id="BVB-Bv-pmx"/>
-                                    <constraint firstItem="oUK-rP-zy7" firstAttribute="centerX" secondItem="ebE-b7-2kl" secondAttribute="centerX" id="CR4-51-Fbw"/>
-                                    <constraint firstItem="oUK-rP-zy7" firstAttribute="centerX" secondItem="7pH-g7-kGs" secondAttribute="centerX" id="IA3-Yd-Gbu"/>
-                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="centerX" secondItem="ebE-b7-2kl" secondAttribute="centerX" id="ZNu-Ha-Djp"/>
-                                    <constraint firstItem="oUK-rP-zy7" firstAttribute="centerY" secondItem="7pH-g7-kGs" secondAttribute="centerY" id="dsy-v8-8Cg"/>
-                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="top" secondItem="oUK-rP-zy7" secondAttribute="bottom" constant="50" id="o6u-aW-7ia"/>
-                                    <constraint firstItem="oUK-rP-zy7" firstAttribute="top" secondItem="ebE-b7-2kl" secondAttribute="bottom" constant="50" id="pkg-a6-9Nw"/>
+                                    <constraint firstAttribute="trailing" secondItem="4s4-AP-UZd" secondAttribute="trailing" id="CvG-Sa-au1"/>
+                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="leading" secondItem="7pH-g7-kGs" secondAttribute="leading" id="EEB-Yp-1uU"/>
+                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="leading" secondItem="oUK-rP-zy7" secondAttribute="leading" id="P36-e3-CZz"/>
+                                    <constraint firstItem="oUK-rP-zy7" firstAttribute="centerY" secondItem="7pH-g7-kGs" secondAttribute="centerY" constant="-100" id="tX9-bG-kDR"/>
+                                    <constraint firstItem="4s4-AP-UZd" firstAttribute="trailing" secondItem="oUK-rP-zy7" secondAttribute="trailing" id="vf7-Xu-eJv"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="Zpj-gR-BhM" appends="YES" id="pQW-LI-HtG"/>
@@ -1169,7 +1162,6 @@
                         <outlet property="primaryViewWidthConstraint" destination="785-CL-XbU" id="ACk-AM-9fV"/>
                         <outlet property="secondaryViewWidthConstraint" destination="gaM-Oi-GAU" id="qwb-Ir-FHG"/>
                         <outlet property="titleTextField" destination="KMs-gd-H2y" id="Ems-fA-e7A"/>
-                        <outlet property="trashForElement" destination="ebE-b7-2kl" id="3Lb-AR-TqW"/>
                         <outlet property="verticalToolbar" destination="7pH-g7-kGs" id="wOK-Go-kr6"/>
                     </connections>
                 </viewController>

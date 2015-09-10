@@ -11,8 +11,8 @@ import UIKit
 protocol SecondaryViewControllerDelegate : NSObjectProtocol {
 	func secondaryViewController(controller:SecondaryViewController, didShowStoryElement element:StoryElement)
 	func secondaryViewController(controller:SecondaryViewController, didUpdateElement element:StoryElement)
+	func secondaryViewController(controller:SecondaryViewController, didDeleteElement element:StoryElement, fromLine line:StoryLine)
 	func secondaryViewController(controller:SecondaryViewController, didReachLeftMargin: Int)
-
 }
 
 class SecondaryViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, StoryElementVCDelegate, UIGestureRecognizerDelegate {
@@ -66,6 +66,19 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 	}
 	
 	var viewControllers = [StoryElementVC]()
+	
+	func storyElementVC(controller:StoryElementVC, elementDeleted element:StoryElement){
+		let indexToRemove = self.currentIndex
+		self.viewControllers.removeAtIndex(indexToRemove)
+
+		let leftyVC = self.viewControllerAtIndex(indexToRemove - 1)
+
+		self.pageViewController?.setViewControllers([leftyVC], direction: .Reverse, animated: true, completion: nil)
+		self.pageControl.numberOfPages = self.viewControllers.count
+		
+		self.delegate?.secondaryViewController(self, didDeleteElement: element, fromLine:self.line!)
+		self.updateCurrentIndex()
+	}
 	
 	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement){
 		self.delegate?.secondaryViewController(self, didUpdateElement: element)

@@ -10,6 +10,7 @@ import UIKit
 
 protocol StoryElementVCDelegate {
 	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement)
+	func storyElementVC(controller:StoryElementVC, elementDeleted element:StoryElement)
 }
 
 class StoryElementVC: UIViewController {

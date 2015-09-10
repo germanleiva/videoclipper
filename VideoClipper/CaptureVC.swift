@@ -422,7 +422,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		vision.additionalCompressionProperties = [AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel] // AVVideoProfileLevelKey requires specific captureSessionPreset
 		
 		// specify a maximum duration with the following property
-		// vision.maximumCaptureDuration = CMTimeMakeWithSeconds(5, 600); // ~ 5 seconds
+		 vision.maximumCaptureDuration = CMTimeMakeWithSeconds(60, 600); // ~ 1 hour
 	}
 
 	//-MARK: VisionDelegate
@@ -523,52 +523,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	func vision(vision: PBJVision, capturedPhoto photoDict: [NSObject : AnyObject]?, error: NSError?) {
 		print("Captured photo")
-		//	if (error) {
-		//	// handle error properly
-		//	return;
-		//	}
-		//	_currentPhoto = photoDict;
-		//
-		//	// save to library
-		//	NSData *photoData = _currentPhoto[PBJVisionPhotoJPEGKey];
-		//	NSDictionary *metadata = _currentPhoto[PBJVisionPhotoMetadataKey];
-		//	[_assetLibrary writeImageDataToSavedPhotosAlbum:photoData metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error1) {
-		//	if (error1 || !assetURL) {
-		//	// handle error properly
-		//	return;
-		//	}
-		//
-		//	NSString *albumName = @"PBJVision";
-		//	__block BOOL albumFound = NO;
-		//	[_assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-		//	if ([albumName compare:[group valueForProperty:ALAssetsGroupPropertyName]] == NSOrderedSame) {
-		//	albumFound = YES;
-		//	[_assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-		//	[group addAsset:asset];
-		//	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Photo Saved!" message: @"Saved to the camera roll."
-		//	delegate:nil
-		//	cancelButtonTitle:nil
-		//	otherButtonTitles:@"OK", nil];
-		//	[alert show];
-		//	} failureBlock:nil];
-		//	}
-		//	if (!group && !albumFound) {
-		//	__weak ALAssetsLibrary *blockSafeLibrary = _assetLibrary;
-		//	[_assetLibrary addAssetsGroupAlbumWithName:albumName resultBlock:^(ALAssetsGroup *group1) {
-		//	[blockSafeLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-		//	[group1 addAsset:asset];
-		//	UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Photo Saved!" message: @"Saved to the camera roll."
-		//	delegate:nil
-		//	cancelButtonTitle:nil
-		//	otherButtonTitles:@"OK", nil];
-		//	[alert show];
-		//	} failureBlock:nil];
-		//	} failureBlock:nil];
-		//	}
-		//	} failureBlock:nil];
-		//	}];
-		//	
-		//	_currentPhoto = nil;
 	}
 	
 	// video capture
@@ -599,27 +553,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		let videoPath = self.currentVideo![PBJVisionVideoPathKey] as! String
 		
-		
 		self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: videoPath)
-		//
-		//	if (error && [error.domain isEqual:PBJVisionErrorDomain] && error.code == PBJVisionErrorCancelled) {
-		//	NSLog(@"recording session cancelled");
-		//	return;
-		//	} else if (error) {
-		//	NSLog(@"encounted an error in video capture (%@)", error);
-		//	return;
-		//	}
-		//
-		//	_currentVideo = videoDict;
-		//
-		//	NSString *videoPath = [_currentVideo  objectForKey:PBJVisionVideoPathKey];
-		//	[_assetLibrary writeVideoAtPathToSavedPhotosAlbum:[NSURL URLWithString:videoPath] completionBlock:^(NSURL *assetURL, NSError *error1) {
-		//	UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Video Saved!" message: @"Saved to the camera roll."
-		//	delegate:self
-		//	cancelButtonTitle:nil
-		//	otherButtonTitles:@"OK", nil];
-		//	[alert show];
-		//	}];
 	}
 	
 	// progress

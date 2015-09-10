@@ -260,6 +260,19 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.updateElement(element)
 	}
 	
+	func secondaryViewController(controller: SecondaryViewController, didDeleteElement element: StoryElement, fromLine line: StoryLine) {
+		let lineElements = line.mutableOrderedSetValueForKey("elements")
+		lineElements.removeObject(element)
+		
+		do {
+			try self.context.save()
+		} catch {
+			print("Couldn't save deletion on DB: \(error)")
+		}
+		
+		self.tableController!.tableView.reloadData()
+	}
+	
 	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) -> Void {
 		//When the secondary view controller shows a particular element I need to update the primary controller to scroll to the same element in the current line
 		

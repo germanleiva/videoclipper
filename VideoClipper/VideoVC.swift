@@ -328,6 +328,19 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 	}
 	
+	@IBAction func deleteVideo(sender:UIButton) {
+		let alertController = UIAlertController(title: "Delete video", message: "The video will remain on the Photo Album. Do you want to remove it from the line?" , preferredStyle: UIAlertControllerStyle.Alert)
+		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+			self.delegate?.storyElementVC(self, elementDeleted: self.video!)
+
+			alertController.dismissViewControllerAnimated(true, completion: nil)
+		}))
+		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+			alertController.dismissViewControllerAnimated(true, completion: nil)
+		}))
+		self.presentViewController(alertController, animated: true, completion: nil)
+	}
+	
 	func showPopupUI() {
 		self.infoView.hidden = false
 		let trackRect = self.scrubberSlider.trackRectForBounds(self.scrubberSlider.bounds)

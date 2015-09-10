@@ -135,7 +135,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		super.awakeFromNib()
 		self.panGesture = UIPanGestureRecognizer(target: self, action: "pannedScrubber:")
 		self.panGesture?.delegate = self
-//		self.scrubber.addGestureRecognizer(self.panGesture!)
+		self.scrubber.addGestureRecognizer(self.panGesture!)
 	}
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {

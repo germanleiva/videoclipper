@@ -110,6 +110,7 @@
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
 		A44CE8F41B600B5300953B7F /* VideoHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoHelper.h; sourceTree = "<group>"; };
+		A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_02.xcdatamodel; sourceTree = "<group>"; };
 		A4664AB61B444BA80095B27D /* VideoClipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoClipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4664AB91B444BA80095B27D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A4664ABE1B444BA80095B27D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -926,10 +927,11 @@
 		A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */,
 				A466D0F71B9DACC900CB55D1 /* VideoClipper_01.xcdatamodel */,
 				A4664AC11B444BA80095B27D /* VideoClipper.xcdatamodel */,
 			);
-			currentVersion = A466D0F71B9DACC900CB55D1 /* VideoClipper_01.xcdatamodel */;
+			currentVersion = A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */;
 			path = VideoClipper.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -11,7 +11,7 @@ import GLKit
 
 let keyShutterLockEnabled = "shutterLockEnabled"
 let keyGhostDisabled = "keyGhostDisabled"
-let keyExpandedCaptureEnabled = "keyExpandedCaptureEnabled"
+let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String)
@@ -73,7 +73,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		let defaults = NSUserDefaults.standardUserDefaults()
 		self.shutterLock.on = defaults.boolForKey(keyShutterLockEnabled)
 		
-		if defaults.boolForKey(keyExpandedCaptureEnabled) {
+		if !defaults.boolForKey(keyShortPreviewEnabled) {
 			self.expandPreview()
 		}
 		
@@ -258,12 +258,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		let defaults = NSUserDefaults.standardUserDefaults()
 		if self.previewViewHeightConstraint == nil || self.previewViewWidthConstraint.active {
 			self.expandPreview()
-			defaults.setBool(true, forKey: keyExpandedCaptureEnabled)
+			defaults.setBool(false, forKey: keyShortPreviewEnabled)
 		} else {
 			self.previewViewHeightConstraint!.active = false
 			self.previewViewWidthConstraint.active = true
 			
-			defaults.setBool(false, forKey: keyExpandedCaptureEnabled)
+			defaults.setBool(true, forKey: keyShortPreviewEnabled)
 		}
 		defaults.synchronize()
 		self.shouldUpdatePreviewLayerFrame = true

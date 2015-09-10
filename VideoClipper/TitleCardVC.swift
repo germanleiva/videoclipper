@@ -73,6 +73,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var importImagePopover:UIPopoverController? = nil
 	var shouldDismissPicker = false
 	
+	var selectedView:UIView? = nil
+	
 	@IBAction func showDurationPopOver(sender:AnyObject?){
 		if self.durationPopover == nil {
 			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
@@ -335,6 +337,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			widget.width = eachTextWidget.textView!.frame.size.width
 			widget.height = eachTextWidget.textView!.frame.size.height
 			widget.fontSize = eachTextWidget.textView!.font!.pointSize
+			widget.color = eachTextWidget.textView!.textColor
 			
 			widgetsOnTitleCard?.addObject(widget)
 		}
@@ -367,10 +370,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	@IBAction func deleteSelectedWidget(sender:UIButton) {
-		let selectedTextWidgets = self.textWidgets.filter { (eachTextWidget) -> Bool in
+	func selectedTextWidgets() -> [TextWidgetStruct] {
+		return self.textWidgets.filter { (eachTextWidget) -> Bool in
 			return !eachTextWidget.leftHandler!.hidden
 		}
+	}
+	
+	@IBAction func deleteSelectedWidget(sender:UIButton) {
+		let selectedTextWidgets = self.selectedTextWidgets()
 		
 		//There will be only one for now
 		for eachSelectedTextWidget in selectedTextWidgets {
@@ -620,10 +627,12 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		textWidget.rightHandler!.hidden = false
 		textWidget.textView!.layer.borderWidth = 0.5
 		//		}
+		self.colorButton.backgroundColor = textWidget.textView!.textColor!
 	}
 	
 	func deactivateHandlers(textWidgets:[TextWidgetStruct]) -> [TextWidgetStruct] {
 		self.deleteButton.enabled = false
+		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
 		var deactivatedTextWidgets = [TextWidgetStruct]()
 		for aTextWidget in textWidgets {
@@ -763,9 +772,18 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	func didPickColor(color: UIColor) {
 		self.colorButton.backgroundColor = color
-		self.canvas!.backgroundColor = color
 		
-		self.titleCard!.backgroundColor = color
+		let selected = self.selectedTextWidgets()
+		if selected.isEmpty {
+			self.canvas!.backgroundColor = color
+			self.titleCard!.backgroundColor = color
+		} else {
+			if let textWidget = selected.first!.textView {
+				if textWidget.text != EMPTY_TEXT {
+					textWidget.textColor = color
+				}
+			}
+		}
 		
 		self.saveCanvas()
 	}

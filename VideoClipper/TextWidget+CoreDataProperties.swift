@@ -20,6 +20,6 @@ extension TextWidget {
     @NSManaged var distanceYFromCenter: NSNumber?
 	@NSManaged var width: NSNumber?
 	@NSManaged var fontSize: NSNumber?
+	@NSManaged var color:NSObject?
     @NSManaged var titleCard: TitleCard?
-
 }

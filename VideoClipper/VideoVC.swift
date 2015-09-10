@@ -271,6 +271,17 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.hidePopupUI()
 	}
 	
+	func filmstrip(filmstripView: FilmstripView, didChangeStartPoint percentage: Float) {
+		self.video!.startPoint = percentage
+		try! self.context.save()
+	}
+	
+	func filmstrip(filmstripView: FilmstripView, didChangeEndPoint percentage: Float) {
+		self.video!.endPoint = percentage
+		try! self.context.save()
+
+	}
+	
 	func setCurrentTime(time:NSTimeInterval, duration:NSTimeInterval) {
 		self.updateLabels(time,duration: duration)
 		self.scrubberSlider.minimumValue = 0
@@ -442,7 +453,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	//-MARK: Thumbnail Generation
 	
 	func generateThumbnails() {
-		self.filmStripView.generateThumbnails(self.asset)
+		self.filmStripView.generateThumbnails(self.asset,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
 	}
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {

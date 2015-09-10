@@ -15,7 +15,9 @@ import CoreData
 extension VideoClip {
 
     @NSManaged var path: String?
-    @NSManaged var thumbnail: NSData?
-    @NSManaged var tags: NSOrderedSet?
+	@NSManaged var thumbnail: NSData?
+	@NSManaged var tags: NSOrderedSet?
+	@NSManaged var startPoint: NSNumber?
+	@NSManaged var endPoint: NSNumber?
 
 }

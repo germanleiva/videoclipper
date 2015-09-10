@@ -268,11 +268,17 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 		for eachElement in elements {
 			var asset:AVAsset? = nil
+			var startTime = kCMTimeZero
 			var assetDuration = kCMTimeZero
 			if (eachElement as! StoryElement).isVideo() {
 				let eachVideo = eachElement as! VideoClip
 				asset = eachVideo.asset
-				assetDuration = asset!.duration
+				let durationInSeconds = CMTimeGetSeconds(asset!.duration)
+				let startPercentage = Float64(eachVideo.startPoint!)
+				let endPercentage = Float64(eachVideo.endPoint!)
+				
+				startTime = CMTimeMakeWithSeconds(durationInSeconds * startPercentage, 1000)
+				assetDuration = CMTimeMakeWithSeconds(durationInSeconds * (endPercentage - startPercentage), 1000)
 
 			} else if (eachElement as! StoryElement).isTitleCard() {
 				let eachTitleCard = eachElement as! TitleCard
@@ -303,7 +309,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
 //			let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
 			
-			let range = CMTimeRangeMake(kCMTimeZero, assetDuration)
+			let range = CMTimeRangeMake(startTime, assetDuration)
 			do {
 				try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
 //				if sourceMetadataTrack != nil {

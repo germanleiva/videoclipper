@@ -33,7 +33,7 @@ class StoryLineCell: UITableViewCell {
 		tapGesture.delegate = self
 		
 		let bgColorView = UIView()
-		bgColorView.backgroundColor = UIColor(red: 253/255, green: 253/255, blue: 150/255, alpha: 1)
+		bgColorView.backgroundColor = Globals.globalTint
 		self.selectedBackgroundView = bgColorView
     }
 	

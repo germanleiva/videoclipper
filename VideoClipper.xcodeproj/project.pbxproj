@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */; };
 		A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */; };
+		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
 		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
@@ -100,6 +101,7 @@
 		A404A52C1B8118AA00B82B29 /* AVPlayerItem+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVPlayerItem+THAdditions.h"; sourceTree = "<group>"; };
 		A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerItem+THAdditions.m"; sourceTree = "<group>"; };
 		A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementVC.swift; sourceTree = "<group>"; };
+		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
 		A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
 		A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
 		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				A404A52B1B81189800B82B29 /* THFoundation */,
 				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
 				A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */,
+				A423152E1BA1CC910096DF01 /* SwiftColors.swift */,
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
@@ -634,6 +637,7 @@
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
 				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
+				A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */,
 				A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */,
 				A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */,
 				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,

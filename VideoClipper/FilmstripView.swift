@@ -17,7 +17,15 @@ protocol FilmstripViewDelegate {
 	func filmstrip(filmstripView:FilmstripView,didChangeEndPoint percentage:Float)
 }
 
-class TrimmerThumbView:UIView {
+class ExtendedInsetView:UIView {
+	override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+		let hitTestEdgeInsets = UIEdgeInsets(top: 0, left: -35, bottom: -10, right: -35 )
+		let hitFrame = UIEdgeInsetsInsetRect(self.bounds, hitTestEdgeInsets)
+		return CGRectContainsPoint(hitFrame, point)
+	}
+}
+
+class TrimmerThumbView:ExtendedInsetView {
 	var color:UIColor
 	var isRight:Bool
 	
@@ -38,12 +46,6 @@ class TrimmerThumbView:UIView {
 		self.color = UIColor.orangeColor()
 	}
 	
-	override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
-		let hitTestEdgeInsets = UIEdgeInsets(top: 0, left: -35, bottom: -10, right: -35 )
-		let hitFrame = UIEdgeInsetsInsetRect(self.bounds, hitTestEdgeInsets)
-		return CGRectContainsPoint(hitFrame, point)
-	}
-
 	override func drawRect(rect: CGRect) {
 		// Drawing code
 		//// Frames
@@ -88,7 +90,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	
 	var thumbnails = [Thumbnail]()
 	var panGesture:UIPanGestureRecognizer? = nil
-	@IBOutlet var scrubber:UIView!
+	@IBOutlet var scrubber:ExtendedInsetView!
 	
 	//TRIMMER
 	@IBOutlet var startConstraint:NSLayoutConstraint!
@@ -169,9 +171,9 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		let size = anImage.size
 		
 		// Scale retina image down to appropriate size
-		let imageSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(0.5, 0.5))
+//		let imageSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(0.5, 0.5))
 //		let imageSize = CGSize(width:self.frame.size.width/8,height:self.frame.size.height)
-//		let imageSize = CGSize(width: 94,height: 52)
+		let imageSize = CGSize(width: 84,height: 52)
 //		let imageRect = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
 	
 //		let imageWidth = CGRectGetWidth(imageRect) * CGFloat(self.thumbnails.count)
@@ -189,7 +191,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: imageSize.height))
 			
 			button.tag = i
-			self.insertSubview(button, belowSubview: self.scrubber)
+			self.insertSubview(button, belowSubview: self.leftOverlayView)
 			currentX += imageSize.width
 		}
 		
@@ -243,13 +245,15 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		
 		switch state {
 		case UIGestureRecognizerState.Began:
-			break
+			self.delegate?.filmstrip(self, didStartScrubbing: percentage)
 		case UIGestureRecognizerState.Changed:
 			self.endConstraint.constant = self.frame.width - potentialStartConstraint
 			if potentialStartConstraint < self.startConstraint.constant {
 				self.startConstraint.constant = potentialStartConstraint
 			}
+			self.delegate?.filmstrip(self, didChangeScrubbing: percentage)
 		case UIGestureRecognizerState.Ended:
+			self.delegate?.filmstrip(self, didEndScrubbing: percentage)
 			self.delegate?.filmstrip(self, didChangeEndPoint: percentage)
 
 			break

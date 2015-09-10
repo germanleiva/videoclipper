@@ -72,6 +72,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
+		self.view.backgroundColor = Globals.globalTint
+
 		self.scrubberSlider.setThumbImage(UIImage(named: "knob"), forState:UIControlState.Normal)
 		self.scrubberSlider.setThumbImage(UIImage(named: "knob_highlighted"),forState:UIControlState.Highlighted)
 		
@@ -81,6 +83,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		
 		self.scrubberSlider.addTarget(self, action: "showPopupUI", forControlEvents: .ValueChanged)
 		self.scrubberSlider.addTarget(self, action: "hidePopupUI", forControlEvents: .TouchUpInside)
+		self.scrubberSlider.addTarget(self, action: "hidePopupUI", forControlEvents: .TouchUpOutside)
 		self.scrubberSlider.addTarget(self, action: "unhidePopupUI", forControlEvents: .TouchDown)
 
 		self.filmStripView.delegate = self
@@ -471,7 +474,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 	
 	override func shouldRecognizeSwiping(locationInView: CGPoint) -> Bool {
-		return /*locationInView.y < self.filmStripView.frame.origin.y  || */locationInView.y > (self.playerToolbar.frame.origin.y + self.playerToolbar.frame.height)
+		return locationInView.y > (self.filmStripView.frame.origin.y + self.filmStripView.frame.height)  && !CGRectContainsPoint(self.playerToolbar.frame, locationInView)
 	}
 	
 }

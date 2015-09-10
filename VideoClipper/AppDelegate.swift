@@ -11,6 +11,10 @@ import CoreData
 //import Fabric
 //import Crashlytics
 
+struct Globals {
+	static var globalTint = UIColor(hexString: "#117AFF")
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

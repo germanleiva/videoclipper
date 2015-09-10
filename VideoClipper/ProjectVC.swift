@@ -13,7 +13,7 @@ import AssetsLibrary
 import Photos
 import MobileCoreServices
 
-class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate, ELCImagePickerControllerDelegate {
+class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate, ELCImagePickerControllerDelegate, UIGestureRecognizerDelegate {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
 	var secondaryController:SecondaryViewController?
@@ -62,15 +62,24 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //		self.view.addConstraint(NSLayoutConstraint(item: self.addButton, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Bottom, multiplier: 1, constant: 200))
 		self.titleTextField!.text = self.project!.name
 		
+		self.verticalToolbar.layer.borderWidth = 0.4
+		self.verticalToolbar.layer.borderColor = UIColor.blackColor().CGColor
+		self.verticalToolbar.backgroundColor = Globals.globalTint
+
 		self.primaryViewWidthConstraint!.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width
 		
 		self.view.layoutIfNeeded()
 		
-		let tapGesture = UITapGestureRecognizer(target: self, action: "tapOnPrimaryView:")
+		let tapGesture = UITapGestureRecognizer(target: self, action: "tapOnBackgroundOfPrimaryView:")
 		
 		self.tableController!.tableView.backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: self.tableController!.tableView.frame.size.width, height: self.tableController!.tableView.frame.size.height))
 		self.tableController!.tableView.backgroundView?.backgroundColor = UIColor.clearColor()
 		self.tableController!.tableView.backgroundView!.addGestureRecognizer(tapGesture)
+		
+		let doubleTap = UITapGestureRecognizer(target: self, action: "doubleTapOnPrimaryView:")
+		doubleTap.numberOfTapsRequired = 2
+		doubleTap.delegate = self
+		self.tableController!.view.addGestureRecognizer(doubleTap)
 		
 		self.secondaryViewWidthConstraint.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width - self.primaryControllerCompactWidth
 		
@@ -93,7 +102,19 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 	}
 	
-	func tapOnPrimaryView(recognizer:UITapGestureRecognizer) {
+	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+		return false
+	}
+	
+	func doubleTapOnPrimaryView(recognizer:UITapGestureRecognizer) {
+		self.titleTextField.resignFirstResponder()
+		if self.tableController!.isCompact {
+			self.expandPrimaryController(true)
+		}
+	}
+	
+	func tapOnBackgroundOfPrimaryView(recognizer:UITapGestureRecognizer) {
+		self.titleTextField.resignFirstResponder()
 		if self.tableController!.isCompact {
 			self.expandPrimaryController(true)
 		}

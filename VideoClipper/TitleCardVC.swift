@@ -115,6 +115,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     override func viewDidLoad() {
         super.viewDidLoad()
 		
+		self.view.backgroundColor = Globals.globalTint
+		
 		let imagePicker = UIImagePickerController()
 		imagePicker.delegate = self
 		imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
@@ -590,7 +592,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 		switch sender.state {
 		case UIGestureRecognizerState.Began:
-			print("\(handlerId) panning began at point \(sender.locationInView(self.view))")
+//			print("\(handlerId) panning began at point \(sender.locationInView(self.view))")
+			break
 		case UIGestureRecognizerState.Changed:
 //			print("\(handlerId) panning began")
 			let translation = sender.translationInView(handlerView)
@@ -677,9 +680,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	//- MARK: Gesture Recognizer Delegate
-//	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
-//		return true
-//	}
+	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+		return true
+	}
+	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 		return otherGestureRecognizer.view!.isDescendantOfView(self.canvas!)
 	}
@@ -789,8 +793,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	override func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {
-		let canvasRect = self.view.convertRect(self.canvas!.frame, fromView:self.canvas)
-		return !CGRectContainsPoint(canvasRect, locationInView)
+//		let canvasRect = self.view.convertRect(self.canvas!.frame, fromView:self.canvas)
+//		return !CGRectContainsPoint(canvasRect, locationInView)
+		return true
 	}
 	
 }

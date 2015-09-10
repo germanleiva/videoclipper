@@ -75,8 +75,12 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
         super.viewDidLoad()
 		
         // Do any additional setup after loading the view.
+		self.view!.backgroundColor = Globals.globalTint
+		self.pageControl!.backgroundColor = Globals.globalTint
+
 		//Adds a shadow to sampleView
 		let layer = self.view.layer
+		
 		layer.shadowOffset = CGSize(width: 1,height: 1)
 		layer.shadowColor = UIColor.blackColor().CGColor
 		
@@ -96,14 +100,16 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		swipeLeftGesture.numberOfTouchesRequired = 1
 		swipeLeftGesture.delegate = self
 		self.view.addGestureRecognizer(swipeLeftGesture)
+		
     }
 	
 	func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
 		let currentVC = self.viewControllerAtIndex(self.currentIndex)
 		return currentVC.shouldRecognizeSwiping(gestureRecognizer.locationInView(currentVC.view))
 	}
+	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-		return false
+		return !otherGestureRecognizer.isKindOfClass(UIPanGestureRecognizer)
 	}
 	
 	@IBAction func pageControlValueChanged(sender:UIPageControl) {

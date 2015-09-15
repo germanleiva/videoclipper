@@ -318,20 +318,27 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
 		}
 		
-		self.expandPrimaryController(self.tableController!.isCompact)
+		if !self.tableController!.isCompact {
+			let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
+			let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
+			
+			self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
+		} else {
+			self.expandPrimaryController(true)
+		}
 	}
 	
-	func expandPrimaryController(shouldHideSecondaryView:Bool,completion:(() -> Void)? = nil) {
+	func expandPrimaryController(shouldHideSecondaryView:Bool) {
 		self.titleTextField.resignFirstResponder()
 		
 		if shouldHideSecondaryView == self.tableController!.isCompact {
-			UIView.animateWithDuration(0.3, animations: { () -> Void in
+			UIView.animateWithDuration(0.1, animations: { () -> Void in
 				self.closeToolbar.transform = CGAffineTransformRotate(self.closeToolbar.transform, CGFloat(M_PI))
 			})
 		}
 		
 		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth
-		self.view.insertSubview(self.verticalToolbar, aboveSubview: self.secondaryController!.view)
+		self.view.bringSubviewToFront(self.verticalToolbar)
 //		let shouldHideSecondaryView = self.primaryViewWidthConstraint?.constant == primaryWidth
 		if shouldHideSecondaryView {
 			primaryControllerCurrentWidth = self.view.frame.size.width - self.verticalToolbar.frame.size.width
@@ -342,20 +349,17 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.tableController!.isCompact = !shouldHideSecondaryView
 
 		self.view.layoutIfNeeded()
-		//		self.view.setNeedsUpdateConstraints()
+//		self.view.setNeedsUpdateConstraints()
 		
 		self.primaryViewWidthConstraint!.constant = primaryControllerCurrentWidth
 		
-		UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+		UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 3, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 			self.view.layoutIfNeeded()
 			}) { (completed) -> Void in
 				if (completed) {
 					//					self.secondaryController!.view.hidden = shouldHideSecondaryView
 					if shouldHideSecondaryView {
 						self.currentItemIndexPath = nil
-					}
-					if let block = completion {
-						block()
 					}
 				}
 		}
@@ -364,22 +368,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	
 	@IBAction func captureForLineTapped(sender:AnyObject?) {
 		self.tableController!.recordTappedOnSelectedLine(sender)
-	}
-	
-	@IBAction func doubleTapOnVerticalBar(sender:AnyObject?) {
-		if self.currentItemIndexPath == nil {
-			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-		}
-		
-		if !self.tableController!.isCompact {
-			let line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
-			let element = line!.elements![self.currentItemIndexPath!.item] as? StoryElement
-			
-			self.primaryController(self.tableController!, willSelectElement: element, itemIndexPath: self.currentItemIndexPath, line: line, lineIndexPath: self.currentLineIndexPath)
-		} else {
-			self.expandPrimaryController(true)
-		}
-		
 	}
 	
 	@IBAction func importForLineTapped(sender:AnyObject?) {

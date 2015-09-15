@@ -40,6 +40,22 @@ extension UITextView {
 	}
 }
 
+class LeftHandlerView:UIView {
+	override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+		let hitTestEdgeInsets = UIEdgeInsets(top: -15, left: -20, bottom: -15, right: -10 )
+		let hitFrame = UIEdgeInsetsInsetRect(self.bounds, hitTestEdgeInsets)
+		return CGRectContainsPoint(hitFrame, point)
+	}
+}
+
+class RightHandlerView:UIView {
+	override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+		let hitTestEdgeInsets = UIEdgeInsets(top: -15, left: -10, bottom: -15, right: -20 )
+		let hitFrame = UIEdgeInsetsInsetRect(self.bounds, hitTestEdgeInsets)
+		return CGRectContainsPoint(hitFrame, point)
+	}
+}
+
 class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var scrollView:UIScrollView?
@@ -512,7 +528,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		let handlerSize = CGFloat(20)
 		
-		model.leftHandler = ExtendedInsetView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.leftHandler = LeftHandlerView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
 		model.leftHandler!.backgroundColor = UIColor.redColor()
 		model.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.leftHandler!)
@@ -521,7 +537,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
 		leftPanningRecognizer.delegate = self
 		
-		model.rightHandler = ExtendedInsetView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.rightHandler = RightHandlerView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
 		model.rightHandler!.backgroundColor = UIColor.redColor()
 		model.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.rightHandler!)
@@ -710,15 +726,16 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	//- MARK: Text View Delegate
 	func textViewDidEndEditing(textView: UITextView) {
-		let textWidget = findTextWidget(textView)!
-		deactivateHandlers([textWidget])
-		
-		textView.isPlaceholder(textView.text.isEmpty)
-		if textView.isPlaceholder() {
-			textView.text = EMPTY_TEXT
-			textView.textColor = EMPTY_COLOR
+		if let textWidget = findTextWidget(textView) {
+			deactivateHandlers([textWidget])
+			
+			textView.isPlaceholder(textView.text.isEmpty)
+			if textView.isPlaceholder() {
+				textView.text = EMPTY_TEXT
+				textView.textColor = EMPTY_COLOR
+			}
+	//		print("textViewDidEndEditing <====")
 		}
-//		print("textViewDidEndEditing <====")
 		self.saveCanvas()
 		self.editingTextView = nil
 	}

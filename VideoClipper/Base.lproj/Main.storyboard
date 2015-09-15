@@ -1145,9 +1145,6 @@
                                     <constraint firstItem="oUK-rP-zy7" firstAttribute="centerY" secondItem="7pH-g7-kGs" secondAttribute="centerY" constant="-100" id="tX9-bG-kDR"/>
                                     <constraint firstItem="4s4-AP-UZd" firstAttribute="trailing" secondItem="oUK-rP-zy7" secondAttribute="trailing" id="vf7-Xu-eJv"/>
                                 </constraints>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="Zpj-gR-BhM" appends="YES" id="pQW-LI-HtG"/>
-                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1222,11 +1219,6 @@
                         <action selector="importForLineTapped:" destination="d93-I1-5WA" id="NbP-Fq-Aj9"/>
                     </connections>
                 </pongPressGestureRecognizer>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="Zpj-gR-BhM">
-                    <connections>
-                        <action selector="doubleTapOnVerticalBar:" destination="d93-I1-5WA" id="taY-8p-1Ia"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2195" y="537"/>
         </scene>

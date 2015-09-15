@@ -318,25 +318,17 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
 		}
 		
-		if self.tableController!.isCompact {
-			//We need to hide the detail view = expand primary
-			UIView.animateWithDuration(0.3, animations: { () -> Void in
-				sender.transform = CGAffineTransformRotate(sender.transform, CGFloat(M_PI))
-			})
-			
-			self.expandPrimaryController(true)
-
-		} else {
-			//We need to show the detail view = compact primary
-			UIView.animateWithDuration(0.3, animations: { () -> Void in
-				sender.transform = CGAffineTransformRotate(sender.transform, CGFloat(M_PI * -1))
-			})
-			self.expandPrimaryController(false)
-		}
+		self.expandPrimaryController(self.tableController!.isCompact)
 	}
 	
 	func expandPrimaryController(shouldHideSecondaryView:Bool,completion:(() -> Void)? = nil) {
 		self.titleTextField.resignFirstResponder()
+		
+		if shouldHideSecondaryView == self.tableController!.isCompact {
+			UIView.animateWithDuration(0.3, animations: { () -> Void in
+				self.closeToolbar.transform = CGAffineTransformRotate(self.closeToolbar.transform, CGFloat(M_PI))
+			})
+		}
 		
 		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth
 		self.view.insertSubview(self.verticalToolbar, aboveSubview: self.secondaryController!.view)

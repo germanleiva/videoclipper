@@ -901,13 +901,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
                                 <rect key="frame" x="35" y="467" width="54" height="34"/>
                                 <state key="normal" title="Import">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
                                 <rect key="frame" x="502" y="467" width="63" height="34"/>
                                 <state key="normal" title="Save as">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -931,70 +931,71 @@
                                     <constraint firstAttribute="bottom" secondItem="jfr-Mu-juV" secondAttribute="bottom" id="vsr-Yl-JmP"/>
                                 </constraints>
                             </scrollView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zSw-vK-PXg">
-                                <rect key="frame" x="35" y="106" width="49" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="Undo"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8x-js-bpn">
-                                <rect key="frame" x="201" y="109" width="33" height="33"/>
-                                <state key="normal" image="icon-type"/>
-                                <connections>
-                                    <action selector="addCenteredTextInput:" destination="IbS-bj-HKR" eventType="touchUpInside" id="ddU-y4-eDa"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lzs-KQ-gSO">
-                                <rect key="frame" x="367" y="109" width="33" height="33"/>
+                                <rect key="frame" x="532" y="109" width="33" height="33"/>
                                 <state key="normal" image="icon-trash"/>
                                 <connections>
                                     <action selector="deleteSelectedWidget:" destination="IbS-bj-HKR" eventType="touchUpInside" id="trK-qs-qjy"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TzP-G1-yFU">
-                                <rect key="frame" x="284" y="109" width="33" height="33"/>
+                                <rect key="frame" x="367" y="109" width="33" height="33"/>
                                 <state key="normal" image="icon-picture"/>
                                 <connections>
                                     <action selector="importImagePressed:" destination="IbS-bj-HKR" eventType="touchUpInside" id="RrO-5K-gi4"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whV-Vq-JaQ">
-                                <rect key="frame" x="523" y="106" width="42" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="XX s"/>
-                                <connections>
-                                    <action selector="showDurationPopOver:" destination="IbS-bj-HKR" eventType="touchUpInside" id="NXs-FF-0FT"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M13-BE-b8R">
-                                <rect key="frame" x="139" y="112" width="30" height="30"/>
+                                <rect key="frame" x="35" y="111" width="30" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <action selector="colorButtonPressed:" destination="IbS-bj-HKR" eventType="touchUpInside" id="EJs-VT-Uf8"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whV-Vq-JaQ">
+                                <rect key="frame" x="240" y="466" width="121" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="XX s duration"/>
+                                <connections>
+                                    <action selector="showDurationPopOver:" destination="IbS-bj-HKR" eventType="touchUpInside" id="NXs-FF-0FT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8x-js-bpn">
+                                <rect key="frame" x="284" y="109" width="33" height="33"/>
+                                <state key="normal" image="icon-type"/>
+                                <connections>
+                                    <action selector="addCenteredTextInput:" destination="IbS-bj-HKR" eventType="touchUpInside" id="ddU-y4-eDa"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1u-gm-0LU">
+                                <rect key="frame" x="197" y="109" width="30" height="34"/>
+                                <state key="normal" title="Aa">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.99215686270000003" green="0.99215686270000003" blue="0.58823529409999997" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="TzP-G1-yFU" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="2NV-EJ-0SJ"/>
-                            <constraint firstItem="TzP-G1-yFU" firstAttribute="leading" secondItem="F8x-js-bpn" secondAttribute="trailing" constant="50" id="5Bx-cd-7ou"/>
-                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="bottom" secondItem="zSw-vK-PXg" secondAttribute="bottom" id="8zh-EX-2v6"/>
+                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="leading" secondItem="TzP-G1-yFU" secondAttribute="trailing" constant="132" id="48L-S3-zfk"/>
+                            <constraint firstItem="J1u-gm-0LU" firstAttribute="leading" secondItem="M13-BE-b8R" secondAttribute="trailing" constant="132" id="4T8-qk-LBk"/>
+                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="centerY" secondItem="M13-BE-b8R" secondAttribute="centerY" id="7zb-qv-Kk6"/>
                             <constraint firstItem="plO-zN-T3u" firstAttribute="leading" secondItem="Gs1-LF-5XS" secondAttribute="leading" id="BcE-uW-zo8"/>
+                            <constraint firstItem="M13-BE-b8R" firstAttribute="leading" secondItem="jfr-Mu-juV" secondAttribute="leading" id="C4o-b7-g25"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="Dv2-vY-cbE"/>
-                            <constraint firstItem="F8x-js-bpn" firstAttribute="leading" secondItem="M13-BE-b8R" secondAttribute="trailing" constant="32" id="FGk-of-M1g"/>
-                            <constraint firstItem="zSw-vK-PXg" firstAttribute="leading" secondItem="Gs1-LF-5XS" secondAttribute="leading" id="I52-G3-aXQ"/>
-                            <constraint firstItem="Gs1-LF-5XS" firstAttribute="top" secondItem="TzP-G1-yFU" secondAttribute="bottom" constant="9" id="XWU-4S-Pm6"/>
-                            <constraint firstItem="whV-Vq-JaQ" firstAttribute="bottom" secondItem="zSw-vK-PXg" secondAttribute="bottom" id="aHy-2V-XZz"/>
+                            <constraint firstItem="J1u-gm-0LU" firstAttribute="centerY" secondItem="M13-BE-b8R" secondAttribute="centerY" id="QLA-th-D62"/>
+                            <constraint firstItem="TzP-G1-yFU" firstAttribute="centerY" secondItem="M13-BE-b8R" secondAttribute="centerY" id="VvB-5k-Rbk"/>
+                            <constraint firstItem="F8x-js-bpn" firstAttribute="centerX" secondItem="jfr-Mu-juV" secondAttribute="centerX" id="XfN-Di-jvh"/>
+                            <constraint firstItem="whV-Vq-JaQ" firstAttribute="centerY" secondItem="AvL-Nj-YyN" secondAttribute="centerY" id="aEW-Ka-cE1"/>
                             <constraint firstItem="AvL-Nj-YyN" firstAttribute="trailing" secondItem="Gs1-LF-5XS" secondAttribute="trailing" id="aNW-sy-Qdx"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="centerY" secondItem="Lmj-n3-BFu" secondAttribute="centerY" id="b2T-Ei-rsf"/>
-                            <constraint firstItem="F8x-js-bpn" firstAttribute="bottom" secondItem="zSw-vK-PXg" secondAttribute="bottom" id="cEr-J1-BP6"/>
-                            <constraint firstItem="TzP-G1-yFU" firstAttribute="bottom" secondItem="zSw-vK-PXg" secondAttribute="bottom" id="dXJ-rE-jjt"/>
+                            <constraint firstItem="Gs1-LF-5XS" firstAttribute="top" secondItem="Lzs-KQ-gSO" secondAttribute="bottom" constant="9" id="dLl-eC-joJ"/>
                             <constraint firstItem="AvL-Nj-YyN" firstAttribute="top" secondItem="Gs1-LF-5XS" secondAttribute="bottom" constant="17" id="fLX-yd-9hE"/>
-                            <constraint firstItem="F8x-js-bpn" firstAttribute="bottom" secondItem="M13-BE-b8R" secondAttribute="bottom" id="gJ1-dW-9KP"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Gs1-LF-5XS" secondAttribute="trailing" constant="15" id="jmb-YA-C9h"/>
-                            <constraint firstItem="whV-Vq-JaQ" firstAttribute="trailing" secondItem="Gs1-LF-5XS" secondAttribute="trailing" id="mrv-kB-vs6"/>
-                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="leading" secondItem="TzP-G1-yFU" secondAttribute="trailing" constant="50" id="oPM-FZ-BYp"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="leading" secondItem="Lmj-n3-BFu" secondAttribute="leadingMargin" constant="15" id="pOz-7a-5wP"/>
+                            <constraint firstItem="whV-Vq-JaQ" firstAttribute="centerX" secondItem="Gs1-LF-5XS" secondAttribute="centerX" id="qeK-xs-PiU"/>
+                            <constraint firstItem="Lzs-KQ-gSO" firstAttribute="trailing" secondItem="jfr-Mu-juV" secondAttribute="trailing" id="w5Y-g2-Qz8"/>
                             <constraint firstItem="plO-zN-T3u" firstAttribute="top" secondItem="Gs1-LF-5XS" secondAttribute="bottom" constant="17" id="wUg-DS-zgD"/>
+                            <constraint firstItem="F8x-js-bpn" firstAttribute="centerY" secondItem="M13-BE-b8R" secondAttribute="centerY" id="zsK-Kh-6MN"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -1361,7 +1362,7 @@
     </scenes>
     <resources>
         <image name="blackbox" width="18" height="18"/>
-        <image name="detailButton-open" width="30" height="50"/>
+        <image name="detailButton-open" width="13" height="22"/>
         <image name="down-arrow" width="40" height="24"/>
         <image name="ghost-selected" width="43" height="43"/>
         <image name="ghost-unselected" width="42" height="42"/>

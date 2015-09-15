@@ -13,7 +13,7 @@ protocol DurationPickerControllerDelegate {
 }
 
 class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-	let values = [0,1,2,3,4,5,6,7,8,9]
+	var values = [0,1,2,3,4,5,6,7,8,9]
 	var currentValue = 3
 	var delegate:DurationPickerControllerDelegate? = nil
 	
@@ -55,7 +55,7 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
 	}
 	
 	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-		return "\(self.values[row]) seconds"
+		return "\(self.values[row])"
 	}
 	
 	func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

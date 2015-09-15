@@ -88,7 +88,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func updateDurationButtonText(newDuration:Int){
-		self.durationButton!.setTitle("\(newDuration) s", forState: UIControlState.Normal)
+		self.durationButton!.setTitle("\(newDuration) s duration", forState: UIControlState.Normal)
 	}
 	
 	func durationPickerController(controller: DurationPickerController, didValueChange newValue: Int) {
@@ -418,7 +418,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
 		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
-		newModel.fontSize = 25
+		newModel.fontSize = 30
 		self.addTextInput(newModel, initialFrame: CGRectZero)
 		
 		let titleCardWidgets = self.titleCard!.mutableOrderedSetValueForKey("widgets")
@@ -637,7 +637,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		textWidget.rightHandler!.hidden = false
 		textWidget.textView!.layer.borderWidth = 0.5
 		//		}
-		self.colorButton.backgroundColor = textWidget.color as! UIColor
+		if textWidget.color == nil {
+			textWidget.color = UIColor.blackColor()
+		}
+		
+		self.colorButton.backgroundColor = textWidget.color as? UIColor
 	}
 	
 	func deactivateHandlers(textWidgets:[TextWidget],fake:Bool = false) -> [TextWidget] {

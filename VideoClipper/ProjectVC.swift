@@ -186,7 +186,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		
 		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
 		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
-		widget.content = firstTitleCard.name
+		widget.content = ""
 		widget.distanceXFromCenter = 0
 		widget.distanceYFromCenter = 0
 		widget.width = 500

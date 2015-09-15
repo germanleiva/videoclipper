@@ -11,6 +11,8 @@ import CoreData
 import MobileCoreServices
 
 let EMPTY_TEXT = "Text"
+let EMPTY_COLOR = UIColor.lightGrayColor()
+
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
 
@@ -18,6 +20,23 @@ extension UIGestureRecognizer {
 	func cancel() {
 		self.enabled = false
 		self.enabled = true
+	}
+}
+
+extension UITextView {
+	func isPlaceholder() -> Bool {
+		if self.tag == -1 {
+			return true
+		}
+		return false
+	}
+	
+	func isPlaceholder(value:Bool) -> Void {
+		if value {
+			self.tag = -1
+		} else {
+			self.tag = 1
+		}
 	}
 }
 
@@ -103,7 +122,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		imagePicker.mediaTypes = [String(kUTTypeImage)]
 		imagePicker.allowsEditing = false
 		
-		
 		self.importImagePopover = UIPopoverController(contentViewController: imagePicker)
 		self.importImagePopover!.delegate = self
 
@@ -166,7 +184,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		} else {
 			self.canvas!.insertSubview(imageView, atIndex: 0)
 		}
-
 		
 		self.view.addConstraint(imageWidget.widthConstraint)
 		self.view.addConstraint(imageWidget.heightConstraint)
@@ -309,17 +326,18 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //			myContext.persistentStoreCoordinator = coordinator
 //			myContext.undoManager = nil
 			
-			let deactivatedWidgets = weakSelf.deactivateHandlers(weakSelf.titleCard!.textWidgets())
+			let deactivatedWidgets = weakSelf.deactivateHandlers(weakSelf.titleCard!.textWidgets(),fake:true)
 			
 			/* Capture the screen shoot at native resolution */
 			UIGraphicsBeginImageContextWithOptions(weakSelf.canvas!.bounds.size, weakSelf.canvas!.opaque, UIScreen.mainScreen().scale)
 			weakSelf.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
 
 			for eachTextWidget in weakSelf.titleCard!.textWidgets() {
-				if eachTextWidget.textView!.text == EMPTY_TEXT {
+				if eachTextWidget.textView!.isPlaceholder() {
 					eachTextWidget.content = ""
 				} else {
 					eachTextWidget.content = eachTextWidget.textView!.text
+					eachTextWidget.color = eachTextWidget.textView!.textColor
 				}
 				
 				eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
@@ -327,7 +345,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				eachTextWidget.width = eachTextWidget.textView!.frame.size.width
 				eachTextWidget.height = eachTextWidget.textView!.frame.size.height
 				eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
-				eachTextWidget.color = eachTextWidget.textView!.textColor
 			}
 			
 			let screenshot = UIGraphicsGetImageFromCurrentImageContext()
@@ -438,9 +455,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.textView!.translatesAutoresizingMaskIntoConstraints = false
 		
 		model.textView!.layer.borderColor = UIColor.blackColor().CGColor
-		if model.content!.isEmpty {
+		model.textView!.isPlaceholder(model.content!.isEmpty)
+
+		if model.textView!.isPlaceholder() {
 			model.textView!.text = EMPTY_TEXT
-			model.textView!.textColor = UIColor.lightGrayColor()
+			model.textView!.textColor = EMPTY_COLOR
 		} else {
 			model.textView!.text = model.content!
 			model.textView!.textColor = model.color as? UIColor
@@ -618,17 +637,19 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		textWidget.rightHandler!.hidden = false
 		textWidget.textView!.layer.borderWidth = 0.5
 		//		}
-		self.colorButton.backgroundColor = textWidget.textView!.textColor!
+		self.colorButton.backgroundColor = textWidget.color as! UIColor
 	}
 	
-	func deactivateHandlers(textWidgets:[TextWidget]) -> [TextWidget] {
+	func deactivateHandlers(textWidgets:[TextWidget],fake:Bool = false) -> [TextWidget] {
 		self.deleteButton.enabled = false
 		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
 		var deactivatedTextWidgets = [TextWidget]()
 		for aTextWidget in textWidgets {
-			aTextWidget.textView!.editable = false
-			aTextWidget.textView!.selectable = false
+			if !fake {
+				aTextWidget.textView!.editable = false
+				aTextWidget.textView!.selectable = false
+			}
 			aTextWidget.tapGesture!.enabled = true
 			
 			//		UIView.animateWithDuration(0.3) { () -> Void in
@@ -645,10 +666,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	//- MARK: Text View Delegate
 	func textViewDidEndEditing(textView: UITextView) {
-		deactivateHandlers([findTextWidget(textView)!])
-		if textView.text.isEmpty {
+		let textWidget = findTextWidget(textView)!
+		deactivateHandlers([textWidget])
+		
+		textView.isPlaceholder(textView.text.isEmpty)
+		if textView.isPlaceholder() {
 			textView.text = EMPTY_TEXT
-			textView.textColor = UIColor.lightGrayColor()
+			textView.textColor = EMPTY_COLOR
 		}
 //		print("textViewDidEndEditing <====")
 		self.saveCanvas()
@@ -664,11 +688,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let potentialTextWidget = (self.titleCard!.textWidgets().filter { (eachTextWidget) -> Bool in
 			return eachTextWidget.textView! == textView
 		}).first
-		if textView.textColor == UIColor.lightGrayColor() {
-			textView.text = nil
+		if textView.isPlaceholder() {
+			textView.text = ""
 			if let textWidgetColor = potentialTextWidget?.color {
-//				textView.textColor = textWidgetColor as? UIColor
-//			} else {
+				textView.textColor = textWidgetColor as? UIColor
+			} else {
 				textView.textColor = UIColor.blackColor()
 			}
 		}
@@ -773,20 +797,26 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.colorButton.backgroundColor = color
 		
 		let selected = self.selectedTextWidgets()
+		var completionBlock:(()->Void)? = nil
+		
 		if selected.isEmpty {
 			self.canvas!.backgroundColor = color
 			self.titleCard!.backgroundColor = color
+			completionBlock = { () -> Void in
+				self.saveCanvas()
+			}
+
 		} else {
-			if let textWidget = selected.first!.textView {
-				if textWidget.text != EMPTY_TEXT {
-					textWidget.textColor = color
+			let textWidget = selected.first!
+			textWidget.color = color
+			if let textWidgetView = textWidget.textView {
+				if !textWidgetView.isPlaceholder() || (self.editingTextView != nil && self.editingTextView == textWidgetView) {
+					textWidgetView.textColor = color
 				}
 			}
 		}
 		
-		colorPicker.dismissViewControllerAnimated(true) { () -> Void in
-			self.saveCanvas()
-		}
+		colorPicker.dismissViewControllerAnimated(true, completion: completionBlock)
 	}
 	
 	override func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {

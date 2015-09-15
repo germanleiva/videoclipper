@@ -40,7 +40,7 @@ extension UITextView {
 	}
 }
 
-class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, DurationPickerControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
@@ -55,6 +55,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var editingTextView:UITextView? = nil
 	
 	@IBOutlet var deleteButton: UIButton!
+	@IBOutlet var fontSizeButton: UIButton!
 	
 	var titleCard: TitleCard? {
 		return self.element as? TitleCard
@@ -74,26 +75,53 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		return queue
 	}()
 	
+	@IBAction func showFontSizePopOver(sender:AnyObject?) {
+		if self.durationPopover == nil {
+			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
+			self.durationPopover = UIPopoverController(contentViewController: durationController)
+			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
+			self.durationPopover!.delegate = self
+		}
+		
+		let selectedTextWidgets = self.selectedTextWidgets()
+
+		if !selectedTextWidgets.isEmpty {
+			let selectedTextWidget = selectedTextWidgets.first!
+			let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
+
+			var newValues = [Int]()
+			for i in 10..<80 {
+				newValues.append(i)
+			}
+			durationPickerController.values = newValues
+			durationPickerController.currentValue = Int(selectedTextWidget.fontSize!)
+			self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)
+			durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
+				selectedTextWidget.fontSize = newValue
+				selectedTextWidget.textView!.font = UIFont.systemFontOfSize(CGFloat(newValue))
+			}
+		}
+	}
+	
 	@IBAction func showDurationPopOver(sender:AnyObject?){
 		if self.durationPopover == nil {
 			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
-			durationController.delegate = self
 			self.durationPopover = UIPopoverController(contentViewController: durationController)
 			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
 			self.durationPopover!.delegate = self
 		}
 		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
+		durationPickerController.values = [0,1,2,3,4,5,6,7,8,9]
 		durationPickerController.currentValue = Int(self.titleCard!.duration!)
 		self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
+		durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
+			self.updateDurationButtonText(newValue)
+			self.titleCard!.duration = newValue
+		}
 	}
 	
 	func updateDurationButtonText(newDuration:Int){
 		self.durationButton!.setTitle("\(newDuration) s duration", forState: UIControlState.Normal)
-	}
-	
-	func durationPickerController(controller: DurationPickerController, didValueChange newValue: Int) {
-		self.updateDurationButtonText(newValue)
-		self.titleCard!.duration = newValue
 	}
 	
 	func popoverControllerDidDismissPopover(popoverController: UIPopoverController) {
@@ -627,6 +655,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	func activateHandlers(textWidget:TextWidget){
 		deactivateHandlers(self.titleCard!.textWidgets().filter { $0 != textWidget })
 		self.deleteButton.enabled = true
+		self.fontSizeButton.enabled = true
 
 		textWidget.textView!.editable = true
 		textWidget.textView!.selectable = true
@@ -646,6 +675,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	func deactivateHandlers(textWidgets:[TextWidget],fake:Bool = false) -> [TextWidget] {
 		self.deleteButton.enabled = false
+		self.fontSizeButton.enabled = false
 		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
 		var deactivatedTextWidgets = [TextWidget]()

@@ -967,11 +967,14 @@
                                     <action selector="addCenteredTextInput:" destination="IbS-bj-HKR" eventType="touchUpInside" id="ddU-y4-eDa"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1u-gm-0LU">
-                                <rect key="frame" x="197" y="109" width="30" height="34"/>
-                                <state key="normal" title="Aa">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1u-gm-0LU">
+                                <rect key="frame" x="197" y="101" width="50" height="50"/>
+                                <state key="normal" image="fontSize-icon">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="showFontSizePopOver:" destination="IbS-bj-HKR" eventType="touchUpInside" id="UgI-FA-BmH"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.99215686270000003" green="0.99215686270000003" blue="0.58823529409999997" alpha="1" colorSpace="calibratedRGB"/>
@@ -1004,6 +1007,7 @@
                         <outlet property="colorButton" destination="M13-BE-b8R" id="Ndc-Kw-6af"/>
                         <outlet property="deleteButton" destination="Lzs-KQ-gSO" id="rjW-0H-C7x"/>
                         <outlet property="durationButton" destination="whV-Vq-JaQ" id="OVr-0T-1Ir"/>
+                        <outlet property="fontSizeButton" destination="J1u-gm-0LU" id="eFK-mb-YPw"/>
                         <outlet property="scrollView" destination="Gs1-LF-5XS" id="f3w-Ir-00G"/>
                     </connections>
                 </viewController>
@@ -1364,6 +1368,7 @@
         <image name="blackbox" width="18" height="18"/>
         <image name="detailButton-open" width="13" height="22"/>
         <image name="down-arrow" width="40" height="24"/>
+        <image name="fontSize-icon" width="50" height="50"/>
         <image name="ghost-selected" width="43" height="43"/>
         <image name="ghost-unselected" width="42" height="42"/>
         <image name="icon-picture" width="33" height="33"/>

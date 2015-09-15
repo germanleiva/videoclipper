@@ -8,14 +8,10 @@
 
 import UIKit
 
-protocol DurationPickerControllerDelegate {
-	func durationPickerController(controller:DurationPickerController,didValueChange newValue:Int) -> Void
-}
-
 class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 	var values = [0,1,2,3,4,5,6,7,8,9]
 	var currentValue = 3
-	var delegate:DurationPickerControllerDelegate? = nil
+	var valueChangedBlock:((Int)->Void)? = nil
 	
 	@IBOutlet weak var pickerView: UIPickerView!
 	
@@ -59,6 +55,8 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
 	}
 	
 	func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-		self.delegate?.durationPickerController(self, didValueChange: self.values[row])
+		if let block = self.valueChangedBlock {
+			block(self.values[row])
+		}
 	}
 }

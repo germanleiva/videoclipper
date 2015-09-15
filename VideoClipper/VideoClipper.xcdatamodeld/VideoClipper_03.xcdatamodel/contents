@@ -34,7 +34,7 @@
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="fontSize" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fontSize" optional="YES" attributeType="Integer 32" minValueString="10" maxValueString="80" defaultValueString="30" syncable="YES"/>
         <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>

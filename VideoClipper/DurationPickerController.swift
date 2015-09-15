@@ -24,6 +24,7 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		let index = self.values.indexOf(self.currentValue)
+		self.pickerView.reloadAllComponents()
 		self.pickerView.selectRow(index!, inComponent: 0, animated: true)
 	}
 

@@ -90,10 +90,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
 
 			var newValues = [Int]()
-			for i in 10..<80 {
+			for i in 10...80 {
 				newValues.append(i)
 			}
-			durationPickerController.values = newValues
+			durationPickerController.values = newValues.reverse()
 			durationPickerController.currentValue = Int(selectedTextWidget.fontSize!)
 			self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)
 			durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
@@ -111,7 +111,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			self.durationPopover!.delegate = self
 		}
 		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
-		durationPickerController.values = [0,1,2,3,4,5,6,7,8,9]
+		durationPickerController.values = [9,8,7,6,5,4,3,2,1,0]
 		durationPickerController.currentValue = Int(self.titleCard!.duration!)
 		self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
 		durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
@@ -154,7 +154,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.importImagePopover!.delegate = self
 
         // Do any additional setup after loading the view.
-		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
+		self.canvas!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
 	
 		for eachTextWidget in self.titleCard!.textWidgets() {
 			self.addTextInput(eachTextWidget,initialFrame: eachTextWidget.initialRect())
@@ -232,9 +232,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	func pannedImageView(recognizer:UIPanGestureRecognizer) {
 		if let imageWidget = self.findImageWidgetForView(recognizer.view!) {
 			if recognizer.state == .Began {
-				self.deleteButton.enabled = true
-				self.currentlySelectedImageWidget = imageWidget
 				self.deactivateHandlers(self.titleCard!.textWidgets())
+				self.currentlySelectedImageWidget = imageWidget
+				self.deleteButton.enabled = true
 				return
 			} else if recognizer.state == .Changed {
 				if self.currentlySelectedImageWidget == nil {
@@ -264,10 +264,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		if let imageWidget = self.findImageWidgetForView(recognizer.view!) {
 			let imageView = recognizer.view!
 			if recognizer.state == .Began {
+				self.deactivateHandlers(self.titleCard!.textWidgets())
 				self.currentlySelectedImageWidget = imageWidget
 				self.deleteButton.enabled = true
 				imageWidget.lastScale = 1
-				self.deactivateHandlers(self.titleCard!.textWidgets())
 				return
 			} else if recognizer.state == .Changed {
 				if self.currentlySelectedImageWidget == nil {
@@ -419,9 +419,12 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	@IBAction func deleteSelectedWidget(sender:UIButton) {
 		let selectedTextWidgets = self.selectedTextWidgets()
 		
+		var somethingWasDeleted = false
+		
 		//There will be only one for now
 		for eachSelectedTextWidget in selectedTextWidgets {
 			self.deleteTextWidget(eachSelectedTextWidget)
+			somethingWasDeleted = true
 		}
 		
 		if let imageWidgetToDelete = self.currentlySelectedImageWidget {
@@ -430,6 +433,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			images?.removeObject(imageWidgetToDelete)
 			
 			self.saveCanvas()
+			somethingWasDeleted = true
+		}
+		
+		if somethingWasDeleted {
+			self.deactivateHandlers(self.titleCard!.textWidgets())
 		}
 	}
 	
@@ -447,12 +455,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	@IBAction func addCenteredTextInput(sender:UIButton) {
 		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
 		newModel.fontSize = 30
+
 		self.addTextInput(newModel, initialFrame: CGRectZero)
 		
 		let titleCardWidgets = self.titleCard!.mutableOrderedSetValueForKey("widgets")
 		titleCardWidgets.addObject(newModel)
 		
-		self.saveCanvas()
+		self.activateHandlers(newModel)
+		
 		self.changesDetected = true
 	}
 
@@ -502,7 +512,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		let handlerSize = CGFloat(20)
 		
-		model.leftHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.leftHandler = ExtendedInsetView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
 		model.leftHandler!.backgroundColor = UIColor.redColor()
 		model.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.leftHandler!)
@@ -511,7 +521,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
 		leftPanningRecognizer.delegate = self
 		
-		model.rightHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.rightHandler = ExtendedInsetView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
 		model.rightHandler!.backgroundColor = UIColor.redColor()
 		model.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.rightHandler!)

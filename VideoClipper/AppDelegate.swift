@@ -12,7 +12,8 @@ import CoreData
 //import Crashlytics
 
 struct Globals {
-	static var globalTint = UIColor(hexString: "#117AFF")
+//	static var globalTint = UIColor(hexString: "#117AFF")!
+	static var globalTint = UIColor(red: 108/255.0 , green: 183/255.0, blue: 215/255.0, alpha: 1)
 }
 
 @UIApplicationMain
@@ -24,10 +25,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		// Override point for customization after application launch.
 //		Fabric.with([Crashlytics()])
 		
-		let pageControlAppearance = UIPageControl.appearance()
-		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()
-		pageControlAppearance.currentPageIndicatorTintColor = UIColor.blackColor()
-		pageControlAppearance.backgroundColor = UIColor.whiteColor()
+//		let pageControlAppearance = UIPageControl.appearance()
+//		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()
+//		pageControlAppearance.currentPageIndicatorTintColor = UIColor.blackColor()
+//		pageControlAppearance.backgroundColor = UIColor.whiteColor()
 		return true
 	}
 

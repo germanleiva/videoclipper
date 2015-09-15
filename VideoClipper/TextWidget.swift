@@ -13,9 +13,26 @@ import UIKit
 @objc(TextWidget)
 class TextWidget: NSManagedObject {
 
-// Insert code here to add functionality to your managed object subclass
+	var textViewMinWidthConstraint: NSLayoutConstraint!
+	var textViewMinHeightConstraint: NSLayoutConstraint!
+	var textViewWidthConstraint: NSLayoutConstraint!
+	var textViewCenterXConstraint: NSLayoutConstraint!
+	var textViewCenterYConstraint: NSLayoutConstraint!
+	
+	var leftHandler:UIView?
+	var rightHandler:UIView?
+	var textView:UITextView?
+		
+	var tapGesture:UITapGestureRecognizer?
+
 	func initialRect() -> CGRect {
 		return CGRect(x:CGFloat(self.distanceXFromCenter!),y:CGFloat(self.distanceYFromCenter!),width:CGFloat(self.width!),height:CGFloat(self.height!))
+	}
+	
+	override func awakeFromInsert() {
+		super.awakeFromInsert()
+		self.content = ""
+		self.color = UIColor.blackColor()
 	}
 
 }

@@ -21,4 +21,8 @@ class TitleCard: StoryElement {
 		super.awakeFromInsert()
 		self.backgroundColor = UIColor.whiteColor()
 	}
+	
+	func textWidgets() -> [TextWidget] {
+		return self.widgets!.array as! [TextWidget]
+	}
 }

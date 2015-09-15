@@ -559,6 +559,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+		let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
+		
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
 			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
 			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
@@ -568,8 +570,20 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		
+		var toggleTitle = "Hide"
+		if storyLine.shouldHide!.boolValue {
+			toggleTitle = "Show"
+		}
+		let toggleAction = UITableViewRowAction(style: .Default, title: toggleTitle) { action, index in
+			let alert = UIAlertController(title: "Toggle button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
+			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
+				alert.dismissViewControllerAnimated(true, completion: nil)
+			}))
+			self.presentViewController(alert, animated: true, completion: nil)
+		}
+		toggleAction.backgroundColor = UIColor(hexString: "#3D5229")
+		
 		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, indexPath in
-			let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
 
 			if storyLine.elements!.count == 0 {
 				self.deleteStoryLine(indexPath)
@@ -591,7 +605,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		deleteAction.backgroundColor = UIColor.redColor()
 		
 		if self.project!.storyLines!.count > 1 {
-			return [deleteAction,cloneAction]
+			return [deleteAction,cloneAction,toggleAction]
 		}
 		return [cloneAction]
 	}

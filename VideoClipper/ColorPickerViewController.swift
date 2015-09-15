@@ -31,7 +31,7 @@ THE SOFTWARE.
 import UIKit
 
 protocol ColorPickerViewControllerDelegate {
-	func didPickColor(color:UIColor)
+	func didPickColor(colorPickerController:ColorPickerViewController,color:UIColor)
 }
 
 class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -101,7 +101,7 @@ class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UIC
 			let hexString = colorPalette[cell.tag]
 			color = hexStringToUIColor(hexString)
 //			self.view.backgroundColor = color
-			delegate?.didPickColor(color)
+			delegate?.didPickColor(self,color: color)
 		}
 	}
 }

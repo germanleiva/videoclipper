@@ -32,6 +32,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	@IBOutlet var secondaryViewWidthConstraint:NSLayoutConstraint!
 
 	@IBOutlet weak var verticalToolbar: UIView!
+	@IBOutlet weak var closeToolbar: UIButton!
+
 	
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	@IBOutlet weak var titleTextField: UITextField!
@@ -133,6 +135,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 		
 		self.titleTextField.autocorrectionType = autocorrectionType
+		
+		if self.tableController!.isCompact {
+			self.closeToolbar.transform = CGAffineTransformIdentity
+		} else {
+			CGAffineTransformRotate(CGAffineTransformIdentity, CGFloat(M_PI))
+		}
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -305,7 +313,29 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	}
 	
-	func expandPrimaryController(shouldHideSecondaryView:Bool) {
+	@IBAction func toggleToolbar(sender:UIButton) {
+		if self.currentItemIndexPath == nil {
+			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+		}
+		
+		if self.tableController!.isCompact {
+			//We need to hide the detail view = expand primary
+			UIView.animateWithDuration(0.3, animations: { () -> Void in
+				sender.transform = CGAffineTransformRotate(sender.transform, CGFloat(M_PI))
+			})
+			
+			self.expandPrimaryController(true)
+
+		} else {
+			//We need to show the detail view = compact primary
+			UIView.animateWithDuration(0.3, animations: { () -> Void in
+				sender.transform = CGAffineTransformRotate(sender.transform, CGFloat(M_PI * -1))
+			})
+			self.expandPrimaryController(false)
+		}
+	}
+	
+	func expandPrimaryController(shouldHideSecondaryView:Bool,completion:(() -> Void)? = nil) {
 		self.titleTextField.resignFirstResponder()
 		
 		var primaryControllerCurrentWidth = self.primaryControllerCompactWidth
@@ -317,8 +347,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			//			self.secondaryController!.view.hidden = false
 		}
 		
-		self.tableController?.isCompact = !shouldHideSecondaryView
-		
+		self.tableController!.isCompact = !shouldHideSecondaryView
+
 		self.view.layoutIfNeeded()
 		//		self.view.setNeedsUpdateConstraints()
 		
@@ -331,6 +361,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 					//					self.secondaryController!.view.hidden = shouldHideSecondaryView
 					if shouldHideSecondaryView {
 						self.currentItemIndexPath = nil
+					}
+					if let block = completion {
+						block()
 					}
 				}
 		}

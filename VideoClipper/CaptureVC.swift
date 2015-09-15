@@ -31,12 +31,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
 		didSet {
-			for eachElement in self.currentLine!.elements! {
-				if (eachElement as! StoryElement).isTitleCard() {
-					self.currentTitleCard = eachElement as? TitleCard
-					return
-				}
-			}
+			self.currentTitleCard = self.currentLine?.firstTitleCard()
 		}
 	}
 	
@@ -55,6 +50,9 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	@IBOutlet weak var shutterButton: KPCameraButton!
 	@IBOutlet weak var ghostButton: UIButton!
 	@IBOutlet weak var shutterLock: UISwitch!
+	
+	@IBOutlet weak var upButton:UIButton!
+	@IBOutlet weak var downButton:UIButton!
 	
 	var previewLayer:AVCaptureVideoPreviewLayer? = nil
 	var effectsViewController:GLKViewController? = nil
@@ -127,7 +125,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	func stopTimer() {
 		self.timer?.invalidate()
 		self.timer = nil;
-		
 	}
 	
 	func captureModeOff(){
@@ -233,6 +230,9 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		super.viewWillAppear(animated)
 		self.resetCapture()
 		PBJVision.sharedInstance().startPreview()
+		
+		self.upButton.enabled = self.currentLine?.previousLine() != nil
+		self.downButton.enabled = self.currentLine?.nextLine() != nil
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
@@ -301,7 +301,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		var ghostTintColor = UIColor.whiteColor()
 		if sender.selected {
-			ghostTintColor = self.shutterButton.tintColor
+//			ghostTintColor = self.shutterButton.tintColor
+			ghostTintColor = Globals.globalTint
 		}
 		UIView.animateWithDuration(0.2) { () -> Void in
 			self.ghostButton.tintColor = ghostTintColor
@@ -324,7 +325,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	@IBAction func shutterButtonDown() {
 		if self.shutterLock.on {
 			//Nothing
-		}else {
+		} else {
 //			self.isRecording = true
 			if !self.isRecording {
 				self.startCapture()
@@ -370,6 +371,38 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	@IBAction func cancelPressed(sender: UIButton) {
 		self.dismissViewControllerAnimated(true, completion: nil)
+	}
+	
+	@IBAction func upArrowPressed(sender:UIButton) {
+		self.animatePlaceholderTitleCard(direction: CGFloat(1),newCurrentLine: self.currentLine!.previousLine())
+	}
+	
+	
+	@IBAction func downArrowPressed(sender:UIButton) {
+		self.animatePlaceholderTitleCard(direction: CGFloat(-1), newCurrentLine: self.currentLine!.nextLine())
+	}
+	
+	func animatePlaceholderTitleCard(direction factor:CGFloat,newCurrentLine:StoryLine?) {
+		let currentTCImageView = self.titleCardPlaceholder.subviews.first!
+		if let newTC = newCurrentLine?.firstTitleCard() {
+			let newTCImageView = UIImageView(image: UIImage(data:newTC.snapshot!))
+			newTCImageView.frame = self.titleCardPlaceholder.bounds
+			newTCImageView.frame = CGRectOffset(newTCImageView.frame, 0, currentTCImageView.frame.height * factor * -1)
+			self.titleCardPlaceholder.insertSubview(newTCImageView, belowSubview: currentTCImageView)
+			
+			self.upButton.enabled = newCurrentLine!.previousLine() != nil
+			self.downButton.enabled = newCurrentLine!.nextLine() != nil
+			
+			UIView.animateWithDuration(0.3, animations: { () -> Void in
+				newTCImageView.frame = self.titleCardPlaceholder.bounds
+				currentTCImageView.frame = CGRectOffset(currentTCImageView.frame, 0, currentTCImageView.frame.height * factor)
+				}) { (completed) -> Void in
+					if completed {
+						self.currentLine = newCurrentLine
+						currentTCImageView.removeFromSuperview()
+					}
+			}
+		}
 	}
 
 	override func prefersStatusBarHidden() -> Bool {

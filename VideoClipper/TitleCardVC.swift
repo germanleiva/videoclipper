@@ -10,31 +10,6 @@ import UIKit
 import CoreData
 import MobileCoreServices
 
-struct TextWidgetStruct {
-	var textViewMinWidthConstraint: NSLayoutConstraint!
-	var textViewMinHeightConstraint: NSLayoutConstraint!
-	var textViewWidthConstraint: NSLayoutConstraint!
-	var textViewCenterXConstraint: NSLayoutConstraint!
-	var textViewCenterYConstraint: NSLayoutConstraint!
-	
-	var leftHandler:UIView?
-	var rightHandler:UIView?
-	var textView:UITextView?
-	
-	var model:TextWidget?
-	
-	var tapGesture:UITapGestureRecognizer?
-
-}
-
-extension TextWidgetStruct: Equatable {}
-
-// MARK: Equatable
-
-func ==(lhs: TextWidgetStruct, rhs: TextWidgetStruct) -> Bool {
-	return lhs.textView == rhs.textView
-}
-
 let EMPTY_TEXT = "Text"
 let TEXT_INITIAL_WIDTH = CGFloat(100)
 let TEXT_INITIAL_HEIGHT = CGFloat(30)
@@ -55,8 +30,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
-	
-	var textWidgets = [TextWidgetStruct]()
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
@@ -74,6 +47,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var shouldDismissPicker = false
 	
 	var selectedView:UIView? = nil
+	
+	lazy var canvasSavingQueue:NSOperationQueue = {
+		var queue = NSOperationQueue()
+		queue.name = "Canvas Saving queue"
+		queue.maxConcurrentOperationCount = 1
+		return queue
+	}()
 	
 	@IBAction func showDurationPopOver(sender:AnyObject?){
 		if self.durationPopover == nil {
@@ -129,21 +109,18 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 
         // Do any additional setup after loading the view.
 		self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
-//	}
-//	
-//	override func viewWillAppear(animated: Bool) {
+	
+		for eachTextWidget in self.titleCard!.textWidgets() {
+			self.addTextInput(eachTextWidget,initialFrame: eachTextWidget.initialRect())
+		}
+		
 		for eachTitleCardElement in self.titleCard!.images! {
 			let imageWidget = eachTitleCardElement as! ImageWidget
 			self.addImageWidget(imageWidget)
 		}
-		
-		for eachTitleCardElement in self.titleCard!.widgets! {
-			let element = eachTitleCardElement as! TextWidget
-			self.addTextInput(element.content!, initialFrame: element.initialRect(),model: element)
-		}
-		
+	
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
-		self.deactivateHandlers(self.textWidgets)
+		self.deactivateHandlers(self.titleCard!.textWidgets())
 
 		self.updateDurationButtonText(Int(self.titleCard!.duration!))
 		
@@ -184,7 +161,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			imageWidget.centerYConstraint = NSLayoutConstraint(item: self.canvas!, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: imageWidget.imageView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: CGFloat(distanceY))
 		}
 		
-		if let firstTextWidget =  self.textWidgets.first {
+		if let firstTextWidget =  self.titleCard!.textWidgets().first {
 			self.canvas!.insertSubview(imageView, belowSubview: firstTextWidget.textView!)
 		} else {
 			self.canvas!.insertSubview(imageView, atIndex: 0)
@@ -212,6 +189,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			if recognizer.state == .Began {
 				self.deleteButton.enabled = true
 				self.currentlySelectedImageWidget = imageWidget
+				self.deactivateHandlers(self.titleCard!.textWidgets())
 				return
 			} else if recognizer.state == .Changed {
 				if self.currentlySelectedImageWidget == nil {
@@ -244,6 +222,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.currentlySelectedImageWidget = imageWidget
 				self.deleteButton.enabled = true
 				imageWidget.lastScale = 1
+				self.deactivateHandlers(self.titleCard!.textWidgets())
 				return
 			} else if recognizer.state == .Changed {
 				if self.currentlySelectedImageWidget == nil {
@@ -318,62 +297,76 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //		activityIndicator.startAnimating()
 //		self.navigationController!.view.addSubview(overlayView)
 //		
-		let deactivatedWidgets = deactivateHandlers(self.textWidgets)
+		self.canvasSavingQueue.cancelAllOperations()
 		
-		/* Capture the screen shoot at native resolution */
-		UIGraphicsBeginImageContextWithOptions(self.canvas!.bounds.size, self.canvas!.opaque, UIScreen.mainScreen().scale)
-		self.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
-
-		for eachTextWidget in self.textWidgets {
-			let widgetsOnTitleCard = self.titleCard?.mutableOrderedSetValueForKey("widgets")
-			let widget = eachTextWidget.model!
+		let weakSelf:TitleCardVC = self
+		
+		let operation = NSOperation()
+		operation.completionBlock = {() -> Void in
+//			let coordinator = (UIApplication.sharedApplication().delegate as! AppDelegate).persistentStoreCoordinator
+//
+//			let myContext = NSManagedObjectContext()
+//			myContext.persistentStoreCoordinator = coordinator
+//			myContext.undoManager = nil
 			
-			if eachTextWidget.textView!.text == EMPTY_TEXT {
-				widget.content = ""
-			} else {
-				widget.content = eachTextWidget.textView!.text
+			let deactivatedWidgets = weakSelf.deactivateHandlers(weakSelf.titleCard!.textWidgets())
+			
+			/* Capture the screen shoot at native resolution */
+			UIGraphicsBeginImageContextWithOptions(weakSelf.canvas!.bounds.size, weakSelf.canvas!.opaque, UIScreen.mainScreen().scale)
+			weakSelf.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
+
+			for eachTextWidget in weakSelf.titleCard!.textWidgets() {
+				if eachTextWidget.textView!.text == EMPTY_TEXT {
+					eachTextWidget.content = ""
+				} else {
+					eachTextWidget.content = eachTextWidget.textView!.text
+				}
+				
+				eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
+				eachTextWidget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
+				eachTextWidget.width = eachTextWidget.textView!.frame.size.width
+				eachTextWidget.height = eachTextWidget.textView!.frame.size.height
+				eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
+				eachTextWidget.color = eachTextWidget.textView!.textColor
 			}
 			
-			widget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
-			widget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
-			widget.width = eachTextWidget.textView!.frame.size.width
-			widget.height = eachTextWidget.textView!.frame.size.height
-			widget.fontSize = eachTextWidget.textView!.font!.pointSize
-			widget.color = eachTextWidget.textView!.textColor
+			let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+			UIGraphicsEndImageContext()
 			
-			widgetsOnTitleCard?.addObject(widget)
-		}
-		
-		let screenshot = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		
-		/* Render the screen shot at custom resolution */
-		let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
-//		let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
+			/* Render the screen shot at custom resolution */
+			let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
+	//		let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
 
-		UIGraphicsBeginImageContextWithOptions(cropRect.size, self.canvas!.opaque, 1)
-		screenshot.drawInRect(cropRect)
-		let img = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		
-		self.titleCard?.snapshot = UIImagePNGRepresentation(img)
-		
-		for eachDeactivatedWidget in deactivatedWidgets {
-			activateHandlers(eachDeactivatedWidget)
+			UIGraphicsBeginImageContextWithOptions(cropRect.size, weakSelf.canvas!.opaque, 1)
+			screenshot.drawInRect(cropRect)
+			let img = UIGraphicsGetImageFromCurrentImageContext()
+			UIGraphicsEndImageContext()
+			
+			weakSelf.titleCard?.snapshot = UIImagePNGRepresentation(img)
+			
+			for eachDeactivatedWidget in deactivatedWidgets {
+				weakSelf.activateHandlers(eachDeactivatedWidget)
+			}
+			
+			do {
+				try weakSelf.context.save()
+	//			overlayView.removeFromSuperview()
+				weakSelf.changesDetected = false
+				
+				NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+					weakSelf.delegate!.storyElementVC(weakSelf, elementChanged: weakSelf.titleCard!)
+				})
+			} catch {
+//				print("Couldn't save the canvas on the DB: \(error)")
+				print("Couldn't save the canvas on the DB")
+			}
 		}
 		
-		do {
-			try self.context.save()
-//			overlayView.removeFromSuperview()
-			self.changesDetected = false
-			self.delegate!.storyElementVC(self, elementChanged: self.titleCard!)
-		} catch {
-			print("Couldn't save the canvas on the DB: \(error)")
-		}
+		self.canvasSavingQueue.addOperation(operation)
 	}
 	
-	func selectedTextWidgets() -> [TextWidgetStruct] {
-		return self.textWidgets.filter { (eachTextWidget) -> Bool in
+	func selectedTextWidgets() -> [TextWidget] {
+		return self.titleCard!.textWidgets().filter { (eachTextWidget) -> Bool in
 			return !eachTextWidget.leftHandler!.hidden
 		}
 	}
@@ -395,108 +388,104 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func deleteTextWidget(aTextWidget:TextWidgetStruct) {
+	func deleteTextWidget(aTextWidget:TextWidget) {
 		aTextWidget.textView?.removeFromSuperview()
 		aTextWidget.leftHandler?.removeFromSuperview()
 		aTextWidget.rightHandler?.removeFromSuperview()
 		
 		let modelWidgets = self.titleCard?.mutableOrderedSetValueForKey("widgets")
-		modelWidgets?.removeObject(aTextWidget.model!)
+		modelWidgets?.removeObject(aTextWidget)
 		
-		self.textWidgets.removeAtIndex(self.textWidgets.indexOf(aTextWidget)!)
 		self.saveCanvas()
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
 		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
 		newModel.fontSize = 25
-		/*let newTextWidget = */self.addTextInput(
-			"",
-			initialFrame: CGRectZero,
-			model: newModel
-		)
+		self.addTextInput(newModel, initialFrame: CGRectZero)
+		
+		let titleCardWidgets = self.titleCard!.mutableOrderedSetValueForKey("widgets")
+		titleCardWidgets.addObject(newModel)
 		
 		self.saveCanvas()
 		self.changesDetected = true
 	}
 
 	override func viewDidLayoutSubviews() {
-		for eachTextWidget in self.textWidgets {
+		for eachTextWidget in self.titleCard!.textWidgets() {
 			eachTextWidget.textView?.contentOffset = CGPointZero
 		}
 	}
 	
-	func addTextInput(content:String, initialFrame:CGRect, model:TextWidget) -> TextWidgetStruct {
-		var textWidget = TextWidgetStruct()
-		
+	func addTextInput(model:TextWidget, initialFrame:CGRect) {
 		var effectiveFrame = initialFrame
 		if initialFrame == CGRectZero {
 			effectiveFrame = CGRect(x: 0,y: 0,width: TEXT_INITIAL_WIDTH,height: TEXT_INITIAL_WIDTH)
 		}
 		
-		textWidget.textView = UITextView(frame: effectiveFrame)
-		textWidget.textView!.backgroundColor = UIColor.clearColor()
-		textWidget.textView!.delegate = self
-		textWidget.textView!.font = UIFont.systemFontOfSize(CGFloat(model.fontSize!))
-		textWidget.textView!.textAlignment = NSTextAlignment.Center
-		textWidget.textView!.editable = false
-		textWidget.textView!.selectable = false
-		textWidget.textView!.showsHorizontalScrollIndicator = false
-		textWidget.textView!.showsVerticalScrollIndicator = false
-		textWidget.textView!.scrollEnabled = false
-		textWidget.model = model
+		model.textView = UITextView(frame: effectiveFrame)
+		model.textView!.backgroundColor = UIColor.clearColor()
+		model.textView!.textColor = model.color as? UIColor
+		model.textView!.delegate = self
+		model.textView!.font = UIFont.systemFontOfSize(CGFloat(model.fontSize!))
+		model.textView!.textAlignment = NSTextAlignment.Center
+		model.textView!.editable = false
+		model.textView!.selectable = false
+		model.textView!.showsHorizontalScrollIndicator = false
+		model.textView!.showsVerticalScrollIndicator = false
+		model.textView!.scrollEnabled = false
 		
-		textWidget.textView!.translatesAutoresizingMaskIntoConstraints = false
+		model.textView!.translatesAutoresizingMaskIntoConstraints = false
 		
-		textWidget.textView!.layer.borderColor = UIColor.blackColor().CGColor
-		if content.isEmpty {
-			textWidget.textView!.text = EMPTY_TEXT
-			textWidget.textView!.textColor = UIColor.lightGrayColor()
+		model.textView!.layer.borderColor = UIColor.blackColor().CGColor
+		if model.content!.isEmpty {
+			model.textView!.text = EMPTY_TEXT
+			model.textView!.textColor = UIColor.lightGrayColor()
 		} else {
-			textWidget.textView!.text = content
-			textWidget.textView!.textColor = UIColor.blackColor()
+			model.textView!.text = model.content!
+			model.textView!.textColor = model.color as? UIColor
 		}
 		
-		textWidget.tapGesture = UITapGestureRecognizer(target: self, action: "tappedTextView:")
+		model.tapGesture = UITapGestureRecognizer(target: self, action: "tappedTextView:")
 		
-		textWidget.textView!.addGestureRecognizer(textWidget.tapGesture!)
-		textWidget.textView!.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "pannedTextView:"))
+		model.textView!.addGestureRecognizer(model.tapGesture!)
+		model.textView!.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "pannedTextView:"))
 		
-		self.canvas!.addSubview(textWidget.textView!)
+		self.canvas!.addSubview(model.textView!)
 		
 		let handlerSize = CGFloat(20)
 		
-		textWidget.leftHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
-		textWidget.leftHandler!.backgroundColor = UIColor.redColor()
-		textWidget.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
-		self.canvas!.addSubview(textWidget.leftHandler!)
+		model.leftHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.leftHandler!.backgroundColor = UIColor.redColor()
+		model.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
+		self.canvas!.addSubview(model.leftHandler!)
 		
 		let leftPanningRecognizer = UIPanGestureRecognizer(target: self, action: "leftPanning:")
-		textWidget.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
+		model.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
 		leftPanningRecognizer.delegate = self
 		
-		textWidget.rightHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
-		textWidget.rightHandler!.backgroundColor = UIColor.redColor()
-		textWidget.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
-		self.canvas!.addSubview(textWidget.rightHandler!)
+		model.rightHandler = UIView(frame: CGRect(x: 0, y: 0, width: handlerSize, height: handlerSize))
+		model.rightHandler!.backgroundColor = UIColor.redColor()
+		model.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
+		self.canvas!.addSubview(model.rightHandler!)
 		
 		let rightPanningRecognizer = UIPanGestureRecognizer(target: self, action: "rightPanning:")
-		textWidget.rightHandler?.addGestureRecognizer(rightPanningRecognizer)
+		model.rightHandler?.addGestureRecognizer(rightPanningRecognizer)
 		rightPanningRecognizer.delegate = self
 		
-		textWidget.leftHandler!.addConstraint(NSLayoutConstraint(item: textWidget.leftHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
-		textWidget.leftHandler!.addConstraint(NSLayoutConstraint(item: textWidget.leftHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
-		textWidget.rightHandler!.addConstraint(NSLayoutConstraint(item: textWidget.rightHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
-		textWidget.rightHandler!.addConstraint(NSLayoutConstraint(item: textWidget.rightHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
+		model.leftHandler!.addConstraint(NSLayoutConstraint(item: model.leftHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
+		model.leftHandler!.addConstraint(NSLayoutConstraint(item: model.leftHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
+		model.rightHandler!.addConstraint(NSLayoutConstraint(item: model.rightHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
+		model.rightHandler!.addConstraint(NSLayoutConstraint(item: model.rightHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
 		
-		textWidget.textViewWidthConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: effectiveFrame.size.width)
-		textWidget.textView!.addConstraint(textWidget.textViewWidthConstraint)
+		model.textViewWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: effectiveFrame.size.width)
+		model.textView!.addConstraint(model.textViewWidthConstraint)
 		
-		textWidget.textViewMinWidthConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_WIDTH)
-		textWidget.textView!.addConstraint(textWidget.textViewMinWidthConstraint)
+		model.textViewMinWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_WIDTH)
+		model.textView!.addConstraint(model.textViewMinWidthConstraint)
 		
-		textWidget.textViewMinHeightConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_HEIGHT)
-		textWidget.textView!.addConstraint(textWidget.textViewMinHeightConstraint)
+		model.textViewMinHeightConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_HEIGHT)
+		model.textView!.addConstraint(model.textViewMinHeightConstraint)
 		
 //		textWidget.textView!.addConstraint(NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: textWidget.textView!, attribute: NSLayoutAttribute.Height, multiplier: 16/9, constant: 0))
 		
@@ -511,18 +500,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			constantY = initialFrame.origin.y
 		}
 		
-		textWidget.textViewCenterXConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.canvas, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: constantX)
-		self.canvas!.addConstraint(textWidget.textViewCenterXConstraint)
+		model.textViewCenterXConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.canvas, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: constantX)
+		self.canvas!.addConstraint(model.textViewCenterXConstraint)
 		
-		textWidget.textViewCenterYConstraint = NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.canvas, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: constantY)
-		self.canvas!.addConstraint(textWidget.textViewCenterYConstraint)
+		model.textViewCenterYConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.canvas, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: constantY)
+		self.canvas!.addConstraint(model.textViewCenterYConstraint)
 		
-		self.canvas!.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[leftHandler]-(-3)-[textInput]-(-3)-[rightHandler]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: ["textInput":textWidget.textView!,"leftHandler":textWidget.leftHandler!,"rightHandler":textWidget.rightHandler!]))
-		
-		self.textWidgets.append(textWidget)
-		
-		
-		return textWidget
+		self.canvas!.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[leftHandler]-(-3)-[textInput]-(-3)-[rightHandler]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: ["textInput":model.textView!,"leftHandler":model.leftHandler!,"rightHandler":model.rightHandler!]))
 	}
 	
 	func tappedTextView(sender: UITapGestureRecognizer) {
@@ -532,13 +516,17 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func tappedView(sender: UITapGestureRecognizer) {
-		deactivateHandlers(self.textWidgets)
+		deactivateHandlers(self.titleCard!.textWidgets())
 	}
 	
-	func findTextWidget(aView:UIView) -> TextWidgetStruct? {
-		return self.textWidgets.filter { (eachWidget) -> Bool in
-			return eachWidget.textView == aView || eachWidget.leftHandler == aView || eachWidget.rightHandler == aView
-		}.first
+	func findTextWidget(view:UIView) -> TextWidget? {
+		for each in self.titleCard!.widgets! {
+			let eachTextWidget = each as! TextWidget
+			if eachTextWidget.textView == view || eachTextWidget.leftHandler == view || eachTextWidget.rightHandler == view {
+				return eachTextWidget
+			}
+		}
+		return nil
 	}
 	
 	func pannedTextView(sender: UIPanGestureRecognizer) {
@@ -585,7 +573,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func panningAHandler(sender:UIPanGestureRecognizer,factor:CGFloat,handlerView:UIView!, _ textWidget:TextWidgetStruct) {
+	func panningAHandler(sender:UIPanGestureRecognizer,factor:CGFloat,handlerView:UIView!, _ textWidget:TextWidget) {
 		var handlerId = "left"
 		if handlerView == 1 {
 			handlerId = "right"
@@ -617,8 +605,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func activateHandlers(textWidget:TextWidgetStruct){
-		deactivateHandlers(self.textWidgets.filter { $0 != textWidget })
+	func activateHandlers(textWidget:TextWidget){
+		deactivateHandlers(self.titleCard!.textWidgets().filter { $0 != textWidget })
 		self.deleteButton.enabled = true
 
 		textWidget.textView!.editable = true
@@ -633,11 +621,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.colorButton.backgroundColor = textWidget.textView!.textColor!
 	}
 	
-	func deactivateHandlers(textWidgets:[TextWidgetStruct]) -> [TextWidgetStruct] {
+	func deactivateHandlers(textWidgets:[TextWidget]) -> [TextWidget] {
 		self.deleteButton.enabled = false
 		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
-		var deactivatedTextWidgets = [TextWidgetStruct]()
+		var deactivatedTextWidgets = [TextWidget]()
 		for aTextWidget in textWidgets {
 			aTextWidget.textView!.editable = false
 			aTextWidget.textView!.selectable = false
@@ -673,9 +661,16 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func textViewDidBeginEditing(textView: UITextView) {
+		let potentialTextWidget = (self.titleCard!.textWidgets().filter { (eachTextWidget) -> Bool in
+			return eachTextWidget.textView! == textView
+		}).first
 		if textView.textColor == UIColor.lightGrayColor() {
 			textView.text = nil
-			textView.textColor = UIColor.blackColor()
+			if let textWidgetColor = potentialTextWidget?.color {
+//				textView.textColor = textWidgetColor as? UIColor
+//			} else {
+				textView.textColor = UIColor.blackColor()
+			}
 		}
 	}
 	
@@ -774,7 +769,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	
-	func didPickColor(color: UIColor) {
+	func didPickColor(colorPicker:ColorPickerViewController,color: UIColor) {
 		self.colorButton.backgroundColor = color
 		
 		let selected = self.selectedTextWidgets()
@@ -789,7 +784,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 		}
 		
-		self.saveCanvas()
+		colorPicker.dismissViewControllerAnimated(true) { () -> Void in
+			self.saveCanvas()
+		}
 	}
 	
 	override func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {

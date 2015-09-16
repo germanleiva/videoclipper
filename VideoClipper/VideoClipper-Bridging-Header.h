@@ -9,6 +9,7 @@
 #import "ELCImagePickerController.h"
 #import "KPCameraButton.h"
 #import "PBJVision.h"
+#import "UIView+Genie.h"
 
 //#import "AVPlayerItem+THAdditions.h"
 

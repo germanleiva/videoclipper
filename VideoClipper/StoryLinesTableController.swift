@@ -130,10 +130,16 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
+	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine) {
+		let section = self.project!.storyLines!.indexOfObject(storyLine)
+		self.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section), animated: false)
+	}
+	
 	func recordTappedOnSelectedLine(sender:AnyObject?) {
 		let captureController = self.storyboard!.instantiateViewControllerWithIdentifier("captureController") as! CaptureVC
 		captureController.delegate = self
 		captureController.currentLine = self.currentStoryLine()
+		captureController.owner = (self.delegate as! ProjectVC).secondaryController
 		self.presentViewController(captureController, animated: true, completion: nil)
 		return
 		
@@ -606,7 +612,9 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		deleteAction.backgroundColor = UIColor.redColor()
 		
 		if self.project!.storyLines!.count > 1 {
-			return [deleteAction,cloneAction,toggleAction]
+//			return [deleteAction,cloneAction,toggleAction]
+			return [deleteAction,cloneAction]
+
 		}
 		return [cloneAction]
 	}

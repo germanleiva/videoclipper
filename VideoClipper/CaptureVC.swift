@@ -15,6 +15,7 @@ let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String)
+	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
 class VideoSegmentThumbnail {
@@ -35,6 +36,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		}
 	}
 	
+	var owner:SecondaryViewController!
+	
 	var currentTitleCard:TitleCard? = nil
 	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
@@ -54,6 +57,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	@IBOutlet weak var upButton:UIButton!
 	@IBOutlet weak var downButton:UIButton!
 	
+	@IBOutlet var infoLabel:UILabel!
+	
 	var previewLayer:AVCaptureVideoPreviewLayer? = nil
 	var effectsViewController:GLKViewController? = nil
 	var currentVideo:NSDictionary? = nil
@@ -63,6 +68,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	var shouldUpdatePreviewLayerFrame = false
 	
 	var delegate:CaptureVCDelegate? = nil
+	
+	var needsToUpdateTitleCardPlaceholder = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,11 +94,60 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		self.recordingIndicator.layer.cornerRadius = self.recordingIndicator.frame.size.width / 2
 		self.recordingIndicator.layer.masksToBounds = true
 		
+		self.updateTitleCardPlaceholder()
+		
+		self.resetCapture()
+		PBJVision.sharedInstance().startPreview()
+		
+		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+			let titleCardUpdated = notification.object as! TitleCard
+			if self.currentTitleCard == titleCardUpdated {
+				self.needsToUpdateTitleCardPlaceholder = true
+			}
+		}
+	}
+	
+	func updateTitleCardPlaceholder() {
+		for eachSubview in self.titleCardPlaceholder.subviews {
+			eachSubview.removeFromSuperview()
+		}
+		
 		if let snapshot = self.currentTitleCard?.snapshot {
 			let imageView = UIImageView(image: UIImage(data: snapshot))
 			imageView.frame = CGRect(x: 0, y: 0, width: self.titleCardPlaceholder.frame.width, height: self.titleCardPlaceholder.frame.height)
 			self.titleCardPlaceholder.addSubview(imageView)
-			
+		}
+		self.needsToUpdateTitleCardPlaceholder = false
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+//		self.resetCapture()
+//		PBJVision.sharedInstance().startPreview()
+		
+		if self.needsToUpdateTitleCardPlaceholder {
+			self.updateTitleCardPlaceholder()
+		}
+		
+		self.upButton.enabled = self.currentLine?.previousLine() != nil
+		self.downButton.enabled = self.currentLine?.nextLine() != nil
+	}
+	
+	
+//	override func viewWillDisappear(animated: Bool) {
+//		super.viewWillDisappear(animated)
+//		PBJVision.sharedInstance().stopPreview()
+//	}
+	
+	deinit {
+		PBJVision.sharedInstance().stopPreview()
+	}
+	
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "modalTitleCardVC" {
+			let modalTitleCardVC = segue.destinationViewController as! ModalTitleCardVC
+			modalTitleCardVC.element = self.currentTitleCard
+			modalTitleCardVC.delegate = self.owner
 		}
 	}
 	
@@ -129,7 +185,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	func captureModeOff(){
 		self.stopTimer()
-		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(true)
+		
+		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(false)
 		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: PBJVision.sharedInstance().capturedVideoSeconds)
 		self.view.addSubview(currentSnapshot)
 		
@@ -143,10 +200,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			self.titleCardPlaceholder!.alpha = 1
 			}, completion: { (completed) -> Void in
 				if completed {
-					currentSnapshot.removeFromSuperview()
+//					currentSnapshot.removeFromSuperview()
 					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
 					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
 					self.segmentThumbnails.append(videoSegmentThumbnail)
+					
+					//Stops the blinking
 					self.recordingIndicator.layer.removeAllAnimations()
 				}
 		})
@@ -154,7 +213,13 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
 		if let lastSegment = self.segmentThumbnails.last {
-			let view = lastSegment.snapshot
+			let lastSegmentView = lastSegment.snapshot
+			
+			if recognizer.direction == UISwipeGestureRecognizerDirection.Down {
+				self.saveCurrentVideo(lastSegmentView)
+				
+				return
+			}
 			
 			//PBJVision does not support remove one segment so we remove the whole thing
 			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
@@ -163,12 +228,16 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 				}
 			}
 			
-			UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 3, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					var factor = CGFloat(1)
-					if recognizer.direction == .Left {
-						factor = CGFloat(-1)
-					}
-					view.center = CGPoint(x: view.center.x + factor * view.frame.width, y: view.center.y)
+			self.infoLabel.text = "Deleted"
+			
+			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+				var factor = CGFloat(1.2)
+				if recognizer.direction == .Left {
+					factor = CGFloat(-1.2)
+				}
+				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
+				lastSegmentView.alpha = 0
+				self.infoLabel.alpha = 1
 				}, completion: { (completed) -> Void in
 					if completed {
 						//Remove last segment from PBJVision not supported yet
@@ -177,9 +246,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 						self.createGhostController()
 						
 						self.recordingTime.text = "00:00:00"
-	//					self.segmentThumbnails.removeLast()
 						self.segmentThumbnails.removeAll()
-						view.removeFromSuperview()
+						lastSegmentView.removeFromSuperview()
+						
+						UIView.animateWithDuration(0.5, animations: { () -> Void in
+							self.infoLabel.alpha = 0
+						})
 					}
 			})
 		}
@@ -224,20 +296,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		view.alpha = 0.5
 		view.hidden = true
 		self.previewView.addSubview(self.effectsViewController!.view)
-	}
-	
-	override func viewWillAppear(animated: Bool) {
-		super.viewWillAppear(animated)
-		self.resetCapture()
-		PBJVision.sharedInstance().startPreview()
-		
-		self.upButton.enabled = self.currentLine?.previousLine() != nil
-		self.downButton.enabled = self.currentLine?.nextLine() != nil
-	}
-	
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		PBJVision.sharedInstance().stopPreview()
 	}
 	
 	func updateRecordingLabel() {
@@ -288,8 +346,44 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 //
 //		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
 
+		if let lastSegmentView = self.segmentThumbnails.last?.snapshot {
+			self.saveCurrentVideo(lastSegmentView,shouldDismiss: true)
+		} else {
+			self.dismissViewControllerAnimated(true, completion: nil)
+		}
+	}
+	
+	func saveCurrentVideo(lastSegmentView:UIView, shouldDismiss:Bool = false) {
+		//We delete the snapshots of the previous segments to give the illusion of saving the whole video clips (video clip = collection of segments)
+		for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
+			if eachSnapshot.snapshot !== lastSegmentView {
+				eachSnapshot.snapshot.removeFromSuperview()
+			}
+		}
+		
 		self.endCapture()
-		self.dismissViewControllerAnimated(true, completion: nil)
+		
+		self.infoLabel.text = "Saving ..."
+		
+		UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			lastSegmentView.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
+			self.infoLabel.alpha = 1
+			}, completion: { (completed) -> Void in
+				if completed {
+					//Remove last segment from PBJVision not supported yet
+					PBJVision.sharedInstance().cancelVideoCapture()
+					self.effectsViewController?.view.removeFromSuperview()
+					self.createGhostController()
+					
+					self.recordingTime.text = "00:00:00"
+					self.segmentThumbnails.removeAll()
+					lastSegmentView.removeFromSuperview()
+					
+					if shouldDismiss {
+						self.dismissViewControllerAnimated(true, completion: nil)
+					}
+				}
+		})
 	}
 	
 	@IBAction func ghostPressed(sender: UIButton) {
@@ -374,12 +468,11 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		self.dismissViewControllerAnimated(true, completion: nil)
 	}
 	
-	@IBAction func upArrowPressed(sender:UIButton) {
+	@IBAction func upArrowPressed(sender:AnyObject?) {
 		self.animatePlaceholderTitleCard(direction: CGFloat(1),newCurrentLine: self.currentLine!.previousLine())
 	}
 	
-	
-	@IBAction func downArrowPressed(sender:UIButton) {
+	@IBAction func downArrowPressed(sender:AnyObject?) {
 		self.animatePlaceholderTitleCard(direction: CGFloat(-1), newCurrentLine: self.currentLine!.nextLine())
 	}
 	
@@ -400,6 +493,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 				}) { (completed) -> Void in
 					if completed {
 						self.currentLine = newCurrentLine
+						self.delegate?.captureVC(self, didChangeStoryLine: newCurrentLine!)
 						currentTCImageView.removeFromSuperview()
 					}
 			}
@@ -584,12 +678,22 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			return
 		} else if error != nil {
 			print("encountered an error in video capture \(error)")
+
+			self.infoLabel.textColor = UIColor.redColor()
+			self.infoLabel.text = "Error =("
+			
 			return
 		}
 		
 		self.currentVideo = videoDict
 		
 		let videoPath = self.currentVideo![PBJVisionVideoPathKey] as! String
+		
+		self.infoLabel.text = "Saved"
+		
+		UIView.animateWithDuration(0.5) { () -> Void in
+			self.infoLabel.alpha = 0
+		}
 		
 		self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: videoPath)
 	}

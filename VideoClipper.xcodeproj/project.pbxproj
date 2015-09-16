@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */ = {isa = PBXBuildFile; fileRef = A40049F21BA98C24003E518C /* UIView+Genie.m */; };
 		A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */; };
 		A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */; };
 		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
@@ -76,6 +77,7 @@
 		A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AB1B98A42E008FB9D0 /* TagMark+CoreDataProperties.swift */; };
 		A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AC1B98A42E008FB9D0 /* TagMark.swift */; };
 		A4F057B01B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AF1B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift */; };
+		A4F20B781BA9AE6000879726 /* ModalTitleCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */; };
 		A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46621B46B54100A12267 /* VideoVC.swift */; };
 		A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FF46651B46B6B100A12267 /* VideoClip.swift */; };
 /* End PBXBuildFile section */
@@ -98,6 +100,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A40049F11BA98C24003E518C /* UIView+Genie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+Genie.h"; path = "ALAssetsLibrary-CustomPhotoAlbum/UIView+Genie.h"; sourceTree = "<group>"; };
+		A40049F21BA98C24003E518C /* UIView+Genie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+Genie.m"; path = "ALAssetsLibrary-CustomPhotoAlbum/UIView+Genie.m"; sourceTree = "<group>"; };
 		A404A52C1B8118AA00B82B29 /* AVPlayerItem+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVPlayerItem+THAdditions.h"; sourceTree = "<group>"; };
 		A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerItem+THAdditions.m"; sourceTree = "<group>"; };
 		A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementVC.swift; sourceTree = "<group>"; };
@@ -197,6 +201,7 @@
 		A4F057AB1B98A42E008FB9D0 /* TagMark+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TagMark+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4F057AC1B98A42E008FB9D0 /* TagMark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagMark.swift; sourceTree = "<group>"; };
 		A4F057AF1B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VideoClip+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalTitleCardVC.swift; sourceTree = "<group>"; };
 		A4FF46621B46B54100A12267 /* VideoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoVC.swift; sourceTree = "<group>"; };
 		A4FF46651B46B6B100A12267 /* VideoClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClip.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -279,6 +284,8 @@
 				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
 				A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */,
 				A423152E1BA1CC910096DF01 /* SwiftColors.swift */,
+				A40049F11BA98C24003E518C /* UIView+Genie.h */,
+				A40049F21BA98C24003E518C /* UIView+Genie.m */,
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
@@ -295,6 +302,7 @@
 				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
 				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
 				A4FF46621B46B54100A12267 /* VideoVC.swift */,
+				A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */,
 				A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */,
 				A44121111B96048500BBB020 /* FilmstripView.swift */,
 				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
@@ -643,8 +651,10 @@
 				A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */,
 				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
 				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
+				A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */,
 				A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */,
 				A4DA9CDD1B973F0F00839F28 /* ELCImagePickerController.m in Sources */,
+				A4F20B781BA9AE6000879726 /* ModalTitleCardVC.swift in Sources */,
 				A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,
 				A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */,

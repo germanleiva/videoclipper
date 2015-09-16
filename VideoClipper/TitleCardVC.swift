@@ -417,9 +417,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	//			overlayView.removeFromSuperview()
 				weakSelf.changesDetected = false
 				
-				NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-					weakSelf.delegate!.storyElementVC(weakSelf, elementChanged: weakSelf.titleCard!)
-				})
+				NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
+				
+				if let elDelegado = weakSelf.delegate {
+					NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+						elDelegado.storyElementVC(weakSelf, elementChanged: weakSelf.titleCard!)
+					})
+				}
 			} catch {
 //				print("Couldn't save the canvas on the DB: \(error)")
 				print("Couldn't save the canvas on the DB")
@@ -455,6 +459,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 		
 		if somethingWasDeleted {
+			self.changesDetected = true
 			self.deactivateHandlers(self.titleCard!.textWidgets())
 		}
 	}

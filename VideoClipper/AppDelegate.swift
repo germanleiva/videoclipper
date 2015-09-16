@@ -14,6 +14,8 @@ import CoreData
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
 	static var globalTint = UIColor(red: 108/255.0 , green: 183/255.0, blue: 215/255.0, alpha: 1)
+	
+	static var notificationTitleCardChanged = "NotificationTitleCardChanged"
 }
 
 @UIApplicationMain

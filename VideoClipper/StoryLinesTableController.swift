@@ -886,15 +886,15 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			//If the bundle is nil that means that I'm moving a StoryLine (row)
 			let state = gesture.state;
 			let location = gesture.locationInView(self.tableView)
-			let indexPath = self.tableView.indexPathForRowAtPoint(location)
+			var indexPath = self.tableView.indexPathForRowAtPoint(location)
 			if indexPath == nil {
-				return
+				indexPath = self.sourceIndexPath
 			}
 			
 			switch (state) {
 				
 			case UIGestureRecognizerState.Began:
-				sourceIndexPath = indexPath;
+				self.sourceIndexPath = indexPath;
 				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
 				snapshot = customSnapshotFromView(cell)
 				
@@ -918,15 +918,15 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				snapshot?.center = center
 				
 				// Is destination valid and is it different from source?
-				if indexPath != sourceIndexPath {
+				if indexPath != self.sourceIndexPath {
 					// ... update data source.
-					self.moveStoryLine(sourceIndexPath!, toIndexPath: indexPath!)
+					self.moveStoryLine(self.sourceIndexPath!, toIndexPath: indexPath!)
 //					 ... move the rows.
-//					tableView.moveRowAtIndexPath(sourceIndexPath!, toIndexPath: indexPath!)
-					self.tableView.moveSection(sourceIndexPath!.section, toSection: indexPath!.section)
+//					tableView.moveRowAtIndexPath(self.sourceIndexPath!, toIndexPath: indexPath!)
+					self.tableView.moveSection(self.sourceIndexPath!.section, toSection: indexPath!.section)
 //					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)
 					// ... and update source so it is in sync with UI changes.
-					sourceIndexPath = indexPath;
+					self.sourceIndexPath = indexPath;
 				}
 				
 			default:
@@ -942,10 +942,10 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 					cell.alpha = 1.0
 					
 					}, completion: { (finished) in
-//						self.tableView.reloadRowsAtIndexPaths([self.sourceIndexPath!], withRowAnimation: UITableViewRowAnimation.None)
+//						self.tableView.reloadRowsAtIndexPaths([self.self.sourceIndexPath!], withRowAnimation: UITableViewRowAnimation.None)
 						self.tableView.reloadData()
-						self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
-						self.sourceIndexPath = nil
+						self.selectRowAtIndexPath(self.self.sourceIndexPath!, animated: true)
+						self.self.sourceIndexPath = nil
 						self.snapshot?.removeFromSuperview()
 						self.snapshot = nil;
 				})

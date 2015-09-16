@@ -448,7 +448,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let images = self.titleCard?.mutableOrderedSetValueForKey("images")
 			images?.removeObject(imageWidgetToDelete)
 			
-			self.saveCanvas()
 			somethingWasDeleted = true
 		}
 		

@@ -482,6 +482,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		self.tableView.insertSections(NSIndexSet(index: section!), withRowAnimation: UITableViewRowAnimation.Bottom)
 		self.tableView.endUpdates()
 		self.selectRowAtIndexPath(indexPath,animated: true)
+		self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: addedObject, lineIndexPath: indexPath)
 		self.tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
 	}
 	
@@ -931,24 +932,30 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				
 			default:
 				// Clean up.
-				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
-				cell.alpha = 0.0
-				cell.hidden = false
-				UIView.animateWithDuration(0.25, animations: { () -> Void in
-					self.snapshot?.center = cell.center
-					self.snapshot?.transform = CGAffineTransformIdentity
-					self.snapshot?.alpha = 0.0
-					// Undo fade out.
-					cell.alpha = 1.0
-					
-					}, completion: { (finished) in
-//						self.tableView.reloadRowsAtIndexPaths([self.self.sourceIndexPath!], withRowAnimation: UITableViewRowAnimation.None)
-						self.tableView.reloadData()
-						self.selectRowAtIndexPath(self.self.sourceIndexPath!, animated: true)
-						self.self.sourceIndexPath = nil
-						self.snapshot?.removeFromSuperview()
-						self.snapshot = nil;
-				})
+				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {
+					cell.alpha = 0.0
+					cell.hidden = false
+					UIView.animateWithDuration(0.25, animations: { () -> Void in
+						self.snapshot?.center = cell.center
+						self.snapshot?.transform = CGAffineTransformIdentity
+						self.snapshot?.alpha = 0.0
+						// Undo fade out.
+						cell.alpha = 1.0
+						
+						}, completion: { (finished) in
+							self.tableView.reloadData()
+							self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
+							self.sourceIndexPath = nil
+							self.snapshot?.removeFromSuperview()
+							self.snapshot = nil;
+					})
+				} else {
+					self.tableView.reloadData()
+					self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
+					self.sourceIndexPath = nil
+					self.snapshot?.removeFromSuperview()
+					self.snapshot = nil;
+				}
 				break
 			}
 		}

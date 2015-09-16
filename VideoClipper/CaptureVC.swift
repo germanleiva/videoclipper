@@ -302,7 +302,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		var ghostTintColor = UIColor.whiteColor()
 		if sender.selected {
 //			ghostTintColor = self.shutterButton.tintColor
-			ghostTintColor = Globals.globalTint
+//			ghostTintColor = Globals.globalTint
+			ghostTintColor = UIColor(hexString: "#117AFF")!
 		}
 		UIView.animateWithDuration(0.2) { () -> Void in
 			self.ghostButton.tintColor = ghostTintColor

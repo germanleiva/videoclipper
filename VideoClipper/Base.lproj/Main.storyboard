@@ -703,7 +703,6 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lSi-dh-nc8">
                                         <rect key="frame" x="75" y="194" width="50" height="35"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" backgroundImage="up-arrow"/>
                                         <connections>
                                             <action selector="upArrowPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="NVg-ZM-U7M"/>
@@ -715,7 +714,6 @@
                                             <constraint firstAttribute="height" constant="35" id="Bdy-68-arL"/>
                                             <constraint firstAttribute="width" constant="50" id="o9f-L0-B7g"/>
                                         </constraints>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" backgroundImage="down-arrow"/>
                                         <connections>
                                             <action selector="downArrowPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="Dlt-R9-N4S"/>
@@ -901,13 +899,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
                                 <rect key="frame" x="35" y="467" width="54" height="34"/>
                                 <state key="normal" title="Import">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
                                 <rect key="frame" x="502" y="467" width="63" height="34"/>
                                 <state key="normal" title="Save as">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -918,7 +916,19 @@
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jfr-Mu-juV">
                                         <rect key="frame" x="0.0" y="0.0" width="530" height="299"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yhB-Bi-Rum">
+                                                <rect key="frame" x="8" y="8" width="514" height="283"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </view>
+                                        </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="yhB-Bi-Rum" secondAttribute="trailing" constant="8" id="fQv-rO-19j"/>
+                                            <constraint firstItem="yhB-Bi-Rum" firstAttribute="top" secondItem="jfr-Mu-juV" secondAttribute="top" constant="8" id="fbR-fR-1I2"/>
+                                            <constraint firstAttribute="bottom" secondItem="yhB-Bi-Rum" secondAttribute="bottom" constant="8" id="gr3-CT-KXr"/>
+                                            <constraint firstItem="yhB-Bi-Rum" firstAttribute="leading" secondItem="jfr-Mu-juV" secondAttribute="leading" constant="8" id="p53-ze-cgB"/>
+                                        </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
@@ -1007,6 +1017,7 @@
                         <outlet property="colorButton" destination="M13-BE-b8R" id="Ndc-Kw-6af"/>
                         <outlet property="deleteButton" destination="Lzs-KQ-gSO" id="rjW-0H-C7x"/>
                         <outlet property="durationButton" destination="whV-Vq-JaQ" id="OVr-0T-1Ir"/>
+                        <outlet property="effectiveCanvas" destination="yhB-Bi-Rum" id="RWB-PH-JPF"/>
                         <outlet property="fontSizeButton" destination="J1u-gm-0LU" id="eFK-mb-YPw"/>
                         <outlet property="scrollView" destination="Gs1-LF-5XS" id="f3w-Ir-00G"/>
                     </connections>

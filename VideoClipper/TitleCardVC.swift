@@ -58,6 +58,8 @@ class RightHandlerView:UIView {
 
 class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
+	@IBOutlet weak var effectiveCanvas:UIView?
+	
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
 	
@@ -141,12 +143,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func popoverControllerDidDismissPopover(popoverController: UIPopoverController) {
-		do {
-			try self.context.save()
-		} catch {
-			print("Couldn't save the new duration of the titleCard on the DB: \(error)")
-		}
+		self.saveCanvas()
 	}
+	
 	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
 		let cameraButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Camera, target: self, action: "takePicture:")
 		let navigationBar = navigationController.navigationBar
@@ -193,6 +192,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		self.canvas!.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 		self.colorButton.backgroundColor = self.titleCard!.backgroundColor as? UIColor
+		
+		self.effectiveCanvas!.layer.borderColor = UIColor.blackColor().CGColor
+		self.effectiveCanvas!.layer.borderWidth = 1;
 	}
 	
 	func addImageWidget(imageWidget:ImageWidget) {
@@ -226,7 +228,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		if let firstTextWidget =  self.titleCard!.textWidgets().first {
 			self.canvas!.insertSubview(imageView, belowSubview: firstTextWidget.textView!)
 		} else {
-			self.canvas!.insertSubview(imageView, atIndex: 0)
+//			self.canvas!.insertSubview(imageView, atIndex: 0)
+			self.canvas!.insertSubview(imageView, aboveSubview: self.effectiveCanvas!)
 		}
 		
 		self.view.addConstraint(imageWidget.widthConstraint)
@@ -857,15 +860,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.colorButton.backgroundColor = color
 		
 		let selected = self.selectedTextWidgets()
-		var completionBlock:(()->Void)? = nil
 		
 		if selected.isEmpty {
 			self.canvas!.backgroundColor = color
 			self.titleCard!.backgroundColor = color
-			completionBlock = { () -> Void in
-				self.saveCanvas()
-			}
-
 		} else {
 			let textWidget = selected.first!
 			textWidget.color = color
@@ -876,7 +874,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 		}
 		
-		colorPicker.dismissViewControllerAnimated(true, completion: completionBlock)
+		colorPicker.dismissViewControllerAnimated(true, completion: { () -> Void in
+			self.saveCanvas()
+		})
 	}
 	
 	override func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {

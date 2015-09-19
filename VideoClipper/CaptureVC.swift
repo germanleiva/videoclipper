@@ -7,14 +7,13 @@
 //
 
 import UIKit
-import GLKit
 
 let keyShutterLockEnabled = "shutterLockEnabled"
 let keyGhostDisabled = "keyGhostDisabled"
 let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String)
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL)
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
@@ -27,7 +26,7 @@ class VideoSegmentThumbnail {
 	}
 }
 
-class CaptureVC: UIViewController, PBJVisionDelegate {
+class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 	var isRecording = false
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
@@ -57,11 +56,11 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	@IBOutlet weak var upButton:UIButton!
 	@IBOutlet weak var downButton:UIButton!
 	
+	@IBOutlet var ghostImageView:UIImageView!
+	
 	@IBOutlet var infoLabel:UILabel!
 	
-	var previewLayer:AVCaptureVideoPreviewLayer? = nil
-	var effectsViewController:GLKViewController? = nil
-	var currentVideo:NSDictionary? = nil
+	var _recorder:SCRecorder!
 	
 	var previewViewHeightConstraint:NSLayoutConstraint? = nil
 	@IBOutlet var previewViewWidthConstraint:NSLayoutConstraint!
@@ -73,8 +72,36 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+			let titleCardUpdated = notification.object as! TitleCard
+			if self.currentTitleCard == titleCardUpdated {
+				self.needsToUpdateTitleCardPlaceholder = true
+			}
+		}
+		
+		//		self.resetCapture()
+		//		PBJVision.sharedInstance().startPreview()
+		
+		_recorder = SCRecorder.sharedRecorder()
+		_recorder.captureSessionPreset = SCRecorderTools.bestCaptureSessionPresetCompatibleWithAllDevices()
+		//    _recorder.maxRecordDuration = CMTimeMake(10, 1);
+		//    _recorder.fastRecordMethodEnabled = YES;
+		
+		_recorder.delegate = self
+//		_recorder.autoSetVideoOrientation = true
+		_recorder.videoOrientation = AVCaptureVideoOrientation.LandscapeRight
+		
+		_recorder.previewView = self.previewView
+		
+		_recorder.initializeSessionLazily = false
+		
+		do {
+			try _recorder.prepare()
+		} catch {
+			print("Prepare error: \(error)")
+		}
 
-        // Do any additional setup after loading the view.
 		let defaults = NSUserDefaults.standardUserDefaults()
 		self.shutterLock.on = defaults.boolForKey(keyShutterLockEnabled)
 		
@@ -95,16 +122,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		self.recordingIndicator.layer.masksToBounds = true
 		
 		self.updateTitleCardPlaceholder()
-		
-		self.resetCapture()
-		PBJVision.sharedInstance().startPreview()
-		
-		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
-			let titleCardUpdated = notification.object as! TitleCard
-			if self.currentTitleCard == titleCardUpdated {
-				self.needsToUpdateTitleCardPlaceholder = true
-			}
-		}
 	}
 	
 	func updateTitleCardPlaceholder() {
@@ -131,16 +148,31 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		
 		self.upButton.enabled = self.currentLine?.previousLine() != nil
 		self.downButton.enabled = self.currentLine?.nextLine() != nil
+		
+		self.prepareSession()
+		
+		//This is a workaround
+		self.ghostImageView.image = nil
 	}
 	
-	
-//	override func viewWillDisappear(animated: Bool) {
-//		super.viewWillDisappear(animated)
+	override func viewDidAppear(animated: Bool) {
+		_recorder.startRunning()
+	}
+
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
 //		PBJVision.sharedInstance().stopPreview()
-//	}
+		_recorder.stopRunning()
+		_recorder.unprepare()
+		
+		_recorder.session?.cancelSession(nil)
+		_recorder.session = nil
+		
+		_recorder.captureSession?.stopRunning()
+	}
 	
 	deinit {
-		PBJVision.sharedInstance().stopPreview()
+//		PBJVision.sharedInstance().stopPreview()
 	}
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -174,7 +206,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	func startTimer() {
 		self.timer?.invalidate()
-		self.timer = NSTimer(timeInterval: 0.5, target: self, selector: "updateRecordingLabel", userInfo: nil, repeats: true)
+		self.timer = NSTimer(timeInterval: 0.5, target: self, selector: "updateTimeRecordedLabel", userInfo: nil, repeats: true)
 		NSRunLoop.mainRunLoop().addTimer(self.timer!, forMode: NSRunLoopCommonModes)
 	}
 	
@@ -183,12 +215,23 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 		self.timer = nil;
 	}
 	
+	func totalTimeSeconds() -> Float64 {
+//		PBJVision.sharedInstance().capturedVideoSeconds
+	
+		if let durationInSeconds = _recorder.session?.duration {
+			return CMTimeGetSeconds(durationInSeconds)
+		} else {
+			return Float64(0)
+		}
+	}
+	
 	func captureModeOff(){
 		self.stopTimer()
 		
 		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(false)
-		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: PBJVision.sharedInstance().capturedVideoSeconds)
-		self.view.addSubview(currentSnapshot)
+//		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
+		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: self.totalTimeSeconds())
+		self.view.insertSubview(currentSnapshot, belowSubview: self.infoLabel)
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
@@ -213,20 +256,14 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
 		if let lastSegment = self.segmentThumbnails.last {
-			let lastSegmentView = lastSegment.snapshot
 			
 			if recognizer.direction == UISwipeGestureRecognizerDirection.Down {
-				self.saveCurrentVideo(lastSegmentView)
-				
+				self.saveCapture(nil)
 				return
 			}
 			
-			//PBJVision does not support remove one segment so we remove the whole thing
-			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
-				if eachSnapshot.snapshot !== lastSegment.snapshot {
-					eachSnapshot.snapshot.removeFromSuperview()
-				}
-			}
+			let lastSegmentIndex = self.segmentThumbnails.count - 1
+			let lastSegmentView = lastSegment.snapshot
 			
 			self.infoLabel.text = "Deleted"
 			
@@ -240,14 +277,10 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 				self.infoLabel.alpha = 1
 				}, completion: { (completed) -> Void in
 					if completed {
-						//Remove last segment from PBJVision not supported yet
-						PBJVision.sharedInstance().cancelVideoCapture()
-						self.effectsViewController?.view.removeFromSuperview()
-						self.createGhostController()
-						
-						self.recordingTime.text = "00:00:00"
-						self.segmentThumbnails.removeAll()
+						self._recorder.session?.removeLastSegment()
+						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
 						lastSegmentView.removeFromSuperview()
+						self.updateTimeRecordedLabel()
 						
 						UIView.animateWithDuration(0.5, animations: { () -> Void in
 							self.infoLabel.alpha = 0
@@ -259,53 +292,32 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-		if self.previewLayer == nil {
-			//Preview and AV layer
-			self.previewView.backgroundColor = UIColor.blackColor()
-			self.previewLayer = PBJVision.sharedInstance().previewLayer
-			self.previewLayer!.frame = self.previewView.bounds
-			self.previewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
-//			self.previewView.layer.addSublayer(self.previewLayer!)
-			self.previewView.layer.insertSublayer(self.previewLayer!, below: self.rightPanel.layer)
-			
-			// ghost effect
-			self.createGhostController()
-			
-			PBJVision.sharedInstance().presentationFrame = self.previewView.frame
-			
-			if PBJVision.sharedInstance().supportsVideoFrameRate(120) {
-				// set faster frame rate
-			}
-		}
+//		PBJVision things
+//		if self.previewLayer == nil {
+//			//Preview and AV layer
+//			self.previewView.backgroundColor = UIColor.blackColor()
+//			self.previewLayer = PBJVision.sharedInstance().previewLayer
+//			self.previewLayer!.frame = self.previewView.bounds
+//			self.previewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
+////			self.previewView.layer.addSublayer(self.previewLayer!)
+//			self.previewView.layer.insertSublayer(self.previewLayer!, below: self.rightPanel.layer)
+//			
+//			// ghost effect
+//			self.createGhostController()
+//			
+//			PBJVision.sharedInstance().presentationFrame = self.previewView.frame
+//			
+//			if PBJVision.sharedInstance().supportsVideoFrameRate(120) {
+//				// set faster frame rate
+//			}
+//		}
 		
-		if self.shouldUpdatePreviewLayerFrame {
-			self.previewLayer!.frame = self.previewView.bounds
-			self.shouldUpdatePreviewLayerFrame = false
-		}
-	}
-	
-	func createGhostController() {
-		self.effectsViewController = GLKViewController()
-		self.effectsViewController!.preferredFramesPerSecond = 60
+//		if self.shouldUpdatePreviewLayerFrame {
+//			self.previewLayer!.frame = self.previewView.bounds
+//			self.shouldUpdatePreviewLayerFrame = false
+//		}
 		
-		let view = self.effectsViewController!.view as! GLKView
-		let viewFrame = self.previewView.bounds
-		view.frame = viewFrame
-		view.context = PBJVision.sharedInstance().context
-		view.contentScaleFactor = UIScreen.mainScreen().scale
-		view.alpha = 0.5
-		view.hidden = true
-		self.previewView.addSubview(self.effectsViewController!.view)
-	}
-	
-	func updateRecordingLabel() {
-		let time = Int(PBJVision.sharedInstance().capturedVideoSeconds)
-		let hours = (time / 3600)
-		let minutes = (time / 60) % 60
-		let seconds = time % 60
-		
-		let timeString = String(format: "%0.2d:%0.2d:%0.2d",hours,minutes,seconds)
-		self.recordingTime.text = timeString;
+		_recorder.previewViewFrameChanged()
 	}
 	
 	func updateShutterLabel(isLocked:Bool) {
@@ -346,43 +358,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 //
 //		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
 
-		if let lastSegmentView = self.segmentThumbnails.last?.snapshot {
-			self.saveCurrentVideo(lastSegmentView,shouldDismiss: true)
-		} else {
+		self.saveCapture({ () -> Void in
 			self.dismissViewControllerAnimated(true, completion: nil)
-		}
-	}
-	
-	func saveCurrentVideo(lastSegmentView:UIView, shouldDismiss:Bool = false) {
-		//We delete the snapshots of the previous segments to give the illusion of saving the whole video clips (video clip = collection of segments)
-		for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
-			if eachSnapshot.snapshot !== lastSegmentView {
-				eachSnapshot.snapshot.removeFromSuperview()
-			}
-		}
-		
-		self.endCapture()
-		
-		self.infoLabel.text = "Saving ..."
-		
-		UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			lastSegmentView.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
-			self.infoLabel.alpha = 1
-			}, completion: { (completed) -> Void in
-				if completed {
-					//Remove last segment from PBJVision not supported yet
-					PBJVision.sharedInstance().cancelVideoCapture()
-					self.effectsViewController?.view.removeFromSuperview()
-					self.createGhostController()
-					
-					self.recordingTime.text = "00:00:00"
-					self.segmentThumbnails.removeAll()
-					lastSegmentView.removeFromSuperview()
-					
-					if shouldDismiss {
-						self.dismissViewControllerAnimated(true, completion: nil)
-					}
-				}
 		})
 	}
 	
@@ -403,9 +380,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			self.ghostButton.tintColor = ghostTintColor
 		}
 		
-		if (self.isRecording) {
-			self.effectsViewController!.view.hidden = !sender.selected;
-		}
+		self.updateGhostImage()
 	}
 	
 	@IBAction func lockPressed(sender: UISwitch) {
@@ -422,11 +397,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 			//Nothing
 		} else {
 //			self.isRecording = true
-			if !self.isRecording {
-				self.startCapture()
-			} else {
-				self.resumeCapture()
-			}
+//			if !self.isRecording {
+//				self.startCapture()
+//			} else {
+//				self.resumeCapture()
+//			}
+			self.startCapture()
 			captureModeOn()
 		}
 	}
@@ -438,11 +414,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 				self.shutterButton.setTitle("", forState: UIControlState.Normal)
 				self.shutterButton.cameraButtonMode = .VideoRecording
 //				self.isRecording = true
-				if !self.isRecording {
-					self.startCapture()
-				} else {
-					self.resumeCapture()
-				}
+//				if !self.isRecording {
+//					self.startCapture()
+//				} else {
+//					self.resumeCapture()
+//				}
+				self.startCapture()
 				captureModeOn()
 			} else {
 				self.shutterButton.setTitle("Tap", forState: UIControlState.Normal)
@@ -465,7 +442,25 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	}
 	
 	@IBAction func cancelPressed(sender: UIButton) {
-		self.dismissViewControllerAnimated(true, completion: nil)
+		let defaultBlock = {()->Void in
+			self.dismissViewControllerAnimated(true, completion: nil)
+		}
+		
+		if self.segmentThumbnails.isEmpty {
+			defaultBlock()
+			return
+		}
+		
+		let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the video recorded so far?", preferredStyle: UIAlertControllerStyle.Alert)
+		alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+			defaultBlock()
+		}))
+		alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+			self.saveCapture({ () -> Void in
+				defaultBlock()
+			})
+		}))
+		self.presentViewController(alert, animated: true, completion: nil)
 	}
 	
 	@IBAction func upArrowPressed(sender:AnyObject?) {
@@ -507,196 +502,241 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 	//-MARK: private start/stop helper methods
 	
 	func startCapture() {
-		UIApplication.sharedApplication().idleTimerDisabled = true
-
-		PBJVision.sharedInstance().startVideoCapture()
+		self.isRecording = true
+		_recorder.record()
+		self.ghostImageView.hidden = true
 	}
-	
+
 	func pauseCapture() {
-		PBJVision.sharedInstance().pauseVideoCapture()
-		self.effectsViewController!.view.hidden = !self.ghostButton.selected
+		self.isRecording = false
+		_recorder.pause()
+		self.ghostImageView.hidden = false
 	}
-	
-	func resumeCapture() {
-		PBJVision.sharedInstance().resumeVideoCapture()
 
-		self.effectsViewController!.view.hidden = true
-	}
-	
-	func endCapture() {
-		UIApplication.sharedApplication().idleTimerDisabled = false
-		PBJVision.sharedInstance().endVideoCapture()
-		self.effectsViewController!.view.hidden = true
+	func saveCapture(completion:(()->Void)?) {
+		if let lastSegmentView = self.segmentThumbnails.last?.snapshot {
+			//We delete the snapshots of the previous segments to give the illusion of saving the whole video clips (video clip = collection of segments)
+			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
+				if eachSnapshot.snapshot !== lastSegmentView {
+					eachSnapshot.snapshot.removeFromSuperview()
+				}
+			}
+			
+			self.infoLabel.text = "Saving ..."
+			
+			UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+				lastSegmentView.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
+				self.infoLabel.alpha = 1
+				}, completion: { (completed) -> Void in
+					
+					if let recordSession = self._recorder.session {
+						recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
+							if error == nil {
+								self.infoLabel.text = "Saved"
+								
+								UIView.animateWithDuration(0.5) { () -> Void in
+									self.infoLabel.alpha = 0
+								}
+								
+								//This if is a workaround
+								if self._recorder.session != nil {
+									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!)
+								}
+								
+								self.resetCapture()
+								
+								completion?()
+							} else {
+								self.infoLabel.text = "ERROR :("
+								
+								UIView.animateWithDuration(0.5) { () -> Void in
+									self.infoLabel.alpha = 0
+								}
+								print("Bad things happened while saving the capture \(error)")
+							}
+						})
+					}
+			})
+		} else {
+			completion?()
+		}
+		
 	}
 	
 	func resetCapture() {
-	//	[_strobeView stop];
-	//	_longPressGestureRecognizer.enabled = YES;
-		
-		let vision = PBJVision.sharedInstance()
-		vision.delegate = self
-		
-		if (vision.isCameraDeviceAvailable(PBJCameraDevice.Back)) {
-			vision.cameraDevice = PBJCameraDevice.Back
-		//	_flipButton.hidden = NO;
-		//	} else {
-		//	vision.cameraDevice = PBJCameraDeviceFront;
-		//	_flipButton.hidden = YES;
-		}
-		
-		vision.cameraMode = PBJCameraMode.Video
-		//vision.cameraMode = PBJCameraMode.Photo // PHOTO: uncomment to test photo capture
-		vision.cameraOrientation = PBJCameraOrientation.LandscapeRight
-		vision.focusMode = PBJFocusMode.ContinuousAutoFocus
-		vision.outputFormat = PBJOutputFormat.Widescreen
-		vision.videoRenderingEnabled = true
-		vision.captureSessionPreset = AVCaptureSessionPreset1920x1080
-		vision.additionalCompressionProperties = [AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel] // AVVideoProfileLevelKey requires specific captureSessionPreset
-		
-		// specify a maximum duration with the following property
-		 vision.maximumCaptureDuration = CMTimeMakeWithSeconds(60, 600); // ~ 1 hour
+		self._recorder.session?.removeAllSegments()
+		self.updateTimeRecordedLabel()
 	}
+	
+//
+//	func resetCapture() {
+//	//	[_strobeView stop];
+//	//	_longPressGestureRecognizer.enabled = YES;
+//		
+//		let vision = PBJVision.sharedInstance()
+//		vision.delegate = self
+//		
+//		if (vision.isCameraDeviceAvailable(PBJCameraDevice.Back)) {
+//			vision.cameraDevice = PBJCameraDevice.Back
+//		//	_flipButton.hidden = NO;
+//		//	} else {
+//		//	vision.cameraDevice = PBJCameraDeviceFront;
+//		//	_flipButton.hidden = YES;
+//		}
+//		
+//		vision.cameraMode = PBJCameraMode.Video
+//		//vision.cameraMode = PBJCameraMode.Photo // PHOTO: uncomment to test photo capture
+//		vision.cameraOrientation = PBJCameraOrientation.LandscapeRight
+//		vision.focusMode = PBJFocusMode.ContinuousAutoFocus
+//		vision.outputFormat = PBJOutputFormat.Widescreen
+//		vision.videoRenderingEnabled = true
+//		vision.captureSessionPreset = AVCaptureSessionPreset1920x1080
+//		vision.additionalCompressionProperties = [AVVideoProfileLevelKey : AVVideoProfileLevelH264HighAutoLevel] // AVVideoProfileLevelKey requires specific captureSessionPreset
+//		
+//		// specify a maximum duration with the following property
+//		 vision.maximumCaptureDuration = CMTimeMakeWithSeconds(60, 600); // ~ 1 hour
+//	}
 
 	//-MARK: VisionDelegate
 	// session
 	
-	func visionSessionWillStart(vision:PBJVision) {
-	}
-	
-	func visionSessionDidStart(vision: PBJVision) {
-		if self.previewView.superview == nil {
-			self.view.addSubview(self.previewView)
-			//	[self.view bringSubviewToFront:_gestureView];
-		}
-	}
-	
-	func visionSessionDidStop(vision: PBJVision) {
-		self.previewView.removeFromSuperview()
-	}
-
-	// preview
-	func visionSessionDidStartPreview(vision: PBJVision) {
-		print("Camera preview did start")
-	}
-
-	func visionSessionDidStopPreview(vision: PBJVision) {
-		print("Camera preview did stop")
-	}
-
-	// device
-	func visionCameraDeviceWillChange(vision: PBJVision) {
-		print("Camera device will change")
-	}
-
-	
-	func visionCameraDeviceDidChange(vision: PBJVision) {
-		print("Camera device did change")
-	}
-
-	//mode
-	func visionCameraModeWillChange(vision: PBJVision) {
-		print("Camera mode will change")
-	}
-
-	func visionCameraModeDidChange(vision: PBJVision) {
-		print("Camera mode did change")
-	}
-
-	// format
-	func visionOutputFormatWillChange(vision: PBJVision) {
-		print("Output format will change")
-	}
-	
-	func visionOutputFormatDidChange(vision: PBJVision) {
-		print("Output format did change")
-	}
-
-	func vision(vision: PBJVision, didChangeCleanAperture cleanAperture: CGRect) {
-		
-	}
-
-	// focus / exposure
-	func visionWillStartFocus(vision: PBJVision) {
-
-	}
-	
-	func visionDidStopFocus(vision: PBJVision) {
-		//	if (_focusView && [_focusView superview]) {
-		//	[_focusView stopAnimation];
-		//	}
-	}
-
-	func visionWillChangeExposure(vision: PBJVision) {
-		
-	}
-	
-	func visionDidChangeExposure(vision: PBJVision) {
-		//	if (_focusView && [_focusView superview]) {
-		//	[_focusView stopAnimation];
-		//	}
-		//	}
-	}
-
-	// flash
-	
-	func visionDidChangeFlashMode(vision: PBJVision) {
-		print("Flash mode did change")
-	}
-	
-	// photo
-
-	func visionWillCapturePhoto(vision: PBJVision) {
-
-	}
-	
-	func visionDidCapturePhoto(vision: PBJVision) {
-	
-	}
-	
-	func vision(vision: PBJVision, capturedPhoto photoDict: [NSObject : AnyObject]?, error: NSError?) {
-		print("Captured photo")
-	}
-	
-	// video capture
-	func visionDidStartVideoCapture(vision: PBJVision) {
-		//	[_strobeView start];
-		self.isRecording = true
-	}
-	func visionDidPauseVideoCapture(vision: PBJVision) {
-		//	[_strobeView stop];
-	}
-	
-	func visionDidResumeVideoCapture(vision: PBJVision) {
-		//	[_strobeView start];
-	}
-	
-	func vision(vision: PBJVision, capturedVideo videoDict: [NSObject : AnyObject]?, error: NSError?) {
-		self.isRecording = false
-		
-		if error != nil && error!.domain == PBJVisionErrorDomain && PBJVisionErrorType(rawValue: error!.code) == .Cancelled {
-			print("recording session cancelled")
-			return
-		} else if error != nil {
-			print("encountered an error in video capture \(error)")
-
-			self.infoLabel.textColor = UIColor.redColor()
-			self.infoLabel.text = "Error =("
-			
-			return
-		}
-		
-		self.currentVideo = videoDict
-		
-		let videoPath = self.currentVideo![PBJVisionVideoPathKey] as! String
-		
-		self.infoLabel.text = "Saved"
-		
-		UIView.animateWithDuration(0.5) { () -> Void in
-			self.infoLabel.alpha = 0
-		}
-		
-		self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: videoPath)
-	}
+//	func visionSessionWillStart(vision:PBJVision) {
+//	}
+//	
+//	func visionSessionDidStart(vision: PBJVision) {
+//		if self.previewView.superview == nil {
+//			self.view.addSubview(self.previewView)
+//			//	[self.view bringSubviewToFront:_gestureView];
+//		}
+//	}
+//	
+//	func visionSessionDidStop(vision: PBJVision) {
+//		self.previewView.removeFromSuperview()
+//	}
+//
+//	// preview
+//	func visionSessionDidStartPreview(vision: PBJVision) {
+//		print("Camera preview did start")
+//	}
+//
+//	func visionSessionDidStopPreview(vision: PBJVision) {
+//		print("Camera preview did stop")
+//	}
+//
+//	// device
+//	func visionCameraDeviceWillChange(vision: PBJVision) {
+//		print("Camera device will change")
+//	}
+//
+//	
+//	func visionCameraDeviceDidChange(vision: PBJVision) {
+//		print("Camera device did change")
+//	}
+//
+//	//mode
+//	func visionCameraModeWillChange(vision: PBJVision) {
+//		print("Camera mode will change")
+//	}
+//
+//	func visionCameraModeDidChange(vision: PBJVision) {
+//		print("Camera mode did change")
+//	}
+//
+//	// format
+//	func visionOutputFormatWillChange(vision: PBJVision) {
+//		print("Output format will change")
+//	}
+//	
+//	func visionOutputFormatDidChange(vision: PBJVision) {
+//		print("Output format did change")
+//	}
+//
+//	func vision(vision: PBJVision, didChangeCleanAperture cleanAperture: CGRect) {
+//		
+//	}
+//
+//	// focus / exposure
+//	func visionWillStartFocus(vision: PBJVision) {
+//
+//	}
+//	
+//	func visionDidStopFocus(vision: PBJVision) {
+//		//	if (_focusView && [_focusView superview]) {
+//		//	[_focusView stopAnimation];
+//		//	}
+//	}
+//
+//	func visionWillChangeExposure(vision: PBJVision) {
+//		
+//	}
+//	
+//	func visionDidChangeExposure(vision: PBJVision) {
+//		//	if (_focusView && [_focusView superview]) {
+//		//	[_focusView stopAnimation];
+//		//	}
+//		//	}
+//	}
+//
+//	// flash
+//	
+//	func visionDidChangeFlashMode(vision: PBJVision) {
+//		print("Flash mode did change")
+//	}
+//	
+//	// photo
+//
+//	func visionWillCapturePhoto(vision: PBJVision) {
+//
+//	}
+//	
+//	func visionDidCapturePhoto(vision: PBJVision) {
+//	
+//	}
+//	
+//	func vision(vision: PBJVision, capturedPhoto photoDict: [NSObject : AnyObject]?, error: NSError?) {
+//		print("Captured photo")
+//	}
+//	
+//	// video capture
+//	func visionDidStartVideoCapture(vision: PBJVision) {
+//		//	[_strobeView start];
+//		self.isRecording = true
+//	}
+//	func visionDidPauseVideoCapture(vision: PBJVision) {
+//		//	[_strobeView stop];
+//	}
+//	
+//	func visionDidResumeVideoCapture(vision: PBJVision) {
+//		//	[_strobeView start];
+//	}
+//	
+//	func vision(vision: PBJVision, capturedVideo videoDict: [NSObject : AnyObject]?, error: NSError?) {
+//		self.isRecording = false
+//		
+//		if error != nil && error!.domain == PBJVisionErrorDomain && PBJVisionErrorType(rawValue: error!.code) == .Cancelled {
+//			print("recording session cancelled")
+//			return
+//		} else if error != nil {
+//			print("encountered an error in video capture \(error)")
+//
+//			self.infoLabel.textColor = UIColor.redColor()
+//			self.infoLabel.text = "Error =("
+//			
+//			return
+//		}
+//		
+//		self.currentVideo = videoDict
+//		
+//		let videoPath = self.currentVideo![PBJVisionVideoPathKey] as! String
+//		
+//		self.infoLabel.text = "Saved"
+//		
+//		UIView.animateWithDuration(0.5) { () -> Void in
+//			self.infoLabel.alpha = 0
+//		}
+//		
+//		self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: videoPath)
+//	}
 	
 	// progress
 //	func vision(vision: PBJVision, didCaptureVideoSampleBuffer sampleBuffer: CMSampleBuffer) {
@@ -708,5 +748,210 @@ class CaptureVC: UIViewController, PBJVisionDelegate {
 //
 //	}
 
+	//-MARK: SCRecorder things
+	
+	func recorder(recorder: SCRecorder, didSkipVideoSampleBufferInSession session: SCRecordSession) {
+		print("Skipped video buffer")
+	}
+	
+	func recorder(recorder: SCRecorder, didReconfigureAudioInput audioInputError: NSError?) {
+		print("Reconfigured audio input: \(audioInputError)")
 
+	}
+	
+	func recorder(recorder: SCRecorder, didReconfigureVideoInput videoInputError: NSError?) {
+		print("Reconfigured video input: \(videoInputError)")
+	}
+	
+	//	- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+//	NSURL *url = info[UIImagePickerControllerMediaURL];
+//	[picker dismissViewControllerAnimated:YES completion:nil];
+//	
+//	SCRecordSessionSegment *segment = [SCRecordSessionSegment segmentWithURL:url info:nil];
+//	
+//	[_recorder.session addSegment:segment];
+//	_recordSession = [SCRecordSession recordSession];
+//	[_recordSession addSegment:segment];
+//	
+//	[self showVideo];
+//	}
+//	- (void) handleStopButtonTapped:(id)sender {
+//	[_recorder pause:^{
+//	[self saveAndShowSession:_recorder.session];
+//	}];
+//	}
+//	
+//	func saveAndShowSession(recordSession:SCRecordSession) {
+//		SCRecordSessionManager.sharedInstance().saveRecordSession(recordSession)
+
+//		self.showVideo()
+//	}
+
+//	- (void)handleRetakeButtonTapped:(id)sender {
+//	SCRecordSession *recordSession = _recorder.session;
+//	
+//	if (recordSession != nil) {
+//	_recorder.session = nil;
+//	
+//	// If the recordSession was saved, we don't want to completely destroy it
+//	if ([[SCRecordSessionManager sharedInstance] isSaved:recordSession]) {
+//	[recordSession endSegmentWithInfo:nil completionHandler:nil];
+//	} else {
+//	[recordSession cancelSession:nil];
+//	}
+//	}
+//	
+//	[self prepareSession];
+//	}
+//	
+//	- (IBAction)switchCameraMode:(id)sender {
+//	if ([_recorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+//	[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+//	self.capturePhotoButton.alpha = 0.0;
+//	self.recordView.alpha = 1.0;
+//	self.retakeButton.alpha = 1.0;
+//	self.stopButton.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	_recorder.captureSessionPreset = kVideoPreset;
+//	[self.switchCameraModeButton setTitle:@"Switch Photo" forState:UIControlStateNormal];
+//	[self.flashModeButton setTitle:@"Flash : Off" forState:UIControlStateNormal];
+//	_recorder.flashMode = SCFlashModeOff;
+//	}];
+//	} else {
+//	[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+//	self.recordView.alpha = 0.0;
+//	self.retakeButton.alpha = 0.0;
+//	self.stopButton.alpha = 0.0;
+//	self.capturePhotoButton.alpha = 1.0;
+//	} completion:^(BOOL finished) {
+//	_recorder.captureSessionPreset = AVCaptureSessionPresetPhoto;
+//	[self.switchCameraModeButton setTitle:@"Switch Video" forState:UIControlStateNormal];
+//	[self.flashModeButton setTitle:@"Flash : Auto" forState:UIControlStateNormal];
+//	_recorder.flashMode = SCFlashModeAuto;
+//	}];
+//	}
+//	}
+//	
+//	- (IBAction)switchFlash:(id)sender {
+//	NSString *flashModeString = nil;
+//	if ([_recorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+//	switch (_recorder.flashMode) {
+//	case SCFlashModeAuto:
+//	flashModeString = @"Flash : Off";
+//	_recorder.flashMode = SCFlashModeOff;
+//	break;
+//	case SCFlashModeOff:
+//	flashModeString = @"Flash : On";
+//	_recorder.flashMode = SCFlashModeOn;
+//	break;
+//	case SCFlashModeOn:
+//	flashModeString = @"Flash : Light";
+//	_recorder.flashMode = SCFlashModeLight;
+//	break;
+//	case SCFlashModeLight:
+//	flashModeString = @"Flash : Auto";
+//	_recorder.flashMode = SCFlashModeAuto;
+//	break;
+//	default:
+//	break;
+//	}
+//	} else {
+//	switch (_recorder.flashMode) {
+//	case SCFlashModeOff:
+//	flashModeString = @"Flash : On";
+//	_recorder.flashMode = SCFlashModeLight;
+//	break;
+//	case SCFlashModeLight:
+//	flashModeString = @"Flash : Off";
+//	_recorder.flashMode = SCFlashModeOff;
+//	break;
+//	default:
+//	break;
+//	}
+//	}
+//	
+//	[self.flashModeButton setTitle:flashModeString forState:UIControlStateNormal];
+//	}
+//	
+	func prepareSession() {
+		if (_recorder.session == nil) {
+			
+			let session = SCRecordSession()
+			session.fileType = AVFileTypeQuickTimeMovie
+			
+			_recorder.session = session
+		}
+		self.updateTimeRecordedLabel()
+		self.updateGhostImage()
+	}
+	
+	func recorder(recorder: SCRecorder, didCompleteSession session: SCRecordSession) {
+//		self.saveAndShowSession(session)
+		print("didCompleteSession")
+	}
+	
+	func recorder(recorder: SCRecorder, didInitializeAudioInSession session: SCRecordSession, error: NSError?) {
+		if error == nil {
+			print("Initialized audio in record session")
+		} else {
+			print("Failed to initialize audio in record session: \(error!.localizedDescription)")
+		}
+	}
+	
+	func recorder(recorder: SCRecorder, didInitializeVideoInSession session: SCRecordSession, error: NSError?) {
+		if error == nil {
+			print("Initialized video in record session")
+		} else {
+			print("Failed to initialize video in record session: \(error!.localizedDescription)")
+		}
+	}
+	
+	func recorder(recorder: SCRecorder, didBeginSegmentInSession session: SCRecordSession, error: NSError?) {
+		print("Began record segment: \(error)")
+	}
+	
+	func recorder(recorder: SCRecorder, didCompleteSegment segment: SCRecordSessionSegment?, inSession session: SCRecordSession, error: NSError?) {
+		print("Completed record segment at \(segment!.url): \(error) (frameRate: \(segment!.frameRate))")
+
+		self.updateGhostImage()
+	}
+	
+//	- (void)updateTimeRecordedLabel {
+//	CMTime currentTime = kCMTimeZero;
+//	
+//	if (_recorder.session != nil) {
+//	currentTime = _recorder.session.duration;
+//	}
+//	
+//	self.timeRecordedLabel.text = [NSString stringWithFormat:@"%.2f sec", CMTimeGetSeconds(currentTime)];
+//	}
+	
+	func updateTimeRecordedLabel() {
+		let time = Int(self.totalTimeSeconds())
+		let hours = (time / 3600)
+		let minutes = (time / 60) % 60
+		let seconds = time % 60
+		
+		let timeString = String(format: "%0.2d:%0.2d:%0.2d",hours,minutes,seconds)
+		self.recordingTime.text = timeString;
+	}
+	
+	func recorder(recorder: SCRecorder, didAppendVideoSampleBufferInSession session: SCRecordSession) {
+		self.updateTimeRecordedLabel()
+	}
+
+	func updateGhostImage() {
+		var image:UIImage? = nil
+		
+		if self.ghostButton.selected {
+//			if _recorder.session != nil && _recorder.session!.segments.count > 0 {
+//				let segment = _recorder.session!.segments.last!
+//				image = segment.lastImage
+//			}
+			image = _recorder.snapshotOfLastVideoBuffer()
+		}
+		self.ghostImageView.image = image
+
+		self.ghostImageView.hidden = !self.ghostButton.selected
+	}
 }

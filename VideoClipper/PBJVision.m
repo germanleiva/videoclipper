@@ -33,7 +33,7 @@
 #import <OpenGLES/EAGL.h>
 #import <UIKit/UIKit.h>
 
-#define LOG_VISION 0
+#define LOG_VISION 1
 #ifndef DLog
 #if !defined(NDEBUG) && LOG_VISION
 #   define DLog(fmt, ...) NSLog((@"VISION: " fmt), ##__VA_ARGS__);

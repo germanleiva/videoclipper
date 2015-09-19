@@ -16,3 +16,6 @@
 //#import "THPlayerController.h"
 //#import "THThumbnail.h"
 #import "AAPLTimedAnnotationWriter.h"
+
+#import <SCRecorder/SCRecorder.h>
+#import "SCRecordSessionManager.h"

@@ -16,6 +16,8 @@
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
+		A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4417AF91BAC240E00392751 /* libSCRecorder.a */; };
+		A4417B041BAC2A6100392751 /* SCRecordSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
@@ -83,6 +85,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A4417AF81BAC240E00392751 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC23FE1117B4200700389EDA;
+			remoteInfo = SCRecorder;
+		};
+		A4417AFA1BAC240E00392751 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DCA8EF50192BD1C200839BE2;
+			remoteInfo = SCRecorderMac;
+		};
+		A4417AFC1BAC240E00392751 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DCDC1DF31AC79592001DC3D9;
+			remoteInfo = SCRecorderFramework;
+		};
 		A4664ACE1B444BA90095B27D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4664AAE1B444BA80095B27D /* Project object */;
@@ -113,6 +136,9 @@
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
+		A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SCRecorder.xcodeproj; path = SCRecorder/Library/SCRecorder.xcodeproj; sourceTree = "<group>"; };
+		A4417B021BAC2A6100392751 /* SCRecordSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCRecordSessionManager.h; sourceTree = "<group>"; };
+		A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCRecordSessionManager.m; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -211,6 +237,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */,
 				A4AAF6A71B8B4A3C006391DE /* Crashlytics.framework in Frameworks */,
 				A4AAF6A61B8B4A3C006391DE /* Fabric.framework in Frameworks */,
 			);
@@ -253,9 +280,22 @@
 			path = "ALAssetsLibrary-CustomPhotoAlbum";
 			sourceTree = "<group>";
 		};
+		A4417AF31BAC240D00392751 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4417AF91BAC240E00392751 /* libSCRecorder.a */,
+				A4417AFB1BAC240E00392751 /* SCRecorderMac.framework */,
+				A4417AFD1BAC240E00392751 /* SCRecorder.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
+				A4417B021BAC2A6100392751 /* SCRecordSessionManager.h */,
+				A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */,
+				A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */,
 				A4AAF6A81B8B4C80006391DE /* Frameworks */,
 				A4664AB81B444BA80095B27D /* VideoClipper */,
 				A4664AD01B444BA90095B27D /* VideoClipperTests */,
@@ -544,6 +584,12 @@
 			mainGroup = A4664AAD1B444BA80095B27D;
 			productRefGroup = A4664AB71B444BA80095B27D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A4417AF31BAC240D00392751 /* Products */;
+					ProjectRef = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A4664AB51B444BA80095B27D /* VideoClipper */,
@@ -552,6 +598,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A4417AF91BAC240E00392751 /* libSCRecorder.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSCRecorder.a;
+			remoteRef = A4417AF81BAC240E00392751 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4417AFB1BAC240E00392751 /* SCRecorderMac.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SCRecorderMac.framework;
+			remoteRef = A4417AFA1BAC240E00392751 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A4417AFD1BAC240E00392751 /* SCRecorder.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SCRecorder.framework;
+			remoteRef = A4417AFC1BAC240E00392751 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A4664AB41B444BA80095B27D /* Resources */ = {
@@ -641,6 +711,7 @@
 				A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */,
 				A4F057B01B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift in Sources */,
 				A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */,
+				A4417B041BAC2A6100392751 /* SCRecordSessionManager.m in Sources */,
 				A4D0AB931B9CB8D4002C0BD9 /* PBJMediaWriter.m in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,

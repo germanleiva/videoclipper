@@ -116,17 +116,20 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathString:String) {
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL) {
 		let library = ALAssetsLibrary()
-		let pathURL = NSURL(fileURLWithPath: pathString)
+//		let pathURL = NSURL(fileURLWithPath: pathString)
 		
 		//		library.saveVideo is used to save on an album
-		library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
-			if errorOnSaving != nil {
-				print("Couldn't save the video on the photos album: \(errorOnSaving)")
-				return
+		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(pathURL) {
+			print("StoryLinesTableController >> didFinishRecordingVideoClipAtPath ")
+			library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
+				if errorOnSaving != nil {
+					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
+					return
+				}
+				self.createNewVideoForAssetURL(assetURL)
 			}
-			self.createNewVideoForAssetURL(assetURL)
 		}
 	}
 	
@@ -143,38 +146,38 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		self.presentViewController(captureController, animated: true, completion: nil)
 		return
 		
-		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
-			print("captureVideoPressed and camera available.")
-			
-			let imagePicker = UIImagePickerController()
-			imagePicker.delegate = self
-			imagePicker.sourceType = .Camera;
-			imagePicker.mediaTypes = [String(kUTTypeMovie)]
-			imagePicker.allowsEditing = true
-			imagePicker.videoQuality = UIImagePickerControllerQualityType.TypeHigh
-			
-			let imageWarning = UIImageView(image: UIImage(named:"verticalVideoWarning"))
-			imagePicker.cameraOverlayView = imageWarning
-			imageWarning.hidden = true
-			imagePicker.showsCameraControls = true
-			
-			self.orientationObserver = NSNotificationCenter.defaultCenter().addObserverForName("UIDeviceOrientationDidChangeNotification", object: nil, queue: NSOperationQueue.mainQueue(), usingBlock: { (notification) -> Void in
-				let orientation = UIDevice.currentDevice().orientation
-				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
-				if !imageWarning.hidden {
-					imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
-				}
-			})
-
-			self.presentViewController(imagePicker, animated: true, completion: { () -> Void in
-				let orientation = UIDevice.currentDevice().orientation
-				imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
-				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
-			})
-			
-		} else {
-			print("Camera not available.")
-		}
+//		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
+//			print("captureVideoPressed and camera available.")
+//			
+//			let imagePicker = UIImagePickerController()
+//			imagePicker.delegate = self
+//			imagePicker.sourceType = .Camera;
+//			imagePicker.mediaTypes = [String(kUTTypeMovie)]
+//			imagePicker.allowsEditing = true
+//			imagePicker.videoQuality = UIImagePickerControllerQualityType.TypeHigh
+//			
+//			let imageWarning = UIImageView(image: UIImage(named:"verticalVideoWarning"))
+//			imagePicker.cameraOverlayView = imageWarning
+//			imageWarning.hidden = true
+//			imagePicker.showsCameraControls = true
+//			
+//			self.orientationObserver = NSNotificationCenter.defaultCenter().addObserverForName("UIDeviceOrientationDidChangeNotification", object: nil, queue: NSOperationQueue.mainQueue(), usingBlock: { (notification) -> Void in
+//				let orientation = UIDevice.currentDevice().orientation
+//				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
+//				if !imageWarning.hidden {
+//					imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
+//				}
+//			})
+//
+//			self.presentViewController(imagePicker, animated: true, completion: { () -> Void in
+//				let orientation = UIDevice.currentDevice().orientation
+//				imagePicker.cameraOverlayView!.center = imagePicker.topViewController!.view.center
+//				imageWarning.hidden = orientation.isLandscape || orientation.isFlat
+//			})
+//			
+//		} else {
+//			print("Camera not available.")
+//		}
 	}
 	
 	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
@@ -897,13 +900,16 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			let location = gesture.locationInView(self.tableView)
 			var indexPath = self.tableView.indexPathForRowAtPoint(location)
 			if indexPath == nil {
+				if self.sourceIndexPath == nil {
+					print("TODO MAL")
+				}
 				indexPath = self.sourceIndexPath
 			}
 			
 			switch (state) {
 				
 			case UIGestureRecognizerState.Began:
-				self.sourceIndexPath = indexPath;
+				self.sourceIndexPath = indexPath
 				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
 				snapshot = customSnapshotFromView(cell)
 				
@@ -940,6 +946,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				
 			default:
 				// Clean up.
+				//Llega indexPath nil
 				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {
 					cell.alpha = 0.0
 					cell.hidden = false

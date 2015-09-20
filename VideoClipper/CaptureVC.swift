@@ -60,6 +60,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	@IBOutlet var ghostImageView:UIImageView!
 	
 	@IBOutlet var infoLabel:UILabel!
+	@IBOutlet var segmentCount:UILabel!
+	@IBOutlet var lineVideoCount:UILabel!
 	
 	var _recorder:SCRecorder!
 	
@@ -134,6 +136,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 			let imageView = UIImageView(image: UIImage(data: snapshot))
 			imageView.frame = CGRect(x: 0, y: 0, width: self.titleCardPlaceholder.frame.width, height: self.titleCardPlaceholder.frame.height)
 			self.titleCardPlaceholder.addSubview(imageView)
+			self.updateLineVideoCount()
 		}
 		self.needsToUpdateTitleCardPlaceholder = false
 	}
@@ -150,6 +153,18 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		
 		//This is a workaround
 		self.ghostImageView.image = nil
+		
+		self.updateSegmentCount()
+	}
+	
+	func updateSegmentCount() {
+		let count = _recorder.session!.segments.count
+		var prefix = "segments"
+		if count == 1 {
+			prefix = "segment"
+		}
+		
+		self.segmentCount.text = "\(count) \(prefix)"
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -276,6 +291,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 						lastSegmentView.removeFromSuperview()
 						self.updateTimeRecordedLabel()
 						self.updateGhostImage()
+						self.updateSegmentCount()
 						
 						UIView.animateWithDuration(0.5, animations: { () -> Void in
 							self.infoLabel.alpha = 0
@@ -428,7 +444,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		}
 	}
 	
-	@IBAction func cancelPressed(sender: UIButton) {
+	@IBAction func cancelPressed(sender: AnyObject) {
 		if self.segmentThumbnails.isEmpty {
 			self.dismissController()
 			return
@@ -449,14 +465,28 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	}
 	
 	@IBAction func upArrowPressed(sender:AnyObject?) {
-		self.animatePlaceholderTitleCard(direction: CGFloat(1),newCurrentLine: self.currentLine!.previousLine())
+		self.animatePlaceholderTitleCard(direction: CGFloat(1), newCurrentLine: self.currentLine!.previousLine()) { () -> Void in
+			self.updateLineVideoCount()
+		}
 	}
 	
 	@IBAction func downArrowPressed(sender:AnyObject?) {
-		self.animatePlaceholderTitleCard(direction: CGFloat(-1), newCurrentLine: self.currentLine!.nextLine())
+		self.animatePlaceholderTitleCard(direction: CGFloat(-1), newCurrentLine: self.currentLine!.nextLine()) { () -> Void in
+			self.updateLineVideoCount()
+		}
 	}
 	
-	func animatePlaceholderTitleCard(direction factor:CGFloat,newCurrentLine:StoryLine?) {
+	func updateLineVideoCount(fakeIncrement:Int = 0){
+		let count = self.currentTitleCard!.storyLine!.videos().count + fakeIncrement
+		var prefix = "videos"
+		if count == 1 {
+			prefix = "video"
+		}
+		
+		self.lineVideoCount.text = "\(count) \(prefix)"
+	}
+	
+	func animatePlaceholderTitleCard(direction factor:CGFloat,newCurrentLine:StoryLine?,completion:()->Void) {
 		let currentTCImageView = self.titleCardPlaceholder.subviews.first!
 		if let newTC = newCurrentLine?.firstTitleCard() {
 			let newTCImageView = UIImageView(image: UIImage(data:newTC.snapshot!))
@@ -475,6 +505,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 						self.currentLine = newCurrentLine
 						self.delegate?.captureVC(self, didChangeStoryLine: newCurrentLine!)
 						currentTCImageView.removeFromSuperview()
+						completion()
 					}
 			}
 		}
@@ -526,14 +557,21 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 								//This if is a workaround
 								if self._recorder.session != nil {
 									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!)
+								} else {
+									print("THIS SHOULDN'T HAPPEN EVER!")
 								}
 								
 								self.deleteSegments()
+								self.updateLineVideoCount(1)
 								self.updateTimeRecordedLabel()
 								
 								completion?()
 							} else {
 								self.infoLabel.text = "ERROR :("
+								
+								self.deleteSegments()
+								self.updateLineVideoCount()
+								self.updateTimeRecordedLabel()
 								
 								UIView.animateWithDuration(0.5) { () -> Void in
 									self.infoLabel.alpha = 0
@@ -555,10 +593,11 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		}
 		self.segmentThumbnails.removeAll()
 		self._recorder.session?.removeAllSegments(true)
+		
+		self.updateSegmentCount()
 	}
 
 	//-MARK: SCRecorder things
-	
 	func recorder(recorder: SCRecorder, didSkipVideoSampleBufferInSession session: SCRecordSession) {
 		print("Skipped video buffer")
 	}
@@ -723,6 +762,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
 
 		self.updateGhostImage()
+		self.updateSegmentCount()
 	}
 	
 	func updateTimeRecordedLabel() {

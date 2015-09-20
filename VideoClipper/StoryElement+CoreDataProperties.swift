@@ -15,6 +15,6 @@ import CoreData
 extension StoryElement {
 
     @NSManaged var name: String?
-    @NSManaged var storyLine: NSManagedObject?
+    @NSManaged var storyLine: StoryLine?
 
 }

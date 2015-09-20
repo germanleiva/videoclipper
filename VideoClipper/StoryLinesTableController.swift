@@ -68,6 +68,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 	var shouldSelectRowAfterDelete = false
 	
+	var exportSession:AVAssetExportSession? = nil
+	
 	func currentStoryLine() -> StoryLine? {
 		return self.project!.storyLines![self.selectedLinePath.section] as? StoryLine
 	}
@@ -107,7 +109,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func updateElement(element:StoryElement) {
-		let storyLine = element.storyLine as! StoryLine
+		let storyLine = element.storyLine!
 		let section = self.project!.storyLines!.indexOfObject(storyLine)
 		let indexPath = NSIndexPath(forRow: 0, inSection: section)
 		if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
@@ -373,7 +375,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	func exportToPhotoAlbum(elements:NSOrderedSet){
 		let (composition,videoComposition,metadataGroups) = self.createComposition(elements)
 		
-		let exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
+		self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
 		
 		exportSession!.videoComposition = videoComposition
 		
@@ -394,37 +396,37 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 		print("Starting exportAsynchronouslyWithCompletionHandler")
 		
-		exportSession!.exportAsynchronouslyWithCompletionHandler {
-			print("Exported Asynchronously With Completion Handler")
-			
+		exportSession!.exportAsynchronouslyWithCompletionHandler {			
 			dispatch_async(dispatch_get_main_queue(), {
-				switch exportSession!.status {
-				case AVAssetExportSessionStatus.Completed:
-					print("Export Complete, trying to write on the photo album")
-					self.writeExportedVideoToAssetsLibrary(exportSession!.outputURL!)
-//					let sourceAsset = AVURLAsset(URL: exportSession!.outputURL!)
-//					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-//						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
-//						
-//						writer.writeMetadataGroups(metadataGroups)
-//						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
-//					})
-				case AVAssetExportSessionStatus.Cancelled:
-					print("Export Cancelled");
-					print("ExportSessionError: \(exportSession!.error?.localizedDescription)")
-				case AVAssetExportSessionStatus.Failed:
-					print("Export Failed");
-					print("ExportSessionError: \(exportSession!.error?.localizedDescription)")
-				default:
-					print("Unknown export session status")
-				}
-				
-				if let error = exportSession!.error {
-					let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-					alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-					self.presentViewController(alert, animated: true, completion: { () -> Void in
-						print("Nothing after the alert")
-					})
+				if let anExportSession = self.exportSession {
+					switch anExportSession.status {
+					case AVAssetExportSessionStatus.Completed:
+						print("Export Complete, trying to write on the photo album")
+						self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
+	//					let sourceAsset = AVURLAsset(URL: exportSession!.outputURL!)
+	//					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+	//						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
+	//						
+	//						writer.writeMetadataGroups(metadataGroups)
+	//						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
+	//					})
+					case AVAssetExportSessionStatus.Cancelled:
+						print("Export Cancelled");
+						print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+					case AVAssetExportSessionStatus.Failed:
+						print("Export Failed");
+						print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+					default:
+						print("Unknown export session status")
+					}
+					
+					if let error = self.exportSession!.error {
+						let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+						alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+						self.presentViewController(alert, animated: true, completion: { () -> Void in
+							print("Nothing after the alert")
+						})
+					}
 				}
 			})
 		}
@@ -434,9 +436,18 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
 		self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
 		self.progressBar!.labelText = "Exporting ..."
+		self.progressBar!.detailsLabelText = "Tap to cancel"
+		self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
 		
 		self.monitorExportProgress(exportSession!)
 
+	}
+	
+	@IBAction func cancelExport() {
+		self.exportSession?.cancelExport()
+		self.exportSession = nil
+		self.progressBar!.hide(true)
+		self.progressBar = nil
 	}
 	
 	func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
@@ -478,9 +489,11 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				self.monitorExportProgress(exportSession)
 			} else {
 				//Not exporting anymore
-				self.progressBar!.labelText = "Done"
-				self.progressBar!.hide(true)
-				self.progressBar = nil
+				if let progress = self.progressBar {
+					progress.labelText = "Done"
+					progress.hide(true)
+					self.progressBar = nil
+				}
 			}
 		})
 	}
@@ -948,6 +961,9 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			default:
 				// Clean up.
 				//Llega indexPath nil
+				if indexPath == nil {
+					print("OTRO TODO MAL")
+				}
 				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {
 					cell.alpha = 0.0
 					cell.hidden = false

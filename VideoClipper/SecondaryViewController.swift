@@ -71,7 +71,7 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		let indexToRemove = self.currentIndex
 		self.viewControllers.removeAtIndex(indexToRemove)
 
-		let leftyVC = self.viewControllerAtIndex(indexToRemove - 1)
+		let leftyVC = self.viewControllerAtIndex(max(0,indexToRemove - 1))
 
 		self.pageViewController?.setViewControllers([leftyVC], direction: .Reverse, animated: true, completion: nil)
 		self.pageControl.numberOfPages = self.viewControllers.count

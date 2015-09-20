@@ -68,8 +68,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 		self.primaryViewWidthConstraint!.constant = self.view.frame.size.width - self.verticalToolbar.frame.size.width
 		
-		self.view.layoutIfNeeded()
-		
 		let tapGesture = UITapGestureRecognizer(target: self, action: "tapOnBackgroundOfPrimaryView:")
 		
 		self.tableController!.tableView.backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: self.tableController!.tableView.frame.size.width, height: self.tableController!.tableView.frame.size.height))
@@ -87,6 +85,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		swipeLeft.numberOfTouchesRequired = 1
 		swipeLeft.direction = .Left
 		self.verticalToolbar!.addGestureRecognizer(swipeLeft)
+		
+		self.view.bringSubviewToFront(self.verticalToolbar)
+		
+		self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+		self.secondaryController!.line = self.project!.storyLines![self.currentLineIndexPath!.section] as! StoryLine
 	}
 	
 	func swipedLeft(sender:UISwipeGestureRecognizer) {
@@ -114,9 +117,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func tapOnBackgroundOfPrimaryView(recognizer:UITapGestureRecognizer) {
-		self.titleTextField.resignFirstResponder()
-		if self.tableController!.isCompact {
-			self.expandPrimaryController(true)
+		if self.titleTextField.isFirstResponder() {
+			self.titleTextField.resignFirstResponder()
+		} else {
+			if self.tableController!.isCompact {
+				self.expandPrimaryController(true)
+			}
 		}
 	}
 	
@@ -146,8 +152,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		if self.isNewProject {
+			self.expandPrimaryController(false)
+			
 			self.titleTextField!.becomeFirstResponder()
 			self.titleTextField.selectAll(nil)
+			
 			self.isNewProject = false
 		}
 	}
@@ -282,7 +291,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) -> Void {
 		//When the secondary view controller shows a particular element I need to update the primary controller to scroll to the same element in the current line
 		
-		let storyLine = element.storyLine as! StoryLine
+		let storyLine = element.storyLine!
 		let itemIndexPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
 		
 		if self.currentItemIndexPath! != itemIndexPath {

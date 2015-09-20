@@ -10,6 +10,7 @@
 		A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */ = {isa = PBXBuildFile; fileRef = A40049F21BA98C24003E518C /* UIView+Genie.m */; };
 		A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */; };
 		A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */; };
+		A418D52C1BAEEB0700AC7D12 /* ProjectsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */; };
 		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
 		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
@@ -121,6 +122,7 @@
 		A404A52C1B8118AA00B82B29 /* AVPlayerItem+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVPlayerItem+THAdditions.h"; sourceTree = "<group>"; };
 		A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerItem+THAdditions.m"; sourceTree = "<group>"; };
 		A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementVC.swift; sourceTree = "<group>"; };
+		A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectsTableController.swift; sourceTree = "<group>"; };
 		A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_03.xcdatamodel; sourceTree = "<group>"; };
 		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
 		A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
+				A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */,
 				A4664AEB1B452D680095B27D /* ProjectVC.swift */,
 				A4664AED1B452D680095B27D /* StoryLinesTableController.swift */,
 				A4E759BA1B9083120076D250 /* SettingsTableController.swift */,
@@ -678,6 +681,7 @@
 				A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */,
 				A4E759BB1B9083120076D250 /* SettingsTableController.swift in Sources */,
 				A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */,
+				A418D52C1BAEEB0700AC7D12 /* ProjectsTableController.swift in Sources */,
 				A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */,
 				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
 				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,

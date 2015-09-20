@@ -789,6 +789,7 @@
                                     <outletCollection property="gestureRecognizers" destination="Kug-Vd-I1B" appends="YES" id="4o3-fX-sda"/>
                                     <outletCollection property="gestureRecognizers" destination="GCT-2P-srr" appends="YES" id="gbH-rs-iFc"/>
                                     <outletCollection property="gestureRecognizers" destination="rCC-g6-bBl" appends="YES" id="U8b-hq-In0"/>
+                                    <outletCollection property="gestureRecognizers" destination="8t7-Sz-ocg" appends="YES" id="6Hq-Cz-ETh"/>
                                 </connections>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Heg-2w-nsv">
@@ -927,6 +928,11 @@
                 <tapGestureRecognizer id="hAb-wI-XOJ">
                     <connections>
                         <segue destination="WKl-nH-FNn" kind="presentation" identifier="modalTitleCardVC" id="YN6-m3-U23"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="8t7-Sz-ocg">
+                    <connections>
+                        <action selector="tappedOnSegment:" destination="Gc3-vh-ICn" id="HfR-nH-nOR"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

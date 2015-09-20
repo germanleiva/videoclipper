@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 let keyShutterLockEnabled = "shutterLockEnabled"
 let keyGhostDisabled = "keyGhostDisabled"
@@ -122,6 +123,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 		self.recordingIndicator.layer.masksToBounds = true
 		
 		self.updateTitleCardPlaceholder()
+		
+		self.prepareSession()
 	}
 	
 	func updateTitleCardPlaceholder() {
@@ -139,8 +142,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-//		self.resetCapture()
-//		PBJVision.sharedInstance().startPreview()
 		
 		if self.needsToUpdateTitleCardPlaceholder {
 			self.updateTitleCardPlaceholder()
@@ -148,8 +149,6 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 		
 		self.upButton.enabled = self.currentLine?.previousLine() != nil
 		self.downButton.enabled = self.currentLine?.nextLine() != nil
-		
-		self.prepareSession()
 		
 		//This is a workaround
 		self.ghostImageView.image = nil
@@ -163,12 +162,17 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 		super.viewWillDisappear(animated)
 //		PBJVision.sharedInstance().stopPreview()
 		_recorder.stopRunning()
-		_recorder.unprepare()
-		
-		_recorder.session?.cancelSession(nil)
-		_recorder.session = nil
-		
-		_recorder.captureSession?.stopRunning()
+	}
+	
+	func dismissController() {
+		self.dismissViewControllerAnimated(true) { () -> Void in
+			self._recorder.unprepare()
+			
+			self._recorder.session?.cancelSession(nil)
+			self._recorder.session = nil
+			
+			self._recorder.captureSession?.stopRunning()
+		}
 	}
 	
 	deinit {
@@ -277,15 +281,30 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 				self.infoLabel.alpha = 1
 				}, completion: { (completed) -> Void in
 					if completed {
-						self._recorder.session?.removeLastSegment()
+						self._recorder.session?.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
 						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
 						lastSegmentView.removeFromSuperview()
 						self.updateTimeRecordedLabel()
+						self.updateGhostImage()
 						
 						UIView.animateWithDuration(0.5, animations: { () -> Void in
 							self.infoLabel.alpha = 0
 						})
 					}
+			})
+		}
+	}
+	
+	@IBAction func tappedOnSegment(sender:UITapGestureRecognizer) {
+		if let recordSession = self._recorder.session {
+			if recordSession.segments.isEmpty {
+				return
+			}
+			
+			let playerVC = AVPlayerViewController()
+			playerVC.player = AVPlayer(playerItem:recordSession.playerItemRepresentingSegments())
+			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
+				playerVC.player?.play()
 			})
 		}
 	}
@@ -359,7 +378,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 //		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
 
 		self.saveCapture({ () -> Void in
-			self.dismissViewControllerAnimated(true, completion: nil)
+			self.dismissController()
 		})
 	}
 	
@@ -442,25 +461,23 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 	}
 	
 	@IBAction func cancelPressed(sender: UIButton) {
-		let defaultBlock = {()->Void in
-			self.dismissViewControllerAnimated(true, completion: nil)
-		}
-		
 		if self.segmentThumbnails.isEmpty {
-			defaultBlock()
+			self.dismissController()
 			return
 		}
 		
 		let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the video recorded so far?", preferredStyle: UIAlertControllerStyle.Alert)
 		alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-			defaultBlock()
+			self.deleteSegments()
+			self.dismissController()
 		}))
 		alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
 			self.saveCapture({ () -> Void in
-				defaultBlock()
+				self.dismissController()
 			})
 		}))
 		self.presentViewController(alert, animated: true, completion: nil)
+		
 	}
 	
 	@IBAction func upArrowPressed(sender:AnyObject?) {
@@ -543,7 +560,8 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!)
 								}
 								
-								self.resetCapture()
+								self.deleteSegments()
+								self.updateTimeRecordedLabel()
 								
 								completion?()
 							} else {
@@ -563,9 +581,12 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 		
 	}
 	
-	func resetCapture() {
-		self._recorder.session?.removeAllSegments()
-		self.updateTimeRecordedLabel()
+	func deleteSegments() {
+		for eachSegment in self.segmentThumbnails {
+			eachSegment.snapshot.removeFromSuperview()
+		}
+		self.segmentThumbnails.removeAll()
+		self._recorder.session?.removeAllSegments(true)
 	}
 	
 //
@@ -911,7 +932,7 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 	}
 	
 	func recorder(recorder: SCRecorder, didCompleteSegment segment: SCRecordSessionSegment?, inSession session: SCRecordSession, error: NSError?) {
-		print("Completed record segment at \(segment!.url): \(error) (frameRate: \(segment!.frameRate))")
+		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
 
 		self.updateGhostImage()
 	}
@@ -944,11 +965,11 @@ class CaptureVC: UIViewController, PBJVisionDelegate, SCRecorderDelegate {
 		var image:UIImage? = nil
 		
 		if self.ghostButton.selected {
-//			if _recorder.session != nil && _recorder.session!.segments.count > 0 {
-//				let segment = _recorder.session!.segments.last!
-//				image = segment.lastImage
-//			}
-			image = _recorder.snapshotOfLastVideoBuffer()
+			if _recorder.session != nil && _recorder.session!.segments.count > 0 {
+				let segment = _recorder.session!.segments.last!
+				image = segment.lastImage
+			}
+//			image = _recorder.snapshotOfLastVideoBuffer()
 		}
 		self.ghostImageView.image = image
 

@@ -321,6 +321,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			let range = CMTimeRangeMake(startTime, assetDuration)
 			do {
 				try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
+				compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
 //				if sourceMetadataTrack != nil {
 //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
 //				}
@@ -353,7 +354,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		videoComposition.instructions = instructions
 //		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
 		videoComposition.frameDuration = CMTimeMake(1, 30)
-//		videoComposition.renderSize = lastNaturalSize
+		//		videoComposition.renderSize = lastNaturalSize
 		videoComposition.renderSize = CGSize(width: 1920,height: 1080)
 
 		self.videoHelper.removeTemporalFilesUsed()

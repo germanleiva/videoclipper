@@ -17,7 +17,6 @@
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
 		A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4417AF91BAC240E00392751 /* libSCRecorder.a */; };
-		A4417B041BAC2A6100392751 /* SCRecordSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
@@ -55,12 +54,6 @@
 		A4CECB731B9464A100D8B342 /* AAPLTimedAnnotationWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4CECB721B9464A100D8B342 /* AAPLTimedAnnotationWriter.m */; };
 		A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */; };
 		A4D095B51B9094B1008F4316 /* colorPalette.plist in Resources */ = {isa = PBXBuildFile; fileRef = A4D095B41B9094B1008F4316 /* colorPalette.plist */; };
-		A4D0AB921B9CB8D4002C0BD9 /* PBJGLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AB881B9CB8D4002C0BD9 /* PBJGLProgram.m */; };
-		A4D0AB931B9CB8D4002C0BD9 /* PBJMediaWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AB8A1B9CB8D4002C0BD9 /* PBJMediaWriter.m */; };
-		A4D0AB941B9CB8D4002C0BD9 /* PBJVision.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AB8C1B9CB8D4002C0BD9 /* PBJVision.m */; };
-		A4D0AB951B9CB8D4002C0BD9 /* PBJVisionUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D0AB8E1B9CB8D4002C0BD9 /* PBJVisionUtilities.m */; };
-		A4D0AB961B9CB8D4002C0BD9 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = A4D0AB901B9CB8D4002C0BD9 /* Shader.fsh */; };
-		A4D0AB971B9CB8D4002C0BD9 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = A4D0AB911B9CB8D4002C0BD9 /* Shader.vsh */; };
 		A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */; };
 		A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */; };
 		A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC41B973F0F00839F28 /* ELCAsset.m */; };
@@ -137,8 +130,6 @@
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
 		A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SCRecorder.xcodeproj; path = SCRecorder/Library/SCRecorder.xcodeproj; sourceTree = "<group>"; };
-		A4417B021BAC2A6100392751 /* SCRecordSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCRecordSessionManager.h; sourceTree = "<group>"; };
-		A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCRecordSessionManager.m; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -189,16 +180,6 @@
 		A4CECB721B9464A100D8B342 /* AAPLTimedAnnotationWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLTimedAnnotationWriter.m; sourceTree = "<group>"; };
 		A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		A4D095B41B9094B1008F4316 /* colorPalette.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = colorPalette.plist; sourceTree = "<group>"; };
-		A4D0AB871B9CB8D4002C0BD9 /* PBJGLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJGLProgram.h; sourceTree = "<group>"; };
-		A4D0AB881B9CB8D4002C0BD9 /* PBJGLProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJGLProgram.m; sourceTree = "<group>"; };
-		A4D0AB891B9CB8D4002C0BD9 /* PBJMediaWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJMediaWriter.h; sourceTree = "<group>"; };
-		A4D0AB8A1B9CB8D4002C0BD9 /* PBJMediaWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJMediaWriter.m; sourceTree = "<group>"; };
-		A4D0AB8B1B9CB8D4002C0BD9 /* PBJVision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJVision.h; sourceTree = "<group>"; };
-		A4D0AB8C1B9CB8D4002C0BD9 /* PBJVision.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJVision.m; sourceTree = "<group>"; };
-		A4D0AB8D1B9CB8D4002C0BD9 /* PBJVisionUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBJVisionUtilities.h; sourceTree = "<group>"; };
-		A4D0AB8E1B9CB8D4002C0BD9 /* PBJVisionUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBJVisionUtilities.m; sourceTree = "<group>"; };
-		A4D0AB901B9CB8D4002C0BD9 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
-		A4D0AB911B9CB8D4002C0BD9 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementPageViewController.swift; sourceTree = "<group>"; };
 		A4DA9CC11B973F0F00839F28 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
 		A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAlbumPickerController.m; sourceTree = "<group>"; };
@@ -293,8 +274,6 @@
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
-				A4417B021BAC2A6100392751 /* SCRecordSessionManager.h */,
-				A4417B031BAC2A6100392751 /* SCRecordSessionManager.m */,
 				A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */,
 				A4AAF6A81B8B4C80006391DE /* Frameworks */,
 				A4664AB81B444BA80095B27D /* VideoClipper */,
@@ -317,7 +296,6 @@
 		A4664AB81B444BA80095B27D /* VideoClipper */ = {
 			isa = PBXGroup;
 			children = (
-				A4D0AB861B9CB8C3002C0BD9 /* Vision */,
 				A48F8B141B9C5F180091D607 /* KPCCameraButton */,
 				A4DA9CC01B973F0F00839F28 /* ELCImagePicker */,
 				A404A52B1B81189800B82B29 /* THFoundation */,
@@ -428,31 +406,6 @@
 				A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */,
 			);
 			path = MBProgressHUD;
-			sourceTree = "<group>";
-		};
-		A4D0AB861B9CB8C3002C0BD9 /* Vision */ = {
-			isa = PBXGroup;
-			children = (
-				A4D0AB871B9CB8D4002C0BD9 /* PBJGLProgram.h */,
-				A4D0AB881B9CB8D4002C0BD9 /* PBJGLProgram.m */,
-				A4D0AB891B9CB8D4002C0BD9 /* PBJMediaWriter.h */,
-				A4D0AB8A1B9CB8D4002C0BD9 /* PBJMediaWriter.m */,
-				A4D0AB8B1B9CB8D4002C0BD9 /* PBJVision.h */,
-				A4D0AB8C1B9CB8D4002C0BD9 /* PBJVision.m */,
-				A4D0AB8D1B9CB8D4002C0BD9 /* PBJVisionUtilities.h */,
-				A4D0AB8E1B9CB8D4002C0BD9 /* PBJVisionUtilities.m */,
-				A4D0AB8F1B9CB8D4002C0BD9 /* Shaders */,
-			);
-			name = Vision;
-			sourceTree = "<group>";
-		};
-		A4D0AB8F1B9CB8D4002C0BD9 /* Shaders */ = {
-			isa = PBXGroup;
-			children = (
-				A4D0AB901B9CB8D4002C0BD9 /* Shader.fsh */,
-				A4D0AB911B9CB8D4002C0BD9 /* Shader.vsh */,
-			);
-			path = Shaders;
 			sourceTree = "<group>";
 		};
 		A4DA9CC01B973F0F00839F28 /* ELCImagePicker */ = {
@@ -628,11 +581,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4D0AB961B9CB8D4002C0BD9 /* Shader.fsh in Resources */,
 				A4664AC71B444BA80095B27D /* LaunchScreen.storyboard in Resources */,
 				A4664AC41B444BA80095B27D /* Assets.xcassets in Resources */,
 				A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */,
-				A4D0AB971B9CB8D4002C0BD9 /* Shader.vsh in Resources */,
 				A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */,
 				A4DA9CDF1B973F0F00839F28 /* ELCAlbumPickerController.xib in Resources */,
 				A4DA9CE01B973F0F00839F28 /* ELCAssetPicker.xib in Resources */,
@@ -679,13 +630,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4D0AB921B9CB8D4002C0BD9 /* PBJGLProgram.m in Sources */,
 				A4A5F7B01B453C3F0090E98A /* StoryElement.swift in Sources */,
 				A4FF46671B46B6B100A12267 /* VideoClip.swift in Sources */,
 				A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */,
 				A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
-				A4D0AB941B9CB8D4002C0BD9 /* PBJVision.m in Sources */,
 				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
 				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
 				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,
@@ -706,13 +655,10 @@
 				A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */,
 				A4DA9CDC1B973F0F00839F28 /* ELCConsole.m in Sources */,
 				A4CECB731B9464A100D8B342 /* AAPLTimedAnnotationWriter.m in Sources */,
-				A4D0AB951B9CB8D4002C0BD9 /* PBJVisionUtilities.m in Sources */,
 				A4DA9CDE1B973F0F00839F28 /* ELCOverlayImageView.m in Sources */,
 				A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */,
 				A4F057B01B98AA2C008FB9D0 /* VideoClip+CoreDataProperties.swift in Sources */,
 				A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */,
-				A4417B041BAC2A6100392751 /* SCRecordSessionManager.m in Sources */,
-				A4D0AB931B9CB8D4002C0BD9 /* PBJMediaWriter.m in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
 				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,

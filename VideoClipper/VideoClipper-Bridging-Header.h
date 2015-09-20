@@ -8,7 +8,6 @@
 #import "MBProgressHUD.h"
 #import "ELCImagePickerController.h"
 #import "KPCameraButton.h"
-#import "PBJVision.h"
 #import "UIView+Genie.h"
 
 //#import "AVPlayerItem+THAdditions.h"
@@ -18,4 +17,3 @@
 #import "AAPLTimedAnnotationWriter.h"
 
 #import <SCRecorder/SCRecorder.h>
-#import "SCRecordSessionManager.h"

@@ -20,4 +20,8 @@ class StoryElement: NSManagedObject {
 	func isTitleCard() -> Bool {
 		return false
 	}
+	
+	func realDuration() -> NSNumber {
+		fatalError("Should be implemented by subclass")
+	}
 }

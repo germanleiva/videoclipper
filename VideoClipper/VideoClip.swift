@@ -19,6 +19,19 @@ class VideoClip: StoryElement {
 		return true
 	}
 	
+	override func realDuration() -> NSNumber {
+		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
+		let startPercentage = Float64(self.startPoint!)
+		let endPercentage = Float64(self.endPoint!)
+		
+		return durationInSeconds * (endPercentage - startPercentage)
+	}
+	
+	var startTime:CMTime {
+		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
+		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
+	}
+	
 	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
 		super.init(entity: entity, insertIntoManagedObjectContext: context)
 		if let path = self.path {

@@ -25,4 +25,8 @@ class TitleCard: StoryElement {
 	func textWidgets() -> [TextWidget] {
 		return self.widgets!.array as! [TextWidget]
 	}
+	
+	override func realDuration() -> NSNumber {
+		return self.duration!
+	}
 }

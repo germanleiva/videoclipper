@@ -33,8 +33,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	@IBOutlet weak var verticalToolbar: UIView!
 	@IBOutlet weak var closeToolbar: UIButton!
-
 	
+	var player:AVPlayer? = nil
+	let observerContext = UnsafeMutablePointer<Void>()
+
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	@IBOutlet weak var titleTextField: UITextField!
 
@@ -240,7 +242,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		
 		let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
 		item.videoComposition = videoComposition
-		let player = AVPlayer(playerItem: item)
+		self.player = AVPlayer(playerItem: item)
+		
+		item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions(rawValue: 0), context: nil)
 		
 		let playerVC = AVPlayerViewController()
 		playerVC.player = player
@@ -251,6 +255,36 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	}
 	
+	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+		if keyPath == "status" {
+			if self.player!.status == AVPlayerStatus.ReadyToPlay {
+				if self.tableController!.isCompact {
+					self.player!.seekToTime(self.timeToSelectedStoryElement(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+				}
+				self.player!.currentItem?.removeObserver(self, forKeyPath: "status")
+				self.player = nil
+			}
+		}
+	}
+	
+	func timeToSelectedStoryElement(timescale:Int32) -> CMTime {
+		var cursorTime = kCMTimeZero
+		for lineIndex in 0..<self.project!.storyLines!.count {
+			let eachStoryLine = self.project!.storyLines![lineIndex] as! StoryLine
+			
+			for elementIndex in 0..<eachStoryLine.elements!.count {
+				if lineIndex == self.currentLineIndexPath!.section && elementIndex == self.currentItemIndexPath!.item {
+					return cursorTime
+				}
+				if !eachStoryLine.shouldHide!.boolValue {
+					let eachElement = eachStoryLine.elements![elementIndex] as! StoryElement
+					cursorTime = CMTimeAdd(cursorTime,CMTimeMakeWithSeconds(Float64(eachElement.realDuration()), timescale))
+				}
+			}
+		}
+		return cursorTime
+	}
+		
 	func textFieldDidEndEditing(textField: UITextField) {
 		if project!.name != textField.text {
 			self.project!.name = textField.text
@@ -448,5 +482,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	
 	@IBAction func playForLineTapped(sender:AnyObject?) {
 		self.tableController!.playTappedOnSelectedLine(sender)
+	}
+	
+	@IBAction func hideForLineTapped(sender:AnyObject?) {
+		self.tableController!.hideTappedOnSelectedLine(sender)
 	}
 }

@@ -259,6 +259,19 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		})
 	}
 	
+	func hideTappedOnSelectedLine(sender:AnyObject?) {
+		let line = self.project!.storyLines![self.selectedLinePath.section] as! StoryLine
+		line.shouldHide! = NSNumber(bool: !line.shouldHide!.boolValue)
+		self.tableView.reloadData()
+		self.tableView.selectRowAtIndexPath(self.selectedLinePath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+		
+		do {
+			try self.context.save()
+		} catch {
+			print("Couldn't save line shouldHide \(error)")
+		}
+	}
+	
 	func createComposition(elements:NSOrderedSet) -> (AVMutableComposition,AVMutableVideoComposition,[AVTimedMetadataGroup]) {
 		let composition = AVMutableComposition()
 		var cursorTime = kCMTimeZero
@@ -284,12 +297,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			if (eachElement as! StoryElement).isVideo() {
 				let eachVideo = eachElement as! VideoClip
 				asset = eachVideo.asset
-				let durationInSeconds = CMTimeGetSeconds(asset!.duration)
-				let startPercentage = Float64(eachVideo.startPoint!)
-				let endPercentage = Float64(eachVideo.endPoint!)
-				
-				startTime = CMTimeMakeWithSeconds(durationInSeconds * startPercentage, 1000)
-				assetDuration = CMTimeMakeWithSeconds(durationInSeconds * (endPercentage - startPercentage), 1000)
+				startTime = eachVideo.startTime
+				assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), 1000)
 
 			} else if (eachElement as! StoryElement).isTitleCard() {
 				let eachTitleCard = eachElement as! TitleCard
@@ -565,6 +574,12 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier("StoryLineCell", forIndexPath: indexPath) as! StoryLineCell
 		
+		let line = self.project!.storyLines![indexPath.section] as! StoryLine
+		if line.shouldHide!.boolValue {
+			cell.collectionView.alpha = 0.6
+		} else {
+			cell.collectionView.alpha = 1
+		}
 		cell.collectionView.tag = indexPath.section
 
 		return cell

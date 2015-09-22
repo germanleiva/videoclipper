@@ -104,6 +104,15 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		self.tableView.selectRowAtIndexPath(self.selectedLinePath, animated: true, scrollPosition: UITableViewScrollPosition.None)
 	}
 	
+	func reloadData() {
+		var selectedIndexPath:NSIndexPath? = nil
+		selectedIndexPath = self.tableView.indexPathForSelectedRow
+		self.tableView.reloadData()
+		if selectedIndexPath != nil {
+			self.tableView.selectRowAtIndexPath(selectedIndexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+		}
+	}
+	
 	func storyLineCell(cell: StoryLineCell, didSelectCollectionViewAtIndex indexPath: NSIndexPath) {
 		self.selectRowAtIndexPath(indexPath, animated: false)
 	}
@@ -118,7 +127,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL) {
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL,tags:[TagMark]) {
 		let library = ALAssetsLibrary()
 //		let pathURL = NSURL(fileURLWithPath: pathString)
 		
@@ -129,7 +138,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
 					return
 				}
-				self.createNewVideoForAssetURL(assetURL)
+				self.createNewVideoForAssetURL(assetURL,tags: tags)
 			}
 		}
 	}
@@ -205,12 +214,18 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
-	func createNewVideoForAssetURL(assetURL:NSURL) {
+	func createNewVideoForAssetURL(assetURL:NSURL,tags:[TagMark]=[]) {
 		let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
 		//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
 		newVideo!.path = assetURL.absoluteString
 		newVideo!.asset = AVAsset(URL: assetURL)
 		newVideo!.asset!.loadValuesAsynchronouslyForKeys(["duration","tracks"], completionHandler: nil)
+
+		let videoTags = newVideo!.mutableOrderedSetValueForKey("tags")
+
+		for eachTag in tags {
+			videoTags.addObject(eachTag)
+		}
 		
 		let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
 		elements.addObject(newVideo!)
@@ -800,7 +815,9 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 						if cell.reuseIdentifier != "TitleCardCollectionCell" && CGRectContainsPoint(cellInViewFrame, pointPressedInView ) {
 							let representationImage = cell.snapshotViewAfterScreenUpdates(true)
 							representationImage.frame = cellInViewFrame
-							representationImage.transform = CGAffineTransformScale(representationImage.transform, 0.90, 0.90)
+							UIView.animateWithDuration(0.1, animations: { () -> Void in
+								representationImage.transform = CGAffineTransformScale(representationImage.transform, 0.90, 0.90)
+							})
 							
 							let offset = CGPointMake(pointPressedInView.x - cellInViewFrame.origin.x, pointPressedInView.y - cellInViewFrame.origin.y)
 							
@@ -905,6 +922,12 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 						bundle.sourceCell.alpha = 1
 						potentiallyNewCollectionView!.reloadData()
 						self.bundle = nil
+						
+						do {
+							try self.context.save()
+						} catch {
+							print("Couldn't reorder elements: \(error)")
+						}
 				})
 				
 				//					if let delegate = self.collectionView?.delegate as? DraggableCollectionViewDelegate {
@@ -978,6 +1001,22 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				if indexPath == nil {
 					print("OTRO TODO MAL")
 				}
+				
+				let completionBlock = {() -> Void in
+					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
+					self.tableView.reloadData()
+					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
+					self.sourceIndexPath = nil
+					self.snapshot?.removeFromSuperview()
+					self.snapshot = nil;
+					
+					do {
+						try self.context.save()
+					} catch {
+						print("Couldn't reorder lines: \(error)")
+					}
+				}
+				
 				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {
 					cell.alpha = 0.0
 					cell.hidden = false
@@ -989,20 +1028,12 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 						cell.alpha = 1.0
 						
 						}, completion: { (finished) in
-							let selectedIndexPath = self.tableView.indexPathForSelectedRow!
-							self.tableView.reloadData()
-							self.selectRowAtIndexPath(selectedIndexPath, animated: false)
-							self.sourceIndexPath = nil
-							self.snapshot?.removeFromSuperview()
-							self.snapshot = nil;
+							if finished {
+								completionBlock()
+							}
 					})
 				} else {
-					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
-					self.tableView.reloadData()
-					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
-					self.sourceIndexPath = nil
-					self.snapshot?.removeFromSuperview()
-					self.snapshot = nil;
+					completionBlock()
 				}
 				break
 			}
@@ -1032,12 +1063,6 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let fromStoryLine = self.project!.storyLines![fromIndexPath.section] as! StoryLine
 		let fromStoryLines = fromStoryLine.project!.mutableOrderedSetValueForKey("storyLines")
 		fromStoryLines.moveObjectsAtIndexes(NSIndexSet(index: fromIndexPath.section), toIndex: toIndexPath.section)
-		
-		do {
-			try context.save()
-		} catch {
-			print("Couldn't reorder lines: \(error)")
-		}
 	}
 	
 	func moveStoryElement(fromCollectionView:UICollectionView,fromIndexPath:NSIndexPath,toCollectionView:UICollectionView, toIndexPath:NSIndexPath) {
@@ -1049,12 +1074,6 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let toStoryLine = self.project!.storyLines![toCollectionView.tag] as! StoryLine
 		let toElements = toStoryLine.mutableOrderedSetValueForKey("elements")
 		toElements.insertObject(elementToMove, atIndex: toIndexPath.item)
-
-		do {
-			try context.save()
-		} catch {
-			print("Couldn't reorder elements: \(error)")
-		}
 	}
 	
 	func checkForDraggingAtTheEdgeAndAnimatePaging(gestureRecognizer: UILongPressGestureRecognizer, theCollectionView:UICollectionView!) {

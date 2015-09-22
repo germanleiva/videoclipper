@@ -105,7 +105,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 	}
 	
-	func createTagView(tagModel:TagMark,percentage:NSNumber,color:UIColor) -> UIView {
+	func createTagView(tagModel:TagMark,percentage:NSNumber,color:UIColor,animated:Bool = false) -> UIView {
 		let tagView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
 		tagView.userInteractionEnabled = true
 		tagView.image = UIImage(named: "tag_mark")
@@ -114,6 +114,9 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		let panGesture = UIPanGestureRecognizer(target: self, action: "panningTagMark:")
 		tagView.addGestureRecognizer(panGesture)
 		self.view.addSubview(tagView)
+		
+		let tapGesture = UITapGestureRecognizer(target: self, action: "tappedTagMark:")
+		tagView.addGestureRecognizer(tapGesture)
 		
 		let swipeUp = UISwipeGestureRecognizer(target: self, action: "swipingOutTagMark:")
 		swipeUp.direction = .Up
@@ -127,7 +130,9 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.view.addConstraint(centerConstraint)
 		self.tagViewConstraints[tagView] = centerConstraint
 		
-		self.view.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0))
+		let baselineConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+		baselineConstraint.identifier = "baselineConstraint"
+		self.view.addConstraint(baselineConstraint)
 
 		tagView.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal
 			, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 50))
@@ -135,6 +140,20 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 50))
 		
 		self.tagViewModels[tagView] = tagModel
+		
+		if animated {
+			let initialConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+			self.view.addConstraint(initialConstraint)
+			baselineConstraint.active = false
+			self.view.layoutIfNeeded()
+			
+			UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+				self.view.removeConstraint(initialConstraint)
+				baselineConstraint.active = true
+				self.view.layoutIfNeeded()
+			}, completion: nil)
+		}
+		
 		return tagView
 	}
 	
@@ -143,16 +162,39 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		if state == UIGestureRecognizerState.Recognized {
 			let tagView = recognizer.view!
 			if let tagModel = self.tagViewModels[tagView] {
-				self.context.deleteObject(tagModel)
-				
-				do {
-					try self.context.save()
-					tagView.removeFromSuperview()
-				} catch {
-					print("Couldn't delete tagMark: \(error)")
+				for constraint in self.view.constraints as [NSLayoutConstraint] {
+					if constraint.identifier != nil && constraint.identifier! == "baselineConstraint" && constraint.firstItem as! NSObject == tagView {
+						constraint.active = false
+					}
 				}
+				self.view.layoutIfNeeded()
+				
+				UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+					let finalConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+					self.view.addConstraint(finalConstraint)
+					self.view.layoutIfNeeded()
+				}, completion: { (completed) -> Void in
+					self.context.deleteObject(tagModel)
+					
+					do {
+						try self.context.save()
+						tagView.removeFromSuperview()
+					} catch {
+						print("Couldn't delete tagMark: \(error)")
+					}
+				})
 			}
 		}
+	}
+	
+	func tappedTagMark(recognizer:UITapGestureRecognizer) {
+		if recognizer.state == .Recognized {
+			let tagView = recognizer.view!
+			if let tagModel = self.tagViewModels[tagView] {
+				self.filmstrip(self.filmStripView, didChangeScrubbing: Float(tagModel.time!))
+			}
+		}
+		
 	}
 	
 	func panningTagMark(recognizer:UIPanGestureRecognizer) {
@@ -195,7 +237,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		let tags = self.video!.mutableOrderedSetValueForKey("tags")
 		tags.addObject(newTag)
 		newTag.time! = self.scrubberSlider.value / self.scrubberSlider.maximumValue
-		self.createTagView(newTag, percentage:newTag.time!,color: newTag.color as! UIColor)
+		self.createTagView(newTag, percentage:newTag.time!,color: newTag.color as! UIColor, animated:true)
 		
 		do {
 			try self.context.save()

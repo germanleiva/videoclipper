@@ -8,19 +8,21 @@
 
 import UIKit
 import AVKit
+import CoreData
 
 let keyShutterLockEnabled = "shutterLockEnabled"
 let keyGhostDisabled = "keyGhostDisabled"
 let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL)
+	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
 class VideoSegmentThumbnail {
 	var snapshot:UIView
 	var time:Float64
+	var tagsPlaceholders = [(UIColor,Float64)]()
 	init(snapshot:UIView,time:Float64) {
 		self.snapshot = snapshot
 		self.time = time
@@ -39,6 +41,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	var owner:SecondaryViewController!
 	
 	var currentTitleCard:TitleCard? = nil
+	var recentTagPlaceholders = [(UIColor,Float64)]()
+	
 	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
 	var segmentThumbnails = [VideoSegmentThumbnail]()
@@ -62,6 +66,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	@IBOutlet var infoLabel:UILabel!
 	@IBOutlet var segmentCount:UILabel!
 	@IBOutlet var lineVideoCount:UILabel!
+
+	@IBOutlet var taggingPanel:UIStackView!
 	
 	var _recorder:SCRecorder!
 	
@@ -87,7 +93,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 //		_recorder.captureSessionPreset = SCRecorderTools.bestCaptureSessionPresetCompatibleWithAllDevices()
 		_recorder.captureSessionPreset = AVCaptureSessionPreset1920x1080
 		//    _recorder.maxRecordDuration = CMTimeMake(10, 1);
-		//    _recorder.fastRecordMethodEnabled = YES;
+//		_recorder.fastRecordMethodEnabled = true
 		
 		_recorder.delegate = self
 //		_recorder.autoSetVideoOrientation = true
@@ -255,6 +261,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 				if completed {
 					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
 					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
+					videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
 					self.segmentThumbnails.append(videoSegmentThumbnail)
 					
 					//Stops the blinking
@@ -284,19 +291,22 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
 				lastSegmentView.alpha = 0
 				self.infoLabel.alpha = 1
-				}, completion: { (completed) -> Void in
-					if completed {
-						self._recorder.session?.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
-						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
-						lastSegmentView.removeFromSuperview()
-						self.updateTimeRecordedLabel()
-						self.updateGhostImage()
-						self.updateSegmentCount()
-						
-						UIView.animateWithDuration(0.5, animations: { () -> Void in
-							self.infoLabel.alpha = 0
-						})
+			}, completion: { (completed) -> Void in
+				if completed {
+					if self._recorder.session?.segments.count > lastSegmentIndex {
+						//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+						self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
 					}
+					self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
+					lastSegmentView.removeFromSuperview()
+					self.updateTimeRecordedLabel()
+					self.updateGhostImage()
+					self.updateSegmentCount()
+					
+					UIView.animateWithDuration(0.5, animations: { () -> Void in
+						self.infoLabel.alpha = 0
+					})
+				}
 			})
 		}
 	}
@@ -476,6 +486,53 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		}
 	}
 	
+	@IBAction func createTagTapped(sender:UIButton?) {
+		let stroke = sender!.tintColor
+		
+		let pathFrame = CGRect(x: -CGRectGetMidX(sender!.bounds), y: -CGRectGetMidY(sender!.bounds), width: sender!.bounds.width, height: sender!.bounds.height)
+//		let pathFrame = sender!.frame
+		let bezierPath = UIBezierPath(roundedRect: pathFrame, cornerRadius: sender!.frame.width / 2)
+		
+		// accounts for left/right offset and contentOffset of scroll view
+		let shapePosition = sender!.center
+		
+		let circleShape = CAShapeLayer()
+		circleShape.path = bezierPath.CGPath
+		circleShape.position = shapePosition
+		circleShape.fillColor = UIColor.clearColor().CGColor
+		circleShape.opacity = 0
+		circleShape.strokeColor = stroke.CGColor
+		circleShape.lineWidth = 20
+		
+		self.taggingPanel.layer.addSublayer(circleShape)
+		
+		CATransaction.begin()
+
+		//remove layer after animation completed
+		CATransaction.setCompletionBlock { () -> Void in
+			circleShape.removeFromSuperlayer()
+		}
+
+		let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
+		
+		scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
+		scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,50, 50, 1))
+		
+		let alphaAnimation = CABasicAnimation(keyPath: "opacity")
+		alphaAnimation.fromValue = 1
+		alphaAnimation.toValue = 0
+		
+		let animation = CAAnimationGroup()
+		animation.animations = [scaleAnimation, alphaAnimation]
+		animation.duration = 0.5
+		animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+		circleShape.addAnimation(animation, forKey: nil)
+		
+		CATransaction.commit()
+
+		self.recentTagPlaceholders.append((sender!.tintColor,self.totalTimeSeconds()))
+	}
+
 	func updateLineVideoCount(fakeIncrement:Int = 0){
 		let count = self.currentTitleCard!.storyLine!.videos().count + fakeIncrement
 		var prefix = "videos"
@@ -485,7 +542,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		
 		self.lineVideoCount.text = "\(count) \(prefix)"
 	}
-	
+
 	func animatePlaceholderTitleCard(direction factor:CGFloat,newCurrentLine:StoryLine?,completion:()->Void) {
 		let currentTCImageView = self.titleCardPlaceholder.subviews.first!
 		if let newTC = newCurrentLine?.firstTitleCard() {
@@ -521,12 +578,15 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		self.isRecording = true
 		_recorder.record()
 		self.ghostImageView.hidden = true
+		self.taggingPanel.hidden = false
+		self.recentTagPlaceholders.removeAll()
 	}
 
 	func pauseCapture() {
 		self.isRecording = false
 		_recorder.pause()
 		self.ghostImageView.hidden = false
+		self.taggingPanel.hidden = true
 	}
 
 	func saveCapture(completion:(()->Void)?) {
@@ -556,7 +616,17 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 								
 								//This if is a workaround
 								if self._recorder.session != nil {
-									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!)
+									var modelTags = [TagMark]()
+									for eachSegment in self.segmentThumbnails {
+										for (color,time) in eachSegment.tagsPlaceholders {
+											let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
+											newTag.color = color
+											newTag.time! = time / self.totalTimeSeconds()
+											modelTags.append(newTag)
+										}
+									}
+									
+									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
 								} else {
 									print("THIS SHOULDN'T HAPPEN EVER!")
 								}

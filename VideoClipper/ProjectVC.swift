@@ -320,7 +320,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			print("Couldn't save deletion on DB: \(error)")
 		}
 		
-		self.tableController!.tableView.reloadData()
+		self.tableController!.reloadData()
 	}
 	
 	func secondaryViewController(controller: SecondaryViewController, didShowStoryElement element: StoryElement) -> Void {

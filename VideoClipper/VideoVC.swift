@@ -12,15 +12,6 @@ import CoreData
 let STATUS_KEYPATH  = "status"
 let REFRESH_INTERVAL = Float64(0.5)
 
-class Thumbnail {
-	var image:UIImage
-	var time:CMTime
-	init(image:UIImage,time:CMTime) {
-		self.image = image
-		self.time = time
-	}
-}
-
 class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegate {
 	let observerContext = UnsafeMutablePointer<Void>()
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -244,7 +235,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 					if self.playerItem?.status == AVPlayerItemStatus.ReadyToPlay {
 						self.addPlayerItemTimeObserver()
 						self.addItemEndObserverForPlayerItem()
-						
+					
 						self.setCurrentTime(CMTimeGetSeconds(kCMTimeZero),duration:CMTimeGetSeconds(self.playerItem!.duration))
 						
 						self.generateThumbnails()
@@ -479,7 +470,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			}
 			try! self.context.save()
 		}
-		self.filmStripView.generateThumbnails(self.asset,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
+		self.filmStripView.generateThumbnails(self.video!,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
 	}
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {

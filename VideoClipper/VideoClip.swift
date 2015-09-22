@@ -9,10 +9,10 @@
 import Foundation
 import CoreData
 import AVFoundation
+import CoreMedia
 
 @objc(VideoClip)
 class VideoClip: StoryElement {
-
 	var asset:AVAsset? = nil
 // Insert code here to add functionality to your managed object subclass
 	override func isVideo() -> Bool {
@@ -22,6 +22,11 @@ class VideoClip: StoryElement {
 	override func realDuration() -> NSNumber {
 		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
 		let startPercentage = Float64(self.startPoint!)
+		
+		if self.endPoint == nil {
+			self.endPoint = 1
+		}
+		
 		let endPercentage = Float64(self.endPoint!)
 		
 		return durationInSeconds * (endPercentage - startPercentage)
@@ -29,6 +34,10 @@ class VideoClip: StoryElement {
 	
 	var startTime:CMTime {
 		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
+		//This shouldn't be necesarry anymore
+		if self.startPoint == nil {
+			self.startPoint = 0
+		}
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
@@ -42,7 +51,6 @@ class VideoClip: StoryElement {
 			}
 		}
 	}
-	
 	
 	func findById(id:Int)->TagMark? {
 		let results = self.tags!.filter { (eachTag) -> Bool in

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol FilmstripViewDelegate {
 	func filmstrip(filmstripView:FilmstripView,tappedOnTime time:NSTimeInterval)
@@ -73,6 +74,7 @@ class TrimmerThumbView:ExtendedInsetView {
 }
 
 class FilmstripView: UIView, UIGestureRecognizerDelegate {
+	var context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 
     /*
     // Only override drawRect: if you perform custom drawing.
@@ -167,7 +169,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		
 		var currentX = CGFloat(0)
 		
-		let anImage = self.thumbnails.first!.image
+		let anImage = self.thumbnails.first!.image as! UIImage
 		let size = anImage.size
 		
 		// Scale retina image down to appropriate size
@@ -183,7 +185,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			let timedImage = self.thumbnails[i]
 			let button = UIButton(type: .Custom)
 			button.adjustsImageWhenHighlighted = false
-			button.setBackgroundImage(timedImage.image, forState: .Normal)
+			button.setBackgroundImage(timedImage.image as! UIImage, forState: .Normal)
 			button.addTarget(self, action: "imageButtonTapped:", forControlEvents: .TouchUpInside)
 			button.frame = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
 			
@@ -264,7 +266,8 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	
 	func imageButtonTapped(sender:UIButton?) {
 		let image = self.thumbnails[sender!.tag]
-		self.delegate?.filmstrip(self, tappedOnTime: CMTimeGetSeconds(image.time))
+		let time = CMTimeMakeFromDictionary(image.time as! NSDictionary)
+		self.delegate?.filmstrip(self, tappedOnTime: CMTimeGetSeconds(time))
 	}
 	
 	func pannedScrubber(sender:UIPanGestureRecognizer) {
@@ -285,19 +288,29 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		}
 	}
 
-	func generateThumbnails(asset:AVAsset,startPercentage:NSNumber,endPercentage:NSNumber) {
+	func generateThumbnails(video:VideoClip,startPercentage:NSNumber,endPercentage:NSNumber) {
+		let asset = video.asset!
 		
 		self.startConstraint.constant = self.frame.width * CGFloat(startPercentage)
 		self.endConstraint.constant = self.frame.width * (1 - CGFloat(endPercentage))
+		let duration = asset.duration
+		self.durationInSeconds = CGFloat(CMTimeGetSeconds(duration))
+		
+		
+		if video.thumbnailImages!.count > 0 {
+			self.thumbnails.removeAll()
+			for eachThumbnail in video.thumbnailImages! {
+				self.thumbnails.append(eachThumbnail as! Thumbnail)
+			}
+			self.buildScrubber()
+			return
+		}
 		
 		let imageGenerator = AVAssetImageGenerator(asset: asset)
 		imageGenerator.appliesPreferredTrackTransform = true
 		
 		//Generate the @2x equivalent
 		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * 2,height:0)
-		
-		let duration = asset.duration
-		self.durationInSeconds = CGFloat(CMTimeGetSeconds(duration))
 		
 		var times = [NSValue]()
 		
@@ -318,7 +331,10 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			if result == AVAssetImageGeneratorResult.Succeeded {
 				let image = UIImage(CGImage: imageRef!)
 				
-				let thumbnail = Thumbnail(image:image,time:actualTime)
+				let thumbnail = NSEntityDescription.insertNewObjectForEntityForName("Thumbnail", inManagedObjectContext: self.context) as! Thumbnail
+				thumbnail.image = image
+				thumbnail.time = CMTimeCopyAsDictionary(actualTime,kCFAllocatorDefault)
+
 				images.append(thumbnail)
 			} else {
 				print("Error: \(error!.localizedDescription)")
@@ -330,7 +346,21 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
 //					NSNotificationCenter.defaultCenter().postNotificationName("THThumbnailsGeneratedNotification", object: self, userInfo: ["images":images])
 					self.thumbnails = images
+					let modelThumbnails = video.mutableOrderedSetValueForKey("thumbnailImages")
+					modelThumbnails.addObjectsFromArray(self.thumbnails)
+					
+					self.thumbnails.removeAll()
+					for eachThumbnail in video.thumbnailImages! {
+						self.thumbnails.append(eachThumbnail as! Thumbnail)
+					}
+					
 					self.buildScrubber()
+					
+					do {
+						try self.context.save()
+					} catch {
+						print("Couldn't save thumbnails in video \(error)")
+					}
 				})
 			}
 		}

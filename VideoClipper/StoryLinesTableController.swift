@@ -124,7 +124,6 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 		//		library.saveVideo is used to save on an album
 		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(pathURL) {
-			print("StoryLinesTableController >> didFinishRecordingVideoClipAtPath ")
 			library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
 				if errorOnSaving != nil {
 					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
@@ -302,12 +301,11 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 
 			} else if (eachElement as! StoryElement).isTitleCard() {
 				let eachTitleCard = eachElement as! TitleCard
-				
-				if eachTitleCard.snapshot == nil {
-					continue;
+
+				if eachTitleCard.asset == nil {
+					eachTitleCard.generateAsset(self.videoHelper)
 				}
-				let titleCardScreenshoot = UIImage(data:eachTitleCard.snapshot!)
-				asset = videoHelper.writeImageAsMovie(titleCardScreenshoot,duration:eachTitleCard.duration!)
+				asset = eachTitleCard.asset
 				assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
 				
 				let chapterMetadataItem = AVMutableMetadataItem()
@@ -681,6 +679,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 //			element = line.elements![itemPath.item] as? StoryElement
 //		}
 //		self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: self.selectedItemPath, line: line, lineIndexPath: indexPath)
+//		self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: line, lineIndexPath: indexPath)
 		self.selectedLinePath = indexPath
 	}
 	
@@ -990,15 +989,17 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 						cell.alpha = 1.0
 						
 						}, completion: { (finished) in
+							let selectedIndexPath = self.tableView.indexPathForSelectedRow!
 							self.tableView.reloadData()
-							self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
+							self.selectRowAtIndexPath(selectedIndexPath, animated: false)
 							self.sourceIndexPath = nil
 							self.snapshot?.removeFromSuperview()
 							self.snapshot = nil;
 					})
 				} else {
+					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
 					self.tableView.reloadData()
-					self.selectRowAtIndexPath(self.sourceIndexPath!, animated: true)
+					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
 					self.sourceIndexPath = nil
 					self.snapshot?.removeFromSuperview()
 					self.snapshot = nil;

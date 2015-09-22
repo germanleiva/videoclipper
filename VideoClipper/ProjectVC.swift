@@ -42,6 +42,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	@IBOutlet weak var containerView: UITableView!
 //	var addButton = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+	@IBOutlet var hideLineButton:UIButton!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -346,14 +347,28 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		
 		self.secondaryController!.line = line
 		
-		if itemIndexPath != nil && itemIndexPath != self.currentItemIndexPath {
+		if let _ = element {
+			self.secondaryController!.addViewControllerFor(element!)
+		}
+		
+		if itemIndexPath != nil /*&& itemIndexPath != self.currentItemIndexPath*/ {
 			self.currentItemIndexPath = itemIndexPath
 			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:lineIndexPath!)
 			self.secondaryController!.scrollToElement(element)
+			self.secondaryController!.pageViewController?.reloadInputViews()
 		} else {
 			self.secondaryController!.pageViewController?.reloadInputViews()
 		}
 
+		self.updateHideLineButton(line)
+	}
+	
+	func updateHideLineButton(line:StoryLine?) {
+		if line == nil || !line!.shouldHide!.boolValue{
+			self.hideLineButton.alpha = 1
+		} else {
+			self.hideLineButton.alpha = 0.6
+		}
 	}
 	
 	@IBAction func toggleToolbar(sender:UIButton) {
@@ -486,5 +501,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	
 	@IBAction func hideForLineTapped(sender:AnyObject?) {
 		self.tableController!.hideTappedOnSelectedLine(sender)
+		self.updateHideLineButton(self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine)
 	}
 }

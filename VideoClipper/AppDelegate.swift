@@ -31,6 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()
 //		pageControlAppearance.currentPageIndicatorTintColor = UIColor.blackColor()
 //		pageControlAppearance.backgroundColor = UIColor.whiteColor()
+		VideoHelper().removeTemporalFilesUsed()
+		
 		return true
 	}
 

@@ -35,37 +35,43 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
 		}
 		set(newValue) {
 			//I removed this because even if we are setting the same line, the elements of that line could have been modified
-//			if self._line != newValue {
+			if self._line != newValue {
 				self._line = newValue
-				self.viewControllers = [StoryElementVC]()
+				self.viewControllers.removeAll()
 				
 				if let currentLine = self.line {
 					for index in 0..<currentLine.elements!.count {
 						//I need to create the VC
-						var newVC:StoryElementVC? = nil
 						let element = self._line?.elements![index] as! StoryElement
-						if element.isTitleCard() {
-							let titleCardVC = self.storyboard?.instantiateViewControllerWithIdentifier("titleCardController") as! TitleCardVC
-							titleCardVC.element = element
-							newVC = titleCardVC
-						} else {
-							//We assume that the element is a video
-							let videoVC = self.storyboard?.instantiateViewControllerWithIdentifier("videoController") as! VideoVC
-							videoVC.element = element
-							newVC = videoVC
-						}
-						newVC?.delegate = self
-						self.viewControllers.append(newVC!)
+						self.addViewControllerFor(element)
 					}
 					
 					self.pageViewController?.setViewControllers([self.viewControllers.first!], direction: .Forward, animated: false, completion: nil)
-					self.pageControl.numberOfPages = self.viewControllers.count
 				}
-//			}
+			}
 		}
 	}
 	
 	var viewControllers = [StoryElementVC]()
+	
+	func addViewControllerFor(element:StoryElement) {
+		if self.controllersFor(element).isEmpty {
+			var newVC:StoryElementVC? = nil
+			if element.isTitleCard() {
+				let titleCardVC = self.storyboard?.instantiateViewControllerWithIdentifier("titleCardController") as! TitleCardVC
+				titleCardVC.element = element
+				newVC = titleCardVC
+			} else {
+				//We assume that the element is a video
+				let videoVC = self.storyboard?.instantiateViewControllerWithIdentifier("videoController") as! VideoVC
+				videoVC.element = element
+				newVC = videoVC
+			}
+			newVC?.delegate = self
+			self.viewControllers.append(newVC!)
+		}
+		self.pageControl.numberOfPages = self.viewControllers.count
+	}
 	
 	func storyElementVC(controller:StoryElementVC, elementDeleted element:StoryElement){
 		let indexToRemove = self.currentIndex
@@ -160,15 +166,19 @@ class SecondaryViewController: UIViewController, UIPageViewControllerDataSource,
         // Dispose of any resources that can be recreated.
     }
 	
-	func scrollToElement(element:StoryElement?) {
-		// Ha ha ha
-		let potentialVCs = self.viewControllers.filter { (eachViewController) -> Bool in
+	func controllersFor(element:StoryElement?) -> [UIViewController]{
+		return self.viewControllers.filter { (eachViewController) -> Bool in
 			return eachViewController.element == element
 		}
+	}
+	
+	func scrollToElement(element:StoryElement?) {
+		// Ha ha ha
+		let potentialVCs = self.controllersFor(element)
 		let elementVC = potentialVCs.first!
 		self.currentIndex = self.indexOfViewController(elementVC)!
 		dispatch_async(dispatch_get_main_queue()) { () -> Void in
-			self.pageViewController!.setViewControllers([elementVC], direction: .Forward, animated: false, completion: nil)
+			self.pageViewController!.setViewControllers([elementVC], direction: UIPageViewControllerNavigationDirection.Forward, animated: false, completion: nil)
 		}
 
 	}

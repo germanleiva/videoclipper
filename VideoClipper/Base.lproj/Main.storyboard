@@ -692,8 +692,8 @@
                                         </connections>
                                     </switch>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cNf-sp-Dbl">
-                                        <rect key="frame" x="0.0" y="539" width="100" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <rect key="frame" x="0.0" y="533" width="100" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" title="Close"/>
                                         <connections>
@@ -729,8 +729,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="200" height="600"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f7a-Fw-T3a">
-                                        <rect key="frame" x="0.0" y="539" width="200" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <rect key="frame" x="0.0" y="533" width="200" height="42"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" title="Use"/>
                                         <connections>
@@ -1389,6 +1389,7 @@
                         <outlet property="addNewLineButton" destination="i6V-ob-0f2" id="VG5-vg-pfL"/>
                         <outlet property="closeToolbar" destination="S8C-1D-cy4" id="hhq-UU-q00"/>
                         <outlet property="containerView" destination="8xU-TI-nOK" id="gK3-BQ-AFt"/>
+                        <outlet property="hideLineButton" destination="4s4-AP-UZd" id="1Xa-pr-SC8"/>
                         <outlet property="primaryViewWidthConstraint" destination="hgP-cD-0CR" id="4sH-GR-9q4"/>
                         <outlet property="secondaryViewWidthConstraint" destination="Uma-Sv-Aed" id="oXJ-eU-2ko"/>
                         <outlet property="titleTextField" destination="KMs-gd-H2y" id="Ems-fA-e7A"/>

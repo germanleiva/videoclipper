@@ -124,13 +124,13 @@
 	[writerInput markAsFinished];
 	[videoWriter endSessionAtSourceTime:CMTimeMake(duration, 1)];
 	[videoWriter finishWritingWithCompletionHandler:^{
-		NSLog(@"Finished writing video writer");
+//		NSLog(@"Finished writing video writer");
 	}];
 
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:pathURL options:@{AVURLAssetPreferPreciseDurationAndTimingKey:@YES}];
-	[asset loadValuesAsynchronouslyForKeys:@[@"duration",@"metadata"] completionHandler:^{
-		NSLog(@"Duration loaded on AVAsset");
-	}];
+//	[asset loadValuesAsynchronouslyForKeys:@[@"tracks",@"duration",@"metadata"] completionHandler:^{
+//		NSLog(@"Duration loaded on AVAsset");
+//	}];
 	
 //	CFRelease(metadataFormatDescription);
 

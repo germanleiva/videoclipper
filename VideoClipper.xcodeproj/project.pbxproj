@@ -20,6 +20,7 @@
 		A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4417AF91BAC240E00392751 /* libSCRecorder.a */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
+		A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */ = {isa = PBXBuildFile; fileRef = A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
 		A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4664ABD1B444BA80095B27D /* Main.storyboard */; };
 		A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */; };
@@ -138,6 +139,8 @@
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
 		A44CE8F41B600B5300953B7F /* VideoHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoHelper.h; sourceTree = "<group>"; };
+		A454C67C1BB1F9D80018D0DB /* NSManagedObject+Cloner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Cloner.h"; sourceTree = "<group>"; };
+		A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Cloner.m"; sourceTree = "<group>"; };
 		A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_02.xcdatamodel; sourceTree = "<group>"; };
 		A4664AB61B444BA80095B27D /* VideoClipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoClipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4664AB91B444BA80095B27D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -311,6 +314,8 @@
 				A423152E1BA1CC910096DF01 /* SwiftColors.swift */,
 				A40049F11BA98C24003E518C /* UIView+Genie.h */,
 				A40049F21BA98C24003E518C /* UIView+Genie.m */,
+				A454C67C1BB1F9D80018D0DB /* NSManagedObject+Cloner.h */,
+				A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */,
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
@@ -648,6 +653,7 @@
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
 				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
 				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
+				A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */,
 				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A47570E31B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift in Sources */,

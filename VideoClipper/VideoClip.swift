@@ -41,15 +41,19 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-		super.init(entity: entity, insertIntoManagedObjectContext: context)
+	func loadAsset() {
 		if let path = self.path {
 			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
 			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
 				//Nothing
-//				print("Asset keys loaded")
+				//				print("Asset keys loaded")
 			}
 		}
+	}
+	
+	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+		super.init(entity: entity, insertIntoManagedObjectContext: context)
+		self.loadAsset()
 	}
 	
 	func findById(id:Int)->TagMark? {

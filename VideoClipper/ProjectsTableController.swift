@@ -236,11 +236,46 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	
 	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
-			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
-				alert.dismissViewControllerAnimated(true, completion: nil)
-			}))
-			self.presentViewController(alert, animated: true, completion: nil)
+//			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
+//			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
+//				alert.dismissViewControllerAnimated(true, completion: nil)
+//			}))
+//			self.presentViewController(alert, animated: true, completion: nil)
+			self.editing = false
+			MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
+				
+				let projectToClone = self.fetchedResultsController.objectAtIndexPath(index) as! Project
+				
+				let clonedProject = projectToClone.clone() as! Project
+				clonedProject.name = "Cloned \(clonedProject.name!)"
+				
+				for eachLine in projectToClone.storyLines! {
+					for eachElement in (eachLine as! StoryLine).elements! {
+						if (eachElement as! StoryElement).isVideo() {
+							(eachElement as! VideoClip).loadAsset()
+						} else {
+							(eachElement as! TitleCard).generateAsset(VideoHelper())
+						}
+					}
+				}
+				
+				do {
+					try self.context.save()
+				} catch {
+					print("Couldn't save cloned project \(error)")
+				}
+				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(clonedProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
+					
+					self.isNewProject = true
+					
+					MBProgressHUD.hideHUDForView(self.view, animated: true)
+					
+					self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
+				})
+			})
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		

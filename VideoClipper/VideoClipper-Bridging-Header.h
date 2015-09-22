@@ -3,6 +3,8 @@
 //
 @import UIKit;
 
+#import "NSManagedObject+Cloner.h"
+
 #import "VideoHelper.h"
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"
 #import "MBProgressHUD.h"

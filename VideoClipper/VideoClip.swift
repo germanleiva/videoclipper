@@ -48,6 +48,8 @@ class VideoClip: StoryElement {
 				//Nothing
 				//				print("Asset keys loaded")
 			}
+		} else {
+			print("The path is nil")
 		}
 	}
 	

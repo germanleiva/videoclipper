@@ -526,7 +526,7 @@
                                 </connections>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d8R-WA-qu1">
-                                <rect key="frame" x="310" y="530" width="50" height="50"/>
+                                <rect key="frame" x="245" y="540" width="50" height="50"/>
                                 <color key="tintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" backgroundImage="tag_button"/>
                                 <connections>
@@ -534,7 +534,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hri-c7-dB5">
-                                <rect key="frame" x="380" y="530" width="50" height="50"/>
+                                <rect key="frame" x="335" y="540" width="50" height="50"/>
                                 <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" backgroundImage="tag_button"/>
                                 <connections>
@@ -542,7 +542,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iXd-U0-UjT">
-                                <rect key="frame" x="450" y="530" width="50" height="50"/>
+                                <rect key="frame" x="425" y="540" width="50" height="50"/>
                                 <color key="tintColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" backgroundImage="tag_button"/>
                                 <connections>
@@ -550,7 +550,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kaQ-bq-ef0">
-                                <rect key="frame" x="520" y="530" width="50" height="50"/>
+                                <rect key="frame" x="515" y="540" width="50" height="50"/>
                                 <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" backgroundImage="tag_button"/>
                                 <connections>
@@ -588,9 +588,9 @@
                                     <constraint firstItem="fgB-AU-9YY" firstAttribute="leading" secondItem="cUD-33-mSQ" secondAttribute="leading" constant="21" id="j0r-p1-Z7G"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bcj-sE-MWx">
-                                <rect key="frame" x="35" y="550" width="86" height="30"/>
-                                <state key="normal" title="Delete video">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bcj-sE-MWx">
+                                <rect key="frame" x="35" y="549" width="33" height="33"/>
+                                <state key="normal" image="icon-trash">
                                     <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
@@ -600,19 +600,19 @@
                         </subviews>
                         <color key="backgroundColor" red="0.53333333329999999" green="0.66666666669999997" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="Bcj-sE-MWx" firstAttribute="centerY" secondItem="d8R-WA-qu1" secondAttribute="centerY" id="2Qv-Dc-Es4"/>
                             <constraint firstItem="Lrr-tA-jzN" firstAttribute="top" secondItem="KOI-XH-laZ" secondAttribute="bottom" id="5tL-da-4fF"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="kaQ-bq-ef0" secondAttribute="trailing" constant="10" id="8tF-Kd-XVd"/>
-                            <constraint firstItem="Bcj-sE-MWx" firstAttribute="bottom" secondItem="d8R-WA-qu1" secondAttribute="bottom" id="Exl-wJ-gZc"/>
                             <constraint firstAttribute="trailingMargin" secondItem="KOI-XH-laZ" secondAttribute="trailing" constant="15" id="GQ8-Ka-SVi"/>
                             <constraint firstItem="cUD-33-mSQ" firstAttribute="centerX" secondItem="KOI-XH-laZ" secondAttribute="leading" constant="75" id="P3m-Io-80z"/>
-                            <constraint firstItem="iXd-U0-UjT" firstAttribute="leading" secondItem="hri-c7-dB5" secondAttribute="trailing" constant="20" id="PlN-W5-bIf"/>
-                            <constraint firstItem="dwh-Gr-Tfo" firstAttribute="top" secondItem="kaQ-bq-ef0" secondAttribute="bottom" constant="20" id="Rcp-Ww-OLn"/>
+                            <constraint firstItem="iXd-U0-UjT" firstAttribute="leading" secondItem="hri-c7-dB5" secondAttribute="trailing" constant="40" id="PlN-W5-bIf"/>
+                            <constraint firstItem="dwh-Gr-Tfo" firstAttribute="top" secondItem="kaQ-bq-ef0" secondAttribute="bottom" constant="10" id="Rcp-Ww-OLn"/>
                             <constraint firstItem="kaQ-bq-ef0" firstAttribute="top" secondItem="iXd-U0-UjT" secondAttribute="top" id="Wda-cq-YjB"/>
                             <constraint firstItem="KOI-XH-laZ" firstAttribute="top" secondItem="aBK-hK-CFy" secondAttribute="bottom" id="XYl-22-pMA"/>
                             <constraint firstItem="KOI-XH-laZ" firstAttribute="centerY" secondItem="WwU-94-EEa" secondAttribute="centerY" id="XxR-yI-Wf5"/>
-                            <constraint firstItem="kaQ-bq-ef0" firstAttribute="leading" secondItem="iXd-U0-UjT" secondAttribute="trailing" constant="20" id="ZOF-qr-Auf"/>
+                            <constraint firstItem="kaQ-bq-ef0" firstAttribute="leading" secondItem="iXd-U0-UjT" secondAttribute="trailing" constant="40" id="ZOF-qr-Auf"/>
                             <constraint firstItem="KOI-XH-laZ" firstAttribute="leading" secondItem="WwU-94-EEa" secondAttribute="leadingMargin" constant="15" id="acu-o5-izm"/>
-                            <constraint firstItem="hri-c7-dB5" firstAttribute="leading" secondItem="d8R-WA-qu1" secondAttribute="trailing" constant="20" id="e3v-cb-b6l"/>
+                            <constraint firstItem="kaQ-bq-ef0" firstAttribute="trailing" secondItem="KOI-XH-laZ" secondAttribute="trailing" id="cnS-Yf-Y3X"/>
+                            <constraint firstItem="hri-c7-dB5" firstAttribute="leading" secondItem="d8R-WA-qu1" secondAttribute="trailing" constant="40" id="e3v-cb-b6l"/>
                             <constraint firstItem="Lrr-tA-jzN" firstAttribute="width" secondItem="KOI-XH-laZ" secondAttribute="width" id="f33-oS-pSP"/>
                             <constraint firstItem="aBK-hK-CFy" firstAttribute="centerX" secondItem="KOI-XH-laZ" secondAttribute="centerX" id="g4b-ev-lXy"/>
                             <constraint firstItem="Lrr-tA-jzN" firstAttribute="leading" secondItem="KOI-XH-laZ" secondAttribute="leading" id="ia1-JE-Ykr"/>

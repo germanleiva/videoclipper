@@ -28,7 +28,9 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	var playerItem:AVPlayerItem?
 	var player:AVPlayer?
-	@IBOutlet var playerView:VideoPlayerView!
+	@IBOutlet var playerView:UIView!
+	var realPlayerView:VideoPlayerView!
+
 
 	var timeObserver:AnyObject? = nil
 	var itemEndObserver:NSObjectProtocol? = nil
@@ -79,7 +81,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 
 		self.filmStripView.delegate = self
 		
-		self.prepareToPlay()
+//		self.prepareToPlay()
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -89,6 +91,12 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			self.loadTagMarks()
 			self.loadedViews = true
 		}
+		self.realPlayerView.frame = self.playerView.frame
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		self.prepareToPlay()
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
@@ -97,10 +105,16 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.pause()
 	}
 	
+	override func viewDidDisappear(animated: Bool) {
+		self.unprepare()
+		super.viewDidDisappear(animated)
+	}
+	
 	func loadTagMarks() {
-		for eachTagView in self.tagViewModels.keys {
-			eachTagView.removeFromSuperview()
-		}
+		//This remove previous tags in case of reuse
+//		for eachTagView in self.tagViewModels.keys {
+//			eachTagView.removeFromSuperview()
+//		}
 		
 		let tags = self.video!.tags!
 		for eachTag in tags {
@@ -259,10 +273,30 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 //		self.sliderOffset = self.scrubberSlider.frame.origin.x + trackRect.origin.x + 12
 //	}
 	
+	func unprepare() {
+		self.playerItem?.removeObserver(self, forKeyPath: STATUS_KEYPATH, context: self.observerContext)
+		if let observer = self.timeObserver {
+			self.player!.removeTimeObserver(observer)
+			self.timeObserver = nil
+		}
+		if let observer = self.itemEndObserver {
+			NSNotificationCenter.defaultCenter().removeObserver(observer)
+			self.itemEndObserver = nil
+		}
+		
+		self.playerItem = nil
+				self.realPlayerView.removeFromSuperview()
+				self.realPlayerView = nil
+		self.player = nil
+	}
+	
 	func prepareToPlay(){
 		let keys = ["tracks",
 			"duration",
 			"commonMetadata"]
+		self.realPlayerView = VideoPlayerView()
+		self.realPlayerView.frame = self.playerView.frame
+		self.view.addSubview(self.realPlayerView)
 		
 		self.playerItem = AVPlayerItem(asset: self.asset, automaticallyLoadedAssetKeys: keys)
 		
@@ -270,7 +304,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 
 		self.player = AVPlayer(playerItem: self.playerItem!)
 		
-		self.playerView.player = self.player!
+		self.realPlayerView.player = self.player!
 	}
 	
 	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change:
@@ -437,9 +471,11 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		weak var weakSelf:VideoVC! = self
 		let callback = { (time:CMTime) -> Void in
 			let currentTime = CMTimeGetSeconds(time)
-			let duration = CMTimeGetSeconds(weakSelf.playerItem!.duration)
-			weakSelf.setCurrentTime(currentTime,duration:duration)
-			weakSelf.updateFilmstripScrubber()
+			if let playerItem = weakSelf.playerItem {
+				let duration = CMTimeGetSeconds(playerItem.duration)
+				weakSelf.setCurrentTime(currentTime,duration:duration)
+				weakSelf.updateFilmstripScrubber()
+			}
 		}
 		
 		// Add observer and store pointer for future use

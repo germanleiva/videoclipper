@@ -557,7 +557,7 @@
                                     <action selector="createTagTapped:" destination="BGX-TW-Ifi" eventType="touchUpInside" id="QIF-2d-v48"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KOI-XH-laZ" customClass="VideoPlayerView" customModule="VideoClipper" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KOI-XH-laZ">
                                 <rect key="frame" x="35" y="151" width="530" height="298"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -984,9 +984,14 @@
                         <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="left" id="GCT-2P-srr">
+                <swipeGestureRecognizer direction="left" numberOfTouchesRequired="2" id="GCT-2P-srr">
                     <connections>
                         <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="XuC-le-qPc"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" numberOfTouchesRequired="2" id="Kug-Vd-I1B">
+                    <connections>
+                        <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="FOy-Bh-Rw4"/>
                     </connections>
                 </swipeGestureRecognizer>
                 <swipeGestureRecognizer direction="down" id="rCC-g6-bBl">
@@ -1002,11 +1007,6 @@
                 <swipeGestureRecognizer direction="up" id="d1J-h1-b9S">
                     <connections>
                         <action selector="downArrowPressed:" destination="Gc3-vh-ICn" id="F8s-hc-oxD"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="right" id="Kug-Vd-I1B">
-                    <connections>
-                        <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="FOy-Bh-Rw4"/>
                     </connections>
                 </swipeGestureRecognizer>
                 <tapGestureRecognizer id="hAb-wI-XOJ">

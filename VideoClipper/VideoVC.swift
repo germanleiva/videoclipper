@@ -85,7 +85,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		if !self.loadedViews {
-			self.filmStripView.buildScrubber()
+			self.filmStripView.buildScrubber(self.video!)
 			self.loadTagMarks()
 			self.loadedViews = true
 		}
@@ -98,11 +98,16 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 	
 	func loadTagMarks() {
+		for eachTagView in self.tagViewModels.keys {
+			eachTagView.removeFromSuperview()
+		}
+		
 		let tags = self.video!.tags!
 		for eachTag in tags {
 			let tagModel = (eachTag as! TagMark)
 			self.createTagView(tagModel,percentage:tagModel.time!,color: tagModel.color as! UIColor)
 		}
+		
 	}
 	
 	func createTagView(tagModel:TagMark,percentage:NSNumber,color:UIColor,animated:Bool = false) -> UIView {
@@ -257,8 +262,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	func prepareToPlay(){
 		let keys = ["tracks",
 			"duration",
-			"commonMetadata",
-			"availableMediaCharacteristicsWithMediaSelectionOptions"]
+			"commonMetadata"]
 		
 		self.playerItem = AVPlayerItem(asset: self.asset, automaticallyLoadedAssetKeys: keys)
 		

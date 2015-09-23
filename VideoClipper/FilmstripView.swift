@@ -156,8 +156,23 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 //		}
 //	}
 	
-	func buildScrubber() {
-		if thumbnails.isEmpty {
+	func buildScrubber(video:VideoClip) {
+		self.thumbnails.removeAll()
+
+		//This deletes the old thumbnails if we are reusing this view
+//		let subviewsCopy = [UIView](self.subviews)
+//		let leftOverlayViewIndex = subviewsCopy.indexOf(self.leftOverlayView)!
+//		for someSubview in subviewsCopy {
+//			if subviewsCopy.indexOf(someSubview) < leftOverlayViewIndex {
+//				someSubview.removeFromSuperview()
+//			}
+//		}
+		
+		for eachThumbnail in video.thumbnailImages! {
+			self.thumbnails.append(eachThumbnail as! Thumbnail)
+		}
+		
+		if self.thumbnails.isEmpty {
 			return
 		}
 		
@@ -173,9 +188,10 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		let size = anImage.size
 		
 		// Scale retina image down to appropriate size
-//		let imageSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(0.5, 0.5))
+		let scale = UIScreen.mainScreen().scale
+		let imageSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(1/scale, 1/scale))
 //		let imageSize = CGSize(width:self.frame.size.width/8,height:self.frame.size.height)
-		let imageSize = CGSize(width: 84,height: 52)
+//		let imageSize = CGSize(width: 84,height: 52)
 //		let imageRect = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
 	
 //		let imageWidth = CGRectGetWidth(imageRect) * CGFloat(self.thumbnails.count)
@@ -298,11 +314,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		
 		
 		if video.thumbnailImages!.count > 0 {
-			self.thumbnails.removeAll()
-			for eachThumbnail in video.thumbnailImages! {
-				self.thumbnails.append(eachThumbnail as! Thumbnail)
-			}
-			self.buildScrubber()
+			self.buildScrubber(video)
 			return
 		}
 		
@@ -310,32 +322,30 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		imageGenerator.appliesPreferredTrackTransform = true
 		
 		//Generate the @2x equivalent
-		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * 2,height:0)
+		let scale = UIScreen.mainScreen().scale
+//		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * scale,height:0)
+		imageGenerator.maximumSize = CGSize(width: 92.5 * scale, height: 52 * scale)
 		
 		var times = [NSValue]()
 		
-		let increment = duration.value / 8
+		let increment = CMTimeGetSeconds(duration) / 8
 		var currentValue = increment / 2
 		
-		while currentValue <= duration.value {
-			let time = CMTimeMake(currentValue,duration.timescale)
+		// 8 times
+		for _ in 0..<8 {
+			let time = CMTimeMakeWithSeconds(currentValue,duration.timescale)
 			times.append(NSValue(CMTime:time))
 			currentValue += increment
 		}
 		
 		var imageCount = times.count
-		var images = [Thumbnail]()
+		var images = [(UIImage,CMTime)]()
 		var errorFound = false
 		
 		imageGenerator.generateCGImagesAsynchronouslyForTimes(times) { (requestedTime, imageRef, actualTime, result, error) -> Void in
 			if result == AVAssetImageGeneratorResult.Succeeded {
 				let image = UIImage(CGImage: imageRef!)
-				
-				let thumbnail = NSEntityDescription.insertNewObjectForEntityForName("Thumbnail", inManagedObjectContext: self.context) as! Thumbnail
-				thumbnail.image = image
-				thumbnail.time = CMTimeCopyAsDictionary(actualTime,kCFAllocatorDefault)
-
-				images.append(thumbnail)
+				images.append((image,actualTime))
 			} else {
 				print("Error: \(error!.localizedDescription)")
 				errorFound = true
@@ -344,17 +354,19 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			// If the decremented image count is at 0, we're all done.
 			if (--imageCount == 0 && !errorFound) {
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					NSNotificationCenter.defaultCenter().postNotificationName("THThumbnailsGeneratedNotification", object: self, userInfo: ["images":images])
-					self.thumbnails = images
+					//					NSNotificationCenter.defaultCenter().postNotificationName("THThumbnailsGeneratedNotification", object: self, userInfo: ["images":images])
 					let modelThumbnails = video.mutableOrderedSetValueForKey("thumbnailImages")
-					modelThumbnails.addObjectsFromArray(self.thumbnails)
+					modelThumbnails.removeAllObjects()
 					
-					self.thumbnails.removeAll()
-					for eachThumbnail in video.thumbnailImages! {
-						self.thumbnails.append(eachThumbnail as! Thumbnail)
+					for (image,time) in images {
+						let thumbnail = NSEntityDescription.insertNewObjectForEntityForName("Thumbnail", inManagedObjectContext: self.context) as! Thumbnail
+						thumbnail.image = image
+						thumbnail.time = CMTimeCopyAsDictionary(time,kCFAllocatorDefault)
+						thumbnail.video = video
+						modelThumbnails.addObject(thumbnail)
 					}
 					
-					self.buildScrubber()
+					self.buildScrubber(video)
 					
 					do {
 						try self.context.save()

@@ -487,7 +487,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	}
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
-		let stroke = sender!.tintColor.colorWithAlphaComponent(0.8)
+		let stroke = sender!.tintColor//.colorWithAlphaComponent(0.8)
 		
 		let pathFrame = CGRect(x: -CGRectGetMidX(sender!.bounds), y: -CGRectGetMidY(sender!.bounds), width: sender!.bounds.width, height: sender!.bounds.height)
 //		let pathFrame = sender!.frame

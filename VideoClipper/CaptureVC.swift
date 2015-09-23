@@ -487,7 +487,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	}
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
-		let stroke = sender!.tintColor
+		let stroke = sender!.tintColor.colorWithAlphaComponent(0.8)
 		
 		let pathFrame = CGRect(x: -CGRectGetMidX(sender!.bounds), y: -CGRectGetMidY(sender!.bounds), width: sender!.bounds.width, height: sender!.bounds.height)
 //		let pathFrame = sender!.frame
@@ -502,7 +502,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		circleShape.fillColor = UIColor.clearColor().CGColor
 		circleShape.opacity = 0
 		circleShape.strokeColor = stroke.CGColor
-		circleShape.lineWidth = 20
+		circleShape.lineWidth = 10
 		
 		self.taggingPanel.layer.addSublayer(circleShape)
 		
@@ -516,7 +516,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
 		
 		scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
-		scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,50, 50, 1))
+		scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,4, 4, 1))
 		
 		let alphaAnimation = CABasicAnimation(keyPath: "opacity")
 		alphaAnimation.fromValue = 1
@@ -524,7 +524,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		
 		let animation = CAAnimationGroup()
 		animation.animations = [scaleAnimation, alphaAnimation]
-		animation.duration = 0.5
+		animation.duration = 0.3
 		animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
 		circleShape.addAnimation(animation, forKey: nil)
 		

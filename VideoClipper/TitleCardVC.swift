@@ -415,7 +415,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 			
 			do {
-				weakSelf.titleCard!.asset = nil
+				weakSelf.titleCard?.asset = nil
 				try weakSelf.context.save()
 	//			overlayView.removeFromSuperview()
 				weakSelf.changesDetected = false

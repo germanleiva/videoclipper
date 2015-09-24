@@ -614,11 +614,40 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let storyLine = self.project!.storyLines![indexPath.section] as! StoryLine
 		
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
-			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
-				alert.dismissViewControllerAnimated(true, completion: nil)
-			}))
-			self.presentViewController(alert, animated: true, completion: nil)
+			self.editing = false
+			MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+			
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
+				
+				let lineToClone = storyLine
+				
+				let clonedLine = lineToClone.clone() as! StoryLine
+				
+				for eachElement in clonedLine.elements! {
+					if (eachElement as! StoryElement).isVideo() {
+						(eachElement as! VideoClip).loadAsset()
+					} else {
+						(eachElement as! TitleCard).generateAsset(VideoHelper())
+					}
+				}
+				
+				let projectLines = lineToClone.project?.mutableOrderedSetValueForKey("storyLines")
+				projectLines!.addObject(clonedLine)
+
+				projectLines!.moveObjectsAtIndexes(NSIndexSet(index: projectLines!.indexOfObject(clonedLine)), toIndex: projectLines!.indexOfObject(lineToClone) + 1)
+				
+				do {
+					try self.context.save()
+				} catch {
+					print("Couldn't save cloned line \(error)")
+				}
+				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					MBProgressHUD.hideHUDForView(self.view, animated: true)
+					
+					self.tableView.reloadData()
+					self.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: projectLines!.indexOfObject(clonedLine)), animated: true)
+				})
+			})
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		
@@ -770,7 +799,11 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 	func selectRowAtIndexPath(indexPath:NSIndexPath,animated:Bool) {
 		self.tableView.delegate!.tableView?(tableView, willSelectRowAtIndexPath: indexPath)
-		self.tableView.selectRowAtIndexPath(indexPath, animated:animated, scrollPosition: UITableViewScrollPosition.None)
+		var position = UITableViewScrollPosition.None
+		if animated {
+			position = UITableViewScrollPosition.Bottom
+		}
+		self.tableView.selectRowAtIndexPath(indexPath, animated:animated, scrollPosition: position)
 		self.tableView.delegate!.tableView?(tableView, didSelectRowAtIndexPath: indexPath)
 	}
 	

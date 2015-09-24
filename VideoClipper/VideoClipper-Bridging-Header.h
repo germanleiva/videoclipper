@@ -4,6 +4,7 @@
 @import UIKit;
 
 #import "NSManagedObject+Cloner.h"
+#import "MBFingerTipWindow.h"
 
 #import "VideoHelper.h"
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"

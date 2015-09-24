@@ -32,6 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //		pageControlAppearance.currentPageIndicatorTintColor = UIColor.blackColor()
 //		pageControlAppearance.backgroundColor = UIColor.whiteColor()
 		VideoHelper().removeTemporalFilesUsed()
+
+		let rootVC = self.window?.rootViewController
+		self.window = MBFingerTipWindow(frame: UIScreen.mainScreen().bounds)
+		self.window?.rootViewController = rootVC
+		self.window?.makeKeyAndVisible()
 		
 		return true
 	}

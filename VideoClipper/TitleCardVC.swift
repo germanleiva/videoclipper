@@ -113,7 +113,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 			durationPickerController.values = newValues.reverse()
 			durationPickerController.currentValue = Int(selectedTextWidget.fontSize!)
-			self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)
+			let rect = self.view.convertRect((sender as! UIButton).frame, fromView: sender!.superview)
+			self.durationPopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)
 			durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
 				selectedTextWidget.fontSize = newValue
 				selectedTextWidget.textView!.font = UIFont.systemFontOfSize(CGFloat(newValue))
@@ -131,7 +132,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
 		durationPickerController.values = [9,8,7,6,5,4,3,2,1,0]
 		durationPickerController.currentValue = Int(self.titleCard!.duration!)
-		self.durationPopover!.presentPopoverFromRect((sender as! UIButton).frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
+		let rect = self.view.convertRect((sender as! UIButton).frame, fromView: sender!.superview)
+		self.durationPopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
 		durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
 			self.updateDurationButtonText(newValue)
 			self.titleCard!.duration = newValue
@@ -800,7 +802,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			self.importImagePopover!.dismissPopoverAnimated(true)
 		} else {
 			if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.SavedPhotosAlbum) {
-				self.importImagePopover!.presentPopoverFromRect(sender!.frame, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Up, animated: true)
+				let rect = self.view.convertRect(sender!.frame, fromView: sender!.superview)
+				self.importImagePopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Up, animated: true)
 			}
 		}
 	}

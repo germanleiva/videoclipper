@@ -169,7 +169,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		fetchRequest.fetchBatchSize = 20
 		
 		// Edit the sort key as appropriate.
-		let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+		let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
 		
 		fetchRequest.sortDescriptors = [sortDescriptor]
 		

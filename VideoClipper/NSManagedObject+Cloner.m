@@ -27,6 +27,13 @@
 						  inContext:self.managedObjectContext];
 }
 
+- (NSManagedObject *)cloneWithCopyCache:(NSDictionary *)copyCache {
+	return [self cloneWithCopyCache: [NSMutableDictionary dictionaryWithDictionary:copyCache]
+					excludeEntities:@[]
+					   currentDepth:0
+						  inContext:self.managedObjectContext];
+}
+
 // Returns a deep-copy of this object
 - (NSManagedObject *)cloneWithCopyCache:(NSMutableDictionary *)alreadyCopiedObjects
 						excludeEntities:(NSArray *)namesOfEntitiesToExclude

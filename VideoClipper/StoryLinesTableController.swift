@@ -620,8 +620,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
 				
 				let lineToClone = storyLine
-				
-				let clonedLine = lineToClone.clone() as! StoryLine
+
+				let clonedLine = lineToClone.cloneWithCopyCache([self.project!.objectID:self.project!]) as! StoryLine
 				
 				for eachElement in clonedLine.elements! {
 					if (eachElement as! StoryElement).isVideo() {

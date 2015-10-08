@@ -24,7 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
 
 	func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-		// Override point for customization after application launch.
 //		Fabric.with([Crashlytics()])
 		
 //		let pageControlAppearance = UIPageControl.appearance()
@@ -33,10 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //		pageControlAppearance.backgroundColor = UIColor.whiteColor()
 		VideoHelper().removeTemporalFilesUsed()
 
-		let rootVC = self.window?.rootViewController
-		self.window = MBFingerTipWindow(frame: UIScreen.mainScreen().bounds)
-		self.window?.rootViewController = rootVC
-		self.window?.makeKeyAndVisible()
+		//This code is used when presenting to show the touch events
+//		let rootVC = self.window?.rootViewController
+//		self.window = MBFingerTipWindow(frame: UIScreen.mainScreen().bounds)
+//		self.window?.rootViewController = rootVC
+//		self.window?.makeKeyAndVisible()
 		
 		return true
 	}

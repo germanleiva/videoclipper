@@ -45,4 +45,5 @@ class StoryLine: NSManagedObject {
 		}
 		return nil
 	}
+	
 }

@@ -12,5 +12,6 @@
 
 - (NSManagedObject *)clone;
 - (NSManagedObject *)cloneInContext:(NSManagedObjectContext *)differentContext;
+- (NSManagedObject *)cloneWithCopyCache:(NSDictionary *)copyCache;
 
 @end

@@ -67,6 +67,18 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
+		
+	var needsToSave = false {
+		didSet {
+			if self.needsToSave {
+				self.saveButton.enabled = true
+				self.saveButton.setTitle("Save", forState: UIControlState.Normal)
+			} else {
+				self.saveButton.enabled = false
+				self.saveButton.setTitle("Saved", forState: UIControlState.Normal)
+			}
+		}
+	}
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
@@ -74,6 +86,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	@IBOutlet var deleteButton: UIButton!
 	@IBOutlet var fontSizeButton: UIButton!
+	@IBOutlet var saveButton: UIButton!
 	
 	var titleCard: TitleCard? {
 		return self.element as? TitleCard
@@ -86,7 +99,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	var selectedView:UIView? = nil
 	
-	lazy var canvasSavingQueue:NSOperationQueue = {
+	lazy var updatingModelQueue:NSOperationQueue = {
 		var queue = NSOperationQueue()
 		queue.name = "Canvas Saving queue"
 		queue.maxConcurrentOperationCount = 1
@@ -158,7 +171,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
-		self.saveCanvas()
+		self.updateModel()
 	}
 	
 	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
@@ -254,6 +267,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.view.addConstraint(imageWidget.centerYConstraint)
 	}
 	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		self.saveCanvas(false)
+	}
+	
 	func findImageWidgetForView(view:UIView) -> ImageWidget? {
 		for each in self.titleCard!.images! {
 			let eachImageWidget = each as! ImageWidget
@@ -289,7 +307,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
-				self.saveCanvas()
+				self.updateModel()
 			}
 		}
 		
@@ -330,7 +348,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
 
-				self.saveCanvas()
+				self.updateModel()
 			}
 		}
 	}
@@ -368,7 +386,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.scrollView!.setContentOffset(CGPointZero, animated: true)
 	}
 	
-	func saveCanvas() {
+	func updateModel() {
 //		let overlayView = UIView(frame: UIScreen.mainScreen().bounds)
 //		overlayView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
 //		let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
@@ -377,7 +395,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //		activityIndicator.startAnimating()
 //		self.navigationController!.view.addSubview(overlayView)
 //		
-		self.canvasSavingQueue.cancelAllOperations()
+		self.updatingModelQueue.cancelAllOperations()
+		self.needsToSave = true
 		
 		let weakSelf:TitleCardVC = self
 		
@@ -428,26 +447,46 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				weakSelf.activateHandlers(eachDeactivatedWidget)
 			}
 			
-			do {
-				weakSelf.titleCard?.asset = nil
-				try weakSelf.context.save()
-	//			overlayView.removeFromSuperview()
-				weakSelf.changesDetected = false
-				
-				NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
-				
-				if let elDelegado = weakSelf.delegate {
-					NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-						elDelegado.storyElementVC(weakSelf, elementChanged: weakSelf.titleCard!)
-					})
-				}
-			} catch {
-//				print("Couldn't save the canvas on the DB: \(error)")
-				print("Couldn't save the canvas on the DB")
+			weakSelf.titleCard?.asset = nil
+			
+			NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
+			
+			if let elDelegado = weakSelf.delegate {
+				NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+					elDelegado.storyElementVC(weakSelf, elementChanged: weakSelf.titleCard!)
+				})
 			}
 		}
 		
-		self.canvasSavingQueue.addOperation(operation)
+		self.updatingModelQueue.addOperation(operation)
+	}
+	
+	@IBAction func saveButtonPressed() {
+		self.saveCanvas(true)
+	}
+	
+	func saveCanvas(animated:Bool) {
+		if self.needsToSave {
+			var progressIndicator:MBProgressHUD? = nil
+			
+			if animated {
+				let window = UIApplication.sharedApplication().delegate!.window!
+				
+				progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
+
+				progressIndicator!.show(true)
+			}
+			
+			do {
+				try self.context.save()
+				self.needsToSave = false
+				if animated {
+					progressIndicator!.hide(true)
+				}
+			} catch {
+				print("Couldn't save the canvas on the DB")
+			}
+		}
 	}
 	
 	func selectedTextWidgets() -> [TextWidget] {
@@ -489,7 +528,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let modelWidgets = self.titleCard?.mutableOrderedSetValueForKey("widgets")
 		modelWidgets?.removeObject(aTextWidget)
 		
-		self.saveCanvas()
+		self.updateModel()
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
@@ -651,7 +690,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				print("textview panning failed")
 			case UIGestureRecognizerState.Ended:
 //				print("textview panning ended <=====")
-				self.saveCanvas()
+				self.updateModel()
 			default:
 				print("not handled textview state \(sender.state)")
 			}
@@ -696,7 +735,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			print("\(handlerId) panning failed")
 		case UIGestureRecognizerState.Ended:
 //			print("\(handlerId) panning ended <========")
-			self.saveCanvas()
+			self.updateModel()
 		default:
 			print("\(handlerId) not handled state \(sender.state)")
 		}
@@ -760,7 +799,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 	//		print("textViewDidEndEditing <====")
 		}
-		self.saveCanvas()
+		self.updateModel()
 		self.editingTextView = nil
 	}
 	
@@ -902,7 +941,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 		
 		colorPicker.dismissViewControllerAnimated(true, completion: { () -> Void in
-			self.saveCanvas()
+			self.updateModel()
 		})
 	}
 	

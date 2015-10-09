@@ -1036,23 +1036,29 @@
                         <viewControllerLayoutGuide type="bottom" id="zHt-XW-yPb"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Lmj-n3-BFu">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
-                                <rect key="frame" x="-71" y="526" width="54" height="34"/>
-                                <state key="normal" title="Import">
+                                <rect key="frame" x="29" y="526" width="84" height="34"/>
+                                <state key="normal" title="Templates">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
-                                <rect key="frame" x="608" y="526" width="63" height="34"/>
-                                <state key="normal" title="Save as">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
+                                <rect key="frame" x="721" y="526" width="50" height="34"/>
+                                <state key="normal" title="Saved">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="saveButtonPressed" destination="IbS-bj-HKR" eventType="touchUpInside" id="nh1-sn-z1N"/>
+                                </connections>
                             </button>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gs1-LF-5XS">
-                                <rect key="frame" x="-71" y="92" width="742" height="417"/>
+                                <rect key="frame" x="29" y="92" width="742" height="417"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jfr-Mu-juV">
                                         <rect key="frame" x="0.0" y="0.0" width="742" height="417"/>
@@ -1083,7 +1089,7 @@
                                 </constraints>
                             </scrollView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="e0E-jv-YSd">
-                                <rect key="frame" x="-63" y="52" width="726" height="33"/>
+                                <rect key="frame" x="37" y="52" width="726" height="33"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M13-BE-b8R">
                                         <rect key="frame" x="0.0" y="0.0" width="33" height="33"/>
@@ -1141,7 +1147,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whV-Vq-JaQ">
-                                <rect key="frame" x="240" y="525" width="121" height="36"/>
+                                <rect key="frame" x="340" y="525" width="121" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="XX s duration"/>
                                 <connections>
@@ -1174,6 +1180,8 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="800" height="600"/>
                     <connections>
                         <outlet property="canvas" destination="jfr-Mu-juV" id="KBS-b5-j65"/>
                         <outlet property="colorButton" destination="M13-BE-b8R" id="Ndc-Kw-6af"/>
@@ -1181,12 +1189,13 @@
                         <outlet property="durationButton" destination="whV-Vq-JaQ" id="OVr-0T-1Ir"/>
                         <outlet property="effectiveCanvas" destination="yhB-Bi-Rum" id="RWB-PH-JPF"/>
                         <outlet property="fontSizeButton" destination="J1u-gm-0LU" id="eFK-mb-YPw"/>
+                        <outlet property="saveButton" destination="AvL-Nj-YyN" id="TYA-BO-ik2"/>
                         <outlet property="scrollView" destination="Gs1-LF-5XS" id="f3w-Ir-00G"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SrG-cZ-bSh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5330" y="478"/>
+            <point key="canvasLocation" x="5460" y="478"/>
         </scene>
         <!--Modal Title CardVC-->
         <scene sceneID="lEi-f3-SM9">

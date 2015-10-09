@@ -92,7 +92,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.view.bringSubviewToFront(self.verticalToolbar)
 		
 		self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-		self.secondaryController!.line = self.project!.storyLines![self.currentLineIndexPath!.section] as! StoryLine
+		self.secondaryController!.line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
 	}
 	
 	func swipedLeft(sender:UISwipeGestureRecognizer) {
@@ -336,7 +336,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?,line:StoryLine?, lineIndexPath: NSIndexPath?) {
-		let previousLineIndexPath = self.currentLineIndexPath
+		_ = self.currentLineIndexPath
 
 		if let _ = element {
 			if !self.tableController!.isCompact {

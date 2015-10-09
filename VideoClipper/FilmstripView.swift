@@ -201,7 +201,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			let timedImage = self.thumbnails[i]
 			let button = UIButton(type: .Custom)
 			button.adjustsImageWhenHighlighted = false
-			button.setBackgroundImage(timedImage.image as! UIImage, forState: .Normal)
+			button.setBackgroundImage(timedImage.image as? UIImage, forState: .Normal)
 			button.addTarget(self, action: "imageButtonTapped:", forControlEvents: .TouchUpInside)
 			button.frame = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
 			

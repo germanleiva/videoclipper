@@ -56,14 +56,14 @@ class RightHandlerView:UIView {
 	}
 }
 
-class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelegate, UIPopoverPresentationControllerDelegate, ColorPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	@IBOutlet weak var canvas:UIView?
 	@IBOutlet weak var effectiveCanvas:UIView?
 	
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
 	
-	var durationPopover:UIPopoverController?
+	var durationPickerController:DurationPickerController?
 	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
@@ -81,7 +81,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	var currentlySelectedImageWidget:ImageWidget? = nil
 	
-	var importImagePopover:UIPopoverController? = nil
+	var importImagePopover:UIImagePickerController? = nil
 	var shouldDismissPicker = false
 	
 	var selectedView:UIView? = nil
@@ -93,58 +93,71 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		return queue
 	}()
 	
-	@IBAction func showFontSizePopOver(sender:AnyObject?) {
-		if self.durationPopover == nil {
-			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
-			self.durationPopover = UIPopoverController(contentViewController: durationController)
-			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
-			self.durationPopover!.delegate = self
+	@IBAction func showFontSizePopOver(sender:UIButton?) {
+		if self.durationPickerController == nil {
+			self.durationPickerController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as? DurationPickerController
+			self.durationPickerController!.modalPresentationStyle = UIModalPresentationStyle.Popover
+			self.durationPickerController!.preferredContentSize = CGSizeMake(200, 200)
 		}
 		
+		let durationPopover = self.durationPickerController!.popoverPresentationController!
+
+		durationPopover.delegate = self
+
 		let selectedTextWidgets = self.selectedTextWidgets()
 
 		if !selectedTextWidgets.isEmpty {
 			let selectedTextWidget = selectedTextWidgets.first!
-			let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
 
 			var newValues = [Int]()
 			for i in 10...80 {
 				newValues.append(i)
 			}
-			durationPickerController.values = newValues.reverse()
-			durationPickerController.currentValue = Int(selectedTextWidget.fontSize!)
-			let rect = self.view.convertRect((sender as! UIButton).frame, fromView: sender!.superview)
-			self.durationPopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Any, animated: true)
-			durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
+			self.durationPickerController!.values = newValues.reverse()
+			self.durationPickerController!.currentValue = Int(selectedTextWidget.fontSize!)
+			durationPopover.sourceView = sender!
+			durationPopover.sourceRect = sender!.bounds
+			durationPopover.permittedArrowDirections = UIPopoverArrowDirection.Any
+			self.durationPickerController!.valueChangedBlock = { (newValue:Int) -> Void in
 				selectedTextWidget.fontSize = newValue
 				selectedTextWidget.textView!.font = UIFont.systemFontOfSize(CGFloat(newValue))
 			}
+			
+			self.presentViewController(self.durationPickerController!, animated: true, completion: nil)
 		}
 	}
 	
-	@IBAction func showDurationPopOver(sender:AnyObject?){
-		if self.durationPopover == nil {
-			let durationController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as! DurationPickerController
-			self.durationPopover = UIPopoverController(contentViewController: durationController)
-			self.durationPopover!.popoverContentSize = CGSize(width: 200, height: 200)
-			self.durationPopover!.delegate = self
+	@IBAction func showDurationPopOver(sender:UIView?){
+		if self.durationPickerController == nil {
+			self.durationPickerController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as? DurationPickerController
+			self.durationPickerController!.modalPresentationStyle = UIModalPresentationStyle.Popover
+			self.durationPickerController!.preferredContentSize = CGSizeMake(200, 200)
+
 		}
-		let durationPickerController = self.durationPopover?.contentViewController as! DurationPickerController
-		durationPickerController.values = [9,8,7,6,5,4,3,2,1,0]
-		durationPickerController.currentValue = Int(self.titleCard!.duration!)
-		let rect = self.view.convertRect((sender as! UIButton).frame, fromView: sender!.superview)
-		self.durationPopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Right, animated: true)
-		durationPickerController.valueChangedBlock = { (newValue:Int) -> Void in
+		let durationPopover = self.durationPickerController!.popoverPresentationController!
+		durationPopover.delegate = self
+
+		self.durationPickerController!.values = [9,8,7,6,5,4,3,2,1,0]
+		self.durationPickerController!.currentValue = Int(self.titleCard!.duration!)
+//		let rect = self.view.convertRect((sender as! UIButton).frame, fromView: sender!.superview)
+		
+		durationPopover.sourceView = sender!
+		durationPopover.sourceRect = sender!.bounds
+		durationPopover.permittedArrowDirections = UIPopoverArrowDirection.Right
+
+		self.durationPickerController!.valueChangedBlock = { (newValue:Int) -> Void in
 			self.updateDurationButtonText(newValue)
 			self.titleCard!.duration = newValue
 		}
+		
+		self.presentViewController(self.durationPickerController!, animated: true, completion: nil)
 	}
 	
 	func updateDurationButtonText(newDuration:Int){
 		self.durationButton!.setTitle("\(newDuration) s duration", forState: UIControlState.Normal)
 	}
 	
-	func popoverControllerDidDismissPopover(popoverController: UIPopoverController) {
+	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
 		self.saveCanvas()
 	}
 	
@@ -166,9 +179,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
 		imagePicker.mediaTypes = [String(kUTTypeImage)]
 		imagePicker.allowsEditing = false
+		imagePicker.modalPresentationStyle = UIModalPresentationStyle.Popover
 		
-		self.importImagePopover = UIPopoverController(contentViewController: imagePicker)
-		self.importImagePopover!.delegate = self
+		self.importImagePopover = imagePicker
+		imagePicker.popoverPresentationController!.delegate = self
 
         // Do any additional setup after loading the view.
 		self.canvas!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
@@ -798,18 +812,22 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	@IBAction func importImagePressed(sender: UIButton?) {
-		if self.importImagePopover!.popoverVisible {
-			self.importImagePopover!.dismissPopoverAnimated(true)
-		} else {
+//		if self.importImagePopover!.popoverVisible {
+//			self.importImagePopover!.dismissPopoverAnimated(true)
+//		} else {
 			if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.SavedPhotosAlbum) {
-				let rect = self.view.convertRect(sender!.frame, fromView: sender!.superview)
-				self.importImagePopover!.presentPopoverFromRect(rect, inView: self.view, permittedArrowDirections: UIPopoverArrowDirection.Up, animated: true)
+				let popoverPresentationController = self.importImagePopover!.popoverPresentationController!
+				popoverPresentationController.sourceView = sender!
+				popoverPresentationController.sourceRect = sender!.bounds
+				popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirection.Up
+
+				self.presentViewController(self.importImagePopover!, animated: true, completion: nil)
 			}
-		}
+//		}
 	}
 	
 	func takePicture(sender:AnyObject?) {
-		self.importImagePopover?.dismissPopoverAnimated(true)
+		self.importImagePopover?.dismissViewControllerAnimated(true, completion: nil)
 		
 		let picker = UIImagePickerController()
 		picker.delegate = self
@@ -821,8 +839,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-		self.importImagePopover?.dismissPopoverAnimated(true)
-
+		self.importImagePopover?.dismissViewControllerAnimated(true, completion: nil)
+		
 		picker.presentingViewController
 		let mediaType = info[UIImagePickerControllerMediaType] as! String
 
@@ -861,7 +879,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
 		picker.dismissViewControllerAnimated(true) { () -> Void in
 			self.shouldDismissPicker = false
-			self.importImagePopover?.dismissPopoverAnimated(true)
+			self.importImagePopover?.dismissViewControllerAnimated(true, completion: nil)
 		}
 	}
 	

@@ -10,8 +10,8 @@ import UIKit
 import AVKit
 import CoreData
 
-let keyShutterLockEnabled = "shutterLockEnabled"
-let keyGhostDisabled = "keyGhostDisabled"
+let keyShutterHoldEnabled = "shutterHoldEnabled"
+let keyGhostEnabled = "keyGhostEnabled"
 let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
@@ -29,7 +29,7 @@ class VideoSegmentThumbnail {
 	}
 }
 
-class CaptureVC: UIViewController, SCRecorderDelegate {
+class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource/*, UICollectionViewDelegate */{
 	var isRecording = false
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
@@ -45,6 +45,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	
 	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
+	@IBOutlet var segmentsCollectionView:UICollectionView!
+	
 	var segmentThumbnails = [VideoSegmentThumbnail]()
 	
 	@IBOutlet weak var recordingTime: UILabel!
@@ -64,7 +66,6 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	@IBOutlet var ghostImageView:UIImageView!
 	
 	@IBOutlet var infoLabel:UILabel!
-	@IBOutlet var segmentCount:UILabel!
 	@IBOutlet var lineVideoCount:UILabel!
 
 	@IBOutlet var taggingPanel:UIStackView!
@@ -110,13 +111,13 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		}
 
 		let defaults = NSUserDefaults.standardUserDefaults()
-		self.shutterLock.on = defaults.boolForKey(keyShutterLockEnabled)
+		self.shutterLock.on = !defaults.boolForKey(keyShutterHoldEnabled)
 		
 		if !defaults.boolForKey(keyShortPreviewEnabled) {
 			self.expandPreview()
 		}
 		
-		if !defaults.boolForKey(keyGhostDisabled) {
+		if defaults.boolForKey(keyGhostEnabled) {
 			self.ghostPressed(self.ghostButton)
 		}
 		
@@ -160,17 +161,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		//This is a workaround
 		self.ghostImageView.image = nil
 		
-		self.updateSegmentCount()
-	}
-	
-	func updateSegmentCount() {
-		let count = _recorder.session!.segments.count
-		var prefix = "segments"
-		if count == 1 {
-			prefix = "segment"
-		}
-		
-		self.segmentCount.text = "\(count) \(prefix)"
+//		self.updateSegmentCount()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -268,6 +259,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 					self.recordingIndicator.layer.removeAllAnimations()
 				}
 		})
+		
+		self.segmentsCollectionView.reloadData()
 	}
 	
 	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
@@ -278,36 +271,36 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 				return
 			}
 			
-			let lastSegmentIndex = self.segmentThumbnails.count - 1
-			let lastSegmentView = lastSegment.snapshot
-			
-			self.infoLabel.text = "Deleted"
-			
-			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				var factor = CGFloat(1.2)
-				if recognizer.direction == .Left {
-					factor = CGFloat(-1.2)
-				}
-				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
-				lastSegmentView.alpha = 0
-				self.infoLabel.alpha = 1
-			}, completion: { (completed) -> Void in
-				if completed {
-					if self._recorder.session?.segments.count > lastSegmentIndex {
-						//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
-						self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
-					}
-					self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
-					lastSegmentView.removeFromSuperview()
-					self.updateTimeRecordedLabel()
-					self.updateGhostImage()
-					self.updateSegmentCount()
-					
-					UIView.animateWithDuration(0.5, animations: { () -> Void in
-						self.infoLabel.alpha = 0
-					})
-				}
-			})
+//			let lastSegmentIndex = self.segmentThumbnails.count - 1
+//			let lastSegmentView = lastSegment.snapshot
+//			
+//			self.infoLabel.text = "Deleted"
+//			
+//			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+//				var factor = CGFloat(1.2)
+//				if recognizer.direction == .Left {
+//					factor = CGFloat(-1.2)
+//				}
+//				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
+//				lastSegmentView.alpha = 0
+//				self.infoLabel.alpha = 1
+//				}, completion: { (completed) -> Void in
+//					if completed {
+//						if self._recorder.session?.segments.count > lastSegmentIndex {
+//							//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+//							self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
+//						}
+//						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
+//						lastSegmentView.removeFromSuperview()
+//						self.updateTimeRecordedLabel()
+//						self.updateGhostImage()
+//						self.updateSegmentCount()
+//						
+//						UIView.animateWithDuration(0.5, animations: { () -> Void in
+//							self.infoLabel.alpha = 0
+//						})
+//					}
+//			})
 		}
 	}
 	
@@ -382,7 +375,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		sender.selected = !sender.selected
 		
 		let defaults = NSUserDefaults.standardUserDefaults()
-		defaults.setBool(!sender.selected, forKey: keyGhostDisabled)
+		defaults.setBool(sender.selected, forKey: keyGhostEnabled)
 		defaults.synchronize()
 		
 		var ghostTintColor = UIColor.whiteColor()
@@ -399,10 +392,11 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 	}
 	
 	@IBAction func lockPressed(sender: UISwitch) {
-		self.updateShutterLabel(sender.on)
+		let isLocked = sender.on
+		self.updateShutterLabel(isLocked)
 
 		let defaults = NSUserDefaults.standardUserDefaults()
-		defaults.setBool(sender.on, forKey: keyShutterLockEnabled)
+		defaults.setBool(!isLocked, forKey: keyShutterHoldEnabled)
 		defaults.synchronize()
 	}
 	
@@ -664,7 +658,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		self.segmentThumbnails.removeAll()
 		self._recorder.session?.removeAllSegments(true)
 		
-		self.updateSegmentCount()
+//		self.updateSegmentCount()
 	}
 
 	//-MARK: SCRecorder things
@@ -832,7 +826,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
 
 		self.updateGhostImage()
-		self.updateSegmentCount()
+//		self.updateSegmentCount()
 	}
 	
 	func updateTimeRecordedLabel() {
@@ -862,5 +856,32 @@ class CaptureVC: UIViewController, SCRecorderDelegate {
 		self.ghostImageView.image = image
 
 		self.ghostImageView.hidden = !self.ghostButton.selected
+	}
+	
+	//-MARK: Collection View Data Source
+	
+	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return self.segmentThumbnails.count
+	}
+	
+	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+		return 1
+	}
+	
+	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath)
+		let videoSegment = self.segmentThumbnails[indexPath.item]
+		
+		for eachSubview in [UIView](videoSegmentCell.contentView.subviews) {
+			eachSubview.removeFromSuperview()
+		}
+		videoSegmentCell.contentView.addSubview(videoSegment.snapshot)
+//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Width, multiplier: 1, constant: 0))
+//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0))
+//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
+//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
+		
+		return videoSegmentCell
+
 	}
 }

@@ -19,11 +19,12 @@ protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
-class VideoSegmentThumbnail {
-	var snapshot:UIView
+class VideoSegmentThumbnail:NSObject {
+	var snapshot:UIImage
 	var time:Float64
 	var tagsPlaceholders = [(UIColor,Float64)]()
-	init(snapshot:UIView,time:Float64) {
+	
+	init(snapshot:UIImage,time:Float64) {
 		self.snapshot = snapshot
 		self.time = time
 	}
@@ -199,6 +200,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		};
 		
 		UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			self.segmentsCollectionView.alpha = 0
 			self.leftPanel.alpha = 0
 			self.rightPanel.alpha = 0
 			self.segmentThumbnailsPlaceholder.alpha = 0
@@ -237,12 +239,22 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		
 		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(false)
 //		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
-		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: self.totalTimeSeconds())
+		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: _recorder.snapshotOfLastVideoBuffer()!, time: self.totalTimeSeconds())
+		self.segmentThumbnails.append(videoSegmentThumbnail)
+		let item = self.segmentThumbnails.indexOf({$0 == videoSegmentThumbnail})
+		let indexPath = NSIndexPath(forItem: item!, inSection: 0)
+		self.segmentsCollectionView.reloadData()
+		self.segmentsCollectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
+		
 		self.view.insertSubview(currentSnapshot, belowSubview: self.infoLabel)
+		let newCell = self.segmentsCollectionView.cellForItemAtIndexPath(indexPath)
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
-
+//			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
+			if let finalFrame = newCell?.frame {
+				currentSnapshot.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+			}
+			self.segmentsCollectionView.alpha = 1
 			self.leftPanel.alpha = 0.7
 			self.rightPanel.alpha = 0.7
 			self.recordingIndicator.alpha = 0
@@ -250,17 +262,16 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.titleCardPlaceholder!.alpha = 1
 			}, completion: { (completed) -> Void in
 				if completed {
-					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
-					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
+					currentSnapshot.removeFromSuperview()
+//					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
+//					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
 					videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
-					self.segmentThumbnails.append(videoSegmentThumbnail)
-					
+//					self.segmentThumbnails.append(videoSegmentThumbnail)
+//					
 					//Stops the blinking
 					self.recordingIndicator.layer.removeAllAnimations()
 				}
 		})
-		
-		self.segmentsCollectionView.reloadData()
 	}
 	
 	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
@@ -586,16 +597,16 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	func saveCapture(completion:(()->Void)?) {
 		if let lastSegmentView = self.segmentThumbnails.last?.snapshot {
 			//We delete the snapshots of the previous segments to give the illusion of saving the whole video clip (video clip = collection of segments)
-			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
-				if eachSnapshot.snapshot !== lastSegmentView {
-					eachSnapshot.snapshot.removeFromSuperview()
-				}
-			}
+//			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
+//				if eachSnapshot.snapshot !== lastSegmentView {
+//					eachSnapshot.snapshot.removeFromSuperview()
+//				}
+//			}
 			
 			self.infoLabel.text = "Saving ..."
 			
 			UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				lastSegmentView.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
+				self.segmentThumbnailsPlaceholder.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
 				self.infoLabel.alpha = 1
 				}, completion: { (completed) -> Void in
 					
@@ -652,9 +663,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	func deleteSegments() {
-		for eachSegment in self.segmentThumbnails {
-			eachSegment.snapshot.removeFromSuperview()
-		}
+//		for eachSegment in self.segmentThumbnails {
+//			eachSegment.snapshot.removeFromSuperview()
+//		}
 		self.segmentThumbnails.removeAll()
 		self._recorder.session?.removeAllSegments(true)
 		
@@ -869,13 +880,10 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath)
+		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoSegment = self.segmentThumbnails[indexPath.item]
 		
-		for eachSubview in [UIView](videoSegmentCell.contentView.subviews) {
-			eachSubview.removeFromSuperview()
-		}
-		videoSegmentCell.contentView.addSubview(videoSegment.snapshot)
+		videoSegmentCell.thumbnail!.image = videoSegment.snapshot
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Width, multiplier: 1, constant: 0))
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0))
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))

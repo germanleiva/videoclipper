@@ -40,6 +40,7 @@
 		A47570E31B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E11B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift */; };
 		A47570E41B9DCA250043C8C2 /* ImageWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E21B9DCA250043C8C2 /* ImageWidget.swift */; };
 		A47570E61B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E51B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift */; };
+		A478D5BE1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */; };
 		A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */; };
 		A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* TextWidget.swift */; };
 		A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */; };
@@ -170,6 +171,7 @@
 		A47570E11B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A47570E21B9DCA250043C8C2 /* ImageWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageWidget.swift; sourceTree = "<group>"; };
 		A47570E51B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TitleCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoSegmentCollectionCell.swift; sourceTree = "<group>"; };
 		A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TextWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A481EFD21B5D42940051ED93 /* TextWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextWidget.swift; sourceTree = "<group>"; };
 		A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondaryViewController.swift; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
 				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
 				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
+				A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -698,6 +701,7 @@
 				A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */,
 				A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */,
 				A4DA9CDD1B973F0F00839F28 /* ELCImagePickerController.m in Sources */,
+				A478D5BE1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift in Sources */,
 				A4F20B781BA9AE6000879726 /* ModalTitleCardVC.swift in Sources */,
 				A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */,
 				A4FF46631B46B54100A12267 /* VideoVC.swift in Sources */,

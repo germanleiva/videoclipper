@@ -30,7 +30,7 @@ class VideoSegmentThumbnail:NSObject {
 	}
 }
 
-class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource/*, UICollectionViewDelegate */{
+class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	var isRecording = false
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
@@ -47,6 +47,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
 	@IBOutlet var segmentsCollectionView:UICollectionView!
+	
+	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
 	var segmentThumbnails = [VideoSegmentThumbnail]()
 	
@@ -133,6 +135,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.updateTitleCardPlaceholder()
 		
 		self.prepareSession()
+		
+//		self.segmentsCollectionView.registerClass(VideoSegmentCollectionCell.self, forCellWithReuseIdentifier:"VideoSegmentCollectionCell")
+
 	}
 	
 	func updateTitleCardPlaceholder() {
@@ -246,14 +251,18 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.segmentsCollectionView.reloadData()
 		self.segmentsCollectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
 		
-		self.view.insertSubview(currentSnapshot, belowSubview: self.infoLabel)
-		let newCell = self.segmentsCollectionView.cellForItemAtIndexPath(indexPath)
+//		self.view.insertSubview(currentSnapshot, belowSubview: self.infoLabel)
+		self.view.insertSubview(currentSnapshot, aboveSubview: self.segmentsCollectionView)
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
-			if let finalFrame = newCell?.frame {
+			
+			if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)?.frame {
 				currentSnapshot.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+			} else {
+				print("TODO MAL")
 			}
+			
 			self.segmentsCollectionView.alpha = 1
 			self.leftPanel.alpha = 0.7
 			self.rightPanel.alpha = 0.7
@@ -395,6 +404,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //			ghostTintColor = Globals.globalTint
 			ghostTintColor = UIColor(hexString: "#117AFF")!
 		}
+		
 		UIView.animateWithDuration(0.2) { () -> Void in
 			self.ghostButton.tintColor = ghostTintColor
 		}
@@ -867,6 +877,20 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.ghostImageView.image = image
 
 		self.ghostImageView.hidden = !self.ghostButton.selected
+
+		var message = "Segments collection view showed"
+		if self.ghostButton.selected {
+			self.topCollectionViewLayout.constant = 0
+		} else {
+			self.topCollectionViewLayout.constant = -self.segmentsCollectionView.frame.height
+					message = "Segments collection view hid"
+		}
+
+		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			self.view.layoutIfNeeded()
+		}) { (completed) -> Void in
+			print(message)
+		}
 	}
 	
 	//-MARK: Collection View Data Source
@@ -880,7 +904,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
+		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let videoSegment = self.segmentThumbnails[indexPath.item]
 		
 		videoSegmentCell.thumbnail!.image = videoSegment.snapshot

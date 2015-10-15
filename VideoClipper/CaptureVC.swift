@@ -11,7 +11,8 @@ import AVKit
 import CoreData
 
 let keyShutterHoldEnabled = "shutterHoldEnabled"
-let keyGhostEnabled = "keyGhostEnabled"
+let keyGhostLevel = "keyGhostLevel"
+let keyStopMotionActive = "keyStopMotionActive"
 let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
@@ -45,7 +46,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
 //	@IBOutlet var titleCardPlaceholder:UIView!
-//	@IBOutlet var videoPlaceholder:UIView!
+	@IBOutlet var videoPlaceholder:UIButton!
+	@IBOutlet weak var saveVideoButton: UIButton!
+	
 	@IBOutlet var segmentsCollectionView:UICollectionView!
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
@@ -58,14 +61,21 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	@IBOutlet weak var previewView: UIView!
 	@IBOutlet weak var rightPanel: UIView!
 	@IBOutlet weak var leftPanel: UIView!
+	@IBOutlet weak var ghostPanel: UIStackView!
 	
 	@IBOutlet weak var shutterButton: KPCameraButton!
-	@IBOutlet weak var ghostButton: UIButton!
+	@IBOutlet weak var stopMotionButton: UIButton!
 	@IBOutlet weak var shutterLock: UISwitch!
 	
 	@IBOutlet var ghostImageView:UIImageView!
 	
 	@IBOutlet var taggingPanel:UIStackView!
+
+	@IBOutlet var plusLineButton:UIButton!
+	
+	@IBOutlet weak var ghostOff: UIImageView!
+	@IBOutlet weak var ghostOn: UIImageView!
+	@IBOutlet weak var ghostSlider: UISlider!
 	
 	var _recorder:SCRecorder!
 	
@@ -75,6 +85,10 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	
 	var delegate:CaptureVCDelegate? = nil
 	
+	var selectedLineIndexPath:NSIndexPath? = nil
+
+	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
+
 	@IBOutlet var titleCardTable:UITableView!
 	
     override func viewDidLoad() {
@@ -115,9 +129,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.expandPreview()
 		}
 		
-		if defaults.boolForKey(keyGhostEnabled) {
-			self.ghostPressed(self.ghostButton)
-		}
+		let savedGhostLevel = defaults.floatForKey(keyGhostLevel)
+		self.ghostImageView.alpha = CGFloat(savedGhostLevel)
+		self.ghostSlider.value = savedGhostLevel
 		
 		self.updateShutterLabel(self.shutterLock!.on)
 		
@@ -129,8 +143,11 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		
 		self.prepareSession()
 		
-//		self.segmentsCollectionView.registerClass(VideoSegmentCollectionCell.self, forCellWithReuseIdentifier:"VideoSegmentCollectionCell")
-
+		self.plusLineButton.layer.borderWidth = 0.4
+		self.plusLineButton.layer.borderColor = UIColor.grayColor().CGColor
+		
+		let rowIndex = self.currentLine?.project?.storyLines?.indexOfObject(self.currentLine!)
+		self.selectedLineIndexPath = NSIndexPath(forRow: rowIndex!, inSection: 0)
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -140,6 +157,13 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.ghostImageView.image = nil
 		
 //		self.updateSegmentCount()
+		self.titleCardTable.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
+		
+		self.ghostOn.tintColor = UIColor(hexString: "#117AFF")!
+		self.ghostOff.tintColor = UIColor(hexString: "#117AFF")!
+		
+		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
+		self.updateStopMotionSegments()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -180,6 +204,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.segmentsCollectionView.alpha = 0
 			self.leftPanel.alpha = 0
 			self.rightPanel.alpha = 0
+			self.ghostPanel.alpha = 0
 //			self.videoPlaceholder.alpha = 0
 //			self.titleCardPlaceholder.alpha = 0
 			}, completion: { (completed) -> Void in
@@ -214,9 +239,17 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	func captureModeOff(){
 		self.stopTimer()
 		
-		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(false)
-//		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
-		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: _recorder.snapshotOfLastVideoBuffer(), time: self.totalTimeSeconds())
+		let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
+		
+//		UIGraphicsBeginImageContext(currentSnapshotView.bounds.size)
+//		currentSnapshotView.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+//		
+//		let currentSnapshot = UIGraphicsGetImageFromCurrentImageContext()
+//		
+//		UIGraphicsEndImageContext()
+		
+		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
+		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: self.totalTimeSeconds())
 		videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
 		self.videoSegments.append(videoSegmentThumbnail)
 		let item = self.videoSegments.indexOf({$0 == videoSegmentThumbnail})
@@ -225,28 +258,29 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.segmentsCollectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
 		
 //		self.view.insertSubview(currentSnapshot, belowSubview: self.infoLabel)
-		self.view.insertSubview(currentSnapshot, aboveSubview: self.segmentsCollectionView)
+		self.view.insertSubview(currentSnapshotView, aboveSubview: self.segmentsCollectionView)
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
 			
 			if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)?.frame {
-				currentSnapshot.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+				currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
 			} else {
 				print("TODO MAL")
 			}
 			
-			self.segmentsCollectionView.alpha = 1
-			self.leftPanel.alpha = 0.7
-			self.rightPanel.alpha = 0.7
+			self.segmentsCollectionView.alpha = 0.75
+			self.leftPanel.alpha = 0.75
+			self.rightPanel.alpha = 0.75
+			self.ghostPanel.alpha = 1
 			self.recordingIndicator.alpha = 0
 //			self.videoPlaceholder!.alpha = 1
 //			self.titleCardPlaceholder!.alpha = 1
 			}, completion: { (completed) -> Void in
 				if completed {
-					currentSnapshot.removeFromSuperview()
-					videoSegmentThumbnail.time = self._recorder.session!.segments.last!.duration
-					videoSegmentThumbnail.snapshot = self._recorder.snapshotOfLastVideoBuffer()
+					currentSnapshotView.removeFromSuperview()
+//					videoSegmentThumbnail.time = self._recorder.session!.segments.last!.duration
+					videoSegmentThumbnail.snapshot = currentSnapshot
 					
 //					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
 //					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
@@ -254,6 +288,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //					
 					//Stops the blinking
 					self.recordingIndicator.layer.removeAllAnimations()
+					
+					self.videoPlaceholder.hidden = false
+					self.saveVideoButton.enabled = true
 				}
 		})
 	}
@@ -299,7 +336,17 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		}
 	}
 	
-	@IBAction func tappedOnSegment(sender:UITapGestureRecognizer) {
+	@IBAction func changedGhostSlider(sender: UISlider) {
+		self.ghostImageView.alpha = CGFloat(sender.value)
+	}
+	
+	@IBAction func touchUpGhostSlider(sender: UISlider) {
+		let defaults = NSUserDefaults.standardUserDefaults()
+		defaults.setFloat(sender.value, forKey: keyGhostLevel)
+		defaults.synchronize()
+	}
+	
+	@IBAction func tappedOnVideo(sender:UIButton) {
 		if let recordSession = self._recorder.session {
 			if recordSession.segments.isEmpty {
 				return
@@ -356,7 +403,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.previewViewWidthConstraint.active = false
 	}
 
-	@IBAction func donePressed(sender:UIButton) {
+	@IBAction func savePressed(sender:UIButton) {
 //		let window = UIApplication.sharedApplication().delegate!.window!
 //
 //		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
@@ -366,25 +413,43 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		})
 	}
 	
-	@IBAction func ghostPressed(sender: UIButton) {
-		sender.selected = !sender.selected
+	@IBAction func stopMotionPressed(sender: UIButton) {
+		self.stopMotionButton.selected = !sender.selected
 		
-		let defaults = NSUserDefaults.standardUserDefaults()
-		defaults.setBool(sender.selected, forKey: keyGhostEnabled)
-		defaults.synchronize()
-		
-		var ghostTintColor = UIColor.whiteColor()
-		if sender.selected {
-//			ghostTintColor = self.shutterButton.tintColor
-//			ghostTintColor = Globals.globalTint
-			ghostTintColor = UIColor(hexString: "#117AFF")!
+		updateStopMotionSegments()
+	}
+	
+	func updateStopMotionSegments(){
+		var tintColor = UIColor.whiteColor()
+		if self.stopMotionButton.selected {
+			tintColor = UIColor(hexString: "#117AFF")!
 		}
 		
 		UIView.animateWithDuration(0.2) { () -> Void in
-			self.ghostButton.tintColor = ghostTintColor
+			self.stopMotionButton.tintColor = tintColor
 		}
 		
-		self.updateGhostImage()
+		var message = "Segments collection view showed"
+		if self.stopMotionButton.selected {
+			self.segmentsCollectionView.hidden = false
+			self.topCollectionViewLayout.constant = 0
+		} else {
+			self.topCollectionViewLayout.constant = -self.segmentsCollectionView.frame.height
+			message = "Segments collection view hid"
+		}
+		
+		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			self.view.layoutIfNeeded()
+			}) { (completed) -> Void in
+				if !self.stopMotionButton.selected {
+					self.segmentsCollectionView.hidden = true
+				}
+				print(message)
+		}
+		
+		let userDefaults = NSUserDefaults.standardUserDefaults()
+		userDefaults.setBool(self.stopMotionButton.selected, forKey: keyStopMotionActive)
+		userDefaults.synchronize()
 	}
 	
 	@IBAction func lockPressed(sender: UISwitch) {
@@ -444,7 +509,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		}
 	}
 	
-	@IBAction func cancelPressed(sender: AnyObject) {
+	@IBAction func donePressed(sender: AnyObject) {
 		if self.videoSegments.isEmpty {
 			self.dismissController()
 			return
@@ -455,10 +520,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.deleteSegments()
 			self.dismissController()
 		}))
-		alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-			self.saveCapture({ () -> Void in
-				self.dismissController()
-			})
+		alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
 		}))
 		self.presentViewController(alert, animated: true, completion: nil)
 		
@@ -606,6 +668,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self._recorder.session?.removeAllSegments(true)
 		
 //		self.updateSegmentCount()
+		
+		self.videoPlaceholder.hidden = true
+		self.saveVideoButton.enabled = false
 	}
 
 	//-MARK: SCRecorder things
@@ -793,30 +858,14 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	func updateGhostImage() {
 		var image:UIImage? = nil
 		
-		if self.ghostButton.selected {
-			if _recorder.session != nil && _recorder.session!.segments.count > 0 {
-				let segment = _recorder.session!.segments.last!
-				image = segment.lastImage
-			}
-//			image = _recorder.snapshotOfLastVideoBuffer()
+		if _recorder.session != nil && _recorder.session!.segments.count > 0 {
+			let segment = _recorder.session!.segments.last!
+			image = segment.lastImage
 		}
+
 		self.ghostImageView.image = image
 
-		self.ghostImageView.hidden = !self.ghostButton.selected
-
-		var message = "Segments collection view showed"
-		if self.ghostButton.selected {
-			self.topCollectionViewLayout.constant = 0
-		} else {
-			self.topCollectionViewLayout.constant = -self.segmentsCollectionView.frame.height
-					message = "Segments collection view hid"
-		}
-
-		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			self.view.layoutIfNeeded()
-		}) { (completed) -> Void in
-			print(message)
-		}
+//		self.ghostImageView.hidden = !self.ghostButton.selected
 	}
 	
 	//-MARK: Collection View Data Source
@@ -875,6 +924,63 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		imageView.image = UIImage(data: line.firstTitleCard()!.snapshot!)
 		
 		return titleCardCell
+	}
+
+	//-MARK: Table View Delegate
+	
+	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		if self.selectedLineIndexPath! == indexPath {
+			self.performSegueWithIdentifier("modalTitleCardVC", sender: self)
+		}
+		self.selectedLineIndexPath = indexPath
+		let selectedLine = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
+		self.currentLine = selectedLine
+		NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: selectedLine)
+	}
+	
+	@IBAction func addStoryLinePressed(sender:UIButton) {
+		let project = self.currentLine!.project! 
+		let j = project.storyLines!.count + 1
+		
+		let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+		newStoryLine.name = "StoryLine \(j)"
+		
+		let storyLines = project.mutableOrderedSetValueForKey("storyLines")
+		storyLines.addObject(newStoryLine)
+		
+		let firstTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
+		firstTitleCard.name = "Untitled"
+		newStoryLine.elements = [firstTitleCard]
+		
+		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
+		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		widget.content = ""
+		widget.distanceXFromCenter = 0
+		widget.distanceYFromCenter = 0
+		widget.width = 500
+		widget.height = 50
+		widget.fontSize = 60
+		widgetsOnTitleCard.addObject(widget)
+		
+		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		
+		do {
+			try context.save()
+
+			let section = project.storyLines!.indexOfObject(newStoryLine)
+			let indexPath = NSIndexPath(forRow: section, inSection: 0)
+			self.titleCardTable.beginUpdates()
+//			self.tableView.insertSections(NSIndexSet(index: section!), withRowAnimation: UITableViewRowAnimation.Bottom)
+			self.titleCardTable.insertRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Bottom)
+			self.titleCardTable.endUpdates()
+			
+			self.titleCardTable.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
+			self.selectedLineIndexPath = indexPath
+			self.currentLine = newStoryLine
+			NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: newStoryLine)
+		} catch {
+			print("Couldn't save the new story line: \(error)")
+		}
 	}
 
 }

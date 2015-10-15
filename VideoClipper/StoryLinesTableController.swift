@@ -1185,7 +1185,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				dispatch_after(delayTime, dispatch_get_main_queue(), {
 					self.animating = false
 					self.handleLongPressGesture(gestureRecognizer)
-				});
+				})
 				
 				self.animating = true
 				
@@ -1195,8 +1195,11 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func scrollToElement(itemIndexPath:NSIndexPath,inLineIndex indexPath:NSIndexPath) {
-		let lineCell = self.tableView.cellForRowAtIndexPath(indexPath) as! StoryLineCell
-		lineCell.collectionView.scrollToItemAtIndexPath(itemIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
+		if let lineCell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
+			lineCell.collectionView.scrollToItemAtIndexPath(itemIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
+		} else {
+			print("This shouldn't happen")
+		}
 	}
 
 }

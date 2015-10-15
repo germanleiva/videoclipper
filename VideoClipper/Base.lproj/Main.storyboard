@@ -683,22 +683,8 @@
                             <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jm3-Ha-A9m">
                                 <rect key="frame" x="480" y="0.0" width="120" height="600"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L9S-Ne-mHv">
-                                        <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
-                                        <color key="backgroundColor" red="0.72549019609999998" green="0.30196078430000001" blue="0.38823529410000002" alpha="1" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="120" id="Xev-uQ-BTV"/>
-                                            <constraint firstAttribute="width" secondItem="L9S-Ne-mHv" secondAttribute="height" multiplier="16:9" id="dbv-69-ETj"/>
-                                            <constraint firstAttribute="height" constant="120" id="scU-CY-b0L"/>
-                                        </constraints>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="dbv-69-ETj"/>
-                                            </mask>
-                                        </variation>
-                                    </view>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="bgI-zh-lHz">
-                                        <rect key="frame" x="35" y="179" width="51" height="31"/>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgI-zh-lHz">
+                                        <rect key="frame" x="35" y="199" width="51" height="31"/>
                                         <color key="onTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <action selector="lockPressed:" destination="Gc3-vh-ICn" eventType="valueChanged" id="dTr-zX-5la"/>
@@ -710,7 +696,7 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" title="Done"/>
                                         <connections>
-                                            <action selector="cancelPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="kQm-wJ-2uj"/>
+                                            <action selector="donePressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="la9-zW-X4d"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fMb-3u-ivD">
@@ -720,15 +706,15 @@
                                             <constraint firstAttribute="height" constant="50" id="ncf-Ar-9Cs"/>
                                         </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <state key="normal" backgroundImage="ghost-unselected"/>
-                                        <state key="selected" backgroundImage="ghost-selected"/>
-                                        <state key="highlighted" backgroundImage="ghost-selected"/>
+                                        <state key="normal" backgroundImage="multiple-icon"/>
+                                        <state key="selected" backgroundImage="multiple-icon"/>
+                                        <state key="highlighted" backgroundImage="multiple-icon"/>
                                         <connections>
-                                            <action selector="ghostPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="NsD-Xn-gwS"/>
+                                            <action selector="stopMotionPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="FAU-kj-ysk"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f7a-Fw-T3a">
-                                        <rect key="frame" x="18" y="130" width="84" height="36"/>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f7a-Fw-T3a">
+                                        <rect key="frame" x="18" y="125" width="84" height="36"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="84" id="DZG-aG-1Nq"/>
                                         </constraints>
@@ -736,21 +722,32 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" title="Save"/>
                                         <connections>
-                                            <action selector="donePressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="6af-7u-vls"/>
+                                            <action selector="savePressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="F2p-Q7-c7P"/>
+                                        </connections>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfs-iX-asy">
+                                        <rect key="frame" x="10" y="10" width="100" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="D0M-5s-t0R"/>
+                                            <constraint firstAttribute="height" constant="100" id="PUv-B4-06P"/>
+                                        </constraints>
+                                        <state key="normal" image="play-background"/>
+                                        <connections>
+                                            <action selector="tappedOnVideo:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="kPG-cI-Paf"/>
                                         </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstItem="bfs-iX-asy" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="AtP-Ms-glP"/>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="width" secondItem="jm3-Ha-A9m" secondAttribute="width" id="Aw2-L5-GEv"/>
                                     <constraint firstAttribute="width" constant="120" id="I5S-PS-pJH"/>
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="top" secondItem="f7a-Fw-T3a" secondAttribute="bottom" constant="50" id="SfY-dZ-EhQ"/>
                                     <constraint firstItem="f7a-Fw-T3a" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="WGX-KF-2xt"/>
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="YHX-0y-baI"/>
                                     <constraint firstAttribute="bottom" secondItem="cNf-sp-Dbl" secondAttribute="bottom" constant="25" id="b3D-UZ-Xrz"/>
-                                    <constraint firstItem="f7a-Fw-T3a" firstAttribute="top" secondItem="L9S-Ne-mHv" secondAttribute="bottom" constant="10" id="crT-Sd-afC"/>
-                                    <constraint firstItem="L9S-Ne-mHv" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="dnr-MZ-gGf"/>
                                     <constraint firstItem="fMb-3u-ivD" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="ifY-lD-jhs"/>
+                                    <constraint firstItem="f7a-Fw-T3a" firstAttribute="top" secondItem="bfs-iX-asy" secondAttribute="bottom" constant="15" id="swH-f6-6om"/>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="zgb-38-GEZ"/>
                                 </constraints>
                                 <variation key="default">
@@ -767,7 +764,7 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="Hold"/>
+                                <state key="normal" title="Tap"/>
                                 <connections>
                                     <action selector="shutterButtonDown" destination="Gc3-vh-ICn" eventType="touchDown" id="DpY-w3-cWo"/>
                                     <action selector="shutterButtonUp" destination="Gc3-vh-ICn" eventType="touchUpOutside" id="5gX-hp-Jgl"/>
@@ -795,9 +792,9 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
                                 <rect key="frame" x="192" y="0.0" width="288" height="120"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="3Dq-pG-rdY"/>
                                 </constraints>
@@ -885,7 +882,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                         <state key="normal" title="+"/>
                                         <connections>
-                                            <action selector="addStoryLinePressed:" destination="d93-I1-5WA" eventType="touchUpInside" id="zMR-al-Ql4"/>
+                                            <action selector="addStoryLinePressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="nh5-Mo-KyW"/>
                                         </connections>
                                     </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="113" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="SYg-sM-bRG">
@@ -954,33 +951,65 @@
                                     <constraint firstAttribute="bottom" secondItem="ffu-8Z-Ier" secondAttribute="bottom" id="pyn-0l-GLH"/>
                                 </constraints>
                             </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hbb-xS-A70">
+                                <rect key="frame" x="165" y="567" width="270" height="25"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-unselected" translatesAutoresizingMaskIntoConstraints="NO" id="DT8-X9-Ero">
+                                        <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="LHw-Us-Tce"/>
+                                            <constraint firstAttribute="height" constant="25" id="ZPI-6S-cT8"/>
+                                        </constraints>
+                                    </imageView>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="j7J-zU-3Ar">
+                                        <rect key="frame" x="33" y="0.0" width="204" height="26"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="200" id="sF9-yL-WeI"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="changedGhostSlider:" destination="Gc3-vh-ICn" eventType="valueChanged" id="LIm-VA-u3z"/>
+                                            <action selector="touchUpGhostSlider:" destination="Gc3-vh-ICn" eventType="touchUpOutside" id="28v-0l-lHX"/>
+                                            <action selector="touchUpGhostSlider:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="CyA-Ic-6eu"/>
+                                        </connections>
+                                    </slider>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-selected" translatesAutoresizingMaskIntoConstraints="NO" id="196-sv-NVP">
+                                        <rect key="frame" x="245" y="0.0" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="Fv3-Zq-aid"/>
+                                            <constraint firstAttribute="height" constant="25" id="kPL-1G-guA"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="leading" secondItem="jTQ-Ew-l5Z" secondAttribute="trailing" id="2Tw-AY-m8N"/>
+                            <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="hbb-xS-A70" secondAttribute="bottom" constant="8" id="3Id-S7-Xnk"/>
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="4rZ-aL-f3h"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="leading" secondItem="cAE-1c-Yb9" secondAttribute="leading" id="Ap9-9E-1e0"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="leading" secondItem="KRD-tb-rJw" secondAttribute="trailing" id="CRN-t4-bGa"/>
                             <constraint firstAttribute="trailing" secondItem="cAE-1c-Yb9" secondAttribute="trailing" constant="10" id="Cnn-K1-Dil"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="centerX" secondItem="cAE-1c-Yb9" secondAttribute="centerX" id="DdA-je-uZK"/>
-                            <constraint firstItem="cAE-1c-Yb9" firstAttribute="top" secondItem="bgI-zh-lHz" secondAttribute="bottom" constant="50" id="FuZ-K8-TVt"/>
+                            <constraint firstItem="cAE-1c-Yb9" firstAttribute="top" secondItem="bgI-zh-lHz" secondAttribute="bottom" constant="30" id="FuZ-K8-TVt"/>
                             <constraint firstAttribute="trailing" secondItem="8nt-VJ-yhx" secondAttribute="trailing" id="GLK-FI-OFz"/>
                             <constraint firstAttribute="bottom" secondItem="jTQ-Ew-l5Z" secondAttribute="bottom" id="Geu-6y-kPS"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="HcS-li-IpB"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="trailing" secondItem="cAE-1c-Yb9" secondAttribute="trailing" id="Hmh-2N-zDe"/>
                             <constraint firstItem="jTQ-Ew-l5Z" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="NAM-FL-r2F"/>
                             <constraint firstAttribute="leadingMargin" secondItem="IFM-7O-i6d" secondAttribute="leading" id="OQo-om-KKJ"/>
+                            <constraint firstItem="hbb-xS-A70" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="P4d-X3-PFF"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="Pro-kz-D5c"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="jm3-Ha-A9m" secondAttribute="bottom" id="Qf4-w6-NAg"/>
+                            <constraint firstItem="bfs-iX-asy" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="UXe-TM-vkf"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="W68-gH-TEL"/>
                             <constraint firstItem="cAE-1c-Yb9" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="WVt-M8-GWb"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerY" secondItem="hDy-EF-rcF" secondAttribute="centerY" id="aXc-wr-QEM"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="IFM-7O-i6d" secondAttribute="bottom" constant="40" id="bJL-lM-Lgt"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="cQZ-WO-aXm"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="dwb-19-Lxp"/>
-                            <constraint firstItem="L9S-Ne-mHv" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="ep9-cI-1AO"/>
                             <constraint firstAttribute="trailing" secondItem="jm3-Ha-A9m" secondAttribute="trailing" id="gPU-cN-IrY"/>
                             <constraint firstItem="f7a-Fw-T3a" firstAttribute="centerX" secondItem="cAE-1c-Yb9" secondAttribute="centerX" id="gdk-bx-k4U"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="iFl-z6-Yt9"/>
@@ -1019,23 +1048,31 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="ghostButton" destination="fMb-3u-ivD" id="vmf-ac-qpt"/>
                         <outlet property="ghostImageView" destination="RFp-Dy-GI4" id="HS1-sm-xsv"/>
+                        <outlet property="ghostOff" destination="DT8-X9-Ero" id="Uur-BK-pTG"/>
+                        <outlet property="ghostOn" destination="196-sv-NVP" id="A9L-5R-ne3"/>
+                        <outlet property="ghostPanel" destination="hbb-xS-A70" id="QJn-HZ-HUz"/>
+                        <outlet property="ghostSlider" destination="j7J-zU-3Ar" id="Shh-aA-SDS"/>
                         <outlet property="leftPanel" destination="jTQ-Ew-l5Z" id="mn6-9i-Rfz"/>
+                        <outlet property="plusLineButton" destination="ffu-8Z-Ier" id="Xpq-ve-2yn"/>
                         <outlet property="previewView" destination="8nt-VJ-yhx" id="EH2-Uo-Hy7"/>
                         <outlet property="previewViewWidthConstraint" destination="iVA-FQ-MXJ" id="4sf-dW-dwK"/>
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>
+                        <outlet property="saveVideoButton" destination="f7a-Fw-T3a" id="g87-uB-vUh"/>
                         <outlet property="segmentsCollectionView" destination="KRD-tb-rJw" id="sX4-9m-FQi"/>
                         <outlet property="shutterButton" destination="cAE-1c-Yb9" id="BkS-Sz-Qr7"/>
                         <outlet property="shutterLock" destination="bgI-zh-lHz" id="rrB-jo-3vm"/>
+                        <outlet property="stopMotionButton" destination="fMb-3u-ivD" id="Llk-XF-Vg0"/>
                         <outlet property="taggingPanel" destination="IFM-7O-i6d" id="CJG-Pz-CYS"/>
+                        <outlet property="titleCardTable" destination="SYg-sM-bRG" id="Je6-YB-EEg"/>
                         <outlet property="topCollectionViewLayout" destination="4rZ-aL-f3h" id="vPm-Xb-9Us"/>
+                        <outlet property="videoPlaceholder" destination="bfs-iX-asy" id="9M6-75-n8y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuf-Mm-ONK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="7IG-Pb-jzD">
+                <tapGestureRecognizer numberOfTapsRequired="2" id="7IG-Pb-jzD" userLabel="Double Tap to Change Size">
                     <connections>
                         <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
                     </connections>
@@ -1045,31 +1082,16 @@
                         <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="52K-Iu-9fQ"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="down" id="tKR-Hg-qJg">
+                <swipeGestureRecognizer direction="down" id="tKO-kN-cx0" userLabel="Swipe Down To Dismiss">
                     <connections>
-                        <action selector="upArrowPressed:" destination="Gc3-vh-ICn" id="9GN-6u-0AT"/>
+                        <action selector="donePressed:" destination="Gc3-vh-ICn" id="UST-qm-OfG"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="d1J-h1-b9S">
+                <tapGestureRecognizer id="hAb-wI-XOJ" userLabel="Tap on TC (deprecated)">
                     <connections>
-                        <action selector="downArrowPressed:" destination="Gc3-vh-ICn" id="F8s-hc-oxD"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <tapGestureRecognizer id="hAb-wI-XOJ">
-                    <connections>
-                        <segue destination="WKl-nH-FNn" kind="presentation" identifier="modalTitleCardVC" id="YN6-m3-U23"/>
+                        <segue destination="WKl-nH-FNn" kind="presentation" identifier="modalTitleCardVC" modalTransitionStyle="coverVertical" id="YN6-m3-U23"/>
                     </connections>
                 </tapGestureRecognizer>
-                <tapGestureRecognizer id="8t7-Sz-ocg">
-                    <connections>
-                        <action selector="tappedOnSegment:" destination="Gc3-vh-ICn" id="HfR-nH-nOR"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="down" id="tKO-kN-cx0">
-                    <connections>
-                        <action selector="cancelPressed:" destination="Gc3-vh-ICn" id="ugD-nz-xgh"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3741" y="478"/>
         </scene>
@@ -1668,8 +1690,10 @@
         <image name="icon-trash" width="33" height="33"/>
         <image name="icon-type" width="33" height="33"/>
         <image name="info_popup" width="83" height="33"/>
+        <image name="multiple-icon" width="50" height="50"/>
         <image name="palette" width="268" height="430"/>
         <image name="pause_button" width="19" height="21"/>
+        <image name="play-background" width="120" height="120"/>
         <image name="play_button" width="21" height="24"/>
         <image name="slate" width="232" height="193"/>
         <image name="tag_button" width="50" height="50"/>

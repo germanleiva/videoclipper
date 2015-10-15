@@ -207,7 +207,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		}
 	}
 	
-	func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+	func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
 		switch type {
 		case .Insert:
 			tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
@@ -285,7 +285,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 			let alert = UIAlertController(title: "Delete project", message: "The videos will remain in your Photo Album. Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.Alert)
 			alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
 				let projectToDelete = self.fetchedResultsController.objectAtIndexPath(index)
-				self.context.deleteObject(projectToDelete)
+				self.context.deleteObject(projectToDelete as! NSManagedObject)
 				
 				do {
 					try self.context.save()

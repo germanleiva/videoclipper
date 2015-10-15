@@ -412,7 +412,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			
 			/* Capture the screen shoot at native resolution */
 			UIGraphicsBeginImageContextWithOptions(weakSelf.canvas!.bounds.size, weakSelf.canvas!.opaque, UIScreen.mainScreen().scale)
-			weakSelf.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext())
+			weakSelf.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext()!)
 
 			for eachTextWidget in weakSelf.titleCard!.textWidgets() {
 				if eachTextWidget.textView!.isPlaceholder() {

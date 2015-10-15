@@ -20,17 +20,17 @@ protocol CaptureVCDelegate {
 }
 
 class VideoSegmentThumbnail:NSObject {
-	var snapshot:UIImage
+	var snapshot:UIImage?
 	var time:Float64
 	var tagsPlaceholders = [(UIColor,Float64)]()
 	
-	init(snapshot:UIImage,time:Float64) {
+	init(snapshot:UIImage?,time:Float64) {
 		self.snapshot = snapshot
 		self.time = time
 	}
 }
 
-class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
 	var isRecording = false
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
@@ -44,13 +44,13 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	var currentTitleCard:TitleCard? = nil
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
-	@IBOutlet var titleCardPlaceholder:UIView!
-	@IBOutlet var segmentThumbnailsPlaceholder:UIView!
+//	@IBOutlet var titleCardPlaceholder:UIView!
+//	@IBOutlet var videoPlaceholder:UIView!
 	@IBOutlet var segmentsCollectionView:UICollectionView!
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
-	var segmentThumbnails = [VideoSegmentThumbnail]()
+	var videoSegments = [VideoSegmentThumbnail]()
 	
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
@@ -58,19 +58,13 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	@IBOutlet weak var previewView: UIView!
 	@IBOutlet weak var rightPanel: UIView!
 	@IBOutlet weak var leftPanel: UIView!
-		
+	
 	@IBOutlet weak var shutterButton: KPCameraButton!
 	@IBOutlet weak var ghostButton: UIButton!
 	@IBOutlet weak var shutterLock: UISwitch!
 	
-	@IBOutlet weak var upButton:UIButton!
-	@IBOutlet weak var downButton:UIButton!
-	
 	@IBOutlet var ghostImageView:UIImageView!
 	
-	@IBOutlet var infoLabel:UILabel!
-	@IBOutlet var lineVideoCount:UILabel!
-
 	@IBOutlet var taggingPanel:UIStackView!
 	
 	var _recorder:SCRecorder!
@@ -81,16 +75,17 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	
 	var delegate:CaptureVCDelegate? = nil
 	
-	var needsToUpdateTitleCardPlaceholder = false
-
+	@IBOutlet var titleCardTable:UITableView!
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
 			let titleCardUpdated = notification.object as! TitleCard
-			if self.currentTitleCard == titleCardUpdated {
-				self.needsToUpdateTitleCardPlaceholder = true
-			}
+//			if self.currentTitleCard == titleCardUpdated {
+//				self.needsToUpdateTitleCardPlaceholder = true
+//			}
+			self.titleCardTable.reloadData()
 		}
 		
 		_recorder = SCRecorder.sharedRecorder()
@@ -132,37 +127,14 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.recordingIndicator.layer.cornerRadius = self.recordingIndicator.frame.size.width / 2
 		self.recordingIndicator.layer.masksToBounds = true
 		
-		self.updateTitleCardPlaceholder()
-		
 		self.prepareSession()
 		
 //		self.segmentsCollectionView.registerClass(VideoSegmentCollectionCell.self, forCellWithReuseIdentifier:"VideoSegmentCollectionCell")
 
 	}
 	
-	func updateTitleCardPlaceholder() {
-		for eachSubview in self.titleCardPlaceholder.subviews {
-			eachSubview.removeFromSuperview()
-		}
-		
-		if let snapshot = self.currentTitleCard?.snapshot {
-			let imageView = UIImageView(image: UIImage(data: snapshot))
-			imageView.frame = CGRect(x: 0, y: 0, width: self.titleCardPlaceholder.frame.width, height: self.titleCardPlaceholder.frame.height)
-			self.titleCardPlaceholder.addSubview(imageView)
-			self.updateLineVideoCount()
-		}
-		self.needsToUpdateTitleCardPlaceholder = false
-	}
-	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		
-		if self.needsToUpdateTitleCardPlaceholder {
-			self.updateTitleCardPlaceholder()
-		}
-		
-		self.upButton.enabled = self.currentLine?.previousLine() != nil
-		self.downButton.enabled = self.currentLine?.nextLine() != nil
 		
 		//This is a workaround
 		self.ghostImageView.image = nil
@@ -208,14 +180,14 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.segmentsCollectionView.alpha = 0
 			self.leftPanel.alpha = 0
 			self.rightPanel.alpha = 0
-			self.segmentThumbnailsPlaceholder.alpha = 0
-			self.titleCardPlaceholder.alpha = 0
+//			self.videoPlaceholder.alpha = 0
+//			self.titleCardPlaceholder.alpha = 0
 			}, completion: { (completed) -> Void in
 				self.recordingIndicator.alpha = 0
 				
 				let options:UIViewAnimationOptions = [.Autoreverse,.Repeat]
 				UIView.animateWithDuration(0.5, delay: 0, options: options, animations: { () -> Void in
-					self.recordingIndicator.alpha = 1.0
+					self.recordingIndicator.alpha = 1.00
 					}, completion: nil)
 		})
 	}
@@ -232,7 +204,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	func totalTimeSeconds() -> Float64 {
-		if let durationInSeconds = _recorder.session?.duration {
+		if let durationInSeconds = self._recorder.session?.duration {
 			return CMTimeGetSeconds(durationInSeconds)
 		} else {
 			return Float64(0)
@@ -244,9 +216,10 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		
 		let currentSnapshot = self.previewView.snapshotViewAfterScreenUpdates(false)
 //		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
-		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: _recorder.snapshotOfLastVideoBuffer()!, time: self.totalTimeSeconds())
-		self.segmentThumbnails.append(videoSegmentThumbnail)
-		let item = self.segmentThumbnails.indexOf({$0 == videoSegmentThumbnail})
+		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: _recorder.snapshotOfLastVideoBuffer(), time: self.totalTimeSeconds())
+		videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
+		self.videoSegments.append(videoSegmentThumbnail)
+		let item = self.videoSegments.indexOf({$0 == videoSegmentThumbnail})
 		let indexPath = NSIndexPath(forItem: item!, inSection: 0)
 		self.segmentsCollectionView.reloadData()
 		self.segmentsCollectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
@@ -267,14 +240,16 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.leftPanel.alpha = 0.7
 			self.rightPanel.alpha = 0.7
 			self.recordingIndicator.alpha = 0
-			self.segmentThumbnailsPlaceholder!.alpha = 1
-			self.titleCardPlaceholder!.alpha = 1
+//			self.videoPlaceholder!.alpha = 1
+//			self.titleCardPlaceholder!.alpha = 1
 			}, completion: { (completed) -> Void in
 				if completed {
 					currentSnapshot.removeFromSuperview()
+					videoSegmentThumbnail.time = self._recorder.session!.segments.last!.duration
+					videoSegmentThumbnail.snapshot = self._recorder.snapshotOfLastVideoBuffer()
+					
 //					self.segmentThumbnailsPlaceholder.addSubview(currentSnapshot)
 //					currentSnapshot.frame = self.segmentThumbnailsPlaceholder.frame
-					videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
 //					self.segmentThumbnails.append(videoSegmentThumbnail)
 //					
 					//Stops the blinking
@@ -284,7 +259,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
-		if let lastSegment = self.segmentThumbnails.last {
+		if let lastSegment = self.videoSegments.last {
 			
 			if recognizer.direction == UISwipeGestureRecognizerDirection.Down {
 				self.saveCapture(nil)
@@ -470,7 +445,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	@IBAction func cancelPressed(sender: AnyObject) {
-		if self.segmentThumbnails.isEmpty {
+		if self.videoSegments.isEmpty {
 			self.dismissController()
 			return
 		}
@@ -487,18 +462,6 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		}))
 		self.presentViewController(alert, animated: true, completion: nil)
 		
-	}
-	
-	@IBAction func upArrowPressed(sender:AnyObject?) {
-		self.animatePlaceholderTitleCard(direction: CGFloat(1), newCurrentLine: self.currentLine!.previousLine()) { () -> Void in
-			self.updateLineVideoCount()
-		}
-	}
-	
-	@IBAction func downArrowPressed(sender:AnyObject?) {
-		self.animatePlaceholderTitleCard(direction: CGFloat(-1), newCurrentLine: self.currentLine!.nextLine()) { () -> Void in
-			self.updateLineVideoCount()
-		}
 	}
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
@@ -548,41 +511,6 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.recentTagPlaceholders.append((sender!.tintColor,self.totalTimeSeconds()))
 	}
 
-	func updateLineVideoCount(fakeIncrement:Int = 0){
-		let count = self.currentTitleCard!.storyLine!.videos().count + fakeIncrement
-		var prefix = "videos"
-		if count == 1 {
-			prefix = "video"
-		}
-		
-		self.lineVideoCount.text = "\(count) \(prefix)"
-	}
-
-	func animatePlaceholderTitleCard(direction factor:CGFloat,newCurrentLine:StoryLine?,completion:()->Void) {
-		let currentTCImageView = self.titleCardPlaceholder.subviews.first!
-		if let newTC = newCurrentLine?.firstTitleCard() {
-			let newTCImageView = UIImageView(image: UIImage(data:newTC.snapshot!))
-			newTCImageView.frame = self.titleCardPlaceholder.bounds
-			newTCImageView.frame = CGRectOffset(newTCImageView.frame, 0, currentTCImageView.frame.height * factor * -1)
-			self.titleCardPlaceholder.insertSubview(newTCImageView, belowSubview: currentTCImageView)
-			
-			self.upButton.enabled = newCurrentLine!.previousLine() != nil
-			self.downButton.enabled = newCurrentLine!.nextLine() != nil
-			
-			UIView.animateWithDuration(0.3, animations: { () -> Void in
-				newTCImageView.frame = self.titleCardPlaceholder.bounds
-				currentTCImageView.frame = CGRectOffset(currentTCImageView.frame, 0, currentTCImageView.frame.height * factor)
-				}) { (completed) -> Void in
-					if completed {
-						self.currentLine = newCurrentLine
-						self.delegate?.captureVC(self, didChangeStoryLine: newCurrentLine!)
-						currentTCImageView.removeFromSuperview()
-						completion()
-					}
-			}
-		}
-	}
-
 	override func prefersStatusBarHidden() -> Bool {
 		return true
 	}
@@ -605,7 +533,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 
 	func saveCapture(completion:(()->Void)?) {
-		if let lastSegmentView = self.segmentThumbnails.last?.snapshot {
+		if let lastSegmentView = self.videoSegments.last?.snapshot {
 			//We delete the snapshots of the previous segments to give the illusion of saving the whole video clip (video clip = collection of segments)
 //			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
 //				if eachSnapshot.snapshot !== lastSegmentView {
@@ -613,26 +541,26 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //				}
 //			}
 			
-			self.infoLabel.text = "Saving ..."
+//			self.infoLabel.text = "Saving ..."
 			
 			UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				self.segmentThumbnailsPlaceholder.frame = self.segmentThumbnailsPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
-				self.infoLabel.alpha = 1
+//				self.videoPlaceholder.frame = self.videoPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
+//				self.infoLabel.alpha = 1
 				}, completion: { (completed) -> Void in
 					
 					if let recordSession = self._recorder.session {
 						recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
 							if error == nil {
-								self.infoLabel.text = "Saved"
+//								self.infoLabel.text = "Saved"
 								
-								UIView.animateWithDuration(0.5) { () -> Void in
-									self.infoLabel.alpha = 0
-								}
+//								UIView.animateWithDuration(0.5) { () -> Void in
+//									self.infoLabel.alpha = 0
+//								}
 								
 								//This if is a workaround
 								if self._recorder.session != nil {
 									var modelTags = [TagMark]()
-									for eachSegment in self.segmentThumbnails {
+									for eachSegment in self.videoSegments {
 										for (color,time) in eachSegment.tagsPlaceholders {
 											let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
 											newTag.color = color
@@ -647,20 +575,18 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 								}
 								
 								self.deleteSegments()
-								self.updateLineVideoCount(1)
 								self.updateTimeRecordedLabel()
 								
 								completion?()
 							} else {
-								self.infoLabel.text = "ERROR :("
+//								self.infoLabel.text = "ERROR :("
 								
 								self.deleteSegments()
-								self.updateLineVideoCount()
 								self.updateTimeRecordedLabel()
 								
-								UIView.animateWithDuration(0.5) { () -> Void in
-									self.infoLabel.alpha = 0
-								}
+//								UIView.animateWithDuration(0.5) { () -> Void in
+//									self.infoLabel.alpha = 0
+//								}
 								print("Bad things happened while saving the capture \(error)")
 							}
 						})
@@ -676,7 +602,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //		for eachSegment in self.segmentThumbnails {
 //			eachSegment.snapshot.removeFromSuperview()
 //		}
-		self.segmentThumbnails.removeAll()
+		self.videoSegments.removeAll()
 		self._recorder.session?.removeAllSegments(true)
 		
 //		self.updateSegmentCount()
@@ -896,7 +822,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	//-MARK: Collection View Data Source
 	
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.segmentThumbnails.count
+		return self.videoSegments.count
 	}
 	
 	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -905,9 +831,23 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
-		let videoSegment = self.segmentThumbnails[indexPath.item]
+		let videoSegment = self.videoSegments[indexPath.item]
 		
 		videoSegmentCell.thumbnail!.image = videoSegment.snapshot
+		
+		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
+			if eachTagLine != videoSegmentCell.thumbnail! {
+				eachTagLine.removeFromSuperview()
+			}
+		}
+		
+		for (color,time) in videoSegment.tagsPlaceholders {
+			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoSegmentCell.contentView.frame.height))
+			newTagLine.backgroundColor = color
+			newTagLine.frame = CGRectOffset(newTagLine.frame, CGFloat(time / self.totalTimeSeconds()) * videoSegmentCell.contentView.frame.width, 0)
+			videoSegmentCell.contentView.addSubview(newTagLine)
+		}
+		
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Width, multiplier: 1, constant: 0))
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0))
 //		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
@@ -916,4 +856,25 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		return videoSegmentCell
 
 	}
+	
+	//-MARK: Table View Data Source
+	
+	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return self.currentLine!.project!.storyLines!.count
+	}
+	
+	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+		return 1
+	}
+	
+	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+		let titleCardCell = tableView.dequeueReusableCellWithIdentifier("titleCardCell", forIndexPath: indexPath)
+		let imageView = titleCardCell.contentView.subviews.first as! UIImageView
+		
+		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
+		imageView.image = UIImage(data: line.firstTitleCard()!.snapshot!)
+		
+		return titleCardCell
+	}
+
 }

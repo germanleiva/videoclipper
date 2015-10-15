@@ -46,7 +46,7 @@ class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UIC
 		var cString:String = hex.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet() as NSCharacterSet).uppercaseString
 		
 		if (cString.hasPrefix("#")) {
-			cString = cString.substringFromIndex(advance(cString.startIndex, 1))
+			cString = cString.substringFromIndex(cString.startIndex.advancedBy(1))
 		}
 		
 		if (cString.characters.count != 6) {

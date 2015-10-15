@@ -401,17 +401,19 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 		exportSession!.videoComposition = videoComposition
 		
-		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
+//		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
+		let file = NSURL(fileURLWithPath: NSHomeDirectory()).URLByAppendingPathComponent("Documents").URLByAppendingPathComponent("test_output.mov")
 		
 		do {
-			try NSFileManager.defaultManager().removeItemAtPath(filePath!)
-			print("Deleted old temporal video file: \(filePath!)")
+			try NSFileManager.defaultManager().removeItemAtPath(file.path!)
+			print("Deleted old temporal video file: \(file.path!)")
 			
 		} catch {
 			print("Couldn't delete old temporal file: \(error)")
 		}
 		
-		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
+//		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
+		exportSession!.outputURL = file
 		exportSession!.outputFileType = AVFileTypeQuickTimeMovie
 		
 //		exportSession!.metadata = metadataItems
@@ -793,6 +795,20 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 
 		videoCell.loader?.stopAnimating()
 		videoCell.thumbnail?.image = UIImage(data: videoElement.thumbnail!)
+		
+		for eachTagLine in [UIView](videoCell.contentView.subviews) {
+			if eachTagLine != videoCell.thumbnail! {
+				eachTagLine.removeFromSuperview()
+			}
+		}
+		
+		for each in videoElement.tags! {
+			let eachTagMark = each as! TagMark
+			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoCell.contentView.bounds.height))
+			newTagLine.backgroundColor = eachTagMark.color as? UIColor
+			newTagLine.frame = CGRectOffset(newTagLine.frame, videoCell.contentView.bounds.width * CGFloat(eachTagMark.time!) , 0)
+			videoCell.contentView.addSubview(newTagLine)
+		}
 
 		return videoCell
 	}
@@ -1077,7 +1093,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 		// Make an image from the input view.
 		UIGraphicsBeginImageContextWithOptions(inputView.bounds.size, false, 0)
-		inputView.layer.renderInContext(UIGraphicsGetCurrentContext())
+		inputView.layer.renderInContext(UIGraphicsGetCurrentContext()!)
 		let image = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext();
 		

@@ -247,14 +247,19 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	func insertVideoElementInCurrentLine(newElement:VideoClip?) {
 		let storyLineCell = self.tableView.cellForRowAtIndexPath(self.selectedLinePath) as! StoryLineCell
 		let newVideoCellIndexPath = NSIndexPath(forItem: self.currentStoryLine()!.elements!.indexOfObject(newElement!), inSection: 0)
-		storyLineCell.collectionView.insertItemsAtIndexPaths([newVideoCellIndexPath])
-		storyLineCell.collectionView.scrollToItemAtIndexPath(newVideoCellIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
-		if self.isCompact {
-			self.delegate?.primaryController(self, willSelectElement: newElement, itemIndexPath: newVideoCellIndexPath, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
-		} else {
-			self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
+		storyLineCell.collectionView.performBatchUpdates({ () -> Void in
+			storyLineCell.collectionView.insertItemsAtIndexPaths([newVideoCellIndexPath])
+		}) { (completed) -> Void in
+			if completed {
+				storyLineCell.collectionView.scrollToItemAtIndexPath(newVideoCellIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
+				if self.isCompact {
+					self.delegate?.primaryController(self, willSelectElement: newElement, itemIndexPath: newVideoCellIndexPath, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
+				} else {
+					self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
+				}
+				self.selectedItemPath = newVideoCellIndexPath
+			}
 		}
-		self.selectedItemPath = newVideoCellIndexPath
 	}
 	
 	func playTappedOnSelectedLine(sender:AnyObject?) {

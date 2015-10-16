@@ -683,7 +683,7 @@
                             <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jm3-Ha-A9m">
                                 <rect key="frame" x="480" y="0.0" width="120" height="600"/>
                                 <subviews>
-                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgI-zh-lHz">
+                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgI-zh-lHz">
                                         <rect key="frame" x="35" y="199" width="51" height="31"/>
                                         <color key="onTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
@@ -691,7 +691,7 @@
                                         </connections>
                                     </switch>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cNf-sp-Dbl">
-                                        <rect key="frame" x="0.0" y="539" width="120" height="36"/>
+                                        <rect key="frame" x="0.0" y="544" width="120" height="36"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" title="Done"/>
@@ -727,6 +727,7 @@
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfs-iX-asy">
                                         <rect key="frame" x="10" y="10" width="100" height="100"/>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="D0M-5s-t0R"/>
                                             <constraint firstAttribute="height" constant="100" id="PUv-B4-06P"/>
@@ -734,6 +735,7 @@
                                         <state key="normal" image="play-background"/>
                                         <connections>
                                             <action selector="tappedOnVideo:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="kPG-cI-Paf"/>
+                                            <outletCollection property="gestureRecognizers" destination="sb1-gz-nco" appends="YES" id="fbK-06-G8i"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -745,7 +747,7 @@
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="top" secondItem="f7a-Fw-T3a" secondAttribute="bottom" constant="50" id="SfY-dZ-EhQ"/>
                                     <constraint firstItem="f7a-Fw-T3a" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="WGX-KF-2xt"/>
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="YHX-0y-baI"/>
-                                    <constraint firstAttribute="bottom" secondItem="cNf-sp-Dbl" secondAttribute="bottom" constant="25" id="b3D-UZ-Xrz"/>
+                                    <constraint firstAttribute="bottom" secondItem="cNf-sp-Dbl" secondAttribute="bottom" constant="20" id="b3D-UZ-Xrz"/>
                                     <constraint firstItem="fMb-3u-ivD" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="ifY-lD-jhs"/>
                                     <constraint firstItem="f7a-Fw-T3a" firstAttribute="top" secondItem="bfs-iX-asy" secondAttribute="bottom" constant="15" id="swH-f6-6om"/>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="zgb-38-GEZ"/>
@@ -795,6 +797,7 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
                                 <rect key="frame" x="192" y="0.0" width="288" height="120"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="3Dq-pG-rdY"/>
                                 </constraints>
@@ -832,10 +835,11 @@
                                 <connections>
                                     <outlet property="dataSource" destination="Gc3-vh-ICn" id="WnW-oe-Mrd"/>
                                     <outlet property="delegate" destination="Gc3-vh-ICn" id="MyC-Xp-SLX"/>
+                                    <outletCollection property="gestureRecognizers" destination="1K3-So-nZd" appends="YES" id="H0r-Lf-VYT"/>
                                 </connections>
                             </collectionView>
                             <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="IFM-7O-i6d">
-                                <rect key="frame" x="20" y="510" width="320" height="50"/>
+                                <rect key="frame" x="0.0" y="510" width="320" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="50G-O6-5Ac">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -952,7 +956,7 @@
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hbb-xS-A70">
-                                <rect key="frame" x="165" y="567" width="270" height="25"/>
+                                <rect key="frame" x="165" y="555" width="270" height="25"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-unselected" translatesAutoresizingMaskIntoConstraints="NO" id="DT8-X9-Ero">
                                         <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
@@ -985,7 +989,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="leading" secondItem="jTQ-Ew-l5Z" secondAttribute="trailing" id="2Tw-AY-m8N"/>
-                            <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="hbb-xS-A70" secondAttribute="bottom" constant="8" id="3Id-S7-Xnk"/>
+                            <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="hbb-xS-A70" secondAttribute="bottom" constant="20" id="3Id-S7-Xnk"/>
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="4rZ-aL-f3h"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="leading" secondItem="cAE-1c-Yb9" secondAttribute="leading" id="Ap9-9E-1e0"/>
@@ -998,7 +1002,7 @@
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="HcS-li-IpB"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="trailing" secondItem="cAE-1c-Yb9" secondAttribute="trailing" id="Hmh-2N-zDe"/>
                             <constraint firstItem="jTQ-Ew-l5Z" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leading" id="NAM-FL-r2F"/>
-                            <constraint firstAttribute="leadingMargin" secondItem="IFM-7O-i6d" secondAttribute="leading" id="OQo-om-KKJ"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="IFM-7O-i6d" secondAttribute="leading" constant="20" id="OQo-om-KKJ"/>
                             <constraint firstItem="hbb-xS-A70" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="P4d-X3-PFF"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="Pro-kz-D5c"/>
@@ -1077,11 +1081,6 @@
                         <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="down" id="rCC-g6-bBl">
-                    <connections>
-                        <action selector="swipedOnSegment:" destination="Gc3-vh-ICn" id="52K-Iu-9fQ"/>
-                    </connections>
-                </swipeGestureRecognizer>
                 <swipeGestureRecognizer direction="down" id="tKO-kN-cx0" userLabel="Swipe Down To Dismiss">
                     <connections>
                         <action selector="donePressed:" destination="Gc3-vh-ICn" id="UST-qm-OfG"/>
@@ -1092,6 +1091,16 @@
                         <segue destination="WKl-nH-FNn" kind="presentation" identifier="modalTitleCardVC" modalTransitionStyle="coverVertical" id="YN6-m3-U23"/>
                     </connections>
                 </tapGestureRecognizer>
+                <swipeGestureRecognizer direction="up" id="sb1-gz-nco" userLabel="Swipe Up to Delete Video">
+                    <connections>
+                        <action selector="swipedUpOnVideo:" destination="Gc3-vh-ICn" id="IVv-WC-DHz"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="1K3-So-nZd">
+                    <connections>
+                        <action selector="swipedOnSegmentCollection:" destination="Gc3-vh-ICn" id="HuS-59-yea"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3741" y="478"/>
         </scene>

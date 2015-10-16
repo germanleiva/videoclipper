@@ -163,7 +163,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.ghostOff.tintColor = UIColor(hexString: "#117AFF")!
 		
 		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
-		self.updateStopMotionSegments()
+		self.updateStopMotionWidgets()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -262,11 +262,12 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
 //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
-			
-			if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)?.frame {
-				currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+			if self.stopMotionButton.selected {
+				if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)?.frame {
+					currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+				}
 			} else {
-				print("TODO MAL")
+				currentSnapshotView.frame = self.view.convertRect(self.videoPlaceholder.frame, fromView: self.rightPanel)
 			}
 			
 			self.segmentsCollectionView.alpha = 0.75
@@ -291,49 +292,46 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 					
 					self.videoPlaceholder.hidden = false
 					self.saveVideoButton.enabled = true
-				}
+			}
 		})
 	}
+	@IBAction func swipedOnSegmentCollection(recognizer:UISwipeGestureRecognizer) {
+		//			let lastSegmentIndex = self.segmentThumbnails.count - 1
+		//			let lastSegmentView = lastSegment.snapshot
+		//
+		//			self.infoLabel.text = "Deleted"
+		//
+		//			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+		//				var factor = CGFloat(1.2)
+		//				if recognizer.direction == .Left {
+		//					factor = CGFloat(-1.2)
+		//				}
+		//				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
+		//				lastSegmentView.alpha = 0
+		//				self.infoLabel.alpha = 1
+		//				}, completion: { (completed) -> Void in
+		//					if completed {
+		//						if self._recorder.session?.segments.count > lastSegmentIndex {
+		//							//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+		//							self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
+		//						}
+		//						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
+		//						lastSegmentView.removeFromSuperview()
+		//						self.updateTimeRecordedLabel()
+		//						self.updateGhostImage()
+		//						self.updateSegmentCount()
+		//
+		//						UIView.animateWithDuration(0.5, animations: { () -> Void in
+		//							self.infoLabel.alpha = 0
+		//						})
+		//					}
+		//			})
+	}
 	
-	@IBAction func swipedOnSegment(recognizer:UISwipeGestureRecognizer) {
-		if let lastSegment = self.videoSegments.last {
-			
-			if recognizer.direction == UISwipeGestureRecognizerDirection.Down {
-				self.saveCapture(nil)
-				return
-			}
-			
-//			let lastSegmentIndex = self.segmentThumbnails.count - 1
-//			let lastSegmentView = lastSegment.snapshot
-//			
-//			self.infoLabel.text = "Deleted"
-//			
-//			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-//				var factor = CGFloat(1.2)
-//				if recognizer.direction == .Left {
-//					factor = CGFloat(-1.2)
-//				}
-//				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
-//				lastSegmentView.alpha = 0
-//				self.infoLabel.alpha = 1
-//				}, completion: { (completed) -> Void in
-//					if completed {
-//						if self._recorder.session?.segments.count > lastSegmentIndex {
-//							//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
-//							self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
-//						}
-//						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
-//						lastSegmentView.removeFromSuperview()
-//						self.updateTimeRecordedLabel()
-//						self.updateGhostImage()
-//						self.updateSegmentCount()
-//						
-//						UIView.animateWithDuration(0.5, animations: { () -> Void in
-//							self.infoLabel.alpha = 0
-//						})
-//					}
-//			})
-		}
+	@IBAction func swipedUpOnVideo(recognizer:UISwipeGestureRecognizer) {
+		self.deleteSegments()
+		self.updateTimeRecordedLabel()
+		return
 	}
 	
 	@IBAction func changedGhostSlider(sender: UISlider) {
@@ -403,23 +401,36 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.previewViewWidthConstraint.active = false
 	}
 
-	@IBAction func savePressed(sender:UIButton) {
-//		let window = UIApplication.sharedApplication().delegate!.window!
-//
-//		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
+	@IBAction func savePressed(sender:UIButton?) {
+		let window = UIApplication.sharedApplication().delegate!.window!
+
+		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
 
 		self.saveCapture({ () -> Void in
-			self.dismissController()
+			progress.hide(true)
 		})
 	}
 	
 	@IBAction func stopMotionPressed(sender: UIButton) {
-		self.stopMotionButton.selected = !sender.selected
-		
-		updateStopMotionSegments()
+		if self.stopMotionButton.selected && self._recorder.session!.segments.count > 1 {
+			let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the \(self._recorder.session!.segments.count) video segments recorded?", preferredStyle: UIAlertControllerStyle.Alert)
+			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+				self.deleteSegments()
+				
+				self.stopMotionButton.selected = !sender.selected
+				self.updateStopMotionWidgets()
+				self.updateTimeRecordedLabel()
+			}))
+			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+			}))
+			self.presentViewController(alert, animated: true, completion: nil)
+		} else {
+			self.stopMotionButton.selected = !sender.selected
+			self.updateStopMotionWidgets()
+		}
 	}
 	
-	func updateStopMotionSegments(){
+	func updateStopMotionWidgets(){
 		var tintColor = UIColor.whiteColor()
 		if self.stopMotionButton.selected {
 			tintColor = UIColor(hexString: "#117AFF")!
@@ -429,13 +440,11 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			self.stopMotionButton.tintColor = tintColor
 		}
 		
-		var message = "Segments collection view showed"
 		if self.stopMotionButton.selected {
 			self.segmentsCollectionView.hidden = false
 			self.topCollectionViewLayout.constant = 0
 		} else {
 			self.topCollectionViewLayout.constant = -self.segmentsCollectionView.frame.height
-			message = "Segments collection view hid"
 		}
 		
 		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
@@ -444,7 +453,6 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 				if !self.stopMotionButton.selected {
 					self.segmentsCollectionView.hidden = true
 				}
-				print(message)
 		}
 		
 		let userDefaults = NSUserDefaults.standardUserDefaults()
@@ -466,14 +474,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		if self.shutterLock.on {
 			//Nothing
 		} else {
-//			self.isRecording = true
-//			if !self.isRecording {
-//				self.startCapture()
-//			} else {
-//				self.resumeCapture()
-//			}
 			self.startCapture()
-			captureModeOn()
 		}
 	}
 	
@@ -481,25 +482,12 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	@IBAction func shutterButtonUp() {
 		if self.shutterLock.on {
 			if self.shutterButton.cameraButtonMode == .VideoReady {
-				self.shutterButton.setTitle("", forState: UIControlState.Normal)
-				self.shutterButton.cameraButtonMode = .VideoRecording
-//				self.isRecording = true
-//				if !self.isRecording {
-//					self.startCapture()
-//				} else {
-//					self.resumeCapture()
-//				}
 				self.startCapture()
-				captureModeOn()
 			} else {
-				self.shutterButton.setTitle("Tap", forState: UIControlState.Normal)
-				self.shutterButton.cameraButtonMode = .VideoReady
-				self.pauseCapture()
-				captureModeOff()
+				self.stopCapture()
 			}
 		} else {
-			self.pauseCapture()
-			captureModeOff()
+			self.stopCapture()
 		}
 	}
 	
@@ -580,97 +568,169 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	//-MARK: private start/stop helper methods
 	
 	func startCapture() {
-		self.isRecording = true
-		_recorder.record()
-		self.ghostImageView.hidden = true
-		self.taggingPanel.hidden = false
-		self.recentTagPlaceholders.removeAll()
+		let defaultStartCaptureBlock = {() -> Void in
+			if self.shutterLock.on {
+				self.shutterButton.setTitle("", forState: UIControlState.Normal)
+				self.shutterButton.cameraButtonMode = .VideoRecording
+			}
+			
+			self.isRecording = true
+			self._recorder.record()
+			self.ghostImageView.hidden = true
+			self.taggingPanel.hidden = false
+			self.recentTagPlaceholders.removeAll()
+			self.captureModeOn()
+		}
+	
+		if !self._recorder.session!.segments.isEmpty && !self.stopMotionButton.selected {
+			let alert = UIAlertController(title: "Action required", message: "Please, save or discard the previously recorded video", preferredStyle: UIAlertControllerStyle.Alert)
+			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+				self.deleteSegments()
+				self.updateTimeRecordedLabel()
+			}))
+			alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+				self.savePressed(nil)
+			}))
+			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
+
+			}))
+			self.presentViewController(alert, animated: true, completion: { () -> Void in
+
+			})
+		} else {
+			defaultStartCaptureBlock()
+		}
 	}
 
-	func pauseCapture() {
+	func stopCapture() {
+		if self.shutterLock.on {
+			self.shutterButton.setTitle("Tap", forState: UIControlState.Normal)
+			self.shutterButton.cameraButtonMode = .VideoReady
+		}
+
 		self.isRecording = false
 		_recorder.pause()
 		self.ghostImageView.hidden = false
 		self.taggingPanel.hidden = true
+		
+		self.captureModeOff()
 	}
 
 	func saveCapture(completion:(()->Void)?) {
-		if let lastSegmentView = self.videoSegments.last?.snapshot {
-			//We delete the snapshots of the previous segments to give the illusion of saving the whole video clip (video clip = collection of segments)
-//			for eachSnapshot in [VideoSegmentThumbnail](self.segmentThumbnails) {
-//				if eachSnapshot.snapshot !== lastSegmentView {
-//					eachSnapshot.snapshot.removeFromSuperview()
-//				}
-//			}
+		let titleCardPlaceHolder = self.titleCardTable.cellForRowAtIndexPath(self.selectedLineIndexPath!)!
+		let frameInBackground = self.view.convertRect(self.videoPlaceholder.frame, fromView: self.rightPanel)
+		let videoPlaceholderCopy = self.videoPlaceholder.snapshotViewAfterScreenUpdates(false)
+		self.view.addSubview(videoPlaceholderCopy)
+		videoPlaceholderCopy.frame = frameInBackground
+		self.videoPlaceholder.hidden = true
+		
+		var delay = 0.0
+		if self.stopMotionButton.selected {
+			let copies = self.segmentsCollectionView.visibleCells().map { (eachCell) -> UIView in
+				let cellCopy = eachCell.snapshotViewAfterScreenUpdates(false)
+				self.segmentsCollectionView.addSubview(cellCopy)
+				cellCopy.frame = eachCell.frame
+				return cellCopy
+			}
 			
-//			self.infoLabel.text = "Saving ..."
+			self.videoSegments.removeAll()
+			self.segmentsCollectionView.reloadData()
 			
-			UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-//				self.videoPlaceholder.frame = self.videoPlaceholder.convertRect(self.titleCardPlaceholder.frame, fromView: self.view)
-//				self.infoLabel.alpha = 1
-				}, completion: { (completed) -> Void in
-					
-					if let recordSession = self._recorder.session {
-						recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
-							if error == nil {
-//								self.infoLabel.text = "Saved"
-								
-//								UIView.animateWithDuration(0.5) { () -> Void in
-//									self.infoLabel.alpha = 0
-//								}
-								
-								//This if is a workaround
-								if self._recorder.session != nil {
-									var modelTags = [TagMark]()
-									for eachSegment in self.videoSegments {
-										for (color,time) in eachSegment.tagsPlaceholders {
-											let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
-											newTag.color = color
-											newTag.time! = time / self.totalTimeSeconds()
-											modelTags.append(newTag)
-										}
-									}
-									
-									self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
-								} else {
-									print("THIS SHOULDN'T HAPPEN EVER!")
-								}
-								
-								self.deleteSegments()
-								self.updateTimeRecordedLabel()
-								
-								completion?()
-							} else {
-//								self.infoLabel.text = "ERROR :("
-								
-								self.deleteSegments()
-								self.updateTimeRecordedLabel()
-								
-//								UIView.animateWithDuration(0.5) { () -> Void in
-//									self.infoLabel.alpha = 0
-//								}
-								print("Bad things happened while saving the capture \(error)")
-							}
-						})
-					}
+			delay = 0.3
+			UIView.animateWithDuration(delay, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+				for eachSegment in copies {
+					eachSegment.center = self.segmentsCollectionView.convertPoint(self.videoPlaceholder.center, fromView: self.rightPanel)
+				}
+			}, completion: { (completed) -> Void in
+				for eachSegment in copies {
+					eachSegment.removeFromSuperview()
+				}
 			})
-		} else {
-			completion?()
 		}
 		
+		UIView.animateWithDuration(0.5, delay: delay, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			videoPlaceholderCopy.center = titleCardPlaceHolder.center
+		}, completion: { (completed) -> Void in
+			UIView.animateWithDuration(0.3, animations: { () -> Void in
+				videoPlaceholderCopy.alpha = 0
+			}, completion: { (completed) -> Void in
+				if completed {
+					videoPlaceholderCopy.removeFromSuperview()
+				}
+			})
+			if let recordSession = self._recorder.session {
+				recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
+					if error == nil {
+						//This is a workaround
+						if self._recorder.session != nil {
+							var modelTags = [TagMark]()
+							for eachSegment in self.videoSegments {
+								for (color,time) in eachSegment.tagsPlaceholders {
+									let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
+									newTag.color = color
+									newTag.time! = time / self.totalTimeSeconds()
+									modelTags.append(newTag)
+								}
+							}
+							
+							self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
+						} else {
+							print("THIS SHOULDN'T HAPPEN EVER!")
+						}
+						
+						self.deleteSegments(false)
+						self.updateTimeRecordedLabel()
+						
+						completion?()
+					} else {
+//						self.infoLabel.text = "ERROR :("
+						completion?()
+						let alert = UIAlertController(title: "Error: \(error?.localizedDescription)", message: "Sorry, we couldn't save your video", preferredStyle: UIAlertControllerStyle.Alert)
+						self.presentViewController(alert, animated: true, completion: nil)
+					}
+				})
+			}
+		})
 	}
 	
-	func deleteSegments() {
+	func deleteSegments(animated:Bool = true) {
 //		for eachSegment in self.segmentThumbnails {
 //			eachSegment.snapshot.removeFromSuperview()
 //		}
 		self.videoSegments.removeAll()
 		self._recorder.session?.removeAllSegments(true)
 		
+		let copies = self.segmentsCollectionView.visibleCells().map { (eachCell) -> UIView in
+			let cellCopy = eachCell.snapshotViewAfterScreenUpdates(false)
+			self.segmentsCollectionView.addSubview(cellCopy)
+			cellCopy.frame = eachCell.frame
+			return cellCopy
+		}
+
+		self.segmentsCollectionView.reloadData()
 //		self.updateSegmentCount()
 		
-		self.videoPlaceholder.hidden = true
+		if animated {
+			let defaultVideoPlaceholderFrame = self.videoPlaceholder.frame
+			
+			UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+				self.videoPlaceholder.frame = CGRectOffset(self.videoPlaceholder.frame, 0, -self.videoPlaceholder.frame.height * 2)
+				for eachCopy in copies {
+					eachCopy.frame = CGRectOffset(eachCopy.frame, 0, -eachCopy.frame.height * 2)
+				}
+			}) { (completed) -> Void in
+				if completed {
+				self.videoPlaceholder.hidden = true
+				self.videoPlaceholder.frame = defaultVideoPlaceholderFrame
+					for eachCopy in copies {
+						eachCopy.removeFromSuperview()
+					}
+				}
+			}
+		}
+		
 		self.saveVideoButton.enabled = false
+		self.ghostImageView.image = nil
 	}
 
 	//-MARK: SCRecorder things

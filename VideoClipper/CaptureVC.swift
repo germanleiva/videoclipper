@@ -319,6 +319,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 					}
 					
 					if self._recorder.session!.segments.isEmpty {
+						self.videoPlaceholder.hidden = true
 						self.saveVideoButton.enabled = false
 						self.ghostImageView.image = nil
 					}
@@ -996,6 +997,10 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		
 		return videoSegmentCell
 
+	}
+	
+	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		//TODO
 	}
 	
 	//-MARK: Table View Data Source

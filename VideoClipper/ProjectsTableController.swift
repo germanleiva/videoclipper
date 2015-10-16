@@ -59,24 +59,86 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		firstStoryLine.elements = [firstTitleCard]
 		
 		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
-		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
-		widget.content = ""
-		widget.distanceXFromCenter = 0
-		widget.distanceYFromCenter = 0
-		widget.width = 500
-		widget.height = 50
-		widget.fontSize = 60
-		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		let idea = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		idea.content = "Idea"
+		idea.distanceXFromCenter = -228
+		idea.distanceYFromCenter = -82
+		idea.width = 105
+		idea.height = 52
+		idea.fontSize = 30
+		widgetsOnTitleCard.addObject(idea)
+		
+		let ideaContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		ideaContent.content = "Please write here the description of your idea"
+		ideaContent.distanceXFromCenter = 20
+		ideaContent.distanceYFromCenter = -46
+		ideaContent.width = 300
+		ideaContent.height = 124
+		ideaContent.fontSize = 30
+		widgetsOnTitleCard.addObject(ideaContent)
+		
+		let group = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		group.content = "Group"
+		group.distanceXFromCenter = 190
+		group.distanceYFromCenter = -150
+		group.width = 100
+		group.height = 52
+		group.fontSize = 30
+		widgetsOnTitleCard.addObject(group)
+		
+		let groupContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		groupContent.content = ""
+		groupContent.distanceXFromCenter = 293
+		groupContent.distanceYFromCenter = -150
+		groupContent.width = 100
+		groupContent.height = 52
+		groupContent.fontSize = 30
+		widgetsOnTitleCard.addObject(groupContent)
+		
+		let author = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		author.content = "Author"
+		author.distanceXFromCenter = -229
+		author.distanceYFromCenter = 67
+		author.width = 102
+		author.height = 52
+		author.fontSize = 30
+		widgetsOnTitleCard.addObject(author)
+		
+		let authorContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		authorContent.content = ""
+		authorContent.distanceXFromCenter = -58
+		authorContent.distanceYFromCenter = 67
+		authorContent.width = 100
+		authorContent.height = 52
+		authorContent.fontSize = 30
+		widgetsOnTitleCard.addObject(authorContent)
+		
+		let take = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		take.content = "Take"
+		take.distanceXFromCenter = -229
+		take.distanceYFromCenter = 136
+		take.width = 119
+		take.height = 52
+		take.fontSize = 30
+		widgetsOnTitleCard.addObject(take)
+		
+		let takeContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+		takeContent.content = ""
+		takeContent.distanceXFromCenter = -58
+		takeContent.distanceYFromCenter = 137
+		takeContent.width = 100
+		takeContent.height = 52
+		takeContent.fontSize = 30
+		widgetsOnTitleCard.addObject(takeContent)
+		
+		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "default2TitleCard")!)
 		
 		do {
 			try context.save()
 		} catch {
-			print(error)
+			print("Couldn't save the new project: \(error)")
 		}
-		
-		print(newProject)
 		
 		self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(newProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
 		

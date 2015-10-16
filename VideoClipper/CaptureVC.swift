@@ -295,7 +295,39 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			}
 		})
 	}
-	@IBAction func swipedOnSegmentCollection(recognizer:UISwipeGestureRecognizer) {
+	@IBAction func swipedOnSegmentCollection(sender:UISwipeGestureRecognizer) {
+		if sender.state != UIGestureRecognizerState.Recognized {
+			return
+		}
+		
+		let p = sender.locationInView(self.segmentsCollectionView)
+
+		if let indexPath = self.segmentsCollectionView.indexPathForItemAtPoint(p) {
+//			if let cell = self.segmentsCollectionView.cellForItemAtIndexPath(indexPath) {
+//				let copyCell = cell.snapshotViewAfterScreenUpdates(false)
+//				self.segmentsCollectionView.addSubview(copyCell)
+//				copyCell.frame = cell.frame
+//				
+			self.videoSegments.removeAtIndex(indexPath.item)
+
+				self.segmentsCollectionView.performBatchUpdates({ () -> Void in
+					self.segmentsCollectionView.deleteItemsAtIndexPaths([indexPath])
+				}, completion: { (completed) -> Void in
+					if self._recorder.session?.segments.count > indexPath.item {
+						//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+						self._recorder.session!.removeSegmentAtIndex(indexPath.item, deleteFile: true)
+					}
+					
+					if self._recorder.session!.segments.isEmpty {
+						self.saveVideoButton.enabled = false
+						self.ghostImageView.image = nil
+					}
+					self.updateTimeRecordedLabel()
+					self.updateGhostImage()
+				})
+//			}
+		}
+		
 		//			let lastSegmentIndex = self.segmentThumbnails.count - 1
 		//			let lastSegmentView = lastSegment.snapshot
 		//

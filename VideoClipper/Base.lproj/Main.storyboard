@@ -1096,7 +1096,7 @@
                         <action selector="swipedUpOnVideo:" destination="Gc3-vh-ICn" id="IVv-WC-DHz"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="right" id="1K3-So-nZd">
+                <swipeGestureRecognizer direction="up" id="1K3-So-nZd" userLabel="Swipe Up to Delete Segment">
                     <connections>
                         <action selector="swipedOnSegmentCollection:" destination="Gc3-vh-ICn" id="HuS-59-yea"/>
                     </connections>

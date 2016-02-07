@@ -17,7 +17,6 @@
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
-		A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4417AF91BAC240E00392751 /* libSCRecorder.a */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */ = {isa = PBXBuildFile; fileRef = A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */; };
@@ -71,6 +70,13 @@
 		A4DA9CE21B973F0F00839F28 /* Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD61B973F0F00839F28 /* Overlay.png */; };
 		A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A4DA9CD71B973F0F00839F28 /* Overlay@2x.png */; };
 		A4E759BB1B9083120076D250 /* SettingsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E759BA1B9083120076D250 /* SettingsTableController.swift */; };
+		A4E94C491C678EA3007D4478 /* IDPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C461C678EA3007D4478 /* IDPermissionsManager.m */; };
+		A4E94C4A1C678EA3007D4478 /* IDFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C481C678EA3007D4478 /* IDFileManager.m */; };
+		A4E94C531C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C4C1C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m */; };
+		A4E94C541C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C4E1C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m */; };
+		A4E94C551C678EB5007D4478 /* IDAssetWriterCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C501C678EB5007D4478 /* IDAssetWriterCoordinator.m */; };
+		A4E94C561C678EB5007D4478 /* IDCaptureSessionCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C521C678EB5007D4478 /* IDCaptureSessionCoordinator.m */; };
+		A4E94C591C67DAC4007D4478 /* SCSampleBufferHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E94C581C67DAC4007D4478 /* SCSampleBufferHolder.m */; };
 		A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */; };
 		A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AB1B98A42E008FB9D0 /* TagMark+CoreDataProperties.swift */; };
 		A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AC1B98A42E008FB9D0 /* TagMark.swift */; };
@@ -85,27 +91,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A4417AF81BAC240E00392751 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DC23FE1117B4200700389EDA;
-			remoteInfo = SCRecorder;
-		};
-		A4417AFA1BAC240E00392751 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DCA8EF50192BD1C200839BE2;
-			remoteInfo = SCRecorderMac;
-		};
-		A4417AFC1BAC240E00392751 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DCDC1DF31AC79592001DC3D9;
-			remoteInfo = SCRecorderFramework;
-		};
 		A4664ACE1B444BA90095B27D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4664AAE1B444BA80095B27D /* Project object */;
@@ -128,6 +113,7 @@
 		A404A52C1B8118AA00B82B29 /* AVPlayerItem+THAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVPlayerItem+THAdditions.h"; sourceTree = "<group>"; };
 		A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerItem+THAdditions.m"; sourceTree = "<group>"; };
 		A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementVC.swift; sourceTree = "<group>"; };
+		A41109891C67E3AE00427EB2 /* SCSampleBufferHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSampleBufferHolder.h; sourceTree = "<group>"; };
 		A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectsTableController.swift; sourceTree = "<group>"; };
 		A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_03.xcdatamodel; sourceTree = "<group>"; };
 		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
@@ -137,7 +123,6 @@
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
-		A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SCRecorder.xcodeproj; path = SCRecorder/Library/SCRecorder.xcodeproj; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -215,6 +200,19 @@
 		A4DA9CD61B973F0F00839F28 /* Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Overlay.png; sourceTree = "<group>"; };
 		A4DA9CD71B973F0F00839F28 /* Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Overlay@2x.png"; sourceTree = "<group>"; };
 		A4E759BA1B9083120076D250 /* SettingsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableController.swift; sourceTree = "<group>"; };
+		A4E94C451C678EA3007D4478 /* IDPermissionsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDPermissionsManager.h; sourceTree = "<group>"; };
+		A4E94C461C678EA3007D4478 /* IDPermissionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDPermissionsManager.m; sourceTree = "<group>"; };
+		A4E94C471C678EA3007D4478 /* IDFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDFileManager.h; sourceTree = "<group>"; };
+		A4E94C481C678EA3007D4478 /* IDFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDFileManager.m; sourceTree = "<group>"; };
+		A4E94C4B1C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDCaptureSessionMovieFileOutputCoordinator.h; sourceTree = "<group>"; };
+		A4E94C4C1C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDCaptureSessionMovieFileOutputCoordinator.m; sourceTree = "<group>"; };
+		A4E94C4D1C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDCaptureSessionAssetWriterCoordinator.h; sourceTree = "<group>"; };
+		A4E94C4E1C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDCaptureSessionAssetWriterCoordinator.m; sourceTree = "<group>"; };
+		A4E94C4F1C678EB5007D4478 /* IDAssetWriterCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDAssetWriterCoordinator.h; sourceTree = "<group>"; };
+		A4E94C501C678EB5007D4478 /* IDAssetWriterCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDAssetWriterCoordinator.m; sourceTree = "<group>"; };
+		A4E94C511C678EB5007D4478 /* IDCaptureSessionCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDCaptureSessionCoordinator.h; sourceTree = "<group>"; };
+		A4E94C521C678EB5007D4478 /* IDCaptureSessionCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDCaptureSessionCoordinator.m; sourceTree = "<group>"; };
+		A4E94C581C67DAC4007D4478 /* SCSampleBufferHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSampleBufferHolder.m; sourceTree = "<group>"; };
 		A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DurationPickerController.swift; sourceTree = "<group>"; };
 		A4F057AB1B98A42E008FB9D0 /* TagMark+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TagMark+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4F057AC1B98A42E008FB9D0 /* TagMark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagMark.swift; sourceTree = "<group>"; };
@@ -235,7 +233,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4417AFE1BAC241B00392751 /* libSCRecorder.a in Frameworks */,
 				A4AAF6A71B8B4A3C006391DE /* Crashlytics.framework in Frameworks */,
 				A4AAF6A61B8B4A3C006391DE /* Fabric.framework in Frameworks */,
 			);
@@ -278,20 +275,9 @@
 			path = "ALAssetsLibrary-CustomPhotoAlbum";
 			sourceTree = "<group>";
 		};
-		A4417AF31BAC240D00392751 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A4417AF91BAC240E00392751 /* libSCRecorder.a */,
-				A4417AFB1BAC240E00392751 /* SCRecorderMac.framework */,
-				A4417AFD1BAC240E00392751 /* SCRecorder.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
-				A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */,
 				A4AAF6A81B8B4C80006391DE /* Frameworks */,
 				A4664AB81B444BA80095B27D /* VideoClipper */,
 				A4664AD01B444BA90095B27D /* VideoClipperTests */,
@@ -313,6 +299,7 @@
 		A4664AB81B444BA80095B27D /* VideoClipper */ = {
 			isa = PBXGroup;
 			children = (
+				A4E94C441C678E1C007D4478 /* Recorder */,
 				A48F8B141B9C5F180091D607 /* KPCCameraButton */,
 				A4DA9CC01B973F0F00839F28 /* ELCImagePicker */,
 				A404A52B1B81189800B82B29 /* THFoundation */,
@@ -471,6 +458,27 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		A4E94C441C678E1C007D4478 /* Recorder */ = {
+			isa = PBXGroup;
+			children = (
+				A4E94C451C678EA3007D4478 /* IDPermissionsManager.h */,
+				A4E94C461C678EA3007D4478 /* IDPermissionsManager.m */,
+				A4E94C471C678EA3007D4478 /* IDFileManager.h */,
+				A4E94C481C678EA3007D4478 /* IDFileManager.m */,
+				A4E94C4B1C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.h */,
+				A4E94C4C1C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m */,
+				A4E94C4D1C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.h */,
+				A4E94C4E1C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m */,
+				A4E94C4F1C678EB5007D4478 /* IDAssetWriterCoordinator.h */,
+				A4E94C501C678EB5007D4478 /* IDAssetWriterCoordinator.m */,
+				A4E94C511C678EB5007D4478 /* IDCaptureSessionCoordinator.h */,
+				A4E94C521C678EB5007D4478 /* IDCaptureSessionCoordinator.m */,
+				A41109891C67E3AE00427EB2 /* SCSampleBufferHolder.h */,
+				A4E94C581C67DAC4007D4478 /* SCSampleBufferHolder.m */,
+			);
+			name = Recorder;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -563,12 +571,6 @@
 			mainGroup = A4664AAD1B444BA80095B27D;
 			productRefGroup = A4664AB71B444BA80095B27D /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = A4417AF31BAC240D00392751 /* Products */;
-					ProjectRef = A4417AF21BAC240D00392751 /* SCRecorder.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				A4664AB51B444BA80095B27D /* VideoClipper */,
@@ -577,30 +579,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		A4417AF91BAC240E00392751 /* libSCRecorder.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSCRecorder.a;
-			remoteRef = A4417AF81BAC240E00392751 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A4417AFB1BAC240E00392751 /* SCRecorderMac.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SCRecorderMac.framework;
-			remoteRef = A4417AFA1BAC240E00392751 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A4417AFD1BAC240E00392751 /* SCRecorder.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SCRecorder.framework;
-			remoteRef = A4417AFC1BAC240E00392751 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A4664AB41B444BA80095B27D /* Resources */ = {
@@ -661,6 +639,7 @@
 				A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */,
 				A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */,
 				A4F8E3B41BB0469C0076A6FF /* Thumbnail+CoreDataProperties.swift in Sources */,
+				A4E94C551C678EB5007D4478 /* IDAssetWriterCoordinator.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
 				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
 				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
@@ -668,7 +647,10 @@
 				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A47570E31B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift in Sources */,
+				A4E94C591C67DAC4007D4478 /* SCSampleBufferHolder.m in Sources */,
 				A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */,
+				A4E94C491C678EA3007D4478 /* IDPermissionsManager.m in Sources */,
+				A4E94C541C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
 				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
 				A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */,
@@ -678,6 +660,7 @@
 				A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */,
 				A47570E61B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift in Sources */,
 				A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */,
+				A4E94C4A1C678EA3007D4478 /* IDFileManager.m in Sources */,
 				A4664AF71B452D680095B27D /* ProjectVC.swift in Sources */,
 				A4664AFD1B452D680095B27D /* StoryLineCell.swift in Sources */,
 				A4EFEAED1B89C76900BED386 /* DurationPickerController.swift in Sources */,
@@ -687,6 +670,8 @@
 				A4F8E3B61BB0469C0076A6FF /* VideoClip+CoreDataProperties.swift in Sources */,
 				A4F057AD1B98A42F008FB9D0 /* TagMark+CoreDataProperties.swift in Sources */,
 				A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */,
+				A4E94C561C678EB5007D4478 /* IDCaptureSessionCoordinator.m in Sources */,
+				A4E94C531C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
 				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,
@@ -794,7 +779,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -810,7 +795,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
@@ -843,7 +828,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -853,7 +838,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/iOS";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;

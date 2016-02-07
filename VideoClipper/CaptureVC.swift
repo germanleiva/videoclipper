@@ -31,8 +31,10 @@ class VideoSegmentThumbnail:NSObject {
 	}
 }
 
-class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
+class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
 	var isRecording = false
+    var _dismissing = false
+    
 	var timer:NSTimer? = nil
 	var currentLine:StoryLine? = nil {
 		didSet {
@@ -77,7 +79,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	@IBOutlet weak var ghostOn: UIImageView!
 	@IBOutlet weak var ghostSlider: UISlider!
 	
-	var _recorder:SCRecorder!
+	var _captureSessionCoordinator:IDCaptureSessionCoordinator!
 	
 	var previewViewHeightConstraint:NSLayoutConstraint? = nil
 	@IBOutlet var previewViewWidthConstraint:NSLayoutConstraint!
@@ -101,27 +103,12 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //			}
 			self.titleCardTable.reloadData()
 		}
-		
-		_recorder = SCRecorder.sharedRecorder()
-//		_recorder.captureSessionPreset = SCRecorderTools.bestCaptureSessionPresetCompatibleWithAllDevices()
-		_recorder.captureSessionPreset = AVCaptureSessionPreset1920x1080
-		//    _recorder.maxRecordDuration = CMTimeMake(10, 1);
-//		_recorder.fastRecordMethodEnabled = true
-		
-		_recorder.delegate = self
-//		_recorder.autoSetVideoOrientation = true
-		_recorder.videoOrientation = AVCaptureVideoOrientation.LandscapeRight
-		
-		_recorder.previewView = self.previewView
-		
-		_recorder.initializeSessionLazily = false
-		
-		do {
-			try _recorder.prepare()
-		} catch {
-			print("Prepare error: \(error)")
-		}
-
+        
+//        _captureSessionCoordinator = IDCaptureSessionMovieFileOutputCoordinator()
+        _captureSessionCoordinator = IDCaptureSessionAssetWriterCoordinator()
+        _captureSessionCoordinator.setDelegate(self, callbackQueue: dispatch_get_main_queue())
+		self.shouldUpdatePreviewLayerFrame = true
+        
 		let defaults = NSUserDefaults.standardUserDefaults()
 		self.shutterLock.on = !defaults.boolForKey(keyShutterHoldEnabled)
 		
@@ -167,23 +154,21 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	override func viewDidAppear(animated: Bool) {
-		_recorder.startRunning()
+//		_recorder.startRunning()
+        _captureSessionCoordinator.startRunning()
+
 	}
 
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		_recorder.stopRunning()
-	}
+//	override func viewWillDisappear(animated: Bool) {
+//		super.viewWillDisappear(animated)
+//		_recorder.stopRunning()
+//	}
 	
 	func dismissController() {
 		self.dismissViewControllerAnimated(true) { () -> Void in
-			self._recorder.unprepare()
-			
-			self._recorder.session?.cancelSession(nil)
-			self._recorder.session = nil
-			
-			self._recorder.captureSession?.stopRunning()
-		}
+            self._captureSessionCoordinator.stopRecording()
+            self._dismissing = false
+        }
 	}
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -229,11 +214,16 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 	
 	func totalTimeSeconds() -> Float64 {
-		if let durationInSeconds = self._recorder.session?.duration {
-			return CMTimeGetSeconds(durationInSeconds)
-		} else {
-			return Float64(0)
-		}
+//		if let durationInSeconds = self._recorder.session?.duration {
+//			return CMTimeGetSeconds(durationInSeconds)
+//		} else {
+//			return Float64(0)
+//		}
+        let durationInSeconds = self._captureSessionCoordinator.recordedDuration()
+        if CMTIME_IS_INVALID(durationInSeconds) {
+            return Float64(0)
+        }
+        return CMTimeGetSeconds(durationInSeconds)
 	}
 	
 	func captureModeOff(){
@@ -248,7 +238,8 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //		
 //		UIGraphicsEndImageContext()
 		
-		let currentSnapshot = _recorder.snapshotOfLastVideoBuffer()
+		let currentSnapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
+        
 		let videoSegmentThumbnail = VideoSegmentThumbnail(snapshot: currentSnapshot, time: self.totalTimeSeconds())
 		videoSegmentThumbnail.tagsPlaceholders += self.recentTagPlaceholders
 		self.videoSegments.append(videoSegmentThumbnail)
@@ -295,71 +286,73 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			}
 		})
 	}
-	@IBAction func swipedOnSegmentCollection(sender:UISwipeGestureRecognizer) {
-		if sender.state != UIGestureRecognizerState.Recognized {
-			return
-		}
-		
-		let p = sender.locationInView(self.segmentsCollectionView)
-
-		if let indexPath = self.segmentsCollectionView.indexPathForItemAtPoint(p) {
-//			if let cell = self.segmentsCollectionView.cellForItemAtIndexPath(indexPath) {
-//				let copyCell = cell.snapshotViewAfterScreenUpdates(false)
-//				self.segmentsCollectionView.addSubview(copyCell)
-//				copyCell.frame = cell.frame
-//				
-			self.videoSegments.removeAtIndex(indexPath.item)
-
-				self.segmentsCollectionView.performBatchUpdates({ () -> Void in
-					self.segmentsCollectionView.deleteItemsAtIndexPaths([indexPath])
-				}, completion: { (completed) -> Void in
-					if self._recorder.session?.segments.count > indexPath.item {
-						//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
-						self._recorder.session!.removeSegmentAtIndex(indexPath.item, deleteFile: true)
-					}
-					
-					if self._recorder.session!.segments.isEmpty {
-						self.videoPlaceholder.hidden = true
-						self.saveVideoButton.enabled = false
-						self.ghostImageView.image = nil
-					}
-					self.updateTimeRecordedLabel()
-					self.updateGhostImage()
-				})
-//			}
-		}
-		
-		//			let lastSegmentIndex = self.segmentThumbnails.count - 1
-		//			let lastSegmentView = lastSegment.snapshot
-		//
-		//			self.infoLabel.text = "Deleted"
-		//
-		//			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-		//				var factor = CGFloat(1.2)
-		//				if recognizer.direction == .Left {
-		//					factor = CGFloat(-1.2)
-		//				}
-		//				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
-		//				lastSegmentView.alpha = 0
-		//				self.infoLabel.alpha = 1
-		//				}, completion: { (completed) -> Void in
-		//					if completed {
-		//						if self._recorder.session?.segments.count > lastSegmentIndex {
-		//							//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
-		//							self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
-		//						}
-		//						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
-		//						lastSegmentView.removeFromSuperview()
-		//						self.updateTimeRecordedLabel()
-		//						self.updateGhostImage()
-		//						self.updateSegmentCount()
-		//
-		//						UIView.animateWithDuration(0.5, animations: { () -> Void in
-		//							self.infoLabel.alpha = 0
-		//						})
-		//					}
-		//			})
-	}
+    
+    //DEPRECATED
+//	@IBAction func swipedOnSegmentCollection(sender:UISwipeGestureRecognizer) {
+//		if sender.state != UIGestureRecognizerState.Recognized {
+//			return
+//		}
+//		
+//		let p = sender.locationInView(self.segmentsCollectionView)
+//
+//		if let indexPath = self.segmentsCollectionView.indexPathForItemAtPoint(p) {
+////			if let cell = self.segmentsCollectionView.cellForItemAtIndexPath(indexPath) {
+////				let copyCell = cell.snapshotViewAfterScreenUpdates(false)
+////				self.segmentsCollectionView.addSubview(copyCell)
+////				copyCell.frame = cell.frame
+////				
+//			self.videoSegments.removeAtIndex(indexPath.item)
+//
+//				self.segmentsCollectionView.performBatchUpdates({ () -> Void in
+//					self.segmentsCollectionView.deleteItemsAtIndexPaths([indexPath])
+//				}, completion: { (completed) -> Void in
+//					if self._recorder.session?.segments.count > indexPath.item {
+//						//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+//						self._recorder.session!.removeSegmentAtIndex(indexPath.item, deleteFile: true)
+//					}
+//					
+//					if self._recorder.session!.segments.isEmpty {
+//						self.videoPlaceholder.hidden = true
+//						self.saveVideoButton.enabled = false
+//						self.ghostImageView.image = nil
+//					}
+//					self.updateTimeRecordedLabel()
+//					self.updateGhostImage()
+//				})
+////			}
+//		}
+//		
+//		//			let lastSegmentIndex = self.segmentThumbnails.count - 1
+//		//			let lastSegmentView = lastSegment.snapshot
+//		//
+//		//			self.infoLabel.text = "Deleted"
+//		//
+//		//			UIView.animateWithDuration(0.4, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+//		//				var factor = CGFloat(1.2)
+//		//				if recognizer.direction == .Left {
+//		//					factor = CGFloat(-1.2)
+//		//				}
+//		//				lastSegmentView.center = CGPoint(x: lastSegmentView.center.x + factor * lastSegmentView.frame.width, y: lastSegmentView.center.y)
+//		//				lastSegmentView.alpha = 0
+//		//				self.infoLabel.alpha = 1
+//		//				}, completion: { (completed) -> Void in
+//		//					if completed {
+//		//						if self._recorder.session?.segments.count > lastSegmentIndex {
+//		//							//Sometimes the segment is not added to the recorder because it's extremely short, that's the reason of the if
+//		//							self._recorder.session!.removeSegmentAtIndex(lastSegmentIndex, deleteFile: true)
+//		//						}
+//		//						self.segmentThumbnails.removeAtIndex(lastSegmentIndex)
+//		//						lastSegmentView.removeFromSuperview()
+//		//						self.updateTimeRecordedLabel()
+//		//						self.updateGhostImage()
+//		//						self.updateSegmentCount()
+//		//
+//		//						UIView.animateWithDuration(0.5, animations: { () -> Void in
+//		//							self.infoLabel.alpha = 0
+//		//						})
+//		//					}
+//		//			})
+//	}
 	
 	@IBAction func swipedUpOnVideo(recognizer:UISwipeGestureRecognizer) {
 		self.deleteSegments()
@@ -377,19 +370,20 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		defaults.synchronize()
 	}
 	
-	@IBAction func tappedOnVideo(sender:UIButton) {
-		if let recordSession = self._recorder.session {
-			if recordSession.segments.isEmpty {
-				return
-			}
-			
-			let playerVC = AVPlayerViewController()
-			playerVC.player = AVPlayer(playerItem:recordSession.playerItemRepresentingSegments())
-			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-				playerVC.player?.play()
-			})
-		}
-	}
+    //TODO
+//	@IBAction func tappedOnVideo(sender:UIButton) {
+//		if let recordSession = self._recorder.session {
+//			if recordSession.segments.isEmpty {
+//				return
+//			}
+//			
+//			let playerVC = AVPlayerViewController()
+//			playerVC.player = AVPlayer(playerItem:recordSession.playerItemRepresentingSegments())
+//			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
+//				playerVC.player?.play()
+//			})
+//		}
+//	}
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
@@ -397,8 +391,12 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //			self.previewLayer!.frame = self.previewView.bounds
 //			self.shouldUpdatePreviewLayerFrame = false
 //		}
+        if self.shouldUpdatePreviewLayerFrame {
+            self.configureInterface()
+        }
 		
-		_recorder.previewViewFrameChanged()
+        //TODO
+//		_recorder.previewViewFrameChanged()
 	}
 	
 	func updateShutterLabel(isLocked:Bool) {
@@ -443,25 +441,26 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			progress.hide(true)
 		})
 	}
-	
-	@IBAction func stopMotionPressed(sender: UIButton) {
-		if self.stopMotionButton.selected && self._recorder.session!.segments.count > 1 {
-			let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the \(self._recorder.session!.segments.count) video segments recorded?", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-				self.deleteSegments()
-				
-				self.stopMotionButton.selected = !sender.selected
-				self.updateStopMotionWidgets()
-				self.updateTimeRecordedLabel()
-			}))
-			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-			}))
-			self.presentViewController(alert, animated: true, completion: nil)
-		} else {
-			self.stopMotionButton.selected = !sender.selected
-			self.updateStopMotionWidgets()
-		}
-	}
+    
+    //TODO
+//	@IBAction func stopMotionPressed(sender: UIButton) {
+//		if self.stopMotionButton.selected && self._recorder.session!.segments.count > 1 {
+//			let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the \(self._recorder.session!.segments.count) video segments recorded?", preferredStyle: UIAlertControllerStyle.Alert)
+//			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+//				self.deleteSegments()
+//				
+//				self.stopMotionButton.selected = !sender.selected
+//				self.updateStopMotionWidgets()
+//				self.updateTimeRecordedLabel()
+//			}))
+//			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+//			}))
+//			self.presentViewController(alert, animated: true, completion: nil)
+//		} else {
+//			self.stopMotionButton.selected = !sender.selected
+//			self.updateStopMotionWidgets()
+//		}
+//	}
 	
 	func updateStopMotionWidgets(){
 		var tintColor = UIColor.whiteColor()
@@ -597,6 +596,53 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	override func prefersStatusBarHidden() -> Bool {
 		return true
 	}
+    
+    //-MARK: recording private
+    
+    func configureInterface(){
+        let previewLayer = _captureSessionCoordinator.previewLayer()
+        
+        previewLayer.frame = self.previewView.bounds
+
+        self.previewView.layer.insertSublayer(previewLayer, atIndex: 0)
+        
+        let previewLayerConnection = previewLayer.connection
+        
+        previewLayerConnection.videoOrientation = AVCaptureVideoOrientation.LandscapeRight
+    }
+    
+    func checkPermissions() {
+        let pm = IDPermissionsManager()
+        pm.checkCameraAuthorizationStatusWithBlock { (granted) -> Void in
+            if !granted {
+                print("we don't have permission to use the camera");
+            }
+        }
+        pm.checkMicrophonePermissionsWithBlock({ (granted) -> Void in
+            if !granted {
+                print("we don't have permission to use the microphone");
+            }
+        })
+    }
+    //-MARK: IDCaptureSessionCoordinatorDelegate methods
+
+    func coordinatorDidBeginRecording(coordinator: IDCaptureSessionCoordinator!) {
+        self.shutterButton.enabled = true
+    }
+    
+    func coordinator(coordinator: IDCaptureSessionCoordinator!, didFinishRecordingToOutputFileURL outputFileURL: NSURL!, error: NSError!) {
+        UIApplication.sharedApplication().idleTimerDisabled = false
+        self.isRecording = false
+        
+        //Do something useful with the video file available at the outputFileURL
+        let fm = IDFileManager()
+//        fm.copyFileToDocuments(outputFileURL)
+        
+        //Dismiss camera (when user taps cancel while camera is recording)
+        if _dismissing {
+            self.dismissController()
+        }
+    }
 	
 	//-MARK: private start/stop helper methods
 	
@@ -608,31 +654,34 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			}
 			
 			self.isRecording = true
-			self._recorder.record()
+//			self._recorder.record()
+            UIApplication.sharedApplication().idleTimerDisabled = true
+            self._captureSessionCoordinator.startRecording()
+            
 			self.ghostImageView.hidden = true
 			self.taggingPanel.hidden = false
 			self.recentTagPlaceholders.removeAll()
 			self.captureModeOn()
 		}
 	
-		if !self._recorder.session!.segments.isEmpty && !self.stopMotionButton.selected {
-			let alert = UIAlertController(title: "Action required", message: "Please, save or discard the previously recorded video", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-				self.deleteSegments()
-				self.updateTimeRecordedLabel()
-			}))
-			alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-				self.savePressed(nil)
-			}))
-			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
-
-			}))
-			self.presentViewController(alert, animated: true, completion: { () -> Void in
-
-			})
-		} else {
+//		if !self._recorder.session!.segments.isEmpty && !self.stopMotionButton.selected {
+//			let alert = UIAlertController(title: "Action required", message: "Please, save or discard the previously recorded video", preferredStyle: UIAlertControllerStyle.Alert)
+//			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+//				self.deleteSegments()
+//				self.updateTimeRecordedLabel()
+//			}))
+//			alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+//				self.savePressed(nil)
+//			}))
+//			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: { (action) -> Void in
+//
+//			}))
+//			self.presentViewController(alert, animated: true, completion: { () -> Void in
+//
+//			})
+//		} else {
 			defaultStartCaptureBlock()
-		}
+//		}
 	}
 
 	func stopCapture() {
@@ -642,7 +691,9 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		}
 
 		self.isRecording = false
-		_recorder.pause()
+//		_recorder.pause()
+        _captureSessionCoordinator.stopRecording()
+        
 		self.ghostImageView.hidden = false
 		self.taggingPanel.hidden = true
 		
@@ -691,38 +742,40 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 					videoPlaceholderCopy.removeFromSuperview()
 				}
 			})
-			if let recordSession = self._recorder.session {
-				recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
-					if error == nil {
-						//This is a workaround
-						if self._recorder.session != nil {
-							var modelTags = [TagMark]()
-							for eachSegment in self.videoSegments {
-								for (color,time) in eachSegment.tagsPlaceholders {
-									let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
-									newTag.color = color
-									newTag.time! = time / self.totalTimeSeconds()
-									modelTags.append(newTag)
-								}
-							}
-							
-							self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
-						} else {
-							print("THIS SHOULDN'T HAPPEN EVER!")
-						}
-						
-						self.deleteSegments(false)
-						self.updateTimeRecordedLabel()
-						
-						completion?()
-					} else {
-//						self.infoLabel.text = "ERROR :("
-						completion?()
-						let alert = UIAlertController(title: "Error: \(error?.localizedDescription)", message: "Sorry, we couldn't save your video", preferredStyle: UIAlertControllerStyle.Alert)
-						self.presentViewController(alert, animated: true, completion: nil)
-					}
-				})
-			}
+            
+            //TODO
+//			if let recordSession = self._recorder.session {
+//				recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
+//					if error == nil {
+//						//This is a workaround
+//						if self._recorder.session != nil {
+//							var modelTags = [TagMark]()
+//							for eachSegment in self.videoSegments {
+//								for (color,time) in eachSegment.tagsPlaceholders {
+//									let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
+//									newTag.color = color
+//									newTag.time! = time / self.totalTimeSeconds()
+//									modelTags.append(newTag)
+//								}
+//							}
+//							
+//							self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
+//						} else {
+//							print("THIS SHOULDN'T HAPPEN EVER!")
+//						}
+//						
+//						self.deleteSegments(false)
+//						self.updateTimeRecordedLabel()
+//						
+//						completion?()
+//					} else {
+////						self.infoLabel.text = "ERROR :("
+//						completion?()
+//						let alert = UIAlertController(title: "Error: \(error?.localizedDescription)", message: "Sorry, we couldn't save your video", preferredStyle: UIAlertControllerStyle.Alert)
+//						self.presentViewController(alert, animated: true, completion: nil)
+//					}
+//				})
+//			}
 		})
 	}
 	
@@ -731,7 +784,7 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 //			eachSegment.snapshot.removeFromSuperview()
 //		}
 		self.videoSegments.removeAll()
-		self._recorder.session?.removeAllSegments(true)
+//		self._recorder.session?.removeAllSegments(true)
 		
 		let copies = self.segmentsCollectionView.visibleCells().map { (eachCell) -> UIView in
 			let cellCopy = eachCell.snapshotViewAfterScreenUpdates(false)
@@ -767,172 +820,24 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 	}
 
 	//-MARK: SCRecorder things
-	func recorder(recorder: SCRecorder, didSkipVideoSampleBufferInSession session: SCRecordSession) {
-		print("Skipped video buffer")
-	}
-	
-	func recorder(recorder: SCRecorder, didReconfigureAudioInput audioInputError: NSError?) {
-		print("Reconfigured audio input: \(audioInputError)")
-
-	}
-	
-	func recorder(recorder: SCRecorder, didReconfigureVideoInput videoInputError: NSError?) {
-		print("Reconfigured video input: \(videoInputError)")
-	}
-	
-	//	- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-//	NSURL *url = info[UIImagePickerControllerMediaURL];
-//	[picker dismissViewControllerAnimated:YES completion:nil];
-//	
-//	SCRecordSessionSegment *segment = [SCRecordSessionSegment segmentWithURL:url info:nil];
-//	
-//	[_recorder.session addSegment:segment];
-//	_recordSession = [SCRecordSession recordSession];
-//	[_recordSession addSegment:segment];
-//	
-//	[self showVideo];
-//	}
-//	- (void) handleStopButtonTapped:(id)sender {
-//	[_recorder pause:^{
-//	[self saveAndShowSession:_recorder.session];
-//	}];
-//	}
-//	
-//	func saveAndShowSession(recordSession:SCRecordSession) {
-//		SCRecordSessionManager.sharedInstance().saveRecordSession(recordSession)
-
-//		self.showVideo()
-//	}
-
-//	- (void)handleRetakeButtonTapped:(id)sender {
-//	SCRecordSession *recordSession = _recorder.session;
-//	
-//	if (recordSession != nil) {
-//	_recorder.session = nil;
-//	
-//	// If the recordSession was saved, we don't want to completely destroy it
-//	if ([[SCRecordSessionManager sharedInstance] isSaved:recordSession]) {
-//	[recordSession endSegmentWithInfo:nil completionHandler:nil];
-//	} else {
-//	[recordSession cancelSession:nil];
-//	}
-//	}
-//	
-//	[self prepareSession];
-//	}
-//	
-//	- (IBAction)switchCameraMode:(id)sender {
-//	if ([_recorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-//	[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-//	self.capturePhotoButton.alpha = 0.0;
-//	self.recordView.alpha = 1.0;
-//	self.retakeButton.alpha = 1.0;
-//	self.stopButton.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	_recorder.captureSessionPreset = kVideoPreset;
-//	[self.switchCameraModeButton setTitle:@"Switch Photo" forState:UIControlStateNormal];
-//	[self.flashModeButton setTitle:@"Flash : Off" forState:UIControlStateNormal];
-//	_recorder.flashMode = SCFlashModeOff;
-//	}];
-//	} else {
-//	[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-//	self.recordView.alpha = 0.0;
-//	self.retakeButton.alpha = 0.0;
-//	self.stopButton.alpha = 0.0;
-//	self.capturePhotoButton.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-//	_recorder.captureSessionPreset = AVCaptureSessionPresetPhoto;
-//	[self.switchCameraModeButton setTitle:@"Switch Video" forState:UIControlStateNormal];
-//	[self.flashModeButton setTitle:@"Flash : Auto" forState:UIControlStateNormal];
-//	_recorder.flashMode = SCFlashModeAuto;
-//	}];
-//	}
-//	}
-//	
-//	- (IBAction)switchFlash:(id)sender {
-//	NSString *flashModeString = nil;
-//	if ([_recorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-//	switch (_recorder.flashMode) {
-//	case SCFlashModeAuto:
-//	flashModeString = @"Flash : Off";
-//	_recorder.flashMode = SCFlashModeOff;
-//	break;
-//	case SCFlashModeOff:
-//	flashModeString = @"Flash : On";
-//	_recorder.flashMode = SCFlashModeOn;
-//	break;
-//	case SCFlashModeOn:
-//	flashModeString = @"Flash : Light";
-//	_recorder.flashMode = SCFlashModeLight;
-//	break;
-//	case SCFlashModeLight:
-//	flashModeString = @"Flash : Auto";
-//	_recorder.flashMode = SCFlashModeAuto;
-//	break;
-//	default:
-//	break;
-//	}
-//	} else {
-//	switch (_recorder.flashMode) {
-//	case SCFlashModeOff:
-//	flashModeString = @"Flash : On";
-//	_recorder.flashMode = SCFlashModeLight;
-//	break;
-//	case SCFlashModeLight:
-//	flashModeString = @"Flash : Off";
-//	_recorder.flashMode = SCFlashModeOff;
-//	break;
-//	default:
-//	break;
-//	}
-//	}
-//	
-//	[self.flashModeButton setTitle:flashModeString forState:UIControlStateNormal];
-//	}
-//	
-	func prepareSession() {
-		if (_recorder.session == nil) {
-			
-			let session = SCRecordSession()
-			session.fileType = AVFileTypeQuickTimeMovie
-			
-			_recorder.session = session
-		}
+    func prepareSession() {
+//		if (_recorder.session == nil) {
+//			
+//			let session = RecordSession()
+//			session.fileType = AVFileTypeQuickTimeMovie
+//			
+//			_recorder.session = session
+//		}
 		self.updateTimeRecordedLabel()
 		self.updateGhostImage()
 	}
 	
-	func recorder(recorder: SCRecorder, didCompleteSession session: SCRecordSession) {
-//		self.saveAndShowSession(session)
-		print("didCompleteSession")
-	}
-	
-	func recorder(recorder: SCRecorder, didInitializeAudioInSession session: SCRecordSession, error: NSError?) {
-		if error == nil {
-			print("Initialized audio in record session")
-		} else {
-			print("Failed to initialize audio in record session: \(error!.localizedDescription)")
-		}
-	}
-	
-	func recorder(recorder: SCRecorder, didInitializeVideoInSession session: SCRecordSession, error: NSError?) {
-		if error == nil {
-			print("Initialized video in record session")
-		} else {
-			print("Failed to initialize video in record session: \(error!.localizedDescription)")
-		}
-	}
-	
-	func recorder(recorder: SCRecorder, didBeginSegmentInSession session: SCRecordSession, error: NSError?) {
-		print("Began record segment: \(error)")
-	}
-	
-	func recorder(recorder: SCRecorder, didCompleteSegment segment: SCRecordSessionSegment?, inSession session: SCRecordSession, error: NSError?) {
+	/*func recorder(recorder: Recorder, didCompleteSegment segment: RecordSessionSegment?, inSession session: RecordSession, error: NSError?) {
 		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
 
 		self.updateGhostImage()
 //		self.updateSegmentCount()
-	}
+	}*/
 	
 	func updateTimeRecordedLabel() {
 		let time = Int(self.totalTimeSeconds())
@@ -944,17 +849,17 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 		self.recordingTime.text = timeString;
 	}
 	
-	func recorder(recorder: SCRecorder, didAppendVideoSampleBufferInSession session: SCRecordSession) {
+	/*func recorder(recorder: Recorder, didAppendVideoSampleBufferInSession session: SCRecordSession) {
 		self.updateTimeRecordedLabel()
-	}
+	}*/
 
 	func updateGhostImage() {
 		var image:UIImage? = nil
 		
-		if _recorder.session != nil && _recorder.session!.segments.count > 0 {
+		/*if _recorder.session != nil && _recorder.session!.segments.count > 0 {
 			let segment = _recorder.session!.segments.last!
 			image = segment.lastImage
-		}
+		}*/
 
 		self.ghostImageView.image = image
 
@@ -989,11 +894,6 @@ class CaptureVC: UIViewController, SCRecorderDelegate, UICollectionViewDataSourc
 			newTagLine.frame = CGRectOffset(newTagLine.frame, CGFloat(time / self.totalTimeSeconds()) * videoSegmentCell.contentView.frame.width, 0)
 			videoSegmentCell.contentView.addSubview(newTagLine)
 		}
-		
-//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Width, multiplier: 1, constant: 0))
-//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0))
-//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
-//		videoSegmentCell.contentView.addConstraint(NSLayoutConstraint(item: videoSegment.snapshot, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: videoSegmentCell.contentView, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
 		
 		return videoSegmentCell
 

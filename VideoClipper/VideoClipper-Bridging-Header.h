@@ -19,4 +19,9 @@
 //#import "THThumbnail.h"
 #import "AAPLTimedAnnotationWriter.h"
 
-#import <SCRecorder/SCRecorder.h>
+#import "IDCaptureSessionCoordinator.h"
+//#import "IDCaptureSessionMovieFileOutputCoordinator.h"
+#import "IDCaptureSessionAssetWriterCoordinator.h"
+#import "IDPermissionsManager.h"
+#import "IDFileManager.h"
+#import "SCSampleBufferHolder.h"

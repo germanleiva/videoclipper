@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8nJ-LI-FZ9">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8nJ-LI-FZ9">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -657,24 +657,23 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8nt-VJ-yhx">
-                                <rect key="frame" x="0.0" y="131" width="600" height="338"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
                                     <imageView alpha="0.40000000000000002" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RFp-Dy-GI4">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="338"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                         <gestureRecognizers/>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="tKO-kN-cx0" appends="YES" id="7O6-gr-THr"/>
                                         </connections>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.071741149340000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="RFp-Dy-GI4" secondAttribute="trailing" id="1p3-78-VMI"/>
-                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="leading" secondItem="8nt-VJ-yhx" secondAttribute="leading" id="FSB-7Q-etB"/>
-                                    <constraint firstAttribute="width" secondItem="8nt-VJ-yhx" secondAttribute="height" multiplier="16:9" id="OTb-Pp-bhw"/>
-                                    <constraint firstAttribute="bottom" secondItem="RFp-Dy-GI4" secondAttribute="bottom" id="Pn5-uC-14g"/>
-                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="top" secondItem="8nt-VJ-yhx" secondAttribute="top" id="SLO-FP-AZc"/>
+                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="centerY" secondItem="8nt-VJ-yhx" secondAttribute="centerY" id="Nh1-lS-UPN"/>
+                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="width" secondItem="8nt-VJ-yhx" secondAttribute="width" id="Vrz-fV-EI2"/>
+                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="height" secondItem="8nt-VJ-yhx" secondAttribute="height" id="wvX-k2-vpN"/>
+                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="centerX" secondItem="8nt-VJ-yhx" secondAttribute="centerX" id="yMk-CI-6ai"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="7IG-Pb-jzD" appends="YES" id="rEC-Qj-Jgl"/>
@@ -960,6 +959,7 @@
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-unselected" translatesAutoresizingMaskIntoConstraints="NO" id="DT8-X9-Ero">
                                         <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                        <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="25" id="LHw-Us-Tce"/>
                                             <constraint firstAttribute="height" constant="25" id="ZPI-6S-cT8"/>
@@ -991,6 +991,8 @@
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="leading" secondItem="jTQ-Ew-l5Z" secondAttribute="trailing" id="2Tw-AY-m8N"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="hbb-xS-A70" secondAttribute="bottom" constant="20" id="3Id-S7-Xnk"/>
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="4rZ-aL-f3h"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="4sk-Yl-Ek2"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="height" secondItem="hDy-EF-rcF" secondAttribute="height" id="6iq-75-wuf"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="leading" secondItem="cAE-1c-Yb9" secondAttribute="leading" id="Ap9-9E-1e0"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="leading" secondItem="KRD-tb-rJw" secondAttribute="trailing" id="CRN-t4-bGa"/>
@@ -1005,19 +1007,18 @@
                             <constraint firstAttribute="leadingMargin" secondItem="IFM-7O-i6d" secondAttribute="leading" constant="20" id="OQo-om-KKJ"/>
                             <constraint firstItem="hbb-xS-A70" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="P4d-X3-PFF"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
-                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="Pro-kz-D5c"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="jm3-Ha-A9m" secondAttribute="bottom" id="Qf4-w6-NAg"/>
                             <constraint firstItem="bfs-iX-asy" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="UXe-TM-vkf"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="W68-gH-TEL"/>
                             <constraint firstItem="cAE-1c-Yb9" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="WVt-M8-GWb"/>
-                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerY" secondItem="hDy-EF-rcF" secondAttribute="centerY" id="aXc-wr-QEM"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="IFM-7O-i6d" secondAttribute="bottom" constant="40" id="bJL-lM-Lgt"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="cQZ-WO-aXm"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerY" secondItem="hDy-EF-rcF" secondAttribute="centerY" id="dGj-m6-UrO"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="8nt-VJ-yhx" secondAttribute="bottom" id="dwb-19-Lxp"/>
+                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="width" secondItem="hDy-EF-rcF" secondAttribute="width" id="epX-ex-Y9l"/>
                             <constraint firstAttribute="trailing" secondItem="jm3-Ha-A9m" secondAttribute="trailing" id="gPU-cN-IrY"/>
                             <constraint firstItem="f7a-Fw-T3a" firstAttribute="centerX" secondItem="cAE-1c-Yb9" secondAttribute="centerX" id="gdk-bx-k4U"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="iFl-z6-Yt9"/>
-                            <constraint firstItem="8nt-VJ-yhx" firstAttribute="width" secondItem="hDy-EF-rcF" secondAttribute="width" id="iVA-FQ-MXJ"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="height" secondItem="hDy-EF-rcF" secondAttribute="height" id="jyZ-nM-fJs"/>
                             <constraint firstItem="fMb-3u-ivD" firstAttribute="top" secondItem="cAE-1c-Yb9" secondAttribute="bottom" constant="110" id="oif-KU-6Rv"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerX" secondItem="h8j-WV-yjo" secondAttribute="centerX" id="oyb-Ct-hya"/>
@@ -1060,7 +1061,6 @@
                         <outlet property="leftPanel" destination="jTQ-Ew-l5Z" id="mn6-9i-Rfz"/>
                         <outlet property="plusLineButton" destination="ffu-8Z-Ier" id="Xpq-ve-2yn"/>
                         <outlet property="previewView" destination="8nt-VJ-yhx" id="EH2-Uo-Hy7"/>
-                        <outlet property="previewViewWidthConstraint" destination="iVA-FQ-MXJ" id="4sf-dW-dwK"/>
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>

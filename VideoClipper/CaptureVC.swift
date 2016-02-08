@@ -13,7 +13,6 @@ import CoreData
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
 let keyStopMotionActive = "keyStopMotionActive"
-let keyShortPreviewEnabled = "keyShortPreviewEnabled"
 
 protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
@@ -81,9 +80,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	var _captureSessionCoordinator:IDCaptureSessionCoordinator!
 	
-	var previewViewHeightConstraint:NSLayoutConstraint? = nil
-	@IBOutlet var previewViewWidthConstraint:NSLayoutConstraint!
-	var shouldUpdatePreviewLayerFrame = false
+	var shouldUpdatePreviewLayerFrame = true
 	
 	var delegate:CaptureVCDelegate? = nil
 	
@@ -107,14 +104,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //        _captureSessionCoordinator = IDCaptureSessionMovieFileOutputCoordinator()
         _captureSessionCoordinator = IDCaptureSessionAssetWriterCoordinator()
         _captureSessionCoordinator.setDelegate(self, callbackQueue: dispatch_get_main_queue())
-		self.shouldUpdatePreviewLayerFrame = true
         
 		let defaults = NSUserDefaults.standardUserDefaults()
 		self.shutterLock.on = !defaults.boolForKey(keyShutterHoldEnabled)
-		
-		if !defaults.boolForKey(keyShortPreviewEnabled) {
-			self.expandPreview()
-		}
 		
 		let savedGhostLevel = defaults.floatForKey(keyGhostLevel)
 		self.ghostImageView.alpha = CGFloat(savedGhostLevel)
@@ -147,7 +139,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.titleCardTable.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
 		
 		self.ghostOn.tintColor = UIColor(hexString: "#117AFF")!
-		self.ghostOff.tintColor = UIColor(hexString: "#117AFF")!
+		self.ghostOff.tintColor = UIColor.lightGrayColor()
 		
 		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
 		self.updateStopMotionWidgets()
@@ -392,6 +384,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //			self.shouldUpdatePreviewLayerFrame = false
 //		}
         if self.shouldUpdatePreviewLayerFrame {
+            self.shouldUpdatePreviewLayerFrame = false
             self.configureInterface()
         }
 		
@@ -407,31 +400,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 	}
 	
-	@IBAction func doubleTapOnPreviewView(recognizer:UITapGestureRecognizer?) {
-		let defaults = NSUserDefaults.standardUserDefaults()
-		if self.previewViewHeightConstraint == nil || self.previewViewWidthConstraint.active {
-			self.expandPreview()
-			defaults.setBool(false, forKey: keyShortPreviewEnabled)
-		} else {
-			self.previewViewHeightConstraint!.active = false
-			self.previewViewWidthConstraint.active = true
-			
-			defaults.setBool(true, forKey: keyShortPreviewEnabled)
-		}
-		defaults.synchronize()
-		self.shouldUpdatePreviewLayerFrame = true
-	}
-	
-	func expandPreview() {
-		if self.previewViewHeightConstraint == nil {
-			self.previewViewHeightConstraint = NSLayoutConstraint(item: self.previewView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Height, multiplier: 1, constant: 0)
-			self.view.addConstraint(self.previewViewHeightConstraint!)
-		} else {
-			self.previewViewHeightConstraint!.active = true
-		}
-		self.previewViewWidthConstraint.active = false
-	}
-
 	@IBAction func savePressed(sender:UIButton?) {
 		let window = UIApplication.sharedApplication().delegate!.window!
 
@@ -601,6 +569,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func configureInterface(){
         let previewLayer = _captureSessionCoordinator.previewLayer()
+        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
         previewLayer.frame = self.previewView.bounds
 

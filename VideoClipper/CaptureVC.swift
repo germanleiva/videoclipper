@@ -30,7 +30,7 @@ class VideoSegmentThumbnail:NSObject {
 	}
 }
 
-class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate {
+class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, CenteredFlowLayoutDelegate, UITableViewDataSource, UITableViewDelegate, MarkerReusableViewDelegate {
 	var isRecording = false
     var _dismissing = false
     
@@ -127,6 +127,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		
 		let rowIndex = self.currentLine?.project?.storyLines?.indexOfObject(self.currentLine!)
 		self.selectedLineIndexPath = NSIndexPath(forRow: rowIndex!, inSection: 0)
+        
+        self.prepareMarker()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -352,7 +354,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	@IBAction func changedGhostSlider(sender: UISlider) {
-		self.ghostImageView.alpha = CGFloat(sender.value / sender.maximumValue)
+		self.ghostImageView.alpha = CGFloat(sender.value)
 	}
 	
 	@IBAction func touchUpGhostSlider(sender: UISlider) {
@@ -826,8 +828,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
 	func updateGhostImage() {
 		self.ghostImageView.image = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-
 //		self.ghostImageView.hidden = !self.ghostButton.selected
+
+        self.ghostPanel.hidden = self.ghostImageView.image == nil
 	}
 	
 	//-MARK: Collection View Data Source
@@ -864,8 +867,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		//TODO
-	}
+        print("Selected NOT centered video")
+    }
 	
 	//-MARK: Table View Data Source
 	
@@ -943,5 +946,112 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			print("Couldn't save the new story line: \(error)")
 		}
 	}
+    
+    //-MARK: Marker
+    let marker = MarkerReusableView(frame: CGRectZero)
+    var fillLayer: CAShapeLayer? = nil
+    var markerWidthConstraint:NSLayoutConstraint?
+    
+    var markerSpacing = CGFloat(0)
+    var markerSmallWidth = CGFloat(0)
+    var markerLargeWidth = CGFloat(0)
+    var markerHeight = CGFloat(0)
+
+    func layout() -> CenteredFlowLayout {
+        return self.segmentsCollectionView?.collectionViewLayout as! CenteredFlowLayout
+    }
+    
+    func prepareMarker(){
+        let layout = self.segmentsCollectionView?.collectionViewLayout as! CenteredFlowLayout
+        
+        markerSpacing = layout.minimumInteritemSpacing / 2
+        markerSmallWidth = layout.minimumInteritemSpacing / 2
+        markerLargeWidth = layout.itemSize.width + layout.minimumInteritemSpacing * 2
+        markerHeight = layout.itemSize.height + layout.minimumInteritemSpacing * 2
+        
+        layout.delegate = self
+        
+        marker.translatesAutoresizingMaskIntoConstraints = false
+        marker.backgroundColor = UIColor.redColor()
+        self.view!.addSubview(marker)
+        marker.bypassToView = self.segmentsCollectionView!
+        marker.delegate = self
+        markerWidthConstraint = NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerSmallWidth)
+        marker.addConstraint(markerWidthConstraint!)
+        marker.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerHeight))
+        self.view!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
+        self.view!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
+    }
+    
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        resetMarker()
+    }
+    
+    //marker delegate
+    func didTouchMarker() {
+        if self.layout().isCentered {
+            //workaround, didSelectItemAtIndexPath was not called when the marker was touched
+            print("Selected centered video")
+        }
+    }
+    
+    func resetMarker(animated:Bool = true){
+        
+        self.markerWidthConstraint?.constant = markerSmallWidth
+        
+        let block = {
+            if let layer = self.fillLayer {
+                layer.removeFromSuperlayer()
+            }
+            self.marker.backgroundColor = UIColor.redColor()
+            
+            self.view.layoutIfNeeded()
+        }
+        
+        if animated {
+            UIView.animateWithDuration(0.2) { () -> Void in
+                block()
+            }
+        } else {
+            block()
+        }
+    }
+    
+    func layout(layout: CenteredFlowLayout, changedModeTo isCentered: Bool) {
+        updateMarkerShape(isCentered)
+        
+    }
+    
+    func updateMarkerShape(isCentered: Bool) {
+        if isCentered {
+            self.markerWidthConstraint?.constant = markerLargeWidth
+        } else {
+            resetMarker()
+        }
+        
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+            }) { (completed) -> Void in
+                if completed {
+                    UIView.animateWithDuration(0.1, animations: { () -> Void in
+                        if isCentered {
+                            self.marker.backgroundColor = UIColor.clearColor()
+                            
+                            let path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: self.markerLargeWidth, height: self.markerHeight), cornerRadius: 0)
+                            let innerPath = UIBezierPath(roundedRect: CGRect(x: self.markerSpacing, y: self.markerSpacing, width: self.markerLargeWidth - self.markerSpacing * 2, height: self.markerHeight - self.markerSpacing * 2), cornerRadius: 0)
+                            path.appendPath(innerPath)
+                            path.usesEvenOddFillRule = true
+                            
+                            self.fillLayer = CAShapeLayer()
+                            self.fillLayer!.path = path.CGPath
+                            self.fillLayer!.fillRule = kCAFillRuleEvenOdd
+                            self.fillLayer!.fillColor = UIColor.redColor().CGColor
+                            
+                            self.marker.layer.addSublayer(self.fillLayer!)
+                        }
+                    })
+                }
+        }
+    }
 
 }

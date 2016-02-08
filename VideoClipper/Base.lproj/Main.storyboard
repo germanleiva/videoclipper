@@ -667,7 +667,7 @@
                                         </connections>
                                     </imageView>
                                 </subviews>
-                                <color key="backgroundColor" red="1" green="0.0" blue="0.071741149340000004" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstItem="RFp-Dy-GI4" firstAttribute="centerY" secondItem="8nt-VJ-yhx" secondAttribute="centerY" id="Nh1-lS-UPN"/>
@@ -793,22 +793,22 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" alwaysBounceHorizontal="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
                                 <rect key="frame" x="192" y="0.0" width="288" height="120"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="3Dq-pG-rdY"/>
                                 </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="pRY-jc-Tec">
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="pRY-jc-Tec" customClass="CenteredFlowLayout" customModule="VideoClipper" customModuleProvider="target">
                                     <size key="itemSize" width="128" height="72"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <inset key="sectionInset" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="VideoSegmentCollectionCell" id="N9c-96-OhE" customClass="VideoSegmentCollectionCell" customModule="VideoClipper" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24" width="128" height="72"/>
+                                        <rect key="frame" x="10" y="24" width="128" height="72"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="72"/>
@@ -838,7 +838,7 @@
                                 </connections>
                             </collectionView>
                             <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="IFM-7O-i6d">
-                                <rect key="frame" x="0.0" y="510" width="320" height="50"/>
+                                <rect key="frame" x="70" y="510" width="320" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="50G-O6-5Ac">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -965,7 +965,7 @@
                                             <constraint firstAttribute="height" constant="25" id="ZPI-6S-cT8"/>
                                         </constraints>
                                     </imageView>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="j7J-zU-3Ar">
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="j7J-zU-3Ar">
                                         <rect key="frame" x="33" y="0.0" width="204" height="26"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="sF9-yL-WeI"/>
@@ -993,6 +993,7 @@
                             <constraint firstItem="KRD-tb-rJw" firstAttribute="top" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="4rZ-aL-f3h"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="4sk-Yl-Ek2"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="height" secondItem="hDy-EF-rcF" secondAttribute="height" id="6iq-75-wuf"/>
+                            <constraint firstItem="IFM-7O-i6d" firstAttribute="leading" secondItem="hDy-EF-rcF" secondAttribute="leadingMargin" constant="50" id="8wW-Br-dHE"/>
                             <constraint firstItem="h8j-WV-yjo" firstAttribute="leading" secondItem="LEr-qt-z1o" secondAttribute="trailing" constant="8" id="Act-nQ-CM5"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="leading" secondItem="cAE-1c-Yb9" secondAttribute="leading" id="Ap9-9E-1e0"/>
                             <constraint firstItem="jm3-Ha-A9m" firstAttribute="leading" secondItem="KRD-tb-rJw" secondAttribute="trailing" id="CRN-t4-bGa"/>
@@ -1041,6 +1042,7 @@
                                 <exclude reference="Act-nQ-CM5"/>
                                 <exclude reference="DdA-je-uZK"/>
                                 <exclude reference="s9E-h6-aM7"/>
+                                <exclude reference="OQo-om-KKJ"/>
                                 <exclude reference="Cnn-K1-Dil"/>
                                 <exclude reference="wgR-Jx-uC2"/>
                                 <exclude reference="cQZ-WO-aXm"/>

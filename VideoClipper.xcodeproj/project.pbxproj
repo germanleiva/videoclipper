@@ -22,6 +22,8 @@
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */ = {isa = PBXBuildFile; fileRef = A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */; };
+		A4561B461C68F88600AA4346 /* CenteredFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4561B451C68F88600AA4346 /* CenteredFlowLayout.swift */; };
+		A4561B481C68F8F600AA4346 /* MarkerReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4561B471C68F8F600AA4346 /* MarkerReusableView.swift */; };
 		A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AB91B444BA80095B27D /* AppDelegate.swift */; };
 		A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4664ABD1B444BA80095B27D /* Main.storyboard */; };
 		A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */; };
@@ -134,6 +136,8 @@
 		A44CE8F41B600B5300953B7F /* VideoHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoHelper.h; sourceTree = "<group>"; };
 		A454C67C1BB1F9D80018D0DB /* NSManagedObject+Cloner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Cloner.h"; sourceTree = "<group>"; };
 		A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Cloner.m"; sourceTree = "<group>"; };
+		A4561B451C68F88600AA4346 /* CenteredFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CenteredFlowLayout.swift; sourceTree = "<group>"; };
+		A4561B471C68F8F600AA4346 /* MarkerReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerReusableView.swift; sourceTree = "<group>"; };
 		A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_02.xcdatamodel; sourceTree = "<group>"; };
 		A4664AB61B444BA80095B27D /* VideoClipper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoClipper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4664AB91B444BA80095B27D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -280,6 +284,16 @@
 			path = "ALAssetsLibrary-CustomPhotoAlbum";
 			sourceTree = "<group>";
 		};
+		A4561B441C68F80F00AA4346 /* CaptureVC */ = {
+			isa = PBXGroup;
+			children = (
+				A4561B471C68F8F600AA4346 /* MarkerReusableView.swift */,
+				A4561B451C68F88600AA4346 /* CenteredFlowLayout.swift */,
+				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
+			);
+			name = CaptureVC;
+			sourceTree = "<group>";
+		};
 		A4664AAD1B444BA80095B27D = {
 			isa = PBXGroup;
 			children = (
@@ -343,7 +357,7 @@
 				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
 				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
-				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
+				A4561B441C68F80F00AA4346 /* CaptureVC */,
 				A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
@@ -661,6 +675,7 @@
 				A411098F1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
 				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
+				A4561B461C68F88600AA4346 /* CenteredFlowLayout.swift in Sources */,
 				A41109901C68204100427EB2 /* VideoSegment.swift in Sources */,
 				A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */,
 				A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */,
@@ -707,6 +722,7 @@
 				A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */,
 				A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */,
 				A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */,
+				A4561B481C68F8F600AA4346 /* MarkerReusableView.swift in Sources */,
 				A4F4AFF91BB3F80C0049109F /* MBFingerTipWindow.m in Sources */,
 				A47570E41B9DCA250043C8C2 /* ImageWidget.swift in Sources */,
 				A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */,

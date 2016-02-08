@@ -16,11 +16,13 @@
 {
     NSString *path = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
-    NSInteger i = 0;
-    while(path == nil || [fm fileExistsAtPath:path]){
+//    NSInteger i = 0;
+    NSInteger i = 40;
+
+//    while(path == nil || [fm fileExistsAtPath:path]){
         path = [NSString stringWithFormat:@"%@output%ld.mov", NSTemporaryDirectory(), (long)i];
-        i++;
-    }
+//        i++;
+//    }
     return [NSURL fileURLWithPath:path];
 }
 

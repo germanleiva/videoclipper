@@ -51,6 +51,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 
 @property (nonatomic) CMTime lastSampleTime;
 @property (nonatomic) SCSampleBufferHolder *lastVideoBuffer;
+@property (nonatomic) UIImage *snapshotOfLastVideoBuffer;
 
 @end
 
@@ -171,6 +172,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
             @synchronized(self) {
                 if(_recordingStatus == RecordingStatusRecording){
                     _lastVideoBuffer.sampleBuffer = sampleBuffer;
+                    _snapshotOfLastVideoBuffer = nil;
                     _lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
                     [_assetWriterCoordinator appendVideoSampleBuffer:sampleBuffer];
                 }
@@ -270,7 +272,13 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 }
 
 - (UIImage *)snapshotOfLastVideoBuffer {
-    return [self imageFromSampleBuffer:_lastVideoBuffer.sampleBuffer];
+    if (_lastVideoBuffer.sampleBuffer == nil) {
+        return nil;
+    }
+    if (_snapshotOfLastVideoBuffer == nil) {
+        _snapshotOfLastVideoBuffer = [self imageFromSampleBuffer:_lastVideoBuffer.sampleBuffer];
+    }
+    return _snapshotOfLastVideoBuffer;
 }
 
 // Create a UIImage from sample buffer data

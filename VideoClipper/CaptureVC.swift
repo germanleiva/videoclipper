@@ -139,22 +139,21 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.titleCardTable.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
 		
 		self.ghostOn.tintColor = UIColor(hexString: "#117AFF")!
-		self.ghostOff.tintColor = UIColor.lightGrayColor()
+		self.ghostOff.tintColor = UIColor.darkGrayColor()
 		
 		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
 		self.updateStopMotionWidgets()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
-//		_recorder.startRunning()
         _captureSessionCoordinator.startRunning()
 
 	}
 
-//	override func viewWillDisappear(animated: Bool) {
-//		super.viewWillDisappear(animated)
-//		_recorder.stopRunning()
-//	}
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		_captureSessionCoordinator.stopRunning()
+	}
 	
 	func dismissController() {
 		self.dismissViewControllerAnimated(true) { () -> Void in
@@ -353,7 +352,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	@IBAction func changedGhostSlider(sender: UISlider) {
-		self.ghostImageView.alpha = CGFloat(sender.value)
+		self.ghostImageView.alpha = CGFloat(sender.value / sender.maximumValue)
 	}
 	
 	@IBAction func touchUpGhostSlider(sender: UISlider) {
@@ -385,7 +384,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //		}
         if self.shouldUpdatePreviewLayerFrame {
             self.shouldUpdatePreviewLayerFrame = false
-            self.configureInterface()
+            self.configurePreviewLayer()
         }
 		
         //TODO
@@ -567,7 +566,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     //-MARK: recording private
     
-    func configureInterface(){
+    func configurePreviewLayer(){
         let previewLayer = _captureSessionCoordinator.previewLayer()
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
@@ -611,6 +610,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         if _dismissing {
             self.dismissController()
         }
+        
+        self.updateGhostImage()
+//		self.updateSegmentCount()
     }
 	
 	//-MARK: private start/stop helper methods
@@ -823,14 +825,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}*/
 
 	func updateGhostImage() {
-		var image:UIImage? = nil
-		
-		/*if _recorder.session != nil && _recorder.session!.segments.count > 0 {
-			let segment = _recorder.session!.segments.last!
-			image = segment.lastImage
-		}*/
-
-		self.ghostImageView.image = image
+		self.ghostImageView.image = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
 
 //		self.ghostImageView.hidden = !self.ghostButton.selected
 	}

@@ -1,5 +1,5 @@
 //
-//  VideoClip+CoreDataProperties.swift
+//  VideoSegment+CoreDataProperties.swift
 //  VideoClipper
 //
 //  Created by Germán Leiva on 08/02/16.
@@ -12,14 +12,9 @@
 import Foundation
 import CoreData
 
-extension VideoClip {
+extension VideoSegment {
 
-    @NSManaged var endPoint: NSNumber?
     @NSManaged var path: String?
-    @NSManaged var startPoint: NSNumber?
-    @NSManaged var thumbnail: NSData?
-    @NSManaged var tags: NSOrderedSet?
-    @NSManaged var thumbnailImages: NSOrderedSet?
-    @NSManaged var paths: NSOrderedSet?
+    @NSManaged var video: VideoClip?
 
 }

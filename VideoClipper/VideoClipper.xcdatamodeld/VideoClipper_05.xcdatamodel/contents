@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Automatic">
+    <entity name="ImageWidget" representedClassName="ImageWidget" syncable="YES">
+        <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="image" attributeType="Transformable" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="images" inverseEntity="TitleCard" syncable="YES"/>
+    </entity>
+    <entity name="Project" representedClassName="Project" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <relationship name="storyLines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryLine" inverseName="project" inverseEntity="StoryLine" syncable="YES"/>
+    </entity>
+    <entity name="StoryElement" representedClassName="StoryElement" isAbstract="YES" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="storyLine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryLine" inverseName="elements" inverseEntity="StoryLine" syncable="YES"/>
+    </entity>
+    <entity name="StoryLine" representedClassName="StoryLine" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shouldHide" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="StoryElement" inverseName="storyLine" inverseEntity="StoryElement" syncable="YES"/>
+        <relationship name="project" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="storyLines" inverseEntity="Project" syncable="YES"/>
+    </entity>
+    <entity name="TagMark" representedClassName="TagMark" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="tags" inverseEntity="VideoClip" syncable="YES"/>
+    </entity>
+    <entity name="TextWidget" representedClassName="TextWidget" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fontSize" optional="YES" attributeType="Integer 32" minValueString="10" maxValueString="80" defaultValueString="30" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>
+    </entity>
+    <entity name="Thumbnail" representedClassName="Thumbnail" syncable="YES">
+        <attribute name="image" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="thumbnailImages" inverseEntity="VideoClip" syncable="YES"/>
+    </entity>
+    <entity name="TitleCard" representedClassName="TitleCard" parentEntity="StoryElement" syncable="YES">
+        <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
+        <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImageWidget" inverseName="titleCard" inverseEntity="ImageWidget" syncable="YES"/>
+        <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
+    </entity>
+    <entity name="VideoClip" representedClassName="VideoClip" parentEntity="StoryElement" syncable="YES">
+        <attribute name="endPoint" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="1" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startPoint" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
+        <relationship name="paths" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="VideoSegment" inverseName="video" inverseEntity="VideoSegment" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TagMark" inverseName="video" inverseEntity="TagMark" syncable="YES"/>
+        <relationship name="thumbnailImages" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Thumbnail" inverseName="video" inverseEntity="Thumbnail" syncable="YES"/>
+    </entity>
+    <entity name="VideoSegment" representedClassName=".VideoSegment" syncable="YES">
+        <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="paths" inverseEntity="VideoClip" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ImageWidget" positionX="-153" positionY="81" width="128" height="133"/>
+        <element name="Project" positionX="-360" positionY="-75" width="128" height="105"/>
+        <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
+        <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
+        <element name="TagMark" positionX="-153" positionY="81" width="128" height="90"/>
+        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="165"/>
+        <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
+        <element name="TitleCard" positionX="117" positionY="216" width="128" height="120"/>
+        <element name="VideoClip" positionX="304" positionY="201" width="128" height="148"/>
+        <element name="VideoSegment" positionX="171" positionY="108" width="128" height="75"/>
+    </elements>
+</model>

@@ -10,6 +10,8 @@
 		A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */ = {isa = PBXBuildFile; fileRef = A40049F21BA98C24003E518C /* UIView+Genie.m */; };
 		A404A52E1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */; };
 		A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */; };
+		A411098F1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A411098C1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift */; };
+		A41109901C68204100427EB2 /* VideoSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A411098D1C68204100427EB2 /* VideoSegment.swift */; };
 		A418D52C1BAEEB0700AC7D12 /* ProjectsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */; };
 		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
 		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
@@ -114,6 +116,9 @@
 		A404A52D1B8118AA00B82B29 /* AVPlayerItem+THAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerItem+THAdditions.m"; sourceTree = "<group>"; };
 		A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementVC.swift; sourceTree = "<group>"; };
 		A41109891C67E3AE00427EB2 /* SCSampleBufferHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSampleBufferHolder.h; sourceTree = "<group>"; };
+		A411098A1C681EA500427EB2 /* VideoClipper_05.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_05.xcdatamodel; sourceTree = "<group>"; };
+		A411098C1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VideoSegment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A411098D1C68204100427EB2 /* VideoSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoSegment.swift; sourceTree = "<group>"; };
 		A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectsTableController.swift; sourceTree = "<group>"; };
 		A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_03.xcdatamodel; sourceTree = "<group>"; };
 		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
@@ -388,6 +393,8 @@
 				A4F8E3B21BB0469C0076A6FF /* Thumbnail.swift */,
 				A4F8E3B31BB0469C0076A6FF /* VideoClip+CoreDataProperties.swift */,
 				A4FF46651B46B6B100A12267 /* VideoClip.swift */,
+				A411098C1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift */,
+				A411098D1C68204100427EB2 /* VideoSegment.swift */,
 				A4F057AB1B98A42E008FB9D0 /* TagMark+CoreDataProperties.swift */,
 				A4F057AC1B98A42E008FB9D0 /* TagMark.swift */,
 			);
@@ -651,8 +658,10 @@
 				A4664AC21B444BA80095B27D /* VideoClipper.xcdatamodeld in Sources */,
 				A4E94C491C678EA3007D4478 /* IDPermissionsManager.m in Sources */,
 				A4E94C541C678EB5007D4478 /* IDCaptureSessionAssetWriterCoordinator.m in Sources */,
+				A411098F1C68204100427EB2 /* VideoSegment+CoreDataProperties.swift in Sources */,
 				A4664AF61B452D680095B27D /* ProjectsVC.swift in Sources */,
 				A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */,
+				A41109901C68204100427EB2 /* VideoSegment.swift in Sources */,
 				A4DA9CDB1B973F0F00839F28 /* ELCAssetTablePicker.m in Sources */,
 				A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */,
 				A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */,
@@ -977,6 +986,7 @@
 		A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A411098A1C681EA500427EB2 /* VideoClipper_05.xcdatamodel */,
 				A4F8E3AC1BB045000076A6FF /* VideoClipper_04.xcdatamodel */,
 				A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */,
 				A45C203E1BA17E2400BE05C5 /* VideoClipper_02.xcdatamodel */,

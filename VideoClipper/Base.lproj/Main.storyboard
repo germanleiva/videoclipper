@@ -724,23 +724,9 @@
                                             <action selector="undoPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="TYa-BW-w29"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfs-iX-asy">
-                                        <rect key="frame" x="10" y="10" width="100" height="100"/>
-                                        <gestureRecognizers/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="D0M-5s-t0R"/>
-                                            <constraint firstAttribute="height" constant="100" id="PUv-B4-06P"/>
-                                        </constraints>
-                                        <state key="normal" image="play-background"/>
-                                        <connections>
-                                            <action selector="tappedOnVideo:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="kPG-cI-Paf"/>
-                                            <outletCollection property="gestureRecognizers" destination="sb1-gz-nco" appends="YES" id="fbK-06-G8i"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="bfs-iX-asy" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="AtP-Ms-glP"/>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="width" secondItem="jm3-Ha-A9m" secondAttribute="width" id="Aw2-L5-GEv"/>
                                     <constraint firstAttribute="width" constant="120" id="I5S-PS-pJH"/>
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="top" secondItem="f7a-Fw-T3a" secondAttribute="bottom" constant="50" id="SfY-dZ-EhQ"/>
@@ -748,7 +734,7 @@
                                     <constraint firstItem="bgI-zh-lHz" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="YHX-0y-baI"/>
                                     <constraint firstAttribute="bottom" secondItem="cNf-sp-Dbl" secondAttribute="bottom" constant="20" id="b3D-UZ-Xrz"/>
                                     <constraint firstItem="fMb-3u-ivD" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="ifY-lD-jhs"/>
-                                    <constraint firstItem="f7a-Fw-T3a" firstAttribute="top" secondItem="bfs-iX-asy" secondAttribute="bottom" constant="15" id="swH-f6-6om"/>
+                                    <constraint firstItem="bgI-zh-lHz" firstAttribute="top" secondItem="f7a-Fw-T3a" secondAttribute="bottom" constant="38" id="m0m-xi-S4K"/>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="zgb-38-GEZ"/>
                                 </constraints>
                                 <variation key="default">
@@ -1009,7 +995,6 @@
                             <constraint firstItem="hbb-xS-A70" firstAttribute="centerX" secondItem="hDy-EF-rcF" secondAttribute="centerX" id="P4d-X3-PFF"/>
                             <constraint firstItem="LEr-qt-z1o" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="Pmq-5O-tsm"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="jm3-Ha-A9m" secondAttribute="bottom" id="Qf4-w6-NAg"/>
-                            <constraint firstItem="bfs-iX-asy" firstAttribute="centerY" secondItem="h8j-WV-yjo" secondAttribute="centerY" id="UXe-TM-vkf"/>
                             <constraint firstItem="8nt-VJ-yhx" firstAttribute="top" relation="greaterThanOrEqual" secondItem="xD1-P4-xRX" secondAttribute="bottom" id="W68-gH-TEL"/>
                             <constraint firstItem="cAE-1c-Yb9" firstAttribute="centerX" secondItem="jm3-Ha-A9m" secondAttribute="centerX" id="WVt-M8-GWb"/>
                             <constraint firstItem="Jrs-6S-7ZY" firstAttribute="top" secondItem="IFM-7O-i6d" secondAttribute="bottom" constant="40" id="bJL-lM-Lgt"/>
@@ -1072,15 +1057,10 @@
                         <outlet property="titleCardTable" destination="SYg-sM-bRG" id="Je6-YB-EEg"/>
                         <outlet property="topCollectionViewLayout" destination="4rZ-aL-f3h" id="vPm-Xb-9Us"/>
                         <outlet property="undoVideoButton" destination="f7a-Fw-T3a" id="S6W-Qm-WMr"/>
-                        <outlet property="videoPlaceholder" destination="bfs-iX-asy" id="9M6-75-n8y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuf-Mm-ONK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="7IG-Pb-jzD" userLabel="Double Tap to Change Size">
-                    <connections>
-                        <action selector="doubleTapOnPreviewView:" destination="Gc3-vh-ICn" id="WTo-ZN-20z"/>
-                    </connections>
-                </tapGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="7IG-Pb-jzD" userLabel="Double Tap to Change Size"/>
                 <swipeGestureRecognizer direction="down" id="tKO-kN-cx0" userLabel="Swipe Down To Dismiss">
                     <connections>
                         <action selector="donePressed:" destination="Gc3-vh-ICn" id="UST-qm-OfG"/>
@@ -1702,7 +1682,6 @@
         <image name="multiple-icon" width="50" height="50"/>
         <image name="palette" width="268" height="430"/>
         <image name="pause_button" width="19" height="21"/>
-        <image name="play-background" width="120" height="120"/>
         <image name="play_button" width="21" height="24"/>
         <image name="slate" width="232" height="193"/>
         <image name="tag_button" width="50" height="50"/>

@@ -15,7 +15,7 @@ let keyGhostLevel = "keyGhostLevel"
 let keyStopMotionActive = "keyStopMotionActive"
 
 protocol CaptureVCDelegate {
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
+//	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
@@ -35,7 +35,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
 //	@IBOutlet var titleCardPlaceholder:UIView!
-	@IBOutlet var videoPlaceholder:UIButton!
 	@IBOutlet weak var undoVideoButton: UIButton!
 	
 	@IBOutlet var segmentsCollectionView:UICollectionView!
@@ -122,7 +121,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		//This is a workaround
 		self.ghostImageView.image = nil
 		
-//		self.updateSegmentCount()
 		self.titleCardTable.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
 		
 		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
@@ -234,7 +232,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //		//						lastSegmentView.removeFromSuperview()
 //		//						self.updateTimeRecordedLabel()
 //		//						self.updateGhostImage()
-//		//						self.updateSegmentCount()
 //		//
 //		//						UIView.animateWithDuration(0.5, animations: { () -> Void in
 //		//							self.infoLabel.alpha = 0
@@ -276,17 +273,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-//		if self.shouldUpdatePreviewLayerFrame {
-//			self.previewLayer!.frame = self.previewView.bounds
-//			self.shouldUpdatePreviewLayerFrame = false
-//		}
+
         if self.shouldUpdatePreviewLayerFrame {
             self.shouldUpdatePreviewLayerFrame = false
             self.configurePreviewLayer()
         }
-		
-        //TODO
-//		_recorder.previewViewFrameChanged()
 	}
 	
 	func updateShutterLabel(isLocked:Bool) {
@@ -296,18 +287,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			self.shutterButton.setTitle("Hold", forState: .Normal)
 		}
 	}
-	
-    //DEPRECATED
-/*	@IBAction func savePressed(sender:UIButton?) {
-		let window = UIApplication.sharedApplication().delegate!.window!
-
-		let progress = MBProgressHUD.showHUDAddedTo(window, animated: true)
-
-		self.saveCapture({ () -> Void in
-			progress.hide(true)
-		})
-	}*/
     
+    //TODO
 	@IBAction func undoPressed(sender:UIButton?) {
     }
 
@@ -496,21 +477,21 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let fm = IDFileManager()
 //        fm.copyFileToDocuments(outputFileURL)
         
-        var modelTags = [TagMark]()
+        //This should happen in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
+        self.saveVideoSegment(outputFileURL)
+        
+        self.updateGhostImage()
+    }
+    
+    func saveVideoSegment(fileURL:NSURL) {
+        var tags = [TagMark]()
         for (color,time) in self.currentVideoSegment!.tagsPlaceholders {
             let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
             newTag.color = color
             newTag.time! = time / self.totalTimeSeconds()
-            modelTags.append(newTag)
+            tags.append(newTag)
         }
         
-//        self.saveVideoSegment(outputFileURL,tags: modelTags)
-        
-        self.updateGhostImage()
-//		self.updateSegmentCount()
-    }
-    
-    func saveVideoSegment(fileURL:NSURL,tags:[TagMark]) {
         let videoSegments = selectedVideo!.mutableOrderedSetValueForKey("segments")
         videoSegments.addObject(self.currentVideoSegment!)
         
@@ -522,6 +503,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
         elements.addObject(selectedVideo!)
         
+        selectedVideo!.thumbnail = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
+
         do {
             defer {
                 //If we need a "finally"
@@ -529,11 +512,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             }
             try self.context.save()
             self.currentVideoSegment = nil
+            self.selectedVideo = nil
+            self.delegate?.captureVC(self, didChangeStoryLine: self.currentLine!)
         } catch {
             print("Couldn't save new video in the DB")
             print(error)
         }
-
     }
 	
 	//-MARK: private start/stop helper methods
@@ -552,6 +536,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self._captureSessionCoordinator.startRecording()
         
         self.ghostImageView.hidden = true
+        self.marker.hidden = true
         self.taggingPanel.hidden = false
         self.recentTagPlaceholders.removeAll()
 
@@ -581,10 +566,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 
 		self.isRecording = false
-//		_recorder.pause()
         _captureSessionCoordinator.stopRecording()
         
 		self.ghostImageView.hidden = false
+        self.marker.hidden = false
 		self.taggingPanel.hidden = true
 		
         self.stopTimer()
@@ -607,6 +592,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         currentVideoSegment!.time = self.totalTimeSeconds()
         currentVideoSegment!.tagsPlaceholders += self.recentTagPlaceholders
+        currentVideoSegment!.snapshot = currentSnapshot
 
         self.view.insertSubview(currentSnapshotView, aboveSubview: self.segmentsCollectionView)
         
@@ -617,64 +603,60 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
         currentIndexPath = self.segmentsCollectionView!.indexPathForItemAtPoint(pointToFind)
 
-        self.segmentsCollectionView?.performBatchUpdates({ () -> Void in
+        if layout.isCentered && currentIndexPath != nil {
+            self.selectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
+        } else {
+            self.selectedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+            let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
+            if currentIndexPath == nil {
+                elements.addObject(self.selectedVideo!)
+                currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.selectedVideo!)!, inSection: 0)
+            } else {
+                elements.insertObject(self.selectedVideo!, atIndex: currentIndexPath!.item)
+            }
+        }
+
+        self.shutterButton.enabled = false
+        
+        UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+            //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
+            if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(currentIndexPath!)?.frame {
+                currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+            }
             
-            let noVideoFoundBlock = { (isAddingAtTheEnd:Bool) in
-                self.selectedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-                let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
-                if isAddingAtTheEnd {
-                    elements.addObject(self.selectedVideo!)
-                    currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.selectedVideo!)!, inSection: 0)
-                } else {
-                    elements.insertObject(self.selectedVideo!, atIndex: currentIndexPath!.item)
-                }
+            self.segmentsCollectionView.alpha = 0.75
+            self.leftPanel.alpha = 0.75
+            self.rightPanel.alpha = 0.75
+            self.ghostPanel.alpha = 1
+            self.recordingIndicator.alpha = 0
+
+        }, completion: { (completed) -> Void in
+            if completed {
+                currentSnapshotView.removeFromSuperview()
+                
+                //Stops the blinking
+                self.recordingIndicator.layer.removeAllAnimations()
+                
+                self.undoVideoButton.enabled = true
+            }
+        })
+        
+        self.segmentsCollectionView?.performBatchUpdates({ () -> Void in
+            if layout.isCentered {
+                self.segmentsCollectionView?.reloadItemsAtIndexPaths([currentIndexPath!])
+            } else {
                 self.segmentsCollectionView?.insertItemsAtIndexPaths([currentIndexPath!])
             }
-            
-            if currentIndexPath != nil {
-                print("Cell \(currentIndexPath)")
-                
-                if layout.isCentered {
-                    self.selectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
-                    self.segmentsCollectionView!.reloadItemsAtIndexPaths([currentIndexPath!])
-                    return
-                } else {
-                    noVideoFoundBlock(false)
-                }
-            } else {
-                print("No cell")
-                noVideoFoundBlock(true)
-            }
-            
         }, completion: { (completed) -> Void in
-            UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-                //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
-                if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(currentIndexPath!)?.frame {
-                    currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
-                }
-                
-                self.segmentsCollectionView.alpha = 0.75
-                self.leftPanel.alpha = 0.75
-                self.rightPanel.alpha = 0.75
-                self.ghostPanel.alpha = 1
-                self.recordingIndicator.alpha = 0
-                //			self.videoPlaceholder!.alpha = 1
-                //			self.titleCardPlaceholder!.alpha = 1
+            if !layout.isCentered {
+                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    self.segmentsCollectionView?.setContentOffset(CGPoint(x:max(self.segmentsCollectionView!.contentOffset.x + spacing,0),y: 0), animated: false)
                 }, completion: { (completed) -> Void in
-                    if completed {
-                        currentSnapshotView.removeFromSuperview()
-                        self.currentVideoSegment!.snapshot = currentSnapshot
-                        
-                        //Stops the blinking
-                        self.recordingIndicator.layer.removeAllAnimations()
-                        
-                        self.videoPlaceholder.hidden = false
-                        self.undoVideoButton.enabled = true
-                        if !layout.isCentered {
-                            self.segmentsCollectionView?.setContentOffset(CGPoint(x:max(self.segmentsCollectionView!.contentOffset.x + spacing,0),y: 0), animated: true)
-                        }
-                    }
-            })
+                    self.shutterButton.enabled = true
+                })
+            } else {
+                self.shutterButton.enabled = true
+            }
         })
     }
 
@@ -774,7 +756,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 
 		self.segmentsCollectionView.reloadData()
-//		self.updateSegmentCount()
 		
 		if animated {
 			let defaultVideoPlaceholderFrame = self.videoPlaceholder.frame
@@ -816,7 +797,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
 
 		self.updateGhostImage()
-//		self.updateSegmentCount()
 	}*/
 	
 	func updateTimeRecordedLabel() {
@@ -854,10 +834,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let video = self.currentLine!.videos()[indexPath.item]
 
-                //TODO
-//		videoSegmentCell.thumbnail!.image = UIImage(data: video.thumbnail!)
-
-        videoSegmentCell.thumbnail!.image = UIImage(named:"ghost-selected")
+        if let imageData = video.thumbnail {
+            videoSegmentCell.thumbnail!.image = UIImage(data: imageData)
+        } else {
+            //TODO WORKAROUND for empty videoClip
+            videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
+        }
+        
 		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
 			if eachTagLine != videoSegmentCell.thumbnail! {
 				eachTagLine.removeFromSuperview()

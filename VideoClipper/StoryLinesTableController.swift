@@ -153,6 +153,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		captureController.delegate = self
 		captureController.currentLine = self.currentStoryLine()
 		captureController.owner = (self.delegate as! ProjectVC).secondaryController
+        
 		self.presentViewController(captureController, animated: true, completion: nil)
 		return
 		

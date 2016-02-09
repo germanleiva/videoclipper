@@ -312,25 +312,16 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				
 				let clonedProject = projectToClone.clone() as! Project
 				clonedProject.name = "Cloned \(clonedProject.name!)"
-				
-                var toDelete = [VideoClip]()
                 
 				for eachLine in clonedProject.storyLines! {
 					for eachElement in (eachLine as! StoryLine).elements! {
 						if (eachElement as! StoryElement).isVideo() {
-                            if !((eachElement as! VideoClip).loadAsset()) {
-                                toDelete.append(eachElement as! VideoClip)
-                            }
+                            (eachElement as! VideoClip).loadAsset()
 						} else {
 							(eachElement as! TitleCard).generateAsset(VideoHelper())
 						}
 					}
 				}
-                
-                //REMOVE this bullshit
-                for bastardVideo in [VideoClip](toDelete) {
-                    self.context.deleteObject(bastardVideo)
-                }
 				
 				do {
 					try self.context.save()

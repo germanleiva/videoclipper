@@ -779,7 +779,7 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l6R-iD-1N7">
+                            <view multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l6R-iD-1N7">
                                 <rect key="frame" x="192" y="0.0" width="288" height="120"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" alwaysBounceHorizontal="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
@@ -832,7 +832,7 @@
                                         </connections>
                                     </collectionView>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="KRD-tb-rJw" secondAttribute="trailing" id="1hl-7p-LKb"/>
                                     <constraint firstAttribute="height" constant="120" id="HIK-ci-nzI"/>
@@ -1068,6 +1068,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="collectionView" destination="KRD-tb-rJw" id="r5J-Y0-Uuc"/>
                         <outlet property="ghostImageView" destination="RFp-Dy-GI4" id="HS1-sm-xsv"/>
                         <outlet property="ghostPanel" destination="hbb-xS-A70" id="QJn-HZ-HUz"/>
                         <outlet property="ghostSlider" destination="j7J-zU-3Ar" id="Shh-aA-SDS"/>
@@ -1077,7 +1078,6 @@
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>
-                        <outlet property="segmentsCollectionView" destination="KRD-tb-rJw" id="sX4-9m-FQi"/>
                         <outlet property="shutterButton" destination="cAE-1c-Yb9" id="BkS-Sz-Qr7"/>
                         <outlet property="shutterLock" destination="bgI-zh-lHz" id="rrB-jo-3vm"/>
                         <outlet property="stopMotionButton" destination="fMb-3u-ivD" id="Llk-XF-Vg0"/>

@@ -71,6 +71,10 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 
 #pragma mark - Recording
 
+- (void) suggestedFileURL:(NSURL *) fileURL {
+    _recordingURL = fileURL;
+}
+
 - (void)startRecording
 {
     @synchronized(self)
@@ -82,10 +86,11 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
         [self transitionToRecordingStatus:RecordingStatusStartingRecording error:nil];
     }
     
-    IDFileManager *fm = [IDFileManager new];
-    _recordingURL = [fm tempFileURL];
+    if (_recordingURL == nil) {
+        IDFileManager *fm = [IDFileManager new];
+        _recordingURL = [fm tempFileURL];
+    }
     
-
     self.assetWriterCoordinator = [[IDAssetWriterCoordinator alloc] initWithURL:_recordingURL];
     if(_outputAudioFormatDescription != nil){
         [_assetWriterCoordinator addAudioTrackWithSourceFormatDescription:self.outputAudioFormatDescription settings:_audioCompressionSettings];

@@ -16,4 +16,11 @@ class VideoSegment: NSManagedObject {
     var snapshot:UIImage?
     var time = Float64(0)
     var tagsPlaceholders = [(UIColor,Float64)]()
+    
+    func writePath() -> String {
+        let documents = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
+        let segmentObjectId = self.objectID.URIRepresentation().absoluteString
+        let fileName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///VideoSegment/", withString: "")) as String
+        return documents + "/" + fileName
+    }
 }

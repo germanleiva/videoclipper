@@ -17,7 +17,6 @@
 
 @implementation IDCaptureSessionCoordinator
 
-
 - (instancetype)init
 {
     self = [super init];
@@ -85,6 +84,10 @@
 - (UIImage*) snapshotOfLastVideoBuffer {
     //overwritten by subclass
     return nil;
+}
+
+- (void)suggestedFileURL:(NSURL*)fileURL {
+    //overwriten by subclass
 }
 
 

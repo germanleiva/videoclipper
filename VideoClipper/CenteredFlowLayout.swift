@@ -56,18 +56,12 @@ class CenteredFlowLayout: UICollectionViewFlowLayout {
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-//        var attributesArray = [UICollectionViewLayoutAttributes]()
-//        
-//        for attributes in super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))! {
-//            let copiedAttributes = attributes.copy() as! UICollectionViewLayoutAttributes
-//            self.applyLayoutAttributes(copiedAttributes)
-//            attributesArray.append(copiedAttributes)
-//        }
-//        return attributesArray
+        var attributesArray = [UICollectionViewLayoutAttributes]()
         
-        let attributesArray = super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))!
-        for attributes in attributesArray {
-            self.applyLayoutAttributes(attributes)
+        for attributes in super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))! {
+            let copiedAttributes = attributes.copy() as! UICollectionViewLayoutAttributes
+            self.applyLayoutAttributes(copiedAttributes)
+            attributesArray.append(copiedAttributes)
         }
         return attributesArray
     }

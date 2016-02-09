@@ -39,17 +39,21 @@
     }
 }
 
-- (void) copyFileToDocuments:(NSURL *)fileURL
+- (NSString *) copyFileToDocuments:(NSURL *)fileURL destinationPath:(NSString*)fileName
 {
     NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
-    NSString *destinationPath = [documentsDirectory stringByAppendingFormat:@"/output_%@.mov", [dateFormatter stringFromDate:[NSDate date]]];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+//    NSString *destinationPath = [documentsDirectory stringByAppendingFormat:@"/output_%@.mov", [dateFormatter stringFromDate:[NSDate date]]];
+    
+    NSString *destinationPath = [documentsDirectory stringByAppendingString:fileName];
     NSError	*error;
     [[NSFileManager defaultManager] copyItemAtURL:fileURL toURL:[NSURL fileURLWithPath:destinationPath] error:&error];
     if(error){
         NSLog(@"error copying file: %@", [error localizedDescription]);
+        return nil;
     }
+    return destinationPath;
 }
 
 - (void)copyFileToCameraRoll:(NSURL *)fileURL

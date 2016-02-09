@@ -12,6 +12,6 @@
 
 - (NSURL *) tempFileURL;
 - (void) removeFile:(NSURL *)outputFileURL;
-- (void) copyFileToDocuments:(NSURL *)fileURL;
+- (NSString *) copyFileToDocuments:(NSURL *)fileURL destinationPath:(NSString*)fileName;
 - (void) copyFileToCameraRoll:(NSURL *)fileURL;
 @end

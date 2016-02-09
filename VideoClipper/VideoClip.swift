@@ -50,6 +50,10 @@ class VideoClip: StoryElement {
 			}
 		} else {
 			print("The path is nil so I will use the path of the first segment")
+            if self.segments?.count == 0 {
+                print("I don't have segments yet")
+                return false
+            }
             if let firstSegmentPath = (self.segments?.firstObject as! VideoSegment).path {
                 self.asset = AVURLAsset(URL: NSURL(string: firstSegmentPath)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in

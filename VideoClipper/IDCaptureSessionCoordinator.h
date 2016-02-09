@@ -31,6 +31,7 @@
 
 - (CMTime)recordedDuration;
 - (UIImage*) snapshotOfLastVideoBuffer;
+- (void)suggestedFileURL:(NSURL*)fileURL;
 
 - (AVCaptureVideoPreviewLayer *)previewLayer;
 

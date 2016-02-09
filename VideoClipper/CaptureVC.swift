@@ -12,7 +12,6 @@ import CoreData
 
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
-let keyStopMotionActive = "keyStopMotionActive"
 
 protocol CaptureVCDelegate {
 //	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
@@ -26,6 +25,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var currentLine:StoryLine? = nil {
 		didSet {
 			self.currentTitleCard = self.currentLine?.firstTitleCard()
+            self.currentVideoSegment = nil
+            self.selectedVideo = nil
 		}
 	}
 	
@@ -37,7 +38,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //	@IBOutlet var titleCardPlaceholder:UIView!
 	@IBOutlet weak var undoVideoButton: UIButton!
 	
-	@IBOutlet var segmentsCollectionView:UICollectionView!
+	@IBOutlet var collectionView:UICollectionView!
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
@@ -124,12 +125,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		
 		self.titleCardTable.selectRowAtIndexPath(self.selectedLineIndexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
 		
-		self.stopMotionButton.selected = NSUserDefaults.standardUserDefaults().boolForKey(keyStopMotionActive)
 		self.updateStopMotionWidgets()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
         _captureSessionCoordinator.startRunning()
+//        //        let lastIndexPath = NSIndexPath(forItem:self.currentLine!.videos().count-1,inSection:0)
+//        //        self.segmentsCollectionView.scrollToItemAtIndexPath(lastIndexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: true)
+//        self.segmentsCollectionView.setContentOffset(CGPoint(x:self.segmentsCollectionView.contentSize.width,y:0), animated: true)
 
 	}
 
@@ -169,10 +172,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             return Float64(0)
         }
         return CMTimeGetSeconds(durationInSeconds)
-	}
-	
-	func captureModeOff(){
-		
 	}
     
     //DEPRECATED
@@ -295,23 +294,20 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
 	@IBAction func stopMotionPressed(sender: UIButton) {
         self.layout().changeMode()
-        self.stopMotionButton.selected = self.layout().isCentered
         self.updateStopMotionWidgets()
 	}
 	
 	func updateStopMotionWidgets(){
+        self.stopMotionButton.selected = self.layout().isCentered
+        
 		var tintColor = UIColor.whiteColor()
 		if self.stopMotionButton.selected {
 			tintColor = UIColor(hexString: "#117AFF")!
 		}
-		
+        
 		UIView.animateWithDuration(0.2) { () -> Void in
 			self.stopMotionButton.tintColor = tintColor
 		}
-		
-		let userDefaults = NSUserDefaults.standardUserDefaults()
-		userDefaults.setBool(self.stopMotionButton.selected, forKey: keyStopMotionActive)
-		userDefaults.synchronize()
 	}
 	
 	@IBAction func lockPressed(sender: UISwitch) {
@@ -443,18 +439,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     func coordinator(coordinator: IDCaptureSessionCoordinator!, didFinishRecordingToOutputFileURL outputFileURL: NSURL!, error: NSError!) {
         UIApplication.sharedApplication().idleTimerDisabled = false
         self.isRecording = false
-        
-        //Do something useful with the video file available at the outputFileURL
-        let fm = IDFileManager()
-//        fm.copyFileToDocuments(outputFileURL)
-        
+    
         //This should happen in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
         self.saveVideoSegment(outputFileURL)
         
         self.updateGhostImage()
     }
     
-    func saveVideoSegment(fileURL:NSURL) {
+    func saveVideoSegment(finalPath:NSURL) {
         var tags = [TagMark]()
         for (color,time) in self.currentVideoSegment!.tagsPlaceholders {
             let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
@@ -474,6 +466,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
         elements.addObject(selectedVideo!)
         
+        selectedVideo!.path = finalPath.absoluteString
         selectedVideo!.thumbnail = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
 
         do {
@@ -504,6 +497,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.currentVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
         
         UIApplication.sharedApplication().idleTimerDisabled = true
+        
+        self._captureSessionCoordinator.suggestedFileURL(NSURL(fileURLWithPath: self.currentVideoSegment!.writePath()))
         self._captureSessionCoordinator.startRecording()
         
         self.ghostImageView.hidden = true
@@ -555,7 +550,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let spacing = layout.itemSize.width + layout.minimumInteritemSpacing
         let halfSpacing = spacing / 2
         
-        var pointToFind = CGPoint(x: self.segmentsCollectionView!.contentOffset.x + layout.commonOffset, y: self.segmentsCollectionView!.frame.height / 2)
+        var pointToFind = CGPoint(x: self.collectionView!.contentOffset.x + layout.commonOffset, y: self.collectionView!.frame.height / 2)
         
         let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
         
@@ -565,14 +560,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         currentVideoSegment!.tagsPlaceholders += self.recentTagPlaceholders
         currentVideoSegment!.snapshot = currentSnapshot
 
-        self.view.insertSubview(currentSnapshotView, aboveSubview: self.segmentsCollectionView)
+        self.view.insertSubview(currentSnapshotView, aboveSubview: self.collectionView)
         
         if !layout.isCentered {
             pointToFind.x += halfSpacing
         }
         print(pointToFind)
 
-        currentIndexPath = self.segmentsCollectionView!.indexPathForItemAtPoint(pointToFind)
+        currentIndexPath = self.collectionView!.indexPathForItemAtPoint(pointToFind)
 
         if layout.isCentered && currentIndexPath != nil {
             self.selectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
@@ -591,11 +586,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
-            if let finalFrame = self.segmentsCollectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(currentIndexPath!)?.frame {
-                currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.segmentsCollectionView)
+            if let finalFrame = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(currentIndexPath!)?.frame {
+                currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.collectionView)
             }
             
-            self.segmentsCollectionView.alpha = 0.75
+            self.collectionView.alpha = 0.75
+            self.topPanel.alpha = 0.75
             self.leftPanel.alpha = 0.75
             self.rightPanel.alpha = 0.75
             self.ghostPanel.alpha = 1
@@ -612,16 +608,16 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             }
         })
         
-        self.segmentsCollectionView?.performBatchUpdates({ () -> Void in
+        self.collectionView?.performBatchUpdates({ () -> Void in
             if layout.isCentered {
-                self.segmentsCollectionView?.reloadItemsAtIndexPaths([currentIndexPath!])
+                self.collectionView?.reloadItemsAtIndexPaths([currentIndexPath!])
             } else {
-                self.segmentsCollectionView?.insertItemsAtIndexPaths([currentIndexPath!])
+                self.collectionView?.insertItemsAtIndexPaths([currentIndexPath!])
             }
         }, completion: { (completed) -> Void in
             if !layout.isCentered {
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
-                    self.segmentsCollectionView?.setContentOffset(CGPoint(x:max(self.segmentsCollectionView!.contentOffset.x + spacing,0),y: 0), animated: false)
+                    self.collectionView?.setContentOffset(CGPoint(x:max(self.collectionView!.contentOffset.x + spacing,0),y: 0), animated: false)
                 }, completion: { (completed) -> Void in
                     self.shutterButton.enabled = true
                 })
@@ -863,15 +859,43 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		if self.selectedLineIndexPath! == indexPath {
 			self.performSegueWithIdentifier("modalTitleCardVC", sender: self)
+            return
 		}
+        let window = UIApplication.sharedApplication().delegate!.window!
+        let blockView = UIView(frame: window!.frame)
+        blockView.backgroundColor = UIColor.blackColor()
+        blockView.alpha = 0.5
+        blockView.userInteractionEnabled = false
+        window?.addSubview(blockView)
+        
+        let progressBar = MBProgressHUD.showHUDAddedTo(blockView, animated: true)
+        progressBar.show(true)
+        
 		self.selectedLineIndexPath = indexPath
 		let selectedLine = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
 		self.currentLine = selectedLine
-		NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: selectedLine)
+		
+//        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: selectedLine)
+        
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.collectionView.reloadSections(NSIndexSet(index: 0))
+        }, completion: { (completed) -> Void in
+            if completed {
+                progressBar.hide(true)
+                self.resetMarker()
+
+                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    blockView.alpha = 0
+                }, completion: { (completed) -> Void in
+                    blockView.removeFromSuperview()
+                })
+            }
+        })
+        
 	}
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {
-		let project = self.currentLine!.project! 
+		let project = self.currentLine!.project!
 		let j = project.storyLines!.count + 1
 		
 		let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
@@ -926,11 +950,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     var markerHeight = CGFloat(0)
 
     func layout() -> CenteredFlowLayout {
-        return self.segmentsCollectionView?.collectionViewLayout as! CenteredFlowLayout
+        return self.collectionView?.collectionViewLayout as! CenteredFlowLayout
     }
     
     func prepareMarker(){
-        let layout = self.segmentsCollectionView?.collectionViewLayout as! CenteredFlowLayout
+        let layout = self.collectionView?.collectionViewLayout as! CenteredFlowLayout
         
         markerSpacing = layout.minimumInteritemSpacing / 2
         markerSmallWidth = layout.minimumInteritemSpacing / 2
@@ -942,13 +966,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         marker.translatesAutoresizingMaskIntoConstraints = false
         marker.backgroundColor = UIColor.redColor()
         self.topPanel.addSubview(marker)
-        marker.bypassToView = self.topPanel
+        marker.bypassToView = self.collectionView
         marker.delegate = self
         markerWidthConstraint = NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerSmallWidth)
         marker.addConstraint(markerWidthConstraint!)
         marker.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerHeight))
-        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
-        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
+        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.topPanel!, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
+        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.topPanel!, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
     }
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
@@ -974,6 +998,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.marker.backgroundColor = UIColor.redColor()
             
             self.view.layoutIfNeeded()
+            self.collectionView.setContentOffset(CGPointZero, animated: true)
         }
         
         if animated {
@@ -987,7 +1012,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func layout(layout: CenteredFlowLayout, changedModeTo isCentered: Bool) {
         updateMarkerShape(isCentered)
-        
+        updateStopMotionWidgets()
     }
     
     func updateMarkerShape(isCentered: Bool) {

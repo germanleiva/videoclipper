@@ -14,7 +14,7 @@ protocol MarkerReusableViewDelegate {
 
 class MarkerReusableView: UICollectionReusableView {
     var delegate:MarkerReusableViewDelegate? = nil
-    var bypassToView:UIView!
+    var bypassToView:UICollectionView!
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
         if hitView == self {

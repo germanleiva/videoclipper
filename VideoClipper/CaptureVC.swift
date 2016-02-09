@@ -47,6 +47,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	@IBOutlet weak var recordingIndicator: UIView!
 	
 	@IBOutlet weak var previewView: UIView!
+    @IBOutlet weak var topPanel: UIView!
 	@IBOutlet weak var rightPanel: UIView!
 	@IBOutlet weak var leftPanel: UIView!
 	@IBOutlet weak var ghostPanel: UIStackView!
@@ -292,26 +293,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	@IBAction func undoPressed(sender:UIButton?) {
     }
 
-
-    //TODO
-//	@IBAction func stopMotionPressed(sender: UIButton) {
-//		if self.stopMotionButton.selected && self._recorder.session!.segments.count > 1 {
-//			let alert = UIAlertController(title: "Unsaved video", message: "Do you want to discard the \(self._recorder.session!.segments.count) video segments recorded?", preferredStyle: UIAlertControllerStyle.Alert)
-//			alert.addAction(UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-//				self.deleteSegments()
-//				
-//				self.stopMotionButton.selected = !sender.selected
-//				self.updateStopMotionWidgets()
-//				self.updateTimeRecordedLabel()
-//			}))
-//			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-//			}))
-//			self.presentViewController(alert, animated: true, completion: nil)
-//		} else {
-//			self.stopMotionButton.selected = !sender.selected
-//			self.updateStopMotionWidgets()
-//		}
-//	}
+	@IBAction func stopMotionPressed(sender: UIButton) {
+        self.layout().changeMode()
+        self.stopMotionButton.selected = self.layout().isCentered
+        self.updateStopMotionWidgets()
+	}
 	
 	func updateStopMotionWidgets(){
 		var tintColor = UIColor.whiteColor()
@@ -321,21 +307,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		
 		UIView.animateWithDuration(0.2) { () -> Void in
 			self.stopMotionButton.tintColor = tintColor
-		}
-		
-		if self.stopMotionButton.selected {
-			self.segmentsCollectionView.hidden = false
-			self.topCollectionViewLayout.constant = 0
-		} else {
-			self.topCollectionViewLayout.constant = -self.segmentsCollectionView.frame.height
-		}
-		
-		UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			self.view.layoutIfNeeded()
-			}) { (completed) -> Void in
-				if !self.stopMotionButton.selected {
-					self.segmentsCollectionView.hidden = true
-				}
 		}
 		
 		let userDefaults = NSUserDefaults.standardUserDefaults()
@@ -545,7 +516,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         };
         
         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-            self.segmentsCollectionView.alpha = 0
+            self.topPanel.alpha = 0
             self.leftPanel.alpha = 0
             self.rightPanel.alpha = 0
             self.ghostPanel.alpha = 0
@@ -835,17 +806,23 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let video = self.currentLine!.videos()[indexPath.item]
 
         if let imageData = video.thumbnail {
-            videoSegmentCell.thumbnail!.image = UIImage(data: imageData)
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
+                let image = UIImage(data: imageData)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    videoSegmentCell.thumbnail!.image = image
+                })
+            })            
         } else {
             //TODO WORKAROUND for empty videoClip
             videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
         }
         
-		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
-			if eachTagLine != videoSegmentCell.thumbnail! {
-				eachTagLine.removeFromSuperview()
-			}
-		}
+//		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
+//			if eachTagLine != videoSegmentCell.thumbnail! {
+//				eachTagLine.removeFromSuperview()
+//			}
+//		}
 		
 //		for (color,time) in video.tagsPlaceholders {
 //			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoSegmentCell.contentView.frame.height))
@@ -964,14 +941,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         marker.translatesAutoresizingMaskIntoConstraints = false
         marker.backgroundColor = UIColor.redColor()
-        self.view!.addSubview(marker)
-        marker.bypassToView = self.segmentsCollectionView!
+        self.topPanel.addSubview(marker)
+        marker.bypassToView = self.topPanel
         marker.delegate = self
         markerWidthConstraint = NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerSmallWidth)
         marker.addConstraint(markerWidthConstraint!)
         marker.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerHeight))
-        self.view!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
-        self.view!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
+        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0))
+        self.topPanel!.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.CenterY, relatedBy: NSLayoutRelation.Equal, toItem: self.segmentsCollectionView!, attribute: NSLayoutAttribute.CenterY, multiplier: 1, constant: 0))
     }
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {

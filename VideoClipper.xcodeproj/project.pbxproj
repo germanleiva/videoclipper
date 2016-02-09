@@ -287,6 +287,7 @@
 		A4561B441C68F80F00AA4346 /* CaptureVC */ = {
 			isa = PBXGroup;
 			children = (
+				A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */,
 				A4561B471C68F8F600AA4346 /* MarkerReusableView.swift */,
 				A4561B451C68F88600AA4346 /* CenteredFlowLayout.swift */,
 				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
@@ -358,7 +359,6 @@
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
 				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
 				A4561B441C68F80F00AA4346 /* CaptureVC */,
-				A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,

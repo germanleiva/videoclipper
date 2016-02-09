@@ -11,4 +11,8 @@ import UIKit
 class VideoSegmentCollectionCell: UICollectionViewCell {
 	@IBOutlet var thumbnail:UIImageView!
 
+    override func prepareForReuse() {
+        print("Reusing")
+        self.thumbnail.image = nil
+    }
 }

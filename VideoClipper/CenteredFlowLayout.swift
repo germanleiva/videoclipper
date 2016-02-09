@@ -17,7 +17,6 @@ class CenteredFlowLayout: UICollectionViewFlowLayout {
     
     var isCentered = false {
         didSet {
-            print(isCentered ? "isCentered":"isNOTCentered")
             self.delegate?.layout(self, changedModeTo: isCentered)
         }
     }
@@ -44,7 +43,6 @@ class CenteredFlowLayout: UICollectionViewFlowLayout {
     }
     
     override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        print(proposedContentOffset)
         let spacing = self.itemSize.width + self.minimumInteritemSpacing
         let halfSpacing = spacing / 2
         
@@ -52,25 +50,24 @@ class CenteredFlowLayout: UICollectionViewFlowLayout {
         
         let finalX = halfSpacing * count
         
-        if finalX % spacing == 0 {
-            print("Ended up not centered")
-            self.isCentered = false
-            
-        } else {
-            print("Ended up centered")
-            self.isCentered = true
-        }
+        self.isCentered = finalX % spacing != 0
         
         return CGPoint(x: finalX, y: proposedContentOffset.y)
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var attributesArray = [UICollectionViewLayoutAttributes]()
+//        var attributesArray = [UICollectionViewLayoutAttributes]()
+//        
+//        for attributes in super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))! {
+//            let copiedAttributes = attributes.copy() as! UICollectionViewLayoutAttributes
+//            self.applyLayoutAttributes(copiedAttributes)
+//            attributesArray.append(copiedAttributes)
+//        }
+//        return attributesArray
         
-        for attributes in super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))! {
-            let copiedAttributes = attributes.copy() as! UICollectionViewLayoutAttributes
-            self.applyLayoutAttributes(copiedAttributes)
-            attributesArray.append(copiedAttributes)
+        let attributesArray = super.layoutAttributesForElementsInRect(CGRectOffset(rect,-self.commonOffset,0))!
+        for attributes in attributesArray {
+            self.applyLayoutAttributes(attributes)
         }
         return attributesArray
     }
@@ -82,7 +79,7 @@ class CenteredFlowLayout: UICollectionViewFlowLayout {
     }
 
     func applyLayoutAttributes(attributes: UICollectionViewLayoutAttributes) -> Void {
-        // Check for representedElementKind being nil, indicating this is // a cell and not a header or decoration view
+        // Check for representedElementKind being nil, indicating this is a cell and not a header or decoration view
             
         if (attributes.representedElementKind == nil) {
             attributes.center = CGPoint(x: attributes.center.x + self.commonOffset, y: attributes.center.y)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8nJ-LI-FZ9">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8nJ-LI-FZ9">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -719,9 +719,9 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <state key="normal" title="Save"/>
+                                        <state key="normal" title="Undo"/>
                                         <connections>
-                                            <action selector="savePressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="F2p-Q7-c7P"/>
+                                            <action selector="undoPressed:" destination="Gc3-vh-ICn" eventType="touchUpInside" id="TYa-BW-w29"/>
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfs-iX-asy">
@@ -1039,10 +1039,10 @@
                                 <exclude reference="pqy-PL-EGR"/>
                                 <exclude reference="oyb-Ct-hya"/>
                                 <exclude reference="gdk-bx-k4U"/>
+                                <exclude reference="OQo-om-KKJ"/>
                                 <exclude reference="Act-nQ-CM5"/>
                                 <exclude reference="DdA-je-uZK"/>
                                 <exclude reference="s9E-h6-aM7"/>
-                                <exclude reference="OQo-om-KKJ"/>
                                 <exclude reference="Cnn-K1-Dil"/>
                                 <exclude reference="wgR-Jx-uC2"/>
                                 <exclude reference="cQZ-WO-aXm"/>
@@ -1056,8 +1056,6 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="ghostImageView" destination="RFp-Dy-GI4" id="HS1-sm-xsv"/>
-                        <outlet property="ghostOff" destination="DT8-X9-Ero" id="Uur-BK-pTG"/>
-                        <outlet property="ghostOn" destination="196-sv-NVP" id="A9L-5R-ne3"/>
                         <outlet property="ghostPanel" destination="hbb-xS-A70" id="QJn-HZ-HUz"/>
                         <outlet property="ghostSlider" destination="j7J-zU-3Ar" id="Shh-aA-SDS"/>
                         <outlet property="leftPanel" destination="jTQ-Ew-l5Z" id="mn6-9i-Rfz"/>
@@ -1066,7 +1064,6 @@
                         <outlet property="recordingIndicator" destination="LEr-qt-z1o" id="11Q-dL-Cfi"/>
                         <outlet property="recordingTime" destination="h8j-WV-yjo" id="pkL-xc-OwG"/>
                         <outlet property="rightPanel" destination="jm3-Ha-A9m" id="EdA-I1-z0K"/>
-                        <outlet property="saveVideoButton" destination="f7a-Fw-T3a" id="g87-uB-vUh"/>
                         <outlet property="segmentsCollectionView" destination="KRD-tb-rJw" id="sX4-9m-FQi"/>
                         <outlet property="shutterButton" destination="cAE-1c-Yb9" id="BkS-Sz-Qr7"/>
                         <outlet property="shutterLock" destination="bgI-zh-lHz" id="rrB-jo-3vm"/>
@@ -1074,6 +1071,7 @@
                         <outlet property="taggingPanel" destination="IFM-7O-i6d" id="CJG-Pz-CYS"/>
                         <outlet property="titleCardTable" destination="SYg-sM-bRG" id="Je6-YB-EEg"/>
                         <outlet property="topCollectionViewLayout" destination="4rZ-aL-f3h" id="vPm-Xb-9Us"/>
+                        <outlet property="undoVideoButton" destination="f7a-Fw-T3a" id="S6W-Qm-WMr"/>
                         <outlet property="videoPlaceholder" destination="bfs-iX-asy" id="9M6-75-n8y"/>
                     </connections>
                 </viewController>

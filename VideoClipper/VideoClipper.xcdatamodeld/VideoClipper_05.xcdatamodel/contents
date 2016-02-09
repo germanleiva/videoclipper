@@ -56,13 +56,13 @@
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="startPoint" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
-        <relationship name="paths" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="VideoSegment" inverseName="video" inverseEntity="VideoSegment" syncable="YES"/>
+        <relationship name="segments" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="VideoSegment" inverseName="video" inverseEntity="VideoSegment" syncable="YES"/>
         <relationship name="tags" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TagMark" inverseName="video" inverseEntity="TagMark" syncable="YES"/>
         <relationship name="thumbnailImages" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Thumbnail" inverseName="video" inverseEntity="Thumbnail" syncable="YES"/>
     </entity>
     <entity name="VideoSegment" representedClassName=".VideoSegment" syncable="YES">
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="paths" inverseEntity="VideoClip" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="segments" inverseEntity="VideoClip" syncable="YES"/>
     </entity>
     <elements>
         <element name="ImageWidget" positionX="-153" positionY="81" width="128" height="133"/>
@@ -73,7 +73,7 @@
         <element name="TextWidget" positionX="-162" positionY="156" width="128" height="165"/>
         <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
         <element name="TitleCard" positionX="117" positionY="216" width="128" height="120"/>
-        <element name="VideoClip" positionX="304" positionY="201" width="128" height="148"/>
+        <element name="VideoClip" positionX="304" positionY="201" width="128" height="150"/>
         <element name="VideoSegment" positionX="171" positionY="108" width="128" height="75"/>
     </elements>
 </model>

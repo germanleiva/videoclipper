@@ -13,5 +13,7 @@ import CoreData
 class VideoSegment: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-
+    var snapshot:UIImage?
+    var time = Float64(0)
+    var tagsPlaceholders = [(UIColor,Float64)]()
 }

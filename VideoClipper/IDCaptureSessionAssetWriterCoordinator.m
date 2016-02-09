@@ -49,7 +49,6 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 @property(nonatomic, retain) __attribute__((NSObject)) CMFormatDescriptionRef outputAudioFormatDescription;
 @property(nonatomic, retain) IDAssetWriterCoordinator *assetWriterCoordinator;
 
-@property (nonatomic) CMTime lastSampleTime;
 @property (nonatomic) SCSampleBufferHolder *lastVideoBuffer;
 @property (nonatomic) UIImage *snapshotOfLastVideoBuffer;
 
@@ -66,8 +65,6 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
         self.audioDataOutputQueue = dispatch_queue_create( "com.example.capturesession.audiodata", DISPATCH_QUEUE_SERIAL );
         [self addDataOutputsToCaptureSession:self.captureSession];
         _lastVideoBuffer = [SCSampleBufferHolder new];
-        _lastSampleTime = kCMTimeZero;
-
     }
     return self;
 }
@@ -173,7 +170,6 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
                 if(_recordingStatus == RecordingStatusRecording){
                     _lastVideoBuffer.sampleBuffer = sampleBuffer;
                     _snapshotOfLastVideoBuffer = nil;
-                    _lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
                     [_assetWriterCoordinator appendVideoSampleBuffer:sampleBuffer];
                 }
             }
@@ -268,7 +264,10 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 }
 
 - (CMTime)recordedDuration {
-    return _lastSampleTime;
+    if (_lastVideoBuffer.sampleBuffer == nil) {
+        return kCMTimeZero;
+    }
+    return CMSampleBufferGetDuration(_lastVideoBuffer.sampleBuffer);
 }
 
 - (UIImage *)snapshotOfLastVideoBuffer {

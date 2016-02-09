@@ -128,19 +128,19 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL,tags:[TagMark]) {
-		let library = ALAssetsLibrary()
+//		let library = ALAssetsLibrary()
 //		let pathURL = NSURL(fileURLWithPath: pathString)
 		
 		//		library.saveVideo is used to save on an album
-		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(pathURL) {
-			library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
-				if errorOnSaving != nil {
-					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
-					return
-				}
-				self.createNewVideoForAssetURL(assetURL,tags: tags)
-			}
-		}
+//		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(pathURL) {
+//			library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
+//				if errorOnSaving != nil {
+//					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
+//					return
+//				}
+				self.createNewVideoForAssetURL(pathURL,tags: tags)
+//			}
+//		}
 	}
 	
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine) {

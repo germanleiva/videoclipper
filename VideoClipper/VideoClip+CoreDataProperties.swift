@@ -20,6 +20,6 @@ extension VideoClip {
     @NSManaged var thumbnail: NSData?
     @NSManaged var tags: NSOrderedSet?
     @NSManaged var thumbnailImages: NSOrderedSet?
-    @NSManaged var paths: NSOrderedSet?
+    @NSManaged var segments: NSOrderedSet?
 
 }

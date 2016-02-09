@@ -439,11 +439,41 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     func coordinator(coordinator: IDCaptureSessionCoordinator!, didFinishRecordingToOutputFileURL outputFileURL: NSURL!, error: NSError!) {
         UIApplication.sharedApplication().idleTimerDisabled = false
         self.isRecording = false
-    
-        //This should happen in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
-        self.saveVideoSegment(outputFileURL)
-        
         self.updateGhostImage()
+
+        //This happens in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
+        
+        let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        temporaryContext.parentContext = self.context
+        
+        temporaryContext.performBlock { () -> Void in
+            self.saveVideoSegment(outputFileURL)
+            
+            do {
+                try temporaryContext.save()
+            } catch {
+                // handle error
+            }
+            
+            self.context.performBlock({ () -> Void in
+                do {
+                    defer {
+                        //If we need a "finally"
+                        
+                    }
+                    try self.context.save()
+                    
+                    self.currentVideoSegment = nil
+                    self.selectedVideo = nil
+                    
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.delegate?.captureVC(self, didChangeStoryLine: self.currentLine!)
+                    })
+                } catch {
+                    // handle error
+                }
+            })
+        }
     }
     
     func saveVideoSegment(finalPath:NSURL) {
@@ -467,21 +497,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         elements.addObject(selectedVideo!)
         
         selectedVideo!.path = finalPath.absoluteString
-        selectedVideo!.thumbnail = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
-
-        do {
-            defer {
-                //If we need a "finally"
-                
-            }
-            try self.context.save()
-            self.currentVideoSegment = nil
-            self.selectedVideo = nil
-            self.delegate?.captureVC(self, didChangeStoryLine: self.currentLine!)
-        } catch {
-            print("Couldn't save new video in the DB")
-            print(error)
-        }
+        selectedVideo!.thumbnailData = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
     }
 	
 	//-MARK: private start/stop helper methods
@@ -801,14 +817,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let video = self.currentLine!.videos()[indexPath.item]
 
-        if let imageData = video.thumbnail {
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
-                let image = UIImage(data: imageData)
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    videoSegmentCell.thumbnail!.image = image
-                })
-            })            
+        if let image = video.thumbnailImage {
+            videoSegmentCell.thumbnail!.image = image
         } else {
             //TODO WORKAROUND for empty videoClip
             videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
@@ -998,7 +1008,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.marker.backgroundColor = UIColor.redColor()
             
             self.view.layoutIfNeeded()
-            self.collectionView.setContentOffset(CGPointZero, animated: true)
+//            self.collectionView.setContentOffset(CGPointZero, animated: true)
         }
         
         if animated {

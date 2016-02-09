@@ -80,4 +80,18 @@ class VideoClip: StoryElement {
 		}
 		return nil
 	}
+    
+    private var _thumbnailImage:UIImage? = nil
+    var thumbnailImage:UIImage? {
+        get {
+            if _thumbnailImage == nil && self.thumbnailData != nil {
+                _thumbnailImage = UIImage(data: self.thumbnailData!)
+            }
+            return _thumbnailImage
+        }
+        set {
+            _thumbnailImage = newValue
+        }
+    }
+    
 }

@@ -786,7 +786,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
 		
-		if videoElement.thumbnail == nil {
+		if videoElement.thumbnailData == nil {
 			videoCell.loader?.startAnimating()
 
 			let url = NSURL(string: videoElement.path!)
@@ -800,7 +800,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				let image = UIImage(CGImage: imageRef)
 //				CGImageRelease(imageRef)
 				let imageData = NSData(data: UIImagePNGRepresentation(image)!)
-				videoElement.thumbnail = imageData
+				videoElement.thumbnailData = imageData
 				
 				try self.context.save()
 			} catch {
@@ -809,7 +809,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 
 		videoCell.loader?.stopAnimating()
-		videoCell.thumbnail?.image = UIImage(data: videoElement.thumbnail!)
+		videoCell.thumbnail?.image = UIImage(data: videoElement.thumbnailData!)
 		
 		for eachTagLine in [UIView](videoCell.contentView.subviews) {
 			if eachTagLine != videoCell.thumbnail! {

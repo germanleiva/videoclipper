@@ -66,10 +66,10 @@ class VideoClip: StoryElement {
         return true
 	}
 	
-	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-		super.init(entity: entity, insertIntoManagedObjectContext: context)
-		self.loadAsset()
-	}
+//	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+//		super.init(entity: entity, insertIntoManagedObjectContext: context)
+//		self.loadAsset()
+//	}
 	
 	func findById(id:Int)->TagMark? {
 		let results = self.tags!.filter { (eachTag) -> Bool in
@@ -92,6 +92,11 @@ class VideoClip: StoryElement {
         set {
             _thumbnailImage = newValue
         }
+    }
+    
+    override func awakeFromFetch() {
+        super.awakeFromFetch()
+        self.loadAsset()
     }
     
 }

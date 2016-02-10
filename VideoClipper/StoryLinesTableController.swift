@@ -56,7 +56,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 	var progressBar:MBProgressHUD? = nil
 	
-	var isCompact = false
+    var isCompact = false
 	
 	let longPress: UILongPressGestureRecognizer = {
 		let recognizer = UILongPressGestureRecognizer()
@@ -786,7 +786,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
 		
-		if videoElement.thumbnailData == nil {
+		if videoElement.thumbnailImage == nil {
 			videoCell.loader?.startAnimating()
 
 			let url = NSURL(string: videoElement.path!)
@@ -801,7 +801,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 //				CGImageRelease(imageRef)
 				let imageData = NSData(data: UIImagePNGRepresentation(image)!)
 				videoElement.thumbnailData = imageData
-				
+				videoElement.thumbnailImage = image
+                
 				try self.context.save()
 			} catch {
 				print("Couldn't generate thumbnail for video: \(error)")
@@ -809,7 +810,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 
 		videoCell.loader?.stopAnimating()
-		videoCell.thumbnail?.image = UIImage(data: videoElement.thumbnailData!)
+		videoCell.thumbnail?.image = videoElement.thumbnailImage
 		
 		for eachTagLine in [UIView](videoCell.contentView.subviews) {
 			if eachTagLine != videoCell.thumbnail! {

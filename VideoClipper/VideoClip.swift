@@ -52,15 +52,15 @@ class VideoClip: StoryElement {
 			print("The path is nil so I will use the path of the first segment")
             if self.segments?.count == 0 {
                 print("I don't have segments yet")
-                return false
+                abort() //return false
             }
             if let firstSegmentPath = (self.segments?.firstObject as! VideoSegment).path {
                 self.asset = AVURLAsset(URL: NSURL(string: firstSegmentPath)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
                 }
             } else {
-                print("This shouldn't happen - deleting videoClip")
-                return false
+                print("This shouldn't happen")
+                abort() //return false
             }
         }
         return true

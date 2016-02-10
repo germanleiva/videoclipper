@@ -62,7 +62,7 @@
     </entity>
     <entity name="VideoSegment" representedClassName=".VideoSegment" syncable="YES">
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VideoClip" inverseName="segments" inverseEntity="VideoClip" syncable="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" ordered="YES" destinationEntity="VideoClip" inverseName="segments" inverseEntity="VideoClip" syncable="YES"/>
     </entity>
     <elements>
         <element name="ImageWidget" positionX="-153" positionY="81" width="128" height="133"/>
@@ -70,10 +70,10 @@
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="75"/>
         <element name="StoryLine" positionX="-72" positionY="-63" width="128" height="105"/>
         <element name="TagMark" positionX="-153" positionY="81" width="128" height="90"/>
-        <element name="TextWidget" positionX="-162" positionY="156" width="128" height="165"/>
+        <element name="TextWidget" positionX="-72" positionY="360" width="128" height="165"/>
         <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
-        <element name="TitleCard" positionX="117" positionY="216" width="128" height="120"/>
+        <element name="TitleCard" positionX="54" positionY="117" width="128" height="120"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="150"/>
-        <element name="VideoSegment" positionX="171" positionY="108" width="128" height="75"/>
+        <element name="VideoSegment" positionX="286" positionY="528" width="128" height="73"/>
     </elements>
 </model>

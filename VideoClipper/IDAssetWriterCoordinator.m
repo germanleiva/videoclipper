@@ -55,7 +55,8 @@ typedef NS_ENUM(NSInteger, WriterStatus){
     self = [super init];
     if (self) {
         _writingQueue = dispatch_queue_create( "com.example.assetwriter.writing", DISPATCH_QUEUE_SERIAL );
-        _videoTrackTransform = CGAffineTransformMakeRotation(M_PI_2); //portrait orientation
+//        _videoTrackTransform = CGAffineTransformMakeRotation(M_PI_2); //portrait orientation
+//        _videoTrackTransform = CGAffineTransformMakeRotation(0 * M_PI); //landscape right
         _URL = URL;
     }
     return self;
@@ -142,7 +143,7 @@ typedef NS_ENUM(NSInteger, WriterStatus){
             // AVAssetWriter will not write over an existing file.
             [[NSFileManager defaultManager] removeItemAtURL:_URL error:NULL];
             _assetWriter = [[AVAssetWriter alloc] initWithURL:_URL fileType:AVFileTypeQuickTimeMovie error:&error];
-            
+
             // Create and add inputs
             if (!error && _videoTrackSourceFormatDescription) {
                 [self setupAssetWriterVideoInputWithSourceFormatDescription:_videoTrackSourceFormatDescription transform:_videoTrackTransform settings:_videoTrackSettings error:&error];
@@ -438,7 +439,7 @@ typedef NS_ENUM(NSInteger, WriterStatus){
     NSString *localizedFailureReason = NSLocalizedString( @"Cannot setup asset writer input.", nil );
     NSDictionary *errorDict = @{ NSLocalizedDescriptionKey : localizedDescription,
                                  NSLocalizedFailureReasonErrorKey : localizedFailureReason };
-    return [NSError errorWithDomain:@"com.example" code:0 userInfo:errorDict];
+    return [NSError errorWithDomain:@"fr.lri.exsitu.VideoClipper" code:0 userInfo:errorDict];
 }
 
 @end

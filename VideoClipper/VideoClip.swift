@@ -41,29 +41,37 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-	func loadAsset() -> Bool{
+    func loadAsset(completionHandler:(() -> Void)?){
+        if let _ = self.asset {
+            completionHandler?()
+            return
+        }
+        
 		if let path = self.path {
 			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
 			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
-				//Nothing
-				//				print("Asset keys loaded")
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    completionHandler?()
+                })
 			}
 		} else {
 			print("The path is nil so I will use the path of the first segment")
             if self.segments?.count == 0 {
                 print("I don't have segments yet")
-                abort() //return false
+                abort()
             }
             if let firstSegmentPath = (self.segments?.firstObject as! VideoSegment).path {
                 self.asset = AVURLAsset(URL: NSURL(string: firstSegmentPath)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        completionHandler?()
+                    })
                 }
             } else {
                 print("This shouldn't happen")
-                abort() //return false
+                abort()
             }
         }
-        return true
 	}
 	
 //	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -96,7 +104,7 @@ class VideoClip: StoryElement {
     
     override func awakeFromFetch() {
         super.awakeFromFetch()
-        self.loadAsset()
+//        self.loadAsset()
     }
     
 }

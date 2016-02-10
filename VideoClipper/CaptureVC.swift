@@ -115,6 +115,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.selectedLineIndexPath = NSIndexPath(forRow: rowIndex!, inSection: 0)
         
         self.prepareMarker()
+        
+        self.collectionView.backgroundColor = UIColor.clearColor()
+        self.collectionView.backgroundView = UIView(frame: CGRectZero)
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -496,7 +499,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
         elements.addObject(selectedVideo!)
         
-        selectedVideo!.path = finalPath.absoluteString
+        self.currentVideoSegment!.path = finalPath.path
+        
         selectedVideo!.thumbnailData = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
     }
 	
@@ -841,7 +845,118 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        print("Selected NOT centered video")
+        self.playVideo(self.currentLine?.videos()[indexPath.item])
+    }
+    
+    func playVideo(tappedVideo:VideoClip?) {
+        let window = UIApplication.sharedApplication().delegate!.window!
+        
+        let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        progressBar.show(true)
+        
+        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+        
+        let errorBlock = { (error:NSError) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                print("Error - \(error.debugDescription)");
+                UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                progressBar.hide(true)
+            })
+        }
+        
+        let assetLoadingGroup = dispatch_group_create();
+        
+        if let allSegments = tappedVideo?.segments {
+            
+            let mutableComposition = AVMutableComposition()
+            let videoCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
+            let audioCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+            var instructions = [AVMutableVideoCompositionInstruction]()
+            var size = CGSizeZero
+            var time = kCMTimeZero
+            
+            for each in allSegments {
+                let eachSegment = each as!VideoSegment
+                let asset = AVAsset(URL: NSURL(string: eachSegment.path!)!)
+                
+                let fileManager = NSFileManager()
+                if fileManager.fileExistsAtPath(eachSegment.path!) {
+                    print("The file exists \(eachSegment.path!)")
+                } else {
+                    print("The file DOES NOT exist \(eachSegment.path!)")
+                }
+//                
+                dispatch_group_enter(assetLoadingGroup);
+                
+//                asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                    var error:NSErrorPointer = nil
+                    switch asset.statusOfValueForKey("tracks", error: error) {
+                    case AVKeyValueStatus.Loaded:
+                        print("Loaded: \(error.debugDescription)")
+                    case .Unknown:
+                        print("Unknown: \(error.debugDescription)")
+                    case .Loading:
+                        print("Loading: \(error.debugDescription)")
+                    case .Failed:
+                        print("Failed: \(error.debugDescription)")
+                    case .Cancelled:
+                        print("Cancelled: \(error.debugDescription)")
+                        
+                    }
+                    
+                    let assetTrack = asset.tracksWithMediaCharacteristic(AVMediaTypeVideo).first
+                    let audioAssetTrack = asset.tracksWithMediaCharacteristic(AVMediaTypeAudio).first
+                    
+                    do {
+                        try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
+                    } catch let error as NSError {
+                        errorBlock(error)
+                    }
+                    
+                    do {
+                        try audioCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: audioAssetTrack!, atTime: time)
+                    } catch let error as NSError {
+                        errorBlock(error)
+                    }
+                    
+                    let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
+                    videoCompositionInstruction.timeRange = CMTimeRange(start: time, duration: assetTrack!.timeRange.duration);
+                    videoCompositionInstruction.layerInstructions = [AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)]
+                    instructions.append(videoCompositionInstruction)
+                    
+                    time = CMTimeAdd(time, assetTrack!.timeRange.duration)
+                    
+                    if (CGSizeEqualToSize(size, CGSizeZero)) {
+                        size = assetTrack!.naturalSize
+                    }
+                    
+//                    dispatch_group_leave(assetLoadingGroup);
+//                })
+            }
+            
+//            dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+                let mutableVideoComposition = AVMutableVideoComposition()
+                mutableVideoComposition.instructions = instructions;
+                
+                // Set the frame duration to an appropriate value (i.e. 30 frames per second for video).
+                mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
+                mutableVideoComposition.renderSize = size;
+                
+                let playerItem = AVPlayerItem(asset: mutableComposition)
+                playerItem.videoComposition = mutableVideoComposition
+                
+                let player = AVPlayer(playerItem: playerItem)
+                
+                let playerController = AVPlayerViewController()
+                playerController.player = player
+                self.presentViewController(playerController, animated: true, completion: { () -> Void in
+                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                    progressBar.hide(true)
+                    playerController.view.frame = self.view.frame
+                    player.play()
+                })
+//            })
+        }
     }
 	
 	//-MARK: Table View Data Source
@@ -973,11 +1088,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         layout.delegate = self
         
+        marker.userInteractionEnabled = true
         marker.translatesAutoresizingMaskIntoConstraints = false
         marker.backgroundColor = UIColor.redColor()
-        self.topPanel.addSubview(marker)
-        marker.bypassToView = self.collectionView
-        marker.delegate = self
+        self.topPanel.insertSubview(marker, belowSubview: self.collectionView)
+//        marker.bypassToView = self.collectionView
+//        marker.delegate = self
         markerWidthConstraint = NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerSmallWidth)
         marker.addConstraint(markerWidthConstraint!)
         marker.addConstraint(NSLayoutConstraint(item: marker, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: markerHeight))
@@ -993,7 +1109,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     func didTouchMarker() {
         if self.layout().isCentered {
             //workaround, didSelectItemAtIndexPath was not called when the marker was touched
-            print("Selected centered video")
+            
+            if let selectedIndexPath = self.collectionView.indexPathForItemAtPoint(CGPoint(x: marker.center.x+self.collectionView.contentOffset.x, y: marker.center.y)) {
+                self.playVideo(self.currentLine?.videos()[selectedIndexPath.item])
+            }
         }
     }
     

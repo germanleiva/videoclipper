@@ -642,7 +642,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 				
 				for eachElement in clonedLine.elements! {
 					if (eachElement as! StoryElement).isVideo() {
-						(eachElement as! VideoClip).loadAsset()
+						(eachElement as! VideoClip).loadAsset(nil)
 					} else {
 						(eachElement as! TitleCard).generateAsset(VideoHelper())
 					}

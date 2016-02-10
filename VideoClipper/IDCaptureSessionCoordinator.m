@@ -99,7 +99,7 @@
     AVCaptureSession *captureSession = [AVCaptureSession new];
     
     //Added to remove the by default zooming of the preview layer
-    captureSession.sessionPreset = AVCaptureSessionPresetPhoto;
+//    captureSession.sessionPreset = AVCaptureSessionPresetPhoto;
     
     if(![self addDefaultCameraInputToCaptureSession:captureSession]){
         NSLog(@"failed to add camera input to capture session");

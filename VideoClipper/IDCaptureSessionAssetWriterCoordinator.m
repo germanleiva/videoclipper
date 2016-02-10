@@ -52,6 +52,8 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 @property (nonatomic) SCSampleBufferHolder *lastVideoBuffer;
 @property (nonatomic) UIImage *snapshotOfLastVideoBuffer;
 
+@property (nonatomic) CMTime initialTime;
+
 @end
 
 @implementation IDCaptureSessionAssetWriterCoordinator
@@ -97,7 +99,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
     }
     [_assetWriterCoordinator addVideoTrackWithSourceFormatDescription:self.outputVideoFormatDescription settings:_videoCompressionSettings];
     
-    dispatch_queue_t callbackQueue = dispatch_queue_create( "com.example.capturesession.writercallback", DISPATCH_QUEUE_SERIAL ); // guarantee ordering of callbacks with a serial queue
+    dispatch_queue_t callbackQueue = dispatch_queue_create( "fr.lri.existu.VideoClipper.capturesession.writercallback", DISPATCH_QUEUE_SERIAL ); // guarantee ordering of callbacks with a serial queue
     [_assetWriterCoordinator setDelegate:self callbackQueue:callbackQueue];
     [_assetWriterCoordinator prepareToRecord]; // asynchronous, will call us back with recorderDidFinishPreparing: or recorder:didFailWithError: when done
 }
@@ -175,6 +177,11 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
                 if(_recordingStatus == RecordingStatusRecording){
                     _lastVideoBuffer.sampleBuffer = sampleBuffer;
                     _snapshotOfLastVideoBuffer = nil;
+                    
+                    if (CMTIME_IS_INVALID(_initialTime)) {
+                        _initialTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+                    }
+                    
                     [_assetWriterCoordinator appendVideoSampleBuffer:sampleBuffer];
                 }
             }
@@ -272,7 +279,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
     if (_lastVideoBuffer.sampleBuffer == nil) {
         return kCMTimeZero;
     }
-    return CMSampleBufferGetDuration(_lastVideoBuffer.sampleBuffer);
+    return CMTimeSubtract(CMSampleBufferGetPresentationTimeStamp(_lastVideoBuffer.sampleBuffer),_initialTime);
 }
 
 - (UIImage *)snapshotOfLastVideoBuffer {

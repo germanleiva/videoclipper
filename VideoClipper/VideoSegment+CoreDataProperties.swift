@@ -2,7 +2,7 @@
 //  VideoSegment+CoreDataProperties.swift
 //  VideoClipper
 //
-//  Created by Germán Leiva on 08/02/16.
+//  Created by Germán Leiva on 10/02/16.
 //  Copyright © 2016 Germán Leiva. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu

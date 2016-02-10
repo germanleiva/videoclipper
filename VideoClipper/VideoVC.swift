@@ -20,17 +20,10 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		return self.element as? VideoClip
 	}
 	
-	var asset:AVAsset {
-		get {
-			return self.video!.asset!
-		}
-	}
-	
 	var playerItem:AVPlayerItem?
 	var player:AVPlayer?
 	@IBOutlet var playerView:UIView!
 	var realPlayerView:VideoPlayerView!
-
 
 	var timeObserver:AnyObject? = nil
 	var itemEndObserver:NSObjectProtocol? = nil
@@ -290,22 +283,26 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.player = nil
 	}
 	
-	func prepareToPlay(){
-		let keys = ["tracks",
-			"duration",
-			"commonMetadata"]
-		self.realPlayerView = VideoPlayerView()
-		self.realPlayerView.frame = self.playerView.frame
-		self.view.addSubview(self.realPlayerView)
-		
-		self.playerItem = AVPlayerItem(asset: self.asset, automaticallyLoadedAssetKeys: keys)
-		
-		self.playerItem?.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: observerContext)
+    func prepareToPlay(){
+        
+        self.realPlayerView = VideoPlayerView()
+        self.realPlayerView.frame = self.playerView.frame
+        self.view.addSubview(self.realPlayerView)
 
-		self.player = AVPlayer(playerItem: self.playerItem!)
-		
-		self.realPlayerView.player = self.player!
-	}
+        self.video?.loadAsset({ () -> Void in
+            let keys = ["tracks",
+                "duration",
+                "commonMetadata"]
+            
+            self.playerItem = AVPlayerItem(asset: self.video!.asset!, automaticallyLoadedAssetKeys: keys)
+            
+            self.playerItem?.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: self.observerContext)
+            
+            self.player = AVPlayer(playerItem: self.playerItem!)
+            
+            self.realPlayerView.player = self.player!
+        })
+    }
 	
 	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change:
 		[String : AnyObject]?, context: UnsafeMutablePointer<Void>) {

@@ -314,7 +314,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				for eachLine in clonedProject.storyLines! {
 					for eachElement in (eachLine as! StoryLine).elements! {
 						if (eachElement as! StoryElement).isVideo() {
-                            (eachElement as! VideoClip).loadAsset()
+                            (eachElement as! VideoClip).loadAsset(nil)
 						} else {
 							(eachElement as! TitleCard).generateAsset(VideoHelper())
 						}

@@ -8,11 +8,11 @@
 
 import UIKit
 
-protocol MarkerReusableViewDelegate {
-    func didTouchMarker()
-}
+//protocol MarkerReusableViewDelegate {
+//    func didTouchMarker()
+//}
 
-class MarkerReusableView: UIView {
+class MarkerReusableView: UICollectionReusableView {
 //    var delegate:MarkerReusableViewDelegate? = nil
 //    var bypassToView:UICollectionView!
     

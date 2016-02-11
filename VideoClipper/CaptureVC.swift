@@ -18,7 +18,7 @@ protocol CaptureVCDelegate {
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
-class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, CenteredFlowLayoutDelegate, UITableViewDataSource, UITableViewDelegate, MarkerReusableViewDelegate {
+class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollectionViewDataSource, UICollectionViewDelegate, CenteredFlowLayoutDelegate, UITableViewDataSource, UITableViewDelegate {
 	var isRecording = false
     
 	var timer:NSTimer? = nil
@@ -1113,17 +1113,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
         resetMarker()
-    }
-    
-    //marker delegate
-    func didTouchMarker() {
-        if self.layout().isCentered {
-            //workaround, didSelectItemAtIndexPath was not called when the marker was touched
-            
-            if let selectedIndexPath = self.collectionView.indexPathForItemAtPoint(CGPoint(x: marker.center.x+self.collectionView.contentOffset.x, y: marker.center.y)) {
-                self.playVideo(self.currentLine?.videos()[selectedIndexPath.item])
-            }
-        }
     }
     
     func resetMarker(animated:Bool = true){

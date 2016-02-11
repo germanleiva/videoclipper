@@ -19,6 +19,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	var video:VideoClip? {
 		return self.element as? VideoClip
 	}
+    
+    var _isReadyToPlay = false
 	
 	var playerItem:AVPlayerItem?
 	var player:AVPlayer?
@@ -46,7 +48,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	@IBOutlet var currentTimeLabel:UILabel!
 	@IBOutlet var remainingTimeLabel:UILabel!
 	@IBOutlet var playerToolbar:UIToolbar!
-	
+    @IBOutlet weak var tagButtonPanel: UIStackView!
+    
 	var scrubbing = false
 	
 	@IBOutlet var filmstripScrubber:UIView!
@@ -79,12 +82,15 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
-		if !self.loadedViews {
+		if !self.loadedViews && _isReadyToPlay {
 			self.filmStripView.buildScrubber(self.video!)
 			self.loadTagMarks()
 			self.loadedViews = true
 		}
-		self.realPlayerView.frame = self.playerView.frame
+        
+        if _isReadyToPlay {
+            self.realPlayerView.frame = self.playerView.frame
+        }
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -289,10 +295,13 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         self.realPlayerView.frame = self.playerView.frame
         self.view.addSubview(self.realPlayerView)
 
-        self.video?.loadAsset({ () -> Void in
-            let keys = ["tracks",
-                "duration",
-                "commonMetadata"]
+        self.video?.loadAsset({ (error:NSError?) -> Void in
+            if let anError = error {
+                print("Couldn't load asset for VideoPlayer: \(anError.localizedDescription)")
+                abort()
+            }
+            
+            let keys = ["tracks","duration"]
             
             self.playerItem = AVPlayerItem(asset: self.video!.asset!, automaticallyLoadedAssetKeys: keys)
             
@@ -301,6 +310,10 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
             self.player = AVPlayer(playerItem: self.playerItem!)
             
             self.realPlayerView.player = self.player!
+            
+            self._isReadyToPlay = true
+            
+            self.view.layoutIfNeeded()
         })
     }
 	

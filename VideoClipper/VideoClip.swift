@@ -41,35 +41,97 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-    func loadAsset(completionHandler:(() -> Void)?){
+    func loadAsset(completionHandler:((error:NSError?) -> Void)?){
         if let _ = self.asset {
-            completionHandler?()
+            completionHandler?(error: nil)
             return
         }
         
 		if let path = self.path {
 			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
-			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
+			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?()
+                    completionHandler?(error: nil)
                 })
 			}
 		} else {
-			print("The path is nil so I will use the path of the first segment")
-            if self.segments?.count == 0 {
-                print("I don't have segments yet")
-                abort()
-            }
-            if let firstSegmentPath = (self.segments?.firstObject as! VideoSegment).path {
-                self.asset = AVURLAsset(URL: NSURL(string: firstSegmentPath)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
-                self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration","commonMetadata"]) { () -> Void in
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?()
+	
+            let assetLoadingGroup = dispatch_group_create();
+            
+            if let allSegments = self.segments {
+                
+                let mutableComposition = AVMutableComposition()
+                let videoCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
+                let audioCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+                var instructions = [AVMutableVideoCompositionInstruction]()
+                var size = CGSizeZero
+                var time = kCMTimeZero
+                
+                let allAssets = allSegments.map({ (each) -> AVAsset in
+                    let eachSegment = each as! VideoSegment
+                    let asset = eachSegment.asset!
+                    
+                    dispatch_group_enter(assetLoadingGroup);
+                    
+                    asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                        var error:NSError?
+                        switch asset.statusOfValueForKey("tracks", error: &error) {
+                        case AVKeyValueStatus.Loaded:
+                            print("tracks Loaded: \(error.debugDescription)")
+                        case .Unknown:
+                            print("tracks Unknown: \(error.debugDescription)")
+                        case .Loading:
+                            print("tracks Loading: \(error.debugDescription)")
+                        case .Failed:
+                            print("tracks Failed: \(error.debugDescription)")
+                        case .Cancelled:
+                            print("tracks Cancelled: \(error.debugDescription)")
+                        }
+                        
+                        dispatch_group_leave(assetLoadingGroup);
                     })
-                }
-            } else {
-                print("This shouldn't happen")
-                abort()
+                    return asset
+                })
+                
+                dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+                    for asset in allAssets {
+                        let assetTrack = asset.tracksWithMediaType(AVMediaTypeVideo).first
+                        let audioAssetTrack = asset.tracksWithMediaType(AVMediaTypeAudio).first
+                        
+                        do {
+                            try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
+                        } catch let error as NSError {
+                            completionHandler?(error: error)
+                        }
+                        
+                        do {
+                            try audioCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: audioAssetTrack!, atTime: time)
+                        } catch let error as NSError {
+                            completionHandler?(error: error)
+                        }
+                        
+                        let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
+                        videoCompositionInstruction.timeRange = CMTimeRange(start: time, duration: assetTrack!.timeRange.duration);
+                        videoCompositionInstruction.layerInstructions = [AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)]
+                        instructions.append(videoCompositionInstruction)
+                        
+                        time = CMTimeAdd(time, assetTrack!.timeRange.duration)
+                        
+                        if (CGSizeEqualToSize(size, CGSizeZero)) {
+                            size = assetTrack!.naturalSize
+                        }
+                    }
+                    
+                    let mutableVideoComposition = AVMutableVideoComposition()
+                    mutableVideoComposition.instructions = instructions;
+                    
+                    // Set the frame duration to an appropriate value (i.e. 30 frames per second for video).
+                    mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
+                    mutableVideoComposition.renderSize = size;
+                    
+                    self.asset = mutableComposition
+                    completionHandler?(error:nil)
+                })
             }
         }
 	}
@@ -106,5 +168,4 @@ class VideoClip: StoryElement {
         super.awakeFromFetch()
 //        self.loadAsset()
     }
-    
 }

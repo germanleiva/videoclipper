@@ -61,7 +61,7 @@
         <relationship name="thumbnailImages" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Thumbnail" inverseName="video" inverseEntity="Thumbnail" syncable="YES"/>
     </entity>
     <entity name="VideoSegment" representedClassName=".VideoSegment" syncable="YES">
-        <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" ordered="YES" destinationEntity="VideoClip" inverseName="segments" inverseEntity="VideoClip" syncable="YES"/>
     </entity>
     <elements>
@@ -74,6 +74,6 @@
         <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
         <element name="TitleCard" positionX="54" positionY="117" width="128" height="120"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="150"/>
-        <element name="VideoSegment" positionX="286" positionY="528" width="128" height="73"/>
+        <element name="VideoSegment" positionX="286" positionY="528" width="128" height="75"/>
     </elements>
 </model>

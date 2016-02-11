@@ -17,23 +17,34 @@ class VideoSegment: NSManagedObject {
     var time = Float64(0)
     var tagsPlaceholders = [(UIColor,Float64)]()
     
+    var path:String? {
+        get {
+            if let aName = self.fileName {
+                let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
+                return documentsPath + "/" + aName
+            }
+            return nil
+        }
+    }
+    
     func writePath() -> String {
         let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
         
-        let entityFolderPath = documentsPath.stringByAppendingString("/\(self.entity.name!)")
-        let fileManager = NSFileManager()
-        if !fileManager.fileExistsAtPath(entityFolderPath) {
-            do {
-                try fileManager.createDirectoryAtPath(entityFolderPath, withIntermediateDirectories: false, attributes: nil)
-            } catch {
-                print("Couldn't create folder at \(entityFolderPath): \(error)")
-                abort()
-            }
-        }
+//        let entityFolderPath = documentsPath.stringByAppendingString("/\(self.entity.name!)")
+//        let fileManager = NSFileManager()
+//        if !fileManager.fileExistsAtPath(entityFolderPath) {
+//            do {
+//                try fileManager.createDirectoryAtPath(entityFolderPath, withIntermediateDirectories: false, attributes: nil)
+//            } catch {
+//                print("Couldn't create folder at \(entityFolderPath): \(error)")
+//                abort()
+//            }
+//        }
         
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let fileName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
-        return entityFolderPath + "/" + fileName
+        let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
+//        return entityFolderPath + "/" + fileName
+        return documentsPath + "/" + videoName
     }
 
     override func prepareForDeletion() {
@@ -41,15 +52,15 @@ class VideoSegment: NSManagedObject {
         print("A VER?")
     }
     
-    override func willSave() {
-        super.willSave()
+    override func didSave() {
+        super.didSave()
         
         if self.deleted {
             let request = NSFetchRequest(entityName: self.entity.name!)
-            request.predicate = NSPredicate(format: "(self == %@) AND (self.path == %@)", argumentArray: [self.objectID,self.path!])
+            request.predicate = NSPredicate(format: "(self != %@) AND (self.fileName == %@)", argumentArray: [self.objectID,self.fileName!])
             do {
-                if let fetchedVideoSegments = try self.managedObjectContext?.executeFetchRequest(request) {
-                    if fetchedVideoSegments.isEmpty {
+                if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
+                    if otherVideoSegmentsUsingSameFile.isEmpty {
                         self.deleteVideoSegmentFile()
                     }
                 }                
@@ -63,6 +74,8 @@ class VideoSegment: NSManagedObject {
         let fileManager = NSFileManager()
         do {
             try fileManager.removeItemAtPath(self.path!)
+            print("Delete segment file \(self.path)")
+
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
         }

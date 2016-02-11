@@ -444,6 +444,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.isRecording = false
         self.updateGhostImage()
 
+        if error != nil {
+            self.currentVideoSegment = nil
+            self.selectedVideo = nil
+            let alert = UIAlertController(title: "Cannot create video file", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+            self.presentViewController(alert, animated: true, completion: nil)
+            return
+        }
+        
         //This happens in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
         
         let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
@@ -488,20 +496,20 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             tags.append(newTag)
         }
         
-        let videoSegments = selectedVideo!.mutableOrderedSetValueForKey("segments")
+        let videoSegments = self.selectedVideo!.mutableOrderedSetValueForKey("segments")
         videoSegments.addObject(self.currentVideoSegment!)
         
-        let videoTags = selectedVideo!.mutableOrderedSetValueForKey("tags")
+        let videoTags = self.selectedVideo!.mutableOrderedSetValueForKey("tags")
         for eachTag in tags {
             videoTags.addObject(eachTag)
         }
         
         let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
-        elements.addObject(selectedVideo!)
+        elements.addObject(self.selectedVideo!)
         
-        self.currentVideoSegment!.path = finalPath.path
+        self.currentVideoSegment!.fileName = finalPath.lastPathComponent
         
-        selectedVideo!.thumbnailData = UIImagePNGRepresentation(currentVideoSegment!.snapshot!)
+        self.selectedVideo!.thumbnailData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!)
     }
 	
 	//-MARK: private start/stop helper methods
@@ -875,9 +883,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             var size = CGSizeZero
             var time = kCMTimeZero
             
-            for each in allSegments {
-                let eachSegment = each as!VideoSegment
-                let asset = AVAsset(URL: NSURL(string: eachSegment.path!)!)
+            let allAssets = allSegments.map({ (each) -> AVAsset in
+                let eachSegment = each as! VideoSegment
+                let asset = AVAsset(URL: NSURL(fileURLWithPath: eachSegment.path!))
                 
                 let fileManager = NSFileManager()
                 if fileManager.fileExistsAtPath(eachSegment.path!) {
@@ -885,27 +893,33 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 } else {
                     print("The file DOES NOT exist \(eachSegment.path!)")
                 }
-//                
+                
                 dispatch_group_enter(assetLoadingGroup);
                 
-//                asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
                     var error:NSErrorPointer = nil
                     switch asset.statusOfValueForKey("tracks", error: error) {
-                    case AVKeyValueStatus.Loaded:
-                        print("Loaded: \(error.debugDescription)")
-                    case .Unknown:
-                        print("Unknown: \(error.debugDescription)")
-                    case .Loading:
-                        print("Loading: \(error.debugDescription)")
-                    case .Failed:
-                        print("Failed: \(error.debugDescription)")
-                    case .Cancelled:
-                        print("Cancelled: \(error.debugDescription)")
-                        
+                        case AVKeyValueStatus.Loaded:
+                            print("tracks Loaded: \(error.debugDescription)")
+                        case .Unknown:
+                            print("tracks Unknown: \(error.debugDescription)")
+                        case .Loading:
+                            print("tracks Loading: \(error.debugDescription)")
+                        case .Failed:
+                            print("tracks Failed: \(error.debugDescription)")
+                        case .Cancelled:
+                            print("tracks Cancelled: \(error.debugDescription)")
                     }
                     
-                    let assetTrack = asset.tracksWithMediaCharacteristic(AVMediaTypeVideo).first
-                    let audioAssetTrack = asset.tracksWithMediaCharacteristic(AVMediaTypeAudio).first
+                    dispatch_group_leave(assetLoadingGroup);
+                })
+                return asset
+            })
+            
+            dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+                for asset in allAssets {
+                    let assetTrack = asset.tracksWithMediaType(AVMediaTypeVideo).first
+                    let audioAssetTrack = asset.tracksWithMediaType(AVMediaTypeAudio).first
                     
                     do {
                         try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
@@ -929,12 +943,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     if (CGSizeEqualToSize(size, CGSizeZero)) {
                         size = assetTrack!.naturalSize
                     }
-                    
-//                    dispatch_group_leave(assetLoadingGroup);
-//                })
-            }
-            
-//            dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+                }
+                
                 let mutableVideoComposition = AVMutableVideoComposition()
                 mutableVideoComposition.instructions = instructions;
                 
@@ -955,7 +965,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     playerController.view.frame = self.view.frame
                     player.play()
                 })
-//            })
+            })
         }
     }
 	

@@ -8,8 +8,8 @@
 
 import UIKit
 import CoreData
-import Fabric
-import Crashlytics
+//import Fabric
+//import Crashlytics
 
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
@@ -25,17 +25,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
 
 	func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        #if DEBUG
-            Fabric.sharedSDK().debug = true
-
-            print("I'm running in DEBUG mode")
-        #else
-            Fabric.sharedSDK().debug = false
-
-            print("I'm running in a non-DEBUG mode")
-        #endif
-        
-        Fabric.with([Crashlytics()])
+//        #if DEBUG
+//            Fabric.sharedSDK().debug = true
+//
+//            print("I'm running in DEBUG mode")
+//        #else
+//            Fabric.sharedSDK().debug = false
+//
+//            print("I'm running in a non-DEBUG mode")
+//        #endif
+//        
+//        Fabric.with([Crashlytics()])
         
 //		let pageControlAppearance = UIPageControl.appearance()
 //		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()

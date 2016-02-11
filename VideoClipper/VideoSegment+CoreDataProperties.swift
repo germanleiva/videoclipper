@@ -14,7 +14,7 @@ import CoreData
 
 extension VideoSegment {
 
-    @NSManaged var path: String?
+    @NSManaged var fileName: String?
     @NSManaged var video: VideoClip?
 
 }

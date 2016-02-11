@@ -81,8 +81,6 @@ class VideoSegment: NSManagedObject {
         let fileManager = NSFileManager()
         do {
             try fileManager.removeItemAtPath(self.path!)
-            print("Delete segment file \(self.path)")
-
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
         }

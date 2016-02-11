@@ -67,6 +67,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
         self.audioDataOutputQueue = dispatch_queue_create( "com.example.capturesession.audiodata", DISPATCH_QUEUE_SERIAL );
         [self addDataOutputsToCaptureSession:self.captureSession];
         _lastVideoBuffer = [SCSampleBufferHolder new];
+        _initialTime = kCMTimeInvalid;
     }
     return self;
 }
@@ -252,6 +253,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
                 @autoreleasepool
                 {
                     [self.delegate coordinator:self didFinishRecordingToOutputFileURL:_recordingURL error:nil];
+                    _initialTime = kCMTimeInvalid;
                 }
             });
         } else {
@@ -268,6 +270,7 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
                     @autoreleasepool
                     {
                         [self.delegate coordinator:self didFinishRecordingToOutputFileURL:_recordingURL error:nil];
+                        _initialTime = kCMTimeInvalid;
                     }
                 });
             }
@@ -276,9 +279,10 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 }
 
 - (CMTime)recordedDuration {
-    if (_lastVideoBuffer.sampleBuffer == nil) {
+    if (_lastVideoBuffer.sampleBuffer == nil || CMTIME_IS_INVALID(_initialTime)) {
         return kCMTimeZero;
     }
+    
     return CMTimeSubtract(CMSampleBufferGetPresentationTimeStamp(_lastVideoBuffer.sampleBuffer),_initialTime);
 }
 

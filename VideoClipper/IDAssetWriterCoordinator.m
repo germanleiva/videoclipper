@@ -401,7 +401,7 @@ typedef NS_ENUM(NSInteger, WriterStatus){
                 _videoInput = nil;
                 _audioInput = nil;
                 if (newStatus == WriterStatusFailed) {
-                    [[NSFileManager defaultManager] removeItemAtURL:_URL error:NULL];
+                    [[[NSFileManager alloc] init] removeItemAtURL:_URL error:NULL];
                 }
             } );
         } else if (newStatus == WriterStatusRecording){

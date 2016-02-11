@@ -520,6 +520,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.shutterButton.cameraButtonMode = .VideoRecording
         }
         
+        self.updateTimeRecordedLabel()
         self.isRecording = true
 
         self.currentVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment

@@ -885,20 +885,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             
             let allAssets = allSegments.map({ (each) -> AVAsset in
                 let eachSegment = each as! VideoSegment
-                let asset = AVAsset(URL: NSURL(fileURLWithPath: eachSegment.path!))
-                
-                let fileManager = NSFileManager()
-                if fileManager.fileExistsAtPath(eachSegment.path!) {
-                    print("The file exists \(eachSegment.path!)")
-                } else {
-                    print("The file DOES NOT exist \(eachSegment.path!)")
-                }
+                let asset = eachSegment.asset!
                 
                 dispatch_group_enter(assetLoadingGroup);
                 
                 asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-                    var error:NSErrorPointer = nil
-                    switch asset.statusOfValueForKey("tracks", error: error) {
+                    var error:NSError?
+                    switch asset.statusOfValueForKey("tracks", error: &error) {
                         case AVKeyValueStatus.Loaded:
                             print("tracks Loaded: \(error.debugDescription)")
                         case .Unknown:

@@ -559,6 +559,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 		//This needs to be here because the context.save() takes times and it will be too late to update shouldSelectRowAfterDelete
 		self.shouldSelectRowAfterDelete = false
+        
+        let deletedStoryLine = storyLines!.objectAtIndex(indexPath.section) as! StoryLine
 		storyLines!.removeObjectAtIndex(indexPath.section)
 		
 		var lineIndexPathToSelect = NSIndexPath(forRow: 0, inSection: min(self.selectedLinePath.section,storyLines!.count - 1))
@@ -568,27 +570,28 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			lineIndexPathToSelect = NSIndexPath(forRow: 0, inSection: max(self.selectedLinePath.section - 1,0))
 		}
 		
-		do {
-			try context.save()
-			self.tableView.beginUpdates()
-			/*For some reason this cool updating didn't work so I'm calling reloadData() after endUpdates =(
-			if indexPath.section != 0 {
-				//First section was NOT deleted
-				self.tableView.reloadSections(NSIndexSet(indexesInRange: NSRange(location:0,length:indexPath.section-1)), withRowAnimation: UITableViewRowAnimation.None)
-			}
-
-			if !indexPath.section == storyLines!.count {
-				//Last section was NOT deleted
-				self.tableView.reloadSections(NSIndexSet(indexesInRange: NSRange(location:indexPath.section+1,length:storyLines!.count-1)), withRowAnimation: UITableViewRowAnimation.None)
-			}
-			*/
-			self.tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Left)
-			self.tableView.endUpdates()
-			self.tableView.reloadData()
-			self.selectRowAtIndexPath(lineIndexPathToSelect, animated: true)
-		} catch {
-			print("Couldn't delete story line: \(error)")
-		}
+        do {
+            self.context.deleteObject(deletedStoryLine)
+            try self.context.save()
+            self.tableView.beginUpdates()
+            /*For some reason this cool updating didn't work so I'm calling reloadData() after endUpdates =(
+            if indexPath.section != 0 {
+            //First section was NOT deleted
+            self.tableView.reloadSections(NSIndexSet(indexesInRange: NSRange(location:0,length:indexPath.section-1)), withRowAnimation: UITableViewRowAnimation.None)
+            }
+            
+            if !indexPath.section == storyLines!.count {
+            //Last section was NOT deleted
+            self.tableView.reloadSections(NSIndexSet(indexesInRange: NSRange(location:indexPath.section+1,length:storyLines!.count-1)), withRowAnimation: UITableViewRowAnimation.None)
+            }
+            */
+            self.tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Left)
+            self.tableView.endUpdates()
+            self.tableView.reloadData()
+            self.selectRowAtIndexPath(lineIndexPathToSelect, animated: true)
+        } catch {
+            print("Couldn't delete story line: \(error)")
+        }
 	}
 	
 	// MARK: - Table view data source

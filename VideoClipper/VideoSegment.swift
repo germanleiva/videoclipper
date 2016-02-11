@@ -27,6 +27,18 @@ class VideoSegment: NSManagedObject {
         }
     }
     
+    var _asset:AVAsset?
+    var asset:AVAsset? {
+        get {
+            if _asset == nil {
+                if let aPath = self.path {
+                    _asset = AVAsset(URL: NSURL(fileURLWithPath: aPath))
+                }
+            }
+            return _asset
+        }
+    }
+    
     func writePath() -> String {
         let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
         
@@ -45,11 +57,6 @@ class VideoSegment: NSManagedObject {
         let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
 //        return entityFolderPath + "/" + fileName
         return documentsPath + "/" + videoName
-    }
-
-    override func prepareForDeletion() {
-        super.prepareForDeletion()
-        print("A VER?")
     }
     
     override func didSave() {

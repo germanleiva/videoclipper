@@ -424,11 +424,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let pm = IDPermissionsManager()
         pm.checkCameraAuthorizationStatusWithBlock { (granted) -> Void in
             if !granted {
+                //"This app doesn't have permission to use the camera, please go to the Settings app > Privacy > Camera and enable access."
                 print("we don't have permission to use the camera");
             }
         }
         pm.checkMicrophonePermissionsWithBlock({ (granted) -> Void in
             if !granted {
+                //"To enable sound recording with your video please go to the Settings app > Privacy > Microphone and enable access."
                 print("we don't have permission to use the microphone");
             }
         })

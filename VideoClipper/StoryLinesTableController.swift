@@ -196,23 +196,23 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-		let tempImage = info[UIImagePickerControllerMediaURL] as! NSURL
-		let pathString = tempImage.relativePath!
-		picker.dismissViewControllerAnimated(true) { () -> Void in
-			NSNotificationCenter.defaultCenter().removeObserver(self.orientationObserver!)
-		}
+//		let tempImage = info[UIImagePickerControllerMediaURL] as! NSURL
+//		let pathString = tempImage.relativePath!
+//		picker.dismissViewControllerAnimated(true) { () -> Void in
+//			NSNotificationCenter.defaultCenter().removeObserver(self.orientationObserver!)
+//		}
 		
-		let library = ALAssetsLibrary()
-		let pathURL = NSURL(fileURLWithPath: pathString)
+//		let library = ALAssetsLibrary()
+//		let pathURL = NSURL(fileURLWithPath: pathString)
 
 //		library.saveVideo is used to save on an album
-		library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
-			if errorOnSaving != nil {
-				print("Couldn't save the video on the photos album: \(errorOnSaving)")
-				return
-			}
-			self.createNewVideoForAssetURL(assetURL)
-		}
+//		library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
+//			if errorOnSaving != nil {
+//				print("Couldn't save the video on the photos album: \(errorOnSaving)")
+//				return
+//			}
+//			self.createNewVideoForAssetURL(assetURL)
+//		}
 	}
 	
 	func createNewVideoForAssetURL(assetURL:NSURL,tags:[TagMark]=[]) {
@@ -273,19 +273,21 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func playTappedOnSelectedLine(sender:AnyObject?) {
-		
-		let (composition,videoComposition,_) = self.createComposition(self.currentStoryLine()!.elements!)
+		self.createComposition(self.currentStoryLine()!.elements!) { (result) -> Void in
+            let (composition,videoComposition,_) = result
+            
+            let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
+            item.videoComposition = videoComposition
+            let player = AVPlayer(playerItem: item)
+            
+            let playerVC = AVPlayerViewController()
+            playerVC.player = player
+            self.presentViewController(playerVC, animated: true, completion: { () -> Void in
+                print("Player presented")
+                playerVC.player?.play()
+            })
+        }
 
-		let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
-		item.videoComposition = videoComposition
-		let player = AVPlayer(playerItem: item)
-		
-		let playerVC = AVPlayerViewController()
-		playerVC.player = player
-		self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-			print("Player presented")
-			playerVC.player?.play()
-		})
 	}
 	
 	func hideTappedOnSelectedLine(sender:AnyObject?) {
@@ -301,7 +303,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
-	func createComposition(elements:NSOrderedSet) -> (AVMutableComposition,AVMutableVideoComposition,[AVTimedMetadataGroup]) {
+	func createComposition(elements:NSOrderedSet,completionHandler:((result:(AVMutableComposition,AVMutableVideoComposition,[AVTimedMetadataGroup])) -> Void)?) -> Void {
 		let composition = AVMutableComposition()
 		var cursorTime = kCMTimeZero
 		let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
@@ -319,86 +321,110 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 //		locationMetadata.value = "+48.701697+002.188952"
 //		metadataItems.append(locationMetadata)
 		
-		for eachElement in elements {
-			var asset:AVAsset? = nil
-			var startTime = kCMTimeZero
-			var assetDuration = kCMTimeZero
-			if (eachElement as! StoryElement).isVideo() {
-				let eachVideo = eachElement as! VideoClip
-				asset = eachVideo.asset
-				startTime = eachVideo.startTime
-				assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), 1000)
+        let assetLoadingGroup = dispatch_group_create();
+        
+        for each in elements {
+            dispatch_group_enter(assetLoadingGroup);
 
-			} else if (eachElement as! StoryElement).isTitleCard() {
-				let eachTitleCard = eachElement as! TitleCard
+            let eachElement = each as! StoryElement
+            eachElement.loadAsset({ (error) -> Void in
+                var error:NSError?
+                switch eachElement.asset!.statusOfValueForKey("tracks", error: &error) {
+                    case AVKeyValueStatus.Loaded:
+                        print("tracks Loaded: \(error.debugDescription)")
+                    case .Unknown:
+                        print("tracks Unknown: \(error.debugDescription)")
+                    case .Loading:
+                        print("tracks Loading: \(error.debugDescription)")
+                    case .Failed:
+                        print("tracks Failed: \(error.debugDescription)")
+                    case .Cancelled:
+                        print("tracks Cancelled: \(error.debugDescription)")
+                }
+                
+                dispatch_group_leave(assetLoadingGroup);
+            })
+        }
 
-				if eachTitleCard.asset == nil {
-					eachTitleCard.generateAsset(self.videoHelper)
-				}
-				asset = eachTitleCard.asset
-				assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
-				
-				let chapterMetadataItem = AVMutableMetadataItem()
-				chapterMetadataItem.identifier = AVMetadataIdentifierQuickTimeUserDataChapter
-				chapterMetadataItem.dataType = kCMMetadataBaseDataType_UTF8 as String
-//				chapterMetadataItem.time = cursorTime
-//				chapterMetadataItem.duration = assetDuration
-//				chapterMetadataItem.locale = NSLocale.currentLocale()
-//				chapterMetadataItem.extendedLanguageTag = "en-FR"
-//				chapterMetadataItem.extraAttributes = nil
-				
-				chapterMetadataItem.value = "Capitulo \(elements.indexOfObject(eachElement))"
-				
-				let group = AVMutableTimedMetadataGroup(items: [chapterMetadataItem], timeRange: CMTimeRange(start: cursorTime,duration: kCMTimeInvalid))
-				timedMetadataGroups.append(group)
-			}
-			
-			let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
-			let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
-//			let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
-			
-			let range = CMTimeRangeMake(startTime, assetDuration)
-			do {
-				try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
-				compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
-//				if sourceMetadataTrack != nil {
-//					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
-//				}
-				if sourceAudioTrack != nil {
-					try compositionAudioTrack.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
-				}
-			} catch {
-				print("Couldn't create composition: \(error)")
-			}
-			
-			// create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
-			let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
-			layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)
-			
-			// create the composition instructions for the range of this clip
-			let videoTrackInstruction = AVMutableVideoCompositionInstruction()
-			videoTrackInstruction.timeRange = CMTimeRange(start:cursorTime, duration:assetDuration)
-			videoTrackInstruction.layerInstructions = [layerInstruction]
-
-			instructions.append(videoTrackInstruction)
-			
-			cursorTime = CMTimeAdd(cursorTime, assetDuration)
-			
-//			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
-//			lastNaturalSize = sourceVideoTrack!.naturalSize
-		}
-		
-		// create our video composition which will be assigned to the player item
-		let videoComposition = AVMutableVideoComposition()
-		videoComposition.instructions = instructions
-//		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
-		videoComposition.frameDuration = CMTimeMake(1, 30)
-		//		videoComposition.renderSize = lastNaturalSize
-		videoComposition.renderSize = CGSize(width: 1920,height: 1080)
-
-		self.videoHelper.removeTemporalFilesUsed()
-		
-		return (composition,videoComposition,timedMetadataGroups)
+        dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+            for eachElement in elements {
+                var asset:AVAsset? = nil
+                var startTime = kCMTimeZero
+                var assetDuration = kCMTimeZero
+                if (eachElement as! StoryElement).isVideo() {
+                    let eachVideo = eachElement as! VideoClip
+                    asset = eachVideo.asset
+                    startTime = eachVideo.startTime
+                    assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), 1000)
+                    
+                } else if (eachElement as! StoryElement).isTitleCard() {
+                    let eachTitleCard = eachElement as! TitleCard
+                    asset = eachTitleCard.asset
+                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
+                    
+                    let chapterMetadataItem = AVMutableMetadataItem()
+                    chapterMetadataItem.identifier = AVMetadataIdentifierQuickTimeUserDataChapter
+                    chapterMetadataItem.dataType = kCMMetadataBaseDataType_UTF8 as String
+                    //				chapterMetadataItem.time = cursorTime
+                    //				chapterMetadataItem.duration = assetDuration
+                    //				chapterMetadataItem.locale = NSLocale.currentLocale()
+                    //				chapterMetadataItem.extendedLanguageTag = "en-FR"
+                    //				chapterMetadataItem.extraAttributes = nil
+                    
+                    chapterMetadataItem.value = "Capitulo \(elements.indexOfObject(eachElement))"
+                    
+                    let group = AVMutableTimedMetadataGroup(items: [chapterMetadataItem], timeRange: CMTimeRange(start: cursorTime,duration: kCMTimeInvalid))
+                    timedMetadataGroups.append(group)
+                }
+                
+                let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
+                let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
+                //			let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
+                
+                let range = CMTimeRangeMake(startTime, assetDuration)
+                do {
+                    try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
+                    compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
+                    //				if sourceMetadataTrack != nil {
+                    //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
+                    //				}
+                    if sourceAudioTrack != nil {
+                        try compositionAudioTrack.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
+                    }
+                } catch {
+                    print("Couldn't create composition: \(error)")
+                    abort()
+                }
+                
+                // create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
+                let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
+                layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)
+                
+                // create the composition instructions for the range of this clip
+                let videoTrackInstruction = AVMutableVideoCompositionInstruction()
+                videoTrackInstruction.timeRange = CMTimeRange(start:cursorTime, duration:assetDuration)
+                videoTrackInstruction.layerInstructions = [layerInstruction]
+                
+                instructions.append(videoTrackInstruction)
+                
+                cursorTime = CMTimeAdd(cursorTime, assetDuration)
+                
+                //			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
+                //			lastNaturalSize = sourceVideoTrack!.naturalSize
+            }
+            
+            // create our video composition which will be assigned to the player item
+            let videoComposition = AVMutableVideoComposition()
+            videoComposition.instructions = instructions
+            //		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
+            videoComposition.frameDuration = CMTimeMake(1, 30)
+            //		videoComposition.renderSize = lastNaturalSize
+            videoComposition.renderSize = CGSize(width: 1920,height: 1080)
+            
+            self.videoHelper.removeTemporalFilesUsed()
+            
+            completionHandler?(result: (composition,videoComposition,timedMetadataGroups))
+        })
 	}
 	
 	func exportTapped(sender:UITableViewCell) {
@@ -410,75 +436,77 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func exportToPhotoAlbum(elements:NSOrderedSet){
-		let (composition,videoComposition,metadataGroups) = self.createComposition(elements)
-		
-		self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
-		
-		exportSession!.videoComposition = videoComposition
-		
-//		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
-		let file = NSURL(fileURLWithPath: NSHomeDirectory()).URLByAppendingPathComponent("Documents").URLByAppendingPathComponent("test_output.mov")
-		
-		do {
-			try NSFileManager.defaultManager().removeItemAtPath(file.path!)
-			print("Deleted old temporal video file: \(file.path!)")
-			
-		} catch {
-			print("Couldn't delete old temporal file: \(error)")
-		}
-		
-//		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
-		exportSession!.outputURL = file
-		exportSession!.outputFileType = AVFileTypeQuickTimeMovie
-		
-//		exportSession!.metadata = metadataItems
-	
-		print("Starting exportAsynchronouslyWithCompletionHandler")
-		
-		exportSession!.exportAsynchronouslyWithCompletionHandler {			
-			dispatch_async(dispatch_get_main_queue(), {
-				if let anExportSession = self.exportSession {
-					switch anExportSession.status {
-					case AVAssetExportSessionStatus.Completed:
-						print("Export Complete, trying to write on the photo album")
-						self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
-	//					let sourceAsset = AVURLAsset(URL: exportSession!.outputURL!)
-	//					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-	//						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
-	//						
-	//						writer.writeMetadataGroups(metadataGroups)
-	//						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
-	//					})
-					case AVAssetExportSessionStatus.Cancelled:
-						print("Export Cancelled");
-						print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
-					case AVAssetExportSessionStatus.Failed:
-						print("Export Failed");
-						print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
-					default:
-						print("Unknown export session status")
-					}
-					
-					if let error = self.exportSession!.error {
-						let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-						alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-						self.presentViewController(alert, animated: true, completion: { () -> Void in
-							print("Nothing after the alert")
-						})
-					}
-				}
-			})
-		}
-		
-		let window = UIApplication.sharedApplication().delegate!.window!
-		
-		self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-		self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
-		self.progressBar!.labelText = "Exporting ..."
-		self.progressBar!.detailsLabelText = "Tap to cancel"
-		self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
-		
-		self.monitorExportProgress(exportSession!)
+        self.createComposition(elements) { (result) -> Void in
+            let (composition,videoComposition,_) = result
+            
+            self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
+            
+            self.exportSession!.videoComposition = videoComposition
+            
+            //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
+            let file = NSURL(fileURLWithPath: NSHomeDirectory()).URLByAppendingPathComponent("Documents").URLByAppendingPathComponent("test_output.mov")
+            
+            do {
+                try NSFileManager().removeItemAtPath(file.path!)
+                print("Deleted old temporal video file: \(file.path!)")
+                
+            } catch {
+                print("Couldn't delete old temporal file: \(error)")
+            }
+            
+            //		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
+            self.exportSession!.outputURL = file
+            self.exportSession!.outputFileType = AVFileTypeQuickTimeMovie
+            
+            //		exportSession!.metadata = metadataItems
+            
+            print("Starting exportAsynchronouslyWithCompletionHandler")
+            
+            self.exportSession!.exportAsynchronouslyWithCompletionHandler {
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let anExportSession = self.exportSession {
+                        switch anExportSession.status {
+                        case AVAssetExportSessionStatus.Completed:
+                            print("Export Complete, trying to write on the photo album")
+                            self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
+                            //					let sourceAsset = AVURLAsset(URL: exportSession!.outputURL!)
+                            //					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                            //						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
+                            //
+                            //						writer.writeMetadataGroups(metadataGroups)
+                            //						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
+                            //					})
+                        case AVAssetExportSessionStatus.Cancelled:
+                            print("Export Cancelled");
+                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+                        case AVAssetExportSessionStatus.Failed:
+                            print("Export Failed");
+                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+                        default:
+                            print("Unknown export session status")
+                        }
+                        
+                        if let error = self.exportSession!.error {
+                            let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+                            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: { () -> Void in
+                                print("Nothing after the alert")
+                            })
+                        }
+                    }
+                })
+            }
+            
+            let window = UIApplication.sharedApplication().delegate!.window!
+            
+            self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+            self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
+            self.progressBar!.labelText = "Exporting ..."
+            self.progressBar!.detailsLabelText = "Tap to cancel"
+            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
+            
+            self.monitorExportProgress(self.exportSession!)
+        }
 
 	}
 	
@@ -490,26 +518,57 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	}
 	
 	func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
-		let library = ALAssetsLibrary()
+        var albumAssetCollection: PHAssetCollection!
+        
+        let albumName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
 
-		let appName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
-		let albumName = "\(appName) (exported)"
-		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(outputURL) {
-			library.saveVideo(
-				outputURL,
-				toAlbum: albumName,
-				completion: { (savedURL, writingToPhotosAlbumError) -> Void in
-					print("We wrote the video to saved photos successfully!!!")
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.predicate = NSPredicate(format: "title = %@", albumName)
+        let collection = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: fetchOptions)
 
-					UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
-
-				}) { (error) -> Void in
-					print("Couldn't export the video: \(error)")
-					return
-			}
-		} else {
-			print("VideoAtPathIs NOT CompatibleWithSavedPhotosAlbum: \(outputURL)")
-		}
+        let blockSaveToAlbum = {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+                PHPhotoLibrary.sharedPhotoLibrary().performChanges({() -> Void in
+                    if let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(outputURL) {
+                        let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
+                        let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: albumAssetCollection)
+                        albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), atIndexes: NSIndexSet(index: 0))
+                    }
+                }, completionHandler: { (success, error) -> Void in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        if success {
+                            //Open Photos app
+                            UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
+                        } else {
+                            let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        }
+                    })
+                })
+            })
+        }
+        
+        // Create the album if does not exist
+        if let theAlbum = collection.firstObject{
+            //found the album
+            albumAssetCollection = theAlbum as! PHAssetCollection
+            blockSaveToAlbum()
+        } else {
+            //Album placeholder for the asset collection, used to reference collection in completion handler
+            var albumPlaceholder:PHObjectPlaceholder!
+            //create the folder
+            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle(albumName)
+                albumPlaceholder = request.placeholderForCreatedAssetCollection
+            },
+            completionHandler: {(success, error)in
+                if(success){
+                    let collection = PHAssetCollection.fetchAssetCollectionsWithLocalIdentifiers([albumPlaceholder.localIdentifier], options: nil)
+                    albumAssetCollection = collection.firstObject as! PHAssetCollection
+                    blockSaveToAlbum()
+                }
+            })
+        }        
 	}
 	
 	func monitorExportProgress(exportSession:AVAssetExportSession) {
@@ -647,7 +706,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 					if (eachElement as! StoryElement).isVideo() {
 						(eachElement as! VideoClip).loadAsset(nil)
 					} else {
-						(eachElement as! TitleCard).generateAsset(VideoHelper())
+						(eachElement as! TitleCard).loadAsset(nil)
 					}
 				}
 				

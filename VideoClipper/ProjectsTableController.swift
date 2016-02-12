@@ -316,7 +316,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 						if (eachElement as! StoryElement).isVideo() {
                             (eachElement as! VideoClip).loadAsset(nil)
 						} else {
-							(eachElement as! TitleCard).generateAsset(VideoHelper())
+							(eachElement as! TitleCard).loadAsset(nil)
 						}
 					}
 				}

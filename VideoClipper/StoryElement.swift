@@ -13,6 +13,8 @@ import CoreData
 class StoryElement: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
+    var asset:AVAsset? = nil
+
 	func isVideo() -> Bool {
 		return false
 	}
@@ -24,4 +26,8 @@ class StoryElement: NSManagedObject {
 	func realDuration() -> NSNumber {
 		fatalError("Should be implemented by subclass")
 	}
+    
+    func loadAsset(completionHandler:((error:NSError?) -> Void)?){
+        fatalError("Should be implemented by subclass")
+    }
 }

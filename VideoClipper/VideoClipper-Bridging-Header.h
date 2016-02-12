@@ -7,7 +7,6 @@
 #import "MBFingerTipWindow.h"
 
 #import "VideoHelper.h"
-#import "ALAssetsLibrary+CustomPhotoAlbum.h"
 #import "MBProgressHUD.h"
 #import "ELCImagePickerController.h"
 #import "KPCameraButton.h"

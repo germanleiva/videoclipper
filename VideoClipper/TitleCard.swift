@@ -30,7 +30,6 @@ class TitleCard: StoryElement {
 		return self.duration!
 	}
 
-	var asset:AVAsset? = nil
 	
 	func generateAsset(videoHelper:VideoHelper) {
 		var newAsset:AVAsset? = nil
@@ -42,7 +41,21 @@ class TitleCard: StoryElement {
 		}
 		self.asset = newAsset
 	}
-	
+    
+    override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
+        if let _ = self.asset {
+            completionHandler?(error: nil)
+            return
+        }
+        
+        if let imageData = self.snapshot {
+            let titleCardScreenshoot = UIImage(data:imageData)
+            self.asset = VideoHelper().writeImageAsMovie(titleCardScreenshoot,duration:self.duration!)
+            self.asset!.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                completionHandler?(error:nil)
+            })
+        }
+    }
 	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
 		super.init(entity: entity, insertIntoManagedObjectContext: context)
 		self.generateAsset(VideoHelper())

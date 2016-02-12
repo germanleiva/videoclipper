@@ -32,7 +32,7 @@ class StoryLine: NSManagedObject {
 		let storyLines = self.project!.storyLines!
 		let nextIndex = storyLines.indexOfObject(self) + 1
 		if storyLines.count > nextIndex {
-			return self.project!.storyLines!.objectAtIndex(nextIndex) as! StoryLine
+			return self.project!.storyLines!.objectAtIndex(nextIndex) as? StoryLine
 		}
 		return nil
 	}
@@ -41,7 +41,7 @@ class StoryLine: NSManagedObject {
 		let storyLines = self.project!.storyLines!
 		let previousIndex = storyLines.indexOfObject(self) - 1
 		if previousIndex >= 0 {
-			return self.project!.storyLines!.objectAtIndex(previousIndex) as! StoryLine
+			return self.project!.storyLines!.objectAtIndex(previousIndex) as? StoryLine
 		}
 		return nil
 	}

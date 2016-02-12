@@ -13,7 +13,6 @@ import CoreMedia
 
 @objc(VideoClip)
 class VideoClip: StoryElement {
-	var asset:AVAsset? = nil
 // Insert code here to add functionality to your managed object subclass
 	override func isVideo() -> Bool {
 		return true
@@ -41,7 +40,7 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-    func loadAsset(completionHandler:((error:NSError?) -> Void)?){
+    override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
         if let _ = self.asset {
             completionHandler?(error: nil)
             return

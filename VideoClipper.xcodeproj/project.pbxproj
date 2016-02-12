@@ -14,7 +14,6 @@
 		A41109901C68204100427EB2 /* VideoSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A411098D1C68204100427EB2 /* VideoSegment.swift */; };
 		A418D52C1BAEEB0700AC7D12 /* ProjectsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */; };
 		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
-		A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
@@ -124,8 +123,6 @@
 		A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectsTableController.swift; sourceTree = "<group>"; };
 		A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_03.xcdatamodel; sourceTree = "<group>"; };
 		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
-		A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
-		A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
 		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
@@ -275,15 +272,6 @@
 			name = THFoundation;
 			sourceTree = "<group>";
 		};
-		A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */ = {
-			isa = PBXGroup;
-			children = (
-				A42BDD4D1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.h */,
-				A42BDD4E1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m */,
-			);
-			path = "ALAssetsLibrary-CustomPhotoAlbum";
-			sourceTree = "<group>";
-		};
 		A4561B441C68F80F00AA4346 /* CaptureVC */ = {
 			isa = PBXGroup;
 			children = (
@@ -324,7 +312,6 @@
 				A4DA9CC01B973F0F00839F28 /* ELCImagePicker */,
 				A404A52B1B81189800B82B29 /* THFoundation */,
 				A4BC7F2F1B6906B100D86E99 /* MBProgressHUD */,
-				A42BDD4C1B67BAA6003CA999 /* ALAssetsLibrary-CustomPhotoAlbum */,
 				A423152E1BA1CC910096DF01 /* SwiftColors.swift */,
 				A40049F11BA98C24003E518C /* UIView+Genie.h */,
 				A40049F21BA98C24003E518C /* UIView+Genie.m */,
@@ -704,7 +691,6 @@
 				A4F8E3B51BB0469C0076A6FF /* Thumbnail.swift in Sources */,
 				A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */,
 				A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */,
-				A42BDD4F1B67BAA6003CA999 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */,
 				A4F4AFFE1BB3F8A50049109F /* LICENSE.md in Sources */,
 				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
 				A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */,

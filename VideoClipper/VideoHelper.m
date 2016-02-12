@@ -174,7 +174,7 @@
 }
 
 -  (void) removeTemporalFilesUsed {
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSFileManager *fileManager = [[NSFileManager alloc] init];
 	NSString *documentsDirectory = [NSHomeDirectory()
 									stringByAppendingPathComponent:@"Documents"];
 	

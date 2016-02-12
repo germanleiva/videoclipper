@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()
 //		pageControlAppearance.currentPageIndicatorTintColor = UIColor.blackColor()
 //		pageControlAppearance.backgroundColor = UIColor.whiteColor()
-		VideoHelper().removeTemporalFilesUsed()
+//		VideoHelper().removeTemporalFilesUsed()
 
 		//This code is used when presenting to show the touch events
 //		let rootVC = self.window?.rootViewController

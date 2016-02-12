@@ -47,7 +47,7 @@ class VideoClip: StoryElement {
         }
         
 		if let path = self.path {
-			self.asset = AVURLAsset(URL: NSURL(string: path)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+			self.asset = AVURLAsset(URL: NSURL(fileURLWithPath: path), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
 			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     completionHandler?(error: nil)

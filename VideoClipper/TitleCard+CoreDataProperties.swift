@@ -19,5 +19,5 @@ extension TitleCard {
     @NSManaged var snapshot: NSData?
     @NSManaged var widgets: NSOrderedSet?
     @NSManaged var images: NSOrderedSet?
-
+    @NSManaged var videoPath:String?
 }

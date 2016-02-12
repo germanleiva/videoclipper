@@ -48,6 +48,7 @@
         <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
         <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
         <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="videoPath" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImageWidget" inverseName="titleCard" inverseEntity="ImageWidget" syncable="YES"/>
         <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
     </entity>
@@ -72,7 +73,7 @@
         <element name="TagMark" positionX="-153" positionY="81" width="128" height="90"/>
         <element name="TextWidget" positionX="-72" positionY="360" width="128" height="165"/>
         <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
-        <element name="TitleCard" positionX="54" positionY="117" width="128" height="120"/>
+        <element name="TitleCard" positionX="54" positionY="117" width="128" height="135"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="150"/>
         <element name="VideoSegment" positionX="286" positionY="528" width="128" height="75"/>
     </elements>

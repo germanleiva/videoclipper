@@ -443,17 +443,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			UIGraphicsEndImageContext()
 			
 			weakSelf.titleCard?.snapshot = UIImagePNGRepresentation(img)
-            
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-                let changeRequest = PHAssetChangeRequest.creationRequestForAssetFromImage(img)
-                let placeHolder = changeRequest.placeholderForCreatedAsset
-            }, completionHandler: { (success, error) -> Void in
-                    if success {
-                        print("SAVED IMAGE")
-                    } else {
-                                                    print("NOT SAVED IMAGE")
-                    }
-            })
 			
 			for eachDeactivatedWidget in deactivatedWidgets {
 				weakSelf.activateHandlers(eachDeactivatedWidget)

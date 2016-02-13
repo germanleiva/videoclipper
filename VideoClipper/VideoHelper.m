@@ -176,11 +176,10 @@
     
     CVPixelBufferRef buffer = NULL;
     
-    NSArray *imageArray =  @[image,image,image,image,image];
+    NSArray *imageArray =  @[image,image];
     //convert uiimage to CGImage.
     int frameCount = 0;
-    double numberOfSecondsPerFrame = seconds / imageArray.count;
-    double frameDuration = fps * numberOfSecondsPerFrame;
+    double frameDuration = seconds * fps / (double)imageArray.count;
     
     //for(VideoFrame * frm in imageArray)
     NSLog(@"**************************************************");
@@ -190,11 +189,11 @@
         buffer = [self pixelBufferFromCGImage:[img CGImage] size:imageSize];
         
         BOOL append_ok = NO;
-        int j = 0;
-        while (!append_ok && j < 30) {
+        int attempsUntilOk = 0;
+        while (!append_ok && attempsUntilOk < 10) {
+            NSLog(@"Processing video frame (%d,%lu)",frameCount,(unsigned long)[imageArray count]);
             if (adaptor.assetWriterInput.readyForMoreMediaData)  {
                 //print out status:
-                NSLog(@"Processing video frame (%d,%d)",frameCount,[imageArray count]);
                 
                 CMTime frameTime = CMTimeMake(frameCount*frameDuration,(int32_t) fps);
                 append_ok = [adaptor appendPixelBuffer:buffer withPresentationTime:frameTime];
@@ -206,13 +205,13 @@
                 }
             }
             else {
-                printf("adaptor not ready %d, %d\n", frameCount, j);
+                printf("adaptor not ready %d, %d\n", frameCount, attempsUntilOk);
                 [NSThread sleepForTimeInterval:0.1];
             }
-            j++;
+            attempsUntilOk++;
         }
         if (!append_ok) {
-            printf("error appending image %d times %d\n, with error.", frameCount, j);
+            printf("error appending image %d times %d\n, with error.", frameCount, attempsUntilOk);
         }
         frameCount++;
     }

@@ -85,7 +85,6 @@
 		A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F057AC1B98A42E008FB9D0 /* TagMark.swift */; };
 		A4F20B781BA9AE6000879726 /* ModalTitleCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */; };
 		A4F4AFF91BB3F80C0049109F /* MBFingerTipWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A4F4AFF81BB3F80C0049109F /* MBFingerTipWindow.m */; };
-		A4F4AFFE1BB3F8A50049109F /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = A4F4AFFD1BB3F8A50049109F /* LICENSE.md */; };
 		A4F8E3B41BB0469C0076A6FF /* Thumbnail+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8E3B11BB0469C0076A6FF /* Thumbnail+CoreDataProperties.swift */; };
 		A4F8E3B51BB0469C0076A6FF /* Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8E3B21BB0469C0076A6FF /* Thumbnail.swift */; };
 		A4F8E3B61BB0469C0076A6FF /* VideoClip+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8E3B31BB0469C0076A6FF /* VideoClip+CoreDataProperties.swift */; };
@@ -691,7 +690,6 @@
 				A4F8E3B51BB0469C0076A6FF /* Thumbnail.swift in Sources */,
 				A404A5301B81CBA000B82B29 /* StoryElementVC.swift in Sources */,
 				A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */,
-				A4F4AFFE1BB3F8A50049109F /* LICENSE.md in Sources */,
 				A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */,
 				A40049F31BA98C24003E518C /* UIView+Genie.m in Sources */,
 				A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */,

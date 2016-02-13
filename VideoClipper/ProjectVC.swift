@@ -247,8 +247,25 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			}
 		}
 		
+//        if let firstElement = elements.first as? StoryElement {
+//            firstElement.loadAsset({ (error) -> Void in
+//                let item = AVPlayerItem(asset: firstElement.asset!)
+//                self.player = AVPlayer(playerItem: item)
+//                
+//                item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions(rawValue: 0), context: nil)
+//                
+//                let playerVC = AVPlayerViewController()
+//                playerVC.player = self.player
+//                self.presentViewController(playerVC, animated: true, completion: { () -> Void in
+//                    print("Player presented")
+//                    playerVC.player?.play()
+//                })
+//            })
+//        }
+        
+        
         self.tableController?.createComposition(NSOrderedSet(array: elements), completionHandler: { (result) -> Void in
-            let (composition,videoComposition,_) = result
+            let (composition,videoComposition) = result
             
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
             item.videoComposition = videoComposition

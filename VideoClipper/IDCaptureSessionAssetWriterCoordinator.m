@@ -62,9 +62,9 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 {
     self = [super init];
     if(self){
-        self.videoDataOutputQueue = dispatch_queue_create( "com.example.capturesession.videodata", DISPATCH_QUEUE_SERIAL );
+        self.videoDataOutputQueue = dispatch_queue_create( "fr.lri.existu.VideoClipper.capturesession.videodata", DISPATCH_QUEUE_SERIAL );
         dispatch_set_target_queue( _videoDataOutputQueue, dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ) );
-        self.audioDataOutputQueue = dispatch_queue_create( "com.example.capturesession.audiodata", DISPATCH_QUEUE_SERIAL );
+        self.audioDataOutputQueue = dispatch_queue_create( "fr.lri.existu.VideoClipper.capturesession.audiodata", DISPATCH_QUEUE_SERIAL );
         [self addDataOutputsToCaptureSession:self.captureSession];
         _lastVideoBuffer = [SCSampleBufferHolder new];
         _initialTime = kCMTimeInvalid;

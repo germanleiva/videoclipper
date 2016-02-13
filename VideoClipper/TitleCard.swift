@@ -46,7 +46,9 @@ class TitleCard: StoryElement {
     
     override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
         if let _ = self.asset {
-            completionHandler?(error: nil)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                completionHandler?(error:nil)
+            })
             return
         }
         
@@ -57,8 +59,10 @@ class TitleCard: StoryElement {
             
             let createAsset = {
                 self.asset = AVAsset(URL: NSURL(fileURLWithPath: self.videoPath!))
-                self.asset!.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-                    completionHandler?(error:nil)
+                self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        completionHandler?(error:nil)
+                    })
                 })
             }
             

@@ -274,7 +274,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 	func playTappedOnSelectedLine(sender:AnyObject?) {
 		self.createComposition(self.currentStoryLine()!.elements!) { (result) -> Void in
-            let (composition,videoComposition,_) = result
+            let (composition,videoComposition) = result
             
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
             item.videoComposition = videoComposition
@@ -303,17 +303,16 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		}
 	}
 	
-	func createComposition(elements:NSOrderedSet,completionHandler:((result:(AVMutableComposition,AVMutableVideoComposition,[AVTimedMetadataGroup])) -> Void)?) -> Void {
+	func createComposition(elements:NSOrderedSet,completionHandler:((result:(AVMutableComposition,AVMutableVideoComposition)) -> Void)?) -> Void {
 		let composition = AVMutableComposition()
-		var cursorTime = kCMTimeZero
 		let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
-
-		let compositionAudioTrack = composition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        var compositionAudioTrack:AVMutableCompositionTrack? = nil
+        var cursorTime = kCMTimeZero
 		
 //		let compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
 		
-		var instructions:[AVVideoCompositionInstructionProtocol] = []
-		var timedMetadataGroups = [AVTimedMetadataGroup]()
+		var instructions = [AVMutableVideoCompositionInstruction]()
+		/*var timedMetadataGroups = [AVTimedMetadataGroup]()*/
 		
 //		let locationMetadata = AVMutableMetadataItem()
 //		locationMetadata.identifier = AVMetadataIdentifierQuickTimeUserDataLocationISO6709
@@ -327,6 +326,12 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
             dispatch_group_enter(assetLoadingGroup);
 
             let eachElement = each as! StoryElement
+            
+            if eachElement.isVideo() {
+                //I need to create a sound track
+                compositionAudioTrack = composition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+            }
+            
             eachElement.loadAsset({ (error) -> Void in
                 var error:NSError?
                 switch eachElement.asset!.statusOfValueForKey("tracks", error: &error) {
@@ -360,9 +365,19 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                 } else if (eachElement as! StoryElement).isTitleCard() {
                     let eachTitleCard = eachElement as! TitleCard
                     asset = eachTitleCard.asset
-                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
+//                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
                     
-                    let chapterMetadataItem = AVMutableMetadataItem()
+                    var error:NSError?
+                    let status = asset!.statusOfValueForKey("duration", error: &error)
+                    
+                    if status != AVKeyValueStatus.Loaded {
+                        print("Duration was not ready: \(error!.localizedDescription)")
+                        abort()
+                    }
+                    
+                    assetDuration = asset!.duration
+                    
+                    /*let chapterMetadataItem = AVMutableMetadataItem()
                     chapterMetadataItem.identifier = AVMetadataIdentifierQuickTimeUserDataChapter
                     chapterMetadataItem.dataType = kCMMetadataBaseDataType_UTF8 as String
                     //				chapterMetadataItem.time = cursorTime
@@ -374,7 +389,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                     chapterMetadataItem.value = "Capitulo \(elements.indexOfObject(eachElement))"
                     
                     let group = AVMutableTimedMetadataGroup(items: [chapterMetadataItem], timeRange: CMTimeRange(start: cursorTime,duration: kCMTimeInvalid))
-                    timedMetadataGroups.append(group)
+                    timedMetadataGroups.append(group)*/
                 }
                 
                 let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
@@ -384,21 +399,24 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                 let range = CMTimeRangeMake(startTime, assetDuration)
                 do {
                     try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
-                    compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
+                    /*compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform*/
                     //				if sourceMetadataTrack != nil {
                     //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
                     //				}
-                    if sourceAudioTrack != nil {
-                        try compositionAudioTrack.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
+                    
+                    //In the case of a TitleCard there is no sound track
+                    if let _ = sourceAudioTrack {
+                        try compositionAudioTrack!.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
                     }
                 } catch {
                     print("Couldn't create composition: \(error)")
                     abort()
                 }
+
                 
                 // create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
                 let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
-                layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)
+                /*layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)*/
                 
                 // create the composition instructions for the range of this clip
                 let videoTrackInstruction = AVMutableVideoCompositionInstruction()
@@ -421,9 +439,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
             //		videoComposition.renderSize = lastNaturalSize
             videoComposition.renderSize = CGSize(width: 1920,height: 1080)
             
-            self.videoHelper.removeTemporalFilesUsed()
-            
-            completionHandler?(result: (composition,videoComposition,timedMetadataGroups))
+            completionHandler?(result: (composition,videoComposition))
         })
 	}
 	
@@ -437,7 +453,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	
 	func exportToPhotoAlbum(elements:NSOrderedSet){
         self.createComposition(elements) { (result) -> Void in
-            let (composition,videoComposition,_) = result
+            let (composition,videoComposition) = result
             
             self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
             

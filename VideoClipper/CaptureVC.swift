@@ -80,7 +80,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         super.viewDidLoad()
 		
 		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
-			let titleCardUpdated = notification.object as! TitleCard
+//			let titleCardUpdated = notification.object as! TitleCard
 //			if self.currentTitleCard == titleCardUpdated {
 //				self.needsToUpdateTitleCardPlaceholder = true
 //			}

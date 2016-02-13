@@ -42,7 +42,9 @@ class VideoClip: StoryElement {
 	
     override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
         if let _ = self.asset {
-            completionHandler?(error: nil)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                completionHandler?(error: nil)
+            })
             return
         }
         
@@ -129,7 +131,10 @@ class VideoClip: StoryElement {
                     mutableVideoComposition.renderSize = size;
                     
                     self.asset = mutableComposition
-                    completionHandler?(error:nil)
+                    
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        completionHandler?(error:nil)
+                    })
                 })
             }
         }

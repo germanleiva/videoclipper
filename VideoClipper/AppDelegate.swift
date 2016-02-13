@@ -49,6 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //		self.window?.rootViewController = rootVC
 //		self.window?.makeKeyAndVisible()
 		
+        //Exotic hack: preloads keyboard so there's no lag on initial keyboard appearance.
+        let lagFreeField: UITextField = UITextField()
+        self.window?.addSubview(lagFreeField)
+        lagFreeField.becomeFirstResponder()
+        lagFreeField.resignFirstResponder()
+        lagFreeField.removeFromSuperview()
+        
 		return true
 	}
 

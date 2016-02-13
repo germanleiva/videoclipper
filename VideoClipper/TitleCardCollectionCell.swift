@@ -9,7 +9,6 @@
 import UIKit
 
 class TitleCardCollectionCell: StoryElementCollectionCell {
-	@IBOutlet weak var label:UILabel?
 	@IBOutlet weak var thumbnail:UIImageView?
 
 

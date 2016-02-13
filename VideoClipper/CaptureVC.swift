@@ -14,7 +14,7 @@ let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
 
 protocol CaptureVCDelegate {
-//	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL, tags :[TagMark])
+	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip)
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
@@ -476,12 +476,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     }
                     try self.context.save()
                     
-                    self.currentVideoSegment = nil
-                    self.selectedVideo = nil
+                    let modifiedVideoClip = self.selectedVideo
                     
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        self.delegate?.captureVC(self, didChangeStoryLine: self.currentLine!)
+                        self.delegate?.captureVC(self, didChangeVideoClip: modifiedVideoClip!)
                     })
+                    
+                    self.currentVideoSegment = nil
+                    self.selectedVideo = nil
                 } catch {
                     // handle error
                 }
@@ -992,6 +994,17 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			self.performSegueWithIdentifier("modalTitleCardVC", sender: self)
             return
 		}
+
+		self.selectedLineIndexPath = indexPath
+		let selectedLine = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
+		self.currentLine = selectedLine
+        
+        self.updateCollectionView()
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: self.currentLine)
+    }
+    
+    func updateCollectionView(){
         let window = UIApplication.sharedApplication().delegate!.window!
         let blockView = UIView(frame: window!.frame)
         blockView.backgroundColor = UIColor.blackColor()
@@ -1002,28 +1015,24 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let progressBar = MBProgressHUD.showHUDAddedTo(blockView, animated: true)
         progressBar.show(true)
         
-		self.selectedLineIndexPath = indexPath
-		let selectedLine = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
-		self.currentLine = selectedLine
-		
-//        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: selectedLine)
-        
         self.collectionView.performBatchUpdates({ () -> Void in
             self.collectionView.reloadSections(NSIndexSet(index: 0))
         }, completion: { (completed) -> Void in
             if completed {
+                let farRightOffset = CGPoint(x:self.collectionView.contentSize.width - self.collectionView.bounds.size.width, y:0)
+                self.collectionView.setContentOffset(farRightOffset, animated: false)
+
                 progressBar.hide(true)
                 self.resetMarker()
-
+                
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
                     blockView.alpha = 0
-                }, completion: { (completed) -> Void in
-                    blockView.removeFromSuperview()
+                    }, completion: { (completed) -> Void in
+                        blockView.removeFromSuperview()
                 })
             }
         })
-        
-	}
+    }
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {
 		let project = self.currentLine!.project!
@@ -1064,6 +1073,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			self.titleCardTable.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: UITableViewScrollPosition.Bottom)
 			self.selectedLineIndexPath = indexPath
 			self.currentLine = newStoryLine
+            
+            updateCollectionView()
+            
 			NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationSelectedLineChanged, object: newStoryLine)
 		} catch {
 			print("Couldn't save the new story line: \(error)")

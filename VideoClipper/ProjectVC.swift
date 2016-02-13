@@ -95,11 +95,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.secondaryController!.line = self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine
 		
 		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationSelectedLineChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
-			self.expandPrimaryController(true)
 			let selectedLine = notification.object
 			self.tableController!.tableView.reloadData()
 			let section = self.project!.storyLines!.indexOfObject(selectedLine!)
 			self.tableController!.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section), animated: true)
+            self.expandPrimaryController(true)
 		}
 	}
 	

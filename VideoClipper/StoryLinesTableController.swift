@@ -13,17 +13,7 @@ import CoreData
 import MediaPlayer
 import ImageIO
 import AVKit
-import AssetsLibrary
 import Photos
-
-class NonRotatingUIImagePickerController : UIImagePickerController {
-	override func shouldAutorotate() -> Bool {
-		return false
-	}
-//	override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-//		return UIInterfaceOrientationMask.Landscape
-//	}
-}
 
 struct Bundle {
 	var offset = CGPointZero
@@ -46,14 +36,10 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	var delegate:PrimaryControllerDelegate? = nil
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-	
-	var orientationObserver:NSObjectProtocol? = nil
-	
+		
 	var bundle:Bundle? = nil
 	var animating = false
-	
-	let videoHelper = VideoHelper()
-	
+		
 	var progressBar:MBProgressHUD? = nil
 	
     var isCompact = false
@@ -117,30 +103,51 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		self.selectRowAtIndexPath(indexPath, animated: false)
 	}
 	
-	func updateElement(element:StoryElement) {
+    func updateElement(element:StoryElement,isNew:Bool = false) {
 		let storyLine = element.storyLine!
-		let section = self.project!.storyLines!.indexOfObject(storyLine)
-		let indexPath = NSIndexPath(forRow: 0, inSection: section)
-		if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
-			let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element) , inSection: 0)
-			cell.collectionView!.reloadItemsAtIndexPaths([itemPath])
-		}
+        if let section = self.project!.storyLines?.indexOfObject(storyLine) {
+            let indexPath = NSIndexPath(forRow: 0, inSection: section)
+            if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
+                let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element) , inSection: 0)
+                if isNew {
+                    cell.collectionView!.reloadSections(NSIndexSet(index: 0))
+                } else {
+                    cell.collectionView!.reloadItemsAtIndexPaths([itemPath])
+                }
+            }
+        }
 	}
+    
+    func createNewVideoForAssetURL(assetURL:NSURL,tags:[TagMark]=[]) {
+        let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+        newVideo!.path = assetURL.absoluteString
+        
+        let videoTags = newVideo!.mutableOrderedSetValueForKey("tags")
+        
+        for eachTag in tags {
+            videoTags.addObject(eachTag)
+        }
+        
+        let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
+        elements.addObject(newVideo!)
+        
+        do {
+            defer {
+                //If we need a "finally"
+                
+            }
+            try self.context.save()
+            newVideo!.loadAsset(nil)
+
+            self.insertVideoElementInCurrentLine(newVideo)
+        } catch {
+            print("Couldn't save new video in the DB")
+            print(error)
+        }
+    }
 	
-	func captureVC(captureController:CaptureVC, didFinishRecordingVideoClipAtPath pathURL:NSURL,tags:[TagMark]) {
-//		let library = ALAssetsLibrary()
-//		let pathURL = NSURL(fileURLWithPath: pathString)
-		
-		//		library.saveVideo is used to save on an album
-//		if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(pathURL) {
-//			library.writeVideoAtPathToSavedPhotosAlbum(pathURL) { (assetURL, errorOnSaving) -> Void in
-//				if errorOnSaving != nil {
-//					print("Couldn't save the video \(pathURL) on the photos album: \(errorOnSaving)")
-//					return
-//				}
-				self.createNewVideoForAssetURL(pathURL,tags: tags)
-//			}
-//		}
+	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip) {
+        self.updateElement(videoClip,isNew:true)
 	}
 	
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine) {
@@ -213,36 +220,6 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 //			}
 //			self.createNewVideoForAssetURL(assetURL)
 //		}
-	}
-	
-	func createNewVideoForAssetURL(assetURL:NSURL,tags:[TagMark]=[]) {
-		let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-		//				newVideo!.name = "V\(self.currentStoryLine.elements!.count)"
-		newVideo!.path = assetURL.absoluteString
-		newVideo!.asset = AVAsset(URL: assetURL)
-		newVideo!.asset!.loadValuesAsynchronouslyForKeys(["duration","tracks"], completionHandler: nil)
-
-		let videoTags = newVideo!.mutableOrderedSetValueForKey("tags")
-
-		for eachTag in tags {
-			videoTags.addObject(eachTag)
-		}
-		
-		let elements = self.currentStoryLine()!.mutableOrderedSetValueForKey("elements")
-		elements.addObject(newVideo!)
-		
-		do {
-			defer {
-				//If we need a "finally"
-				
-			}
-			try self.context.save()
-			
-			self.insertVideoElementInCurrentLine(newVideo)
-		} catch {
-			print("Couldn't save new video in the DB")
-			print(error)
-		}
 	}
 	
 	func insertVideoElementInCurrentLine(newElement:VideoClip?) {
@@ -855,11 +832,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			let titleCardCell = collectionView.dequeueReusableCellWithReuseIdentifier("TitleCardCollectionCell", forIndexPath: indexPath) as! TitleCardCollectionCell
 			if let snapshot = titleCardElement.snapshot {
 				titleCardCell.thumbnail!.image = UIImage(data: snapshot)
-				titleCardCell.label!.text = ""
-			} else {
-				titleCardCell.label!.text = titleCardElement.name
-			}
-			return titleCardCell
+            }
+            return titleCardCell
 		}
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
@@ -867,24 +841,29 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		if videoElement.thumbnailImage == nil {
 			videoCell.loader?.startAnimating()
 
-			let url = NSURL(string: videoElement.path!)
-			let asset = AVAsset(URL: url!)
-			let generator = AVAssetImageGenerator(asset: asset)
-			generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
-			generator.appliesPreferredTrackTransform = true
-			
-			do {
-				let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
-				let image = UIImage(CGImage: imageRef)
-//				CGImageRelease(imageRef)
-				let imageData = NSData(data: UIImagePNGRepresentation(image)!)
-				videoElement.thumbnailData = imageData
-				videoElement.thumbnailImage = image
+            videoElement.loadAsset({ (error) -> Void in
+                if error != nil {
+                    print(error?.localizedDescription)
+                    abort()
+                }
+                let asset = videoElement.asset!
+                let generator = AVAssetImageGenerator(asset: asset)
+                generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
+                generator.appliesPreferredTrackTransform = true
                 
-				try self.context.save()
-			} catch {
-				print("Couldn't generate thumbnail for video: \(error)")
-			}
+                do {
+                    let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
+                    let image = UIImage(CGImage: imageRef)
+                    //				CGImageRelease(imageRef)
+                    let imageData = NSData(data: UIImagePNGRepresentation(image)!)
+                    videoElement.thumbnailData = imageData
+                    videoElement.thumbnailImage = image
+                    
+                    try self.context.save()
+                } catch {
+                    print("Couldn't generate thumbnail for video: \(error)")
+                }
+            })
 		}
 
 		videoCell.loader?.stopAnimating()

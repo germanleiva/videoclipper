@@ -137,7 +137,7 @@
 	return asset;
 }
 
-- (void) createMovieAtPath:(NSString*)videoOutputPath duration:(int)seconds withImage:(UIImage*)image completion: (void (^)(void))handler {
+- (void) createMovieAtPath:(NSURL*)videoOutputPath duration:(int)seconds withImage:(UIImage*)image completion: (void (^)(void))handler {
     NSError *error = nil;
 
     CGSize imageSize = image.size;
@@ -145,8 +145,8 @@
     
     NSLog(@"Start building video from defined frames.");
     
-    AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:
-                                  [NSURL fileURLWithPath:videoOutputPath] fileType:AVFileTypeQuickTimeMovie
+    AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:videoOutputPath
+                                                           fileType:AVFileTypeQuickTimeMovie
                                                               error:&error];
     NSParameterAssert(videoWriter);
     

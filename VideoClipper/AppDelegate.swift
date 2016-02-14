@@ -17,6 +17,7 @@ struct Globals {
 	
 	static var notificationTitleCardChanged = "NotificationTitleCardChanged"
 	static var notificationSelectedLineChanged = "NotificationSelectedLineChanged"
+    static var documentsDirectory = (UIApplication.sharedApplication().delegate as! AppDelegate).applicationDocumentsDirectory
 }
 
 @UIApplicationMain

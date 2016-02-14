@@ -23,6 +23,6 @@
 - (CVPixelBufferRef) pixelBufferFromCGImage:(CGImageRef)image size:(CGSize)size;
 -  (void) removeTemporalFilesUsed;
 
-- (void) createMovieAtPath:(NSString*)videoOutputPath duration:(int)seconds withImage:(UIImage*)image completion: (void (^)(void))handler;
+- (void) createMovieAtPath:(NSURL*)videoOutputPath duration:(int)seconds withImage:(UIImage*)image completion: (void (^)(void))handler;
 
 @end

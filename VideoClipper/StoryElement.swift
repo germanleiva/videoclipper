@@ -30,4 +30,8 @@ class StoryElement: NSManagedObject {
     func loadAsset(completionHandler:((error:NSError?) -> Void)?){
         fatalError("Should be implemented by subclass")
     }
+    
+    func deleteAssetFile() {
+        self.asset = nil
+    }
 }

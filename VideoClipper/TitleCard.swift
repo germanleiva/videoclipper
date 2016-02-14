@@ -58,7 +58,8 @@ class TitleCard: StoryElement {
             }
             
             let createAsset = {
-                self.asset = AVAsset(URL: NSURL(fileURLWithPath: self.videoPath!))
+                let path = Globals.documentsDirectory.URLByAppendingPathComponent(self.videoFileName!)
+                self.asset = AVAsset(URL: path)
                 self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(error:nil)
@@ -66,7 +67,7 @@ class TitleCard: StoryElement {
                 })
             }
             
-            if self.videoPath == nil {
+            if self.videoFileName == nil {
                 self.writeVideoFromSnapshot({ () -> Void in
                     createAsset()
                 })
@@ -80,38 +81,32 @@ class TitleCard: StoryElement {
         let path = self.writePath()
 
         VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: UIImage(data:self.snapshot!)) { () -> Void in
-            self.videoPath = path
+            self.videoFileName = path.lastPathComponent
             handler?()
         }
     }
 
-    func writePath() -> String {
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
-
+    func writePath() -> NSURL {
         let titleCardObjectId = self.objectID.URIRepresentation().absoluteString
         
         let illegalFileNameCharacters = NSCharacterSet(charactersInString: "/\\?%*|\"<>")
         let components = titleCardObjectId.stringByReplacingOccurrencesOfString("x-coredata://", withString: "").componentsSeparatedByCharactersInSet(illegalFileNameCharacters)
         let videoName = components.joinWithSeparator("_")
         
-        return documentsPath + "/" + videoName + ".mov"
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName + ".mov")
     }
     
     override func didSave() {
         super.didSave()
         
         if self.deleted {
-            if let path = self.videoPath {
+            if let path = self.videoFileName {
                 let request = NSFetchRequest(entityName: self.entity.name!)
                 request.predicate = NSPredicate(format: "(self != %@) AND (self.path == %@)", argumentArray: [self.objectID,path])
                 do {
                     if let otherTitleCardsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
                         if otherTitleCardsUsingSameFile.isEmpty {
-                            do {
-                                try NSFileManager().removeItemAtPath(path)
-                            } catch let error as NSError {
-                                print("Couldn't delete titlecard video file \(path): \(error.localizedDescription)")
-                            }
+                            deleteAssetFile()
                         }
                     }
                 } catch {
@@ -119,6 +114,20 @@ class TitleCard: StoryElement {
                 }
             }
         }
+    }
+    
+    override func deleteAssetFile() {
+        if let path = self.videoFileName {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
+                do {
+                    try NSFileManager().removeItemAtURL(Globals.documentsDirectory.URLByAppendingPathComponent(path))
+                } catch let error as NSError {
+                    print("Couldn't delete titlecard video file \(path): \(error.localizedDescription)")
+                }
+            }
+        }
+        self.videoFileName = nil
+        super.deleteAssetFile()
     }
 
 }

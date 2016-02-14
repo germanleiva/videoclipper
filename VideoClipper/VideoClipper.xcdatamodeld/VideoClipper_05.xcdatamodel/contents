@@ -48,7 +48,7 @@
         <attribute name="backgroundColor" optional="YES" attributeType="Transformable" valueTransformerName="" syncable="YES"/>
         <attribute name="duration" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="9" defaultValueString="3" syncable="YES"/>
         <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="videoPath" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="videoFileName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ImageWidget" inverseName="titleCard" inverseEntity="ImageWidget" syncable="YES"/>
         <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
     </entity>

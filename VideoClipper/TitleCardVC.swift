@@ -479,8 +479,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 			
 			do {
-				try self.context.save()
-				self.needsToSave = false
+                //We need to regenerate the asset
+                self.titleCard?.deleteAssetFile()
+                try self.context.save()
+				
+                self.needsToSave = false
 				if animated {
 					progressIndicator!.hide(true)
 				}

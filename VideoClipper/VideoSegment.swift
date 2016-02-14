@@ -17,11 +17,10 @@ class VideoSegment: NSManagedObject {
     var time = Float64(0)
     var tagsPlaceholders = [(UIColor,Float64)]()
     
-    var path:String? {
+    var path:NSURL? {
         get {
             if let aName = self.fileName {
-                let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
-                return documentsPath + "/" + aName
+                return Globals.documentsDirectory.URLByAppendingPathComponent(aName)
             }
             return nil
         }
@@ -32,31 +31,18 @@ class VideoSegment: NSManagedObject {
         get {
             if _asset == nil {
                 if let aPath = self.path {
-                    _asset = AVAsset(URL: NSURL(fileURLWithPath: aPath))
+                    _asset = AVAsset(URL: aPath)
                 }
             }
             return _asset
         }
     }
     
-    func writePath() -> String {
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
-        
-//        let entityFolderPath = documentsPath.stringByAppendingString("/\(self.entity.name!)")
-//        let fileManager = NSFileManager()
-//        if !fileManager.fileExistsAtPath(entityFolderPath) {
-//            do {
-//                try fileManager.createDirectoryAtPath(entityFolderPath, withIntermediateDirectories: false, attributes: nil)
-//            } catch {
-//                print("Couldn't create folder at \(entityFolderPath): \(error)")
-//                abort()
-//            }
-//        }
-        
+    func writePath() -> NSURL {
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
         let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
 //        return entityFolderPath + "/" + fileName
-        return documentsPath + "/" + videoName
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
     }
     
     override func didSave() {
@@ -78,9 +64,8 @@ class VideoSegment: NSManagedObject {
     }
     
     func deleteVideoSegmentFile() {
-        let fileManager = NSFileManager()
         do {
-            try fileManager.removeItemAtPath(self.path!)
+            try NSFileManager().removeItemAtURL(self.path!)
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
         }

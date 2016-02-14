@@ -437,10 +437,10 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
             self.exportSession!.videoComposition = videoComposition
             
             //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
-            let file = NSURL(fileURLWithPath: NSHomeDirectory()).URLByAppendingPathComponent("Documents").URLByAppendingPathComponent("test_output.mov")
+            let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
             
             do {
-                try NSFileManager().removeItemAtPath(file.path!)
+                try NSFileManager().removeItemAtURL(file)
                 print("Deleted old temporal video file: \(file.path!)")
                 
             } catch {

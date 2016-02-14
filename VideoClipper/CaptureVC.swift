@@ -531,7 +531,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         UIApplication.sharedApplication().idleTimerDisabled = true
         
-        self._captureSessionCoordinator.suggestedFileURL(NSURL(fileURLWithPath: self.currentVideoSegment!.writePath()))
+        self._captureSessionCoordinator.suggestedFileURL(self.currentVideoSegment!.writePath())
         self._captureSessionCoordinator.startRecording()
         
         self.ghostImageView.hidden = true

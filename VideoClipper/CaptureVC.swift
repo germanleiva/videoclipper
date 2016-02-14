@@ -1124,7 +1124,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
     
     func resetMarker(animated:Bool = true){
-        
         self.markerWidthConstraint?.constant = markerSmallWidth
         
         let block = {

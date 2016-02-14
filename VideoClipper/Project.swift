@@ -30,5 +30,6 @@ class Project: NSManagedObject {
 		if self.updatedAt == nil || now.timeIntervalSinceDate(self.updatedAt!) > 1.0 {
 			self.updatedAt = now;
 		}
+        super.willSave()
 	}
 }

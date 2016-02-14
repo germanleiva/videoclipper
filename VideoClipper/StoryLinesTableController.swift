@@ -438,16 +438,17 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
             
             //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
             let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
+            let fileManager = NSFileManager()
             
-            do {
-                try NSFileManager().removeItemAtURL(file)
-                print("Deleted old temporal video file: \(file.path!)")
-                
-            } catch {
-                print("Couldn't delete old temporal file: \(error)")
+            if fileManager.fileExistsAtPath(file.path!) {
+                do {
+                    try NSFileManager().removeItemAtURL(file)
+                    print("Deleted old temporal video file: \(file.path!)")
+                } catch {
+                    print("Couldn't delete old temporal file: \(error)")
+                }
             }
             
-            //		exportSession!.outputURL = NSURL(fileURLWithPath: filePath!)
             self.exportSession!.outputURL = file
             self.exportSession!.outputFileType = AVFileTypeQuickTimeMovie
             

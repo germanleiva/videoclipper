@@ -243,12 +243,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //		//			})
 //	}
 	
-	@IBAction func swipedUpOnVideo(recognizer:UISwipeGestureRecognizer) {
-//		self.deleteSegments()
-		self.updateTimeRecordedLabel()
-		return
-	}
-	
 	@IBAction func changedGhostSlider(sender: UISlider) {
 		self.ghostImageView.alpha = CGFloat(sender.value)
 	}
@@ -970,7 +964,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	//-MARK: Table View Data Source
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return self.currentLine!.project!.storyLines!.count
+		return self.currentLine?.project!.storyLines!.count ?? 0
 	}
 	
 	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -1023,7 +1017,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 self.collectionView.setContentOffset(farRightOffset, animated: false)
 
                 progressBar.hide(true)
-                self.resetMarker()
+                self.layout().isCentered = false
                 
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
                     blockView.alpha = 0
@@ -1082,6 +1076,30 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 	}
     
+    @IBAction func swipedUpOnCollectionView(recognizer:UISwipeGestureRecognizer) {
+        let point = recognizer.locationInView(self.collectionView)
+        if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
+            let videoToDelete = self.currentLine?.videos()[indexPath.item]
+            
+            let elements = self.currentLine?.mutableOrderedSetValueForKey("elements")
+            elements?.removeObject(videoToDelete!)
+            
+            self.context.deleteObject(videoToDelete!)
+            
+            do {
+                try self.context.save()
+                self.collectionView.performBatchUpdates({ () -> Void in
+                    self.collectionView.deleteItemsAtIndexPaths([indexPath])
+                    }, completion: nil)
+                
+                self.updateTimeRecordedLabel()
+                
+            } catch {
+                print("Couldn't delete video \(error)")
+            }
+        }
+    }
+    
     //-MARK: Marker
     let marker = MarkerReusableView(frame: CGRectZero)
     var fillLayer: CAShapeLayer? = nil
@@ -1120,7 +1138,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        resetMarker()
+        self.layout().isCentered = false
     }
     
     func resetMarker(animated:Bool = true){

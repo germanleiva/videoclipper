@@ -108,9 +108,9 @@ class TitleCard: StoryElement {
         super.didSave()
         
         if self.deleted {
-            if let path = self.videoFileName {
+            if let aVideoFileName = self.videoFileName {
                 let request = NSFetchRequest(entityName: self.entity.name!)
-                request.predicate = NSPredicate(format: "(self != %@) AND (self.videoFileName == %@)", argumentArray: [self.objectID,path])
+                request.predicate = NSPredicate(format: "(self != %@) AND (self.videoFileName == %@)", argumentArray: [self.objectID,aVideoFileName])
                 do {
                     if let otherTitleCardsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
                         if otherTitleCardsUsingSameFile.isEmpty {

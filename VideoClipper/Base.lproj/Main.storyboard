@@ -650,9 +650,6 @@
                                     <imageView alpha="0.40000000000000002" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RFp-Dy-GI4">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                         <gestureRecognizers/>
-                                        <connections>
-                                            <outletCollection property="gestureRecognizers" destination="tKO-kN-cx0" appends="YES" id="7O6-gr-THr"/>
-                                        </connections>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1050,6 +1047,9 @@
                                 <exclude reference="dwb-19-Lxp"/>
                             </mask>
                         </variation>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="tKO-kN-cx0" appends="YES" id="kcw-wr-W3F"/>
+                        </connections>
                     </view>
                     <toolbarItems/>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -1087,14 +1087,9 @@
                         <segue destination="WKl-nH-FNn" kind="presentation" identifier="modalTitleCardVC" modalTransitionStyle="coverVertical" id="YN6-m3-U23"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="sb1-gz-nco" userLabel="Swipe Up to Delete Video">
+                <swipeGestureRecognizer direction="up" id="1K3-So-nZd" userLabel="Swipe Up to Delete Video">
                     <connections>
-                        <action selector="swipedUpOnVideo:" destination="Gc3-vh-ICn" id="IVv-WC-DHz"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="1K3-So-nZd" userLabel="Swipe Up to Delete Segment">
-                    <connections>
-                        <action selector="swipedOnSegmentCollection:" destination="Gc3-vh-ICn" id="HuS-59-yea"/>
+                        <action selector="swipedUpOnCollectionView:" destination="Gc3-vh-ICn" id="JAo-2G-Mqu"/>
                     </connections>
                 </swipeGestureRecognizer>
             </objects>

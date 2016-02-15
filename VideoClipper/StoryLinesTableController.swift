@@ -284,6 +284,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		let composition = AVMutableComposition()
 		let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
         var compositionAudioTrack:AVMutableCompositionTrack? = nil
+        var compositionMetadataTrack:AVMutableCompositionTrack? = nil
         var cursorTime = kCMTimeZero
 		
 //		let compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
@@ -304,9 +305,14 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 
             let eachElement = each as! StoryElement
             
-            if eachElement.isVideo() {
-                //I need to create a sound track
+            if eachElement.isVideo() && compositionAudioTrack == nil {
+                //I need to create a mutable track for the sound
                 compositionAudioTrack = composition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+            }
+            
+            //I only added the location timed metadata to the TitleCard
+            if eachElement.isTitleCard() && compositionMetadataTrack == nil {
+                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
             }
             
             eachElement.loadAsset({ (error) -> Void in
@@ -371,7 +377,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                 
                 let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
                 let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
-                //			let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
+                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
                 
                 let range = CMTimeRangeMake(startTime, assetDuration)
                 do {
@@ -381,10 +387,16 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                     //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
                     //				}
                     
-                    //In the case of a TitleCard there is no sound track
+                    //In the case of having only one TitleCard there is no sound track
                     if let _ = sourceAudioTrack {
                         try compositionAudioTrack!.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
                     }
+                    
+                    //If there is at least one TitleCard we should have metadata
+                    if let _ = sourceMetadataTrack {
+                        try compositionMetadataTrack!.insertTimeRange(range, ofTrack: sourceMetadataTrack!, atTime: cursorTime)
+                    }
+                    
                 } catch {
                     print("Couldn't create composition: \(error)")
                     abort()
@@ -415,6 +427,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
             videoComposition.frameDuration = CMTimeMake(1, 30)
             //		videoComposition.renderSize = lastNaturalSize
             videoComposition.renderSize = CGSize(width: 1920,height: 1080)
+            
             
             completionHandler?(result: (composition,videoComposition))
         })
@@ -463,13 +476,13 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
                         case AVAssetExportSessionStatus.Completed:
                             print("Export Complete, trying to write on the photo album")
                             self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
-                            //					let sourceAsset = AVURLAsset(URL: exportSession!.outputURL!)
-                            //					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-                            //						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
-                            //
-                            //						writer.writeMetadataGroups(metadataGroups)
-                            //						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
-                            //					})
+//                            					let sourceAsset = AVURLAsset(URL: self.exportSession!.outputURL!)
+//                            					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+//                            						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
+//                            
+//                            						writer.writeMetadataGroups(metadataGroups)
+//                            						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
+//                            					})
                         case AVAssetExportSessionStatus.Cancelled:
                             print("Export Cancelled");
                             print("ExportSessionError: \(anExportSession.error?.localizedDescription)")

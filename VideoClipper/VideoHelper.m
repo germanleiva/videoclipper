@@ -159,7 +159,6 @@
                                             assetWriterInputWithMediaType:AVMediaTypeVideo
                                             outputSettings:videoSettings];
     
-    
     AVAssetWriterInputPixelBufferAdaptor *adaptor = [AVAssetWriterInputPixelBufferAdaptor
                                                      assetWriterInputPixelBufferAdaptorWithAssetWriterInput:videoWriterInput
                                                      sourcePixelBufferAttributes:nil];
@@ -168,6 +167,38 @@
     NSParameterAssert([videoWriter canAddInput:videoWriterInput]);
     videoWriterInput.expectsMediaDataInRealTime = YES;
     [videoWriter addInput:videoWriterInput];
+
+    
+    //SETUP TIMED METADATA
+    
+    // Setup metadata track in order to write metadata samples
+    AVAssetWriterInputMetadataAdaptor *assetWriterMetadataAdaptor;
+    
+    CMFormatDescriptionRef metadataFormatDescription = NULL;
+    
+    NSArray *specs = @[@{ (__bridge id)kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier : AVMetadataIdentifierQuickTimeMetadataLocationISO6709,
+                          (__bridge id)kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType   : (__bridge id)kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 }];
+    
+    OSStatus err = CMMetadataFormatDescriptionCreateWithMetadataSpecifications(kCFAllocatorDefault, kCMMetadataFormatType_Boxed, (__bridge CFArrayRef)specs, &metadataFormatDescription);
+
+//    OSStatus err = CMTextFormatDescriptionCreateFromBigEndianTextDescriptionData(kCFAllocatorDefault, (uint8_t*)text, textLengthBigEndian, NULL, kCMMediaType_Text, &metadataFormatDescription);
+    
+    if (!err)
+    {
+        AVAssetWriterInput *assetWriterMetadataIn = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeMetadata
+                                                                                       outputSettings:nil sourceFormatHint:metadataFormatDescription];
+        assetWriterMetadataAdaptor = [AVAssetWriterInputMetadataAdaptor assetWriterInputMetadataAdaptorWithAssetWriterInput:assetWriterMetadataIn];
+        assetWriterMetadataIn.expectsMediaDataInRealTime = YES;
+
+        [assetWriterMetadataIn addTrackAssociationWithTrackOfInput:videoWriterInput type:AVTrackAssociationTypeMetadataReferent];
+    
+        [videoWriter addInput:assetWriterMetadataIn];
+    } else {
+        NSLog(@"CMMetadataFormatDescriptionCreateWithMetadataSpecifications failed with error %d", (int)err);
+    }
+    
+    //SETUP TIMED METADATA
+    
     
     //Start a session:
     [videoWriter startWriting];
@@ -202,6 +233,21 @@
                         NSLog(@"Unresolved error %@,%@.", error, [error userInfo]);
                     }
                 }
+                
+                //TIMED METADATA
+                if (frameCount == 0) {
+                    NSString *iso6709Notation = @"+48.7127+002.1680+142.418/";
+                    AVMutableMetadataItem *newMetadataItem = [[AVMutableMetadataItem alloc] init];
+                    newMetadataItem.identifier = AVMetadataIdentifierQuickTimeMetadataLocationISO6709;
+                    newMetadataItem.dataType = (__bridge NSString *)kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709;
+                    newMetadataItem.value = iso6709Notation;
+                    AVTimedMetadataGroup *metadataGroup = [[AVTimedMetadataGroup alloc] initWithItems:@[newMetadataItem] timeRange:CMTimeRangeMake(frameTime, kCMTimeInvalid)];
+                    
+                    if (![assetWriterMetadataAdaptor appendTimedMetadataGroup:metadataGroup]) {
+                        NSLog(@"appendTimedMetadataGroup FAILED");
+                    }
+                }
+                
             }
             else {
                 printf("adaptor not ready %d, %d\n", frameCount, attempsUntilOk);
@@ -222,8 +268,6 @@
         NSLog(@"Write Ended");
         handler();
     }];
-
-
 }
 
 - (CVPixelBufferRef) pixelBufferFromCGImage:(CGImageRef)image size:(CGSize)size

@@ -45,5 +45,162 @@ class StoryLine: NSManagedObject {
 		}
 		return nil
 	}
+    
+    func createComposition(completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
+        StoryLine.createComposition(self.elements!, completionHandler: completionHandler)
+    }
+    
+    class func createComposition(elements:NSOrderedSet,completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
+        let composition = AVMutableComposition()
+        let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
+        var compositionAudioTrack:AVMutableCompositionTrack? = nil
+        var compositionMetadataTrack:AVMutableCompositionTrack? = nil
+        var cursorTime = kCMTimeZero
+        
+        //		let compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        var instructions = [AVMutableVideoCompositionInstruction]()
+        /*var timedMetadataGroups = [AVTimedMetadataGroup]()*/
+        
+        //		let locationMetadata = AVMutableMetadataItem()
+        //		locationMetadata.identifier = AVMetadataIdentifierQuickTimeUserDataLocationISO6709
+        //		locationMetadata.dataType = kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 as String
+        //		locationMetadata.value = "+48.701697+002.188952"
+        //		metadataItems.append(locationMetadata)
+        
+        let assetLoadingGroup = dispatch_group_create();
+        
+        for each in elements {
+            dispatch_group_enter(assetLoadingGroup);
+            
+            let eachElement = each as! StoryElement
+            
+            if eachElement.isVideo() && compositionAudioTrack == nil {
+                //I need to create a mutable track for the sound
+                compositionAudioTrack = composition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+            }
+            
+            //I only added the location timed metadata to the TitleCard
+            if eachElement.isTitleCard() && compositionMetadataTrack == nil {
+                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
+            }
+            
+            eachElement.loadAsset({ (error) -> Void in
+                var error:NSError?
+                switch eachElement.asset!.statusOfValueForKey("tracks", error: &error) {
+                case AVKeyValueStatus.Loaded:
+                    print("tracks Loaded: \(error.debugDescription)")
+                case .Unknown:
+                    print("tracks Unknown: \(error.debugDescription)")
+                case .Loading:
+                    print("tracks Loading: \(error.debugDescription)")
+                case .Failed:
+                    print("tracks Failed: \(error.debugDescription)")
+                case .Cancelled:
+                    print("tracks Cancelled: \(error.debugDescription)")
+                }
+                
+                dispatch_group_leave(assetLoadingGroup);
+            })
+        }
+        
+        dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+            for eachElement in elements {
+                var asset:AVAsset? = nil
+                var startTime = kCMTimeZero
+                var assetDuration = kCMTimeZero
+                if (eachElement as! StoryElement).isVideo() {
+                    let eachVideo = eachElement as! VideoClip
+                    asset = eachVideo.asset
+                    startTime = eachVideo.startTime
+                    assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), 1000)
+                    
+                } else if (eachElement as! StoryElement).isTitleCard() {
+                    let eachTitleCard = eachElement as! TitleCard
+                    asset = eachTitleCard.asset
+                    //                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
+                    
+                    var error:NSError?
+                    let status = asset!.statusOfValueForKey("duration", error: &error)
+                    
+                    if status != AVKeyValueStatus.Loaded {
+                        print("Duration was not ready: \(error!.localizedDescription)")
+                        abort()
+                    }
+                    
+                    assetDuration = asset!.duration
+                    
+                    /*let chapterMetadataItem = AVMutableMetadataItem()
+                    chapterMetadataItem.identifier = AVMetadataIdentifierQuickTimeUserDataChapter
+                    chapterMetadataItem.dataType = kCMMetadataBaseDataType_UTF8 as String
+                    //				chapterMetadataItem.time = cursorTime
+                    //				chapterMetadataItem.duration = assetDuration
+                    //				chapterMetadataItem.locale = NSLocale.currentLocale()
+                    //				chapterMetadataItem.extendedLanguageTag = "en-FR"
+                    //				chapterMetadataItem.extraAttributes = nil
+                    
+                    chapterMetadataItem.value = "Capitulo \(elements.indexOfObject(eachElement))"
+                    
+                    let group = AVMutableTimedMetadataGroup(items: [chapterMetadataItem], timeRange: CMTimeRange(start: cursorTime,duration: kCMTimeInvalid))
+                    timedMetadataGroups.append(group)*/
+                }
+                
+                let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
+                let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
+                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
+                
+                let range = CMTimeRangeMake(startTime, assetDuration)
+                do {
+                    try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
+                    /*compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform*/
+                    //				if sourceMetadataTrack != nil {
+                    //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
+                    //				}
+                    
+                    //In the case of having only one TitleCard there is no sound track
+                    if let _ = sourceAudioTrack {
+                        try compositionAudioTrack!.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
+                    }
+                    
+                    //If there is at least one TitleCard we should have metadata
+                    if let _ = sourceMetadataTrack {
+                        try compositionMetadataTrack!.insertTimeRange(range, ofTrack: sourceMetadataTrack!, atTime: cursorTime)
+                    }
+                    
+                } catch {
+                    print("Couldn't create composition: \(error)")
+                    abort()
+                }
+                
+                
+                // create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
+                let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
+                /*layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)*/
+                
+                // create the composition instructions for the range of this clip
+                let videoTrackInstruction = AVMutableVideoCompositionInstruction()
+                videoTrackInstruction.timeRange = CMTimeRange(start:cursorTime, duration:assetDuration)
+                videoTrackInstruction.layerInstructions = [layerInstruction]
+                
+                instructions.append(videoTrackInstruction)
+                
+                cursorTime = CMTimeAdd(cursorTime, assetDuration)
+                
+                //			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
+                //			lastNaturalSize = sourceVideoTrack!.naturalSize
+            }
+            
+            // create our video composition which will be assigned to the player item
+            let videoComposition = AVMutableVideoComposition()
+            videoComposition.instructions = instructions
+            //		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
+            videoComposition.frameDuration = CMTimeMake(1, 30)
+            //		videoComposition.renderSize = lastNaturalSize
+            videoComposition.renderSize = CGSize(width: 1920,height: 1080)
+            
+            
+            completionHandler?(composition,videoComposition)
+        })
+    }
 	
 }

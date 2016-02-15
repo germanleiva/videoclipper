@@ -264,9 +264,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //        }
         
         
-        self.tableController?.createComposition(NSOrderedSet(array: elements), completionHandler: { (result) -> Void in
-            let (composition,videoComposition) = result
-            
+        StoryLine.createComposition(NSOrderedSet(array: elements), completionHandler: { (composition,videoComposition) -> Void in            
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
             item.videoComposition = videoComposition
             self.player = AVPlayer(playerItem: item)

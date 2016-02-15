@@ -8,8 +8,8 @@
 
 import UIKit
 import CoreData
-//import Fabric
-//import Crashlytics
+import Fabric
+import Crashlytics
 
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
@@ -35,8 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //
 //            print("I'm running in a non-DEBUG mode")
 //        #endif
-//        
-//        Fabric.with([Crashlytics()])
+        
+        Fabric.with([Crashlytics()])
         
 //		let pageControlAppearance = UIPageControl.appearance()
 //		pageControlAppearance.pageIndicatorTintColor = UIColor.lightGrayColor()

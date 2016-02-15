@@ -6,7 +6,6 @@
 //  Copyright © 2015 Germán Leiva. All rights reserved.
 //
 
-
 #import "VideoHelper.h"
 #import <CoreMedia/CMMetadata.h>
 

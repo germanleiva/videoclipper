@@ -592,7 +592,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         if !layout.isCentered {
             pointToFind.x += halfSpacing
         }
-        print(pointToFind)
+//        print(pointToFind)
 
         currentIndexPath = self.collectionView!.indexPathForItemAtPoint(pointToFind)
 

@@ -17,10 +17,17 @@ import Photos
 
 struct Bundle {
 	var offset = CGPointZero
-	var sourceCell : UICollectionViewCell
+	var sourceCell : UICollectionViewCell?
 	var representationImageView : UIView
 	var currentIndexPath : NSIndexPath
 	var collectionView: UICollectionView
+    
+    mutating func cell() -> UICollectionViewCell {
+        if self.sourceCell == nil {
+            self.sourceCell = collectionView.cellForItemAtIndexPath(currentIndexPath)
+        }
+        return sourceCell!
+    }
 }
 var bundle : Bundle?
 
@@ -646,17 +653,17 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	func handleLongPressGesture(gesture: UILongPressGestureRecognizer) -> Void {
 		
-		if let bundle = self.bundle {
+		if self.bundle != nil {
 			//If I have a bundle that means that I'm moving a StoryElement (collectionViewCell)
 			let dragPointOnCanvas = gesture.locationInView(self.view)
 			
 			if gesture.state == UIGestureRecognizerState.Began {
 				
-				bundle.sourceCell.hidden = true
-				self.view.addSubview(bundle.representationImageView)
+				self.bundle!.cell().hidden = true
+				self.view.addSubview(self.bundle!.representationImageView)
 				
 				UIView.animateWithDuration(0.5, animations: { () -> Void in
-					bundle.representationImageView.alpha = 0.8
+					self.bundle!.representationImageView.alpha = 0.8
 				});
 			}
 			
@@ -669,11 +676,11 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			if gesture.state == UIGestureRecognizerState.Changed {
 
 				// Update the representation image
-				let imageViewFrame = bundle.representationImageView.frame
-				bundle.representationImageView.frame =
+				let imageViewFrame = self.bundle!.representationImageView.frame
+				bundle!.representationImageView.frame =
 					CGRectMake(
-						dragPointOnCanvas.x - bundle.offset.x,
-						dragPointOnCanvas.y - bundle.offset.y,
+						dragPointOnCanvas.x - self.bundle!.offset.x,
+						dragPointOnCanvas.y - self.bundle!.offset.y,
 						imageViewFrame.size.width,
 						imageViewFrame.size.height)
 
@@ -685,10 +692,10 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					//We stay on the same collection view
 					
 					if let indexPath = indexPath {
-						if !indexPath.isEqual(bundle.currentIndexPath) {
+						if !indexPath.isEqual(self.bundle!.currentIndexPath) {
 							//Same collection view (source = destination)
-							self.moveStoryElement(potentiallyNewCollectionView!,fromIndexPath: bundle.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
-                            potentiallyNewCollectionView!.moveItemAtIndexPath(bundle.currentIndexPath, toIndexPath: indexPath)
+							self.moveStoryElement(potentiallyNewCollectionView!,fromIndexPath: self.bundle!.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
+                            potentiallyNewCollectionView!.moveItemAtIndexPath(self.bundle!.currentIndexPath, toIndexPath: indexPath)
                             self.bundle!.currentIndexPath = indexPath
 						}
 					}
@@ -703,14 +710,16 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					}
 					
 					if let indexPath = indexPath {
-						self.moveStoryElement(bundle.collectionView,fromIndexPath: bundle.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
-                        bundle.collectionView.deleteItemsAtIndexPaths([bundle.currentIndexPath])
+						self.moveStoryElement(bundle!.collectionView,fromIndexPath: bundle!.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
+                        bundle!.collectionView.deleteItemsAtIndexPaths([bundle!.currentIndexPath])
                         potentiallyNewCollectionView!.insertItemsAtIndexPaths([indexPath])
-                        if let cell = potentiallyNewCollectionView!.cellForItemAtIndexPath(indexPath) {
-                            cell.hidden = true
-                            self.bundle = Bundle(offset: bundle.offset, sourceCell: cell, representationImageView:bundle.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
+                        let cell = potentiallyNewCollectionView!.cellForItemAtIndexPath(indexPath)
+                        if cell != nil {
+                            cell!.hidden = true
+                            self.bundle = Bundle(offset: bundle!.offset, sourceCell: cell, representationImageView:bundle!.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
                         } else {
                             print("We are moving to a new collection view but I couldn't find a cell for that indexPath ... weird")
+                            self.bundle = Bundle(offset: bundle!.offset, sourceCell: nil, representationImageView:bundle!.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
                         }
 					}
 				}
@@ -718,16 +727,17 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			}
 			
 			if gesture.state == UIGestureRecognizerState.Ended {
-				bundle.sourceCell.alpha = 0
-				bundle.sourceCell.hidden = false
+				bundle!.cell().alpha = 0
+				bundle!.cell().hidden = false
 				UIView.animateKeyframesWithDuration(0.1, delay: 0, options: UIViewKeyframeAnimationOptions(rawValue: 0), animations: { () -> Void in
 					
-					bundle.representationImageView.frame = self.view.convertRect(bundle.sourceCell.frame, fromView: bundle.collectionView)
-					bundle.representationImageView.transform = CGAffineTransformScale(bundle.representationImageView.transform, 1,1)
+					self.bundle!.representationImageView.frame = self.view.convertRect(self.bundle!.cell().frame, fromView: self.bundle!.collectionView)
+					self.bundle!.representationImageView.transform = CGAffineTransformScale(self.bundle!
+                        .representationImageView.transform, 1,1)
 
                 }, completion: { (completed) -> Void in
-                    bundle.representationImageView.removeFromSuperview()
-                    bundle.sourceCell.alpha = 1
+                    self.bundle!.representationImageView.removeFromSuperview()
+                    self.bundle!.cell().alpha = 1
                     potentiallyNewCollectionView!.reloadData()
                     self.bundle = nil
                     
@@ -760,7 +770,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			var indexPath = self.tableView.indexPathForRowAtPoint(location)
 			if indexPath == nil {
 				if self.sourceIndexPath == nil {
-					print("TODO MAL")
+                    print("TODO MAL - pero fixeado")
+                    gesture.cancel()
+                    return
                 }
                 indexPath = self.sourceIndexPath
 			}
@@ -797,7 +809,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					self.moveStoryLine(self.sourceIndexPath!, toIndexPath: indexPath!)
 //					 ... move the rows.
 //					tableView.moveRowAtIndexPath(self.sourceIndexPath!, toIndexPath: indexPath!)
+                    self.tableView.beginUpdates()
 					self.tableView.moveSection(self.sourceIndexPath!.section, toSection: indexPath!.section)
+                    self.tableView.endUpdates()
 //					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)
 					// ... and update source so it is in sync with UI changes.
 					self.sourceIndexPath = indexPath;
@@ -890,7 +904,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		}
 
 //		let	collectionViewFrameInCanvas = self.view!.convertRect(theCollectionView.frame, fromView: theCollectionView)
-		let collectionViewFrameInCanvas = theCollectionView.frame
+		let collectionViewFrameInCanvas = theCollectionView.superview!.frame
 		var hitTestRectangles = [String:CGRect]()
 		
 		var leftRect : CGRect = collectionViewFrameInCanvas

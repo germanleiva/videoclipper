@@ -28,7 +28,7 @@ protocol PrimaryControllerDelegate {
 	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?, line:StoryLine?, lineIndexPath: NSIndexPath?)
 }
 
-class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
+class StoryLinesTableController: UITableViewController, NSFetchedResultsControllerDelegate, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
 	var project:Project? = nil
 	var selectedItemPath:NSIndexPath?
 	var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
@@ -39,9 +39,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 		
 	var bundle:Bundle? = nil
 	var animating = false
-		
-	var progressBar:MBProgressHUD? = nil
-	
+    
     var isCompact = false
 	
 	let longPress: UILongPressGestureRecognizer = {
@@ -53,9 +51,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 	var snapshot: UIView? = nil
 	
 	var shouldSelectRowAfterDelete = false
-	
-	var exportSession:AVAssetExportSession? = nil
-	
+		
 	func currentStoryLine() -> StoryLine? {
 		return self.project!.storyLines![self.selectedLinePath.section] as? StoryLine
 	}
@@ -277,175 +273,7 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			print("Couldn't save line shouldHide \(error)")
 		}
 	}
-	
-	func exportTapped(sender:UITableViewCell) {
-		let indexPath = self.tableView.indexPathForCell(sender)
-		let storyLine = self.project?.storyLines![indexPath!.section] as! StoryLine
-		print("exportTapped \(storyLine)")
 		
-		exportToPhotoAlbum(storyLine.elements!)
-	}
-	
-	func exportToPhotoAlbum(elements:NSOrderedSet){
-        StoryLine.createComposition(elements) { (composition,videoComposition) -> Void in
-            self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
-            
-            self.exportSession!.videoComposition = videoComposition
-            
-            //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
-            let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
-            let fileManager = NSFileManager()
-            
-            if fileManager.fileExistsAtPath(file.path!) {
-                do {
-                    try NSFileManager().removeItemAtURL(file)
-                    print("Deleted old temporal video file: \(file.path!)")
-                } catch {
-                    print("Couldn't delete old temporal file: \(error)")
-                }
-            }
-            
-            self.exportSession!.outputURL = file
-            self.exportSession!.outputFileType = AVFileTypeQuickTimeMovie
-            
-            //		exportSession!.metadata = metadataItems
-            
-            print("Starting exportAsynchronouslyWithCompletionHandler")
-            
-            self.exportSession!.exportAsynchronouslyWithCompletionHandler {
-                dispatch_async(dispatch_get_main_queue(), {
-                    if let anExportSession = self.exportSession {
-                        switch anExportSession.status {
-                        case AVAssetExportSessionStatus.Completed:
-                            print("Export Complete, trying to write on the photo album")
-                            self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
-//                            					let sourceAsset = AVURLAsset(URL: self.exportSession!.outputURL!)
-//                            					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
-//                            						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
-//                            
-//                            						writer.writeMetadataGroups(metadataGroups)
-//                            						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
-//                            					})
-                        case AVAssetExportSessionStatus.Cancelled:
-                            print("Export Cancelled");
-                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
-                        case AVAssetExportSessionStatus.Failed:
-                            print("Export Failed");
-                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
-                        default:
-                            print("Unknown export session status")
-                        }
-                        
-                        if let error = self.exportSession!.error {
-                            let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: { () -> Void in
-                                print("Nothing after the alert")
-                            })
-                        }
-                    }
-                })
-            }
-            
-            let window = UIApplication.sharedApplication().delegate!.window!
-            
-            self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-            self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
-            self.progressBar!.labelText = "Exporting ..."
-            self.progressBar!.detailsLabelText = "Tap to cancel"
-            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
-            
-            self.monitorExportProgress(self.exportSession!)
-        }
-
-	}
-	
-	@IBAction func cancelExport() {
-		self.exportSession?.cancelExport()
-		self.exportSession = nil
-		self.progressBar!.hide(true)
-		self.progressBar = nil
-	}
-	
-	func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
-        var albumAssetCollection: PHAssetCollection!
-        
-        let albumName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
-
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.predicate = NSPredicate(format: "title = %@", albumName)
-        let collection = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: fetchOptions)
-
-        let blockSaveToAlbum = {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-                PHPhotoLibrary.sharedPhotoLibrary().performChanges({() -> Void in
-                    if let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(outputURL) {
-                        let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
-                        let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: albumAssetCollection)
-                        albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), atIndexes: NSIndexSet(index: 0))
-                    }
-                }, completionHandler: { (success, error) -> Void in
-                    dispatch_async(dispatch_get_main_queue(), {
-                        if success {
-                            //Open Photos app
-                            UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
-                        } else {
-                            let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                            self.presentViewController(alert, animated: true, completion: nil)
-                        }
-                    })
-                })
-            })
-        }
-        
-        // Create the album if does not exist
-        if let theAlbum = collection.firstObject{
-            //found the album
-            albumAssetCollection = theAlbum as! PHAssetCollection
-            blockSaveToAlbum()
-        } else {
-            //Album placeholder for the asset collection, used to reference collection in completion handler
-            var albumPlaceholder:PHObjectPlaceholder!
-            //create the folder
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle(albumName)
-                albumPlaceholder = request.placeholderForCreatedAssetCollection
-            },
-            completionHandler: {(success, error)in
-                if(success){
-                    let collection = PHAssetCollection.fetchAssetCollectionsWithLocalIdentifiers([albumPlaceholder.localIdentifier], options: nil)
-                    albumAssetCollection = collection.firstObject as! PHAssetCollection
-                    blockSaveToAlbum()
-                }
-            })
-        }        
-	}
-	
-	func monitorExportProgress(exportSession:AVAssetExportSession) {
-		let delta = Int64(NSEC_PER_SEC / 10)
-		
-		let popTime = dispatch_time(DISPATCH_TIME_NOW, delta)
-		
-		dispatch_after(popTime, dispatch_get_main_queue(), {
-			let status = exportSession.status
-			if status == AVAssetExportSessionStatus.Exporting {
-				self.progressBar!.progress = exportSession.progress
-				if exportSession.progress == 1 {
-					self.progressBar!.labelText = "Saving ..."
-				}
-//				print("Exporting progress \(exportSession.progress)")
-				self.monitorExportProgress(exportSession)
-			} else {
-				//Not exporting anymore
-				if let progress = self.progressBar {
-					progress.labelText = "Done"
-					progress.hide(true)
-					self.progressBar = nil
-				}
-			}
-		})
-	}
-	
 	func addStoryLine(addedObject:StoryLine) {
 		let section = self.project?.storyLines!.indexOfObject(addedObject)
 		let indexPath = NSIndexPath(forRow: 0, inSection: section!)
@@ -860,29 +688,30 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 						if !indexPath.isEqual(bundle.currentIndexPath) {
 							//Same collection view (source = destination)
 							self.moveStoryElement(potentiallyNewCollectionView!,fromIndexPath: bundle.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
-							
-							potentiallyNewCollectionView!.moveItemAtIndexPath(bundle.currentIndexPath, toIndexPath: indexPath)
-							self.bundle!.currentIndexPath = indexPath
+                            potentiallyNewCollectionView!.moveItemAtIndexPath(bundle.currentIndexPath, toIndexPath: indexPath)
+                            self.bundle!.currentIndexPath = indexPath
 						}
 					}
 				} else {
 					//We need to change collection view
 					if indexPath == nil && CGRectContainsPoint(potentiallyNewCollectionView!.frame, dragPointOnCollectionView) {
-						let toStoryLine = self.project!.storyLines![potentiallyNewCollectionView!.tag] as! StoryLine
-						indexPath = NSIndexPath(forItem: toStoryLine.elements!.count, inSection: 0)
+                        indexPath = potentiallyNewCollectionView?.indexPathForItemAtPoint(dragPointOnCollectionView)
+                        if indexPath == nil {
+                            let toStoryLine = self.project!.storyLines![potentiallyNewCollectionView!.tag] as! StoryLine
+                            indexPath = NSIndexPath(forItem: toStoryLine.elements!.count, inSection: 0)
+                        }
 					}
 					
 					if let indexPath = indexPath {
 						self.moveStoryElement(bundle.collectionView,fromIndexPath: bundle.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
-						bundle.collectionView.deleteItemsAtIndexPaths([bundle.currentIndexPath])
-						potentiallyNewCollectionView!.insertItemsAtIndexPaths([indexPath])
-						
-						if let cell = potentiallyNewCollectionView!.cellForItemAtIndexPath(indexPath) {
-							cell.hidden = true
-							self.bundle = Bundle(offset: bundle.offset, sourceCell: cell, representationImageView:bundle.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
-						} else {
-							print("We are moving to a new collection view but I couldn't find a cell for that indexPath ... weird")
-						}
+                        bundle.collectionView.deleteItemsAtIndexPaths([bundle.currentIndexPath])
+                        potentiallyNewCollectionView!.insertItemsAtIndexPaths([indexPath])
+                        if let cell = potentiallyNewCollectionView!.cellForItemAtIndexPath(indexPath) {
+                            cell.hidden = true
+                            self.bundle = Bundle(offset: bundle.offset, sourceCell: cell, representationImageView:bundle.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
+                        } else {
+                            print("We are moving to a new collection view but I couldn't find a cell for that indexPath ... weird")
+                        }
 					}
 				}
 				
@@ -896,17 +725,17 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 					bundle.representationImageView.frame = self.view.convertRect(bundle.sourceCell.frame, fromView: bundle.collectionView)
 					bundle.representationImageView.transform = CGAffineTransformScale(bundle.representationImageView.transform, 1,1)
 
-					}, completion: { (completed) -> Void in
-						bundle.representationImageView.removeFromSuperview()
-						bundle.sourceCell.alpha = 1
-						potentiallyNewCollectionView!.reloadData()
-						self.bundle = nil
-						
-						do {
-							try self.context.save()
-						} catch {
-							print("Couldn't reorder elements: \(error)")
-						}
+                }, completion: { (completed) -> Void in
+                    bundle.representationImageView.removeFromSuperview()
+                    bundle.sourceCell.alpha = 1
+                    potentiallyNewCollectionView!.reloadData()
+                    self.bundle = nil
+                    
+                    do {
+                        try self.context.save()
+                    } catch {
+                        print("Couldn't reorder elements: \(error)")
+                    }
 				})
 				
 				//					if let delegate = self.collectionView?.delegate as? DraggableCollectionViewDelegate {
@@ -932,8 +761,8 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			if indexPath == nil {
 				if self.sourceIndexPath == nil {
 					print("TODO MAL")
-				}
-				indexPath = self.sourceIndexPath
+                }
+                indexPath = self.sourceIndexPath
 			}
 			
 			switch (state) {
@@ -1131,5 +960,4 @@ class StoryLinesTableController: UITableViewController, StoryLineCellDelegate, C
 			print("This shouldn't happen")
 		}
 	}
-
 }

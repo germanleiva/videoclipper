@@ -44,6 +44,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //	var addButton = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
 	@IBOutlet var hideLineButton:UIButton!
 	
+    var progressBar:MBProgressHUD? = nil
+    var exportSession:AVAssetExportSession? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
 		self.addNewLineButton.layer.borderWidth = 0.4
@@ -234,8 +237,169 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			}
 		}
 
-		self.tableController?.exportToPhotoAlbum(NSOrderedSet(array: elements))
+		exportToPhotoAlbum(NSOrderedSet(array: elements))
 	}
+    
+    func exportToPhotoAlbum(elements:NSOrderedSet){
+        StoryLine.createComposition(elements) { (composition,videoComposition) -> Void in
+            self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
+            
+            self.exportSession!.videoComposition = videoComposition
+            
+            //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
+            let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
+            let fileManager = NSFileManager()
+            
+            if fileManager.fileExistsAtPath(file.path!) {
+                do {
+                    try NSFileManager().removeItemAtURL(file)
+                    print("Deleted old temporal video file: \(file.path!)")
+                } catch {
+                    print("Couldn't delete old temporal file: \(error)")
+                }
+            }
+            
+            self.exportSession!.outputURL = file
+            self.exportSession!.outputFileType = AVFileTypeQuickTimeMovie
+            
+            //		exportSession!.metadata = metadataItems
+            
+            print("Starting exportAsynchronouslyWithCompletionHandler")
+            
+            self.exportSession!.exportAsynchronouslyWithCompletionHandler {
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let anExportSession = self.exportSession {
+                        switch anExportSession.status {
+                        case AVAssetExportSessionStatus.Completed:
+                            print("Export Complete, trying to write on the photo album")
+                            self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
+                            //                            					let sourceAsset = AVURLAsset(URL: self.exportSession!.outputURL!)
+                            //                            					sourceAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                            //                            						let writer = AAPLTimedAnnotationWriter(asset: sourceAsset)
+                            //
+                            //                            						writer.writeMetadataGroups(metadataGroups)
+                            //                            						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
+                            //                            					})
+                        case AVAssetExportSessionStatus.Cancelled:
+                            print("Export Cancelled");
+                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+                        case AVAssetExportSessionStatus.Failed:
+                            print("Export Failed");
+                            print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
+                        default:
+                            print("Unknown export session status")
+                        }
+                        
+                        if let error = self.exportSession!.error {
+                            let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+                            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: { () -> Void in
+                                print("Nothing after the alert")
+                            })
+                        }
+                    }
+                })
+            }
+            
+            let window = UIApplication.sharedApplication().delegate!.window!
+            
+            self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+            self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
+            self.progressBar!.labelText = "Exporting ..."
+            self.progressBar!.detailsLabelText = "Tap to cancel"
+            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
+            
+            self.monitorExportProgress(self.exportSession!)
+        }
+    }
+    
+    
+    
+    func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
+        var albumAssetCollection: PHAssetCollection!
+        
+        let albumName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
+        
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.predicate = NSPredicate(format: "title = %@", albumName)
+        let collection = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: fetchOptions)
+        
+        let blockSaveToAlbum = {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+                PHPhotoLibrary.sharedPhotoLibrary().performChanges({() -> Void in
+                    if let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(outputURL) {
+                        let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
+                        let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: albumAssetCollection)
+                        albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), atIndexes: NSIndexSet(index: 0))
+                    }
+                    }, completionHandler: { (success, error) -> Void in
+                        dispatch_async(dispatch_get_main_queue(), {
+                            if success {
+                                //Open Photos app
+                                UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
+                            } else {
+                                let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+                                self.presentViewController(alert, animated: true, completion: nil)
+                            }
+                        })
+                })
+            })
+        }
+        
+        // Create the album if does not exist
+        if let theAlbum = collection.firstObject{
+            //found the album
+            albumAssetCollection = theAlbum as! PHAssetCollection
+            blockSaveToAlbum()
+        } else {
+            //Album placeholder for the asset collection, used to reference collection in completion handler
+            var albumPlaceholder:PHObjectPlaceholder!
+            //create the folder
+            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle(albumName)
+                albumPlaceholder = request.placeholderForCreatedAssetCollection
+                },
+                completionHandler: {(success, error)in
+                    if(success){
+                        let collection = PHAssetCollection.fetchAssetCollectionsWithLocalIdentifiers([albumPlaceholder.localIdentifier], options: nil)
+                        albumAssetCollection = collection.firstObject as! PHAssetCollection
+                        blockSaveToAlbum()
+                    }
+            })
+        }        
+    }
+    
+    func monitorExportProgress(exportSession:AVAssetExportSession) {
+        let delta = Int64(NSEC_PER_SEC / 10)
+        
+        let popTime = dispatch_time(DISPATCH_TIME_NOW, delta)
+        
+        dispatch_after(popTime, dispatch_get_main_queue(), {
+            let status = exportSession.status
+            if status == AVAssetExportSessionStatus.Exporting {
+                self.progressBar!.progress = exportSession.progress
+                if exportSession.progress == 1 {
+                    self.progressBar!.labelText = "Saving ..."
+                }
+                //				print("Exporting progress \(exportSession.progress)")
+                self.monitorExportProgress(exportSession)
+            } else {
+                //Not exporting anymore
+                if let progress = self.progressBar {
+                    progress.labelText = "Done"
+                    progress.hide(true)
+                    self.progressBar = nil
+                }
+            }
+        })
+    }
+    
+    @IBAction func cancelExport() {
+        self.exportSession?.cancelExport()
+        self.exportSession = nil
+        self.progressBar!.hide(true)
+        self.progressBar = nil
+    }
 	
 	@IBAction func playProjectPressed(sender:AnyObject?) {
 		var elements = [AnyObject]()
@@ -246,23 +410,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 				elements += line.elements!
 			}
 		}
-		
-//        if let firstElement = elements.first as? StoryElement {
-//            firstElement.loadAsset({ (error) -> Void in
-//                let item = AVPlayerItem(asset: firstElement.asset!)
-//                self.player = AVPlayer(playerItem: item)
-//                
-//                item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions(rawValue: 0), context: nil)
-//                
-//                let playerVC = AVPlayerViewController()
-//                playerVC.player = self.player
-//                self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-//                    print("Player presented")
-//                    playerVC.player?.play()
-//                })
-//            })
-//        }
-        
         
         StoryLine.createComposition(NSOrderedSet(array: elements), completionHandler: { (composition,videoComposition) -> Void in            
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
@@ -388,7 +535,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 		self.updateHideLineButton(line)
 	}
-	
+    
+    // MARK: - Story Line Vertical Toolbar
+
 	func updateHideLineButton(line:StoryLine?) {
 		if line == nil || !line!.shouldHide!.boolValue{
 			self.hideLineButton.alpha = 1
@@ -450,83 +599,83 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
 	}
 	
-	@IBAction func captureForLineTapped(sender:AnyObject?) {
-		self.tableController!.recordTappedOnSelectedLine(sender)
-	}
-	
-	@IBAction func importForLineTapped(sender:AnyObject?) {
-		print("Long press selector triggered")
-		
-		
-		let picker = ELCImagePickerController(imagePicker: ())
-		
-				
-		picker.maximumImagesCount = 100 //Set the maximum number of images to select to 100
-		picker.returnsOriginalImage = true //Only return the fullScreenImage, not the fullResolutionImage
-		picker.returnsImage = true //Return UIimage if YES. If NO, only return asset location information
-		picker.onOrder = true //For multiple image selection, display and return order of selected images
-		picker.mediaTypes = [kUTTypeMovie] //Support only movie types
-					
-		picker.imagePickerDelegate = self
-		
-//		let picker = UIImagePickerController()
-//		picker.delegate = self
-//		picker.allowsEditing = false
-//		picker.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-//		picker.mediaTypes = [String(kUTTypeMovie)]
-//		picker.videoQuality = UIImagePickerControllerQualityType.TypeIFrame1280x720
-
-		self.presentViewController(picker, animated: true, completion: nil)
-	}
-	
-	func elcImagePickerController(picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [AnyObject]!) {
-		picker.dismissViewControllerAnimated(true, completion: nil)
-
-		for dict in info as! [[String:AnyObject]] {
-			if dict[UIImagePickerControllerMediaType] as! String == ALAssetTypeVideo {
-				let fileURL = dict[UIImagePickerControllerReferenceURL] as! NSURL
-//				let pathString = fileURL.relativePath!
-
-//				self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
-				self.tableController!.createNewVideoForAssetURL(fileURL)
-
-				print(dict)
-			}
-		}
-	}
-	
-	func elcImagePickerControllerDidCancel(picker: ELCImagePickerController!) {
-		picker.dismissViewControllerAnimated(true, completion: nil)
-	}
-	
-	//MARK: imagePickerControllerDelegate
-	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-		let fileURL = info[UIImagePickerControllerMediaURL] as! NSURL
-		let pathString = fileURL.relativePath!
-//		let library = ALAssetsLibrary()
-		
-//		library.assetForURL(NSURL(fileURLWithPath: pathString), resultBlock: { (alAsset) -> Void in
-//			let representation = alAsset.defaultRepresentation()
-		picker.dismissViewControllerAnimated(true, completion: nil)
-
-			self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
-
-//			}) { (error) -> Void in
-//				print("Couldn't open Asset from Photo Album: \(error)")
-//				picker.dismissViewControllerAnimated(true, completion: nil)
-//		}
-		
-	}
-	func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-		picker.dismissViewControllerAnimated(true, completion: nil)
-	}
-	
-	@IBAction func playForLineTapped(sender:AnyObject?) {
-		self.tableController!.playTappedOnSelectedLine(sender)
-	}
-	
-	@IBAction func hideForLineTapped(sender:AnyObject?) {
-		self.tableController!.hideTappedOnSelectedLine(sender)
-		self.updateHideLineButton(self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine)
-	}
+    @IBAction func captureForLineTapped(sender:AnyObject?) {
+        self.tableController!.recordTappedOnSelectedLine(sender)
+    }
+    
+    @IBAction func importForLineTapped(sender:AnyObject?) {
+        print("Long press selector triggered")
+        
+        
+        let picker = ELCImagePickerController(imagePicker: ())
+        
+        
+        picker.maximumImagesCount = 100 //Set the maximum number of images to select to 100
+        picker.returnsOriginalImage = true //Only return the fullScreenImage, not the fullResolutionImage
+        picker.returnsImage = true //Return UIimage if YES. If NO, only return asset location information
+        picker.onOrder = true //For multiple image selection, display and return order of selected images
+        picker.mediaTypes = [kUTTypeMovie] //Support only movie types
+        
+        picker.imagePickerDelegate = self
+        
+        //		let picker = UIImagePickerController()
+        //		picker.delegate = self
+        //		picker.allowsEditing = false
+        //		picker.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+        //		picker.mediaTypes = [String(kUTTypeMovie)]
+        //		picker.videoQuality = UIImagePickerControllerQualityType.TypeIFrame1280x720
+        
+        self.presentViewController(picker, animated: true, completion: nil)
+    }
+    
+    func elcImagePickerController(picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [AnyObject]!) {
+        picker.dismissViewControllerAnimated(true, completion: nil)
+        
+        for dict in info as! [[String:AnyObject]] {
+            if dict[UIImagePickerControllerMediaType] as! String == ALAssetTypeVideo {
+                let fileURL = dict[UIImagePickerControllerReferenceURL] as! NSURL
+                //				let pathString = fileURL.relativePath!
+                
+                //				self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
+                self.tableController!.createNewVideoForAssetURL(fileURL)
+                
+                print(dict)
+            }
+        }
+    }
+    
+    func elcImagePickerControllerDidCancel(picker: ELCImagePickerController!) {
+        picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    //MARK: imagePickerControllerDelegate
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        let fileURL = info[UIImagePickerControllerMediaURL] as! NSURL
+        let pathString = fileURL.relativePath!
+        //		let library = ALAssetsLibrary()
+        
+        //		library.assetForURL(NSURL(fileURLWithPath: pathString), resultBlock: { (alAsset) -> Void in
+        //			let representation = alAsset.defaultRepresentation()
+        picker.dismissViewControllerAnimated(true, completion: nil)
+        
+        self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
+        
+        //			}) { (error) -> Void in
+        //				print("Couldn't open Asset from Photo Album: \(error)")
+        //				picker.dismissViewControllerAnimated(true, completion: nil)
+        //		}
+        
+    }
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func playForLineTapped(sender:AnyObject?) {
+        self.tableController!.playTappedOnSelectedLine(sender)
+    }
+    
+    @IBAction func hideForLineTapped(sender:AnyObject?) {
+        self.tableController!.hideTappedOnSelectedLine(sender)
+        self.updateHideLineButton(self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine)
+    }
 }

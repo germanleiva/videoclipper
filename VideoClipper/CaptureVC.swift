@@ -36,7 +36,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
 //	@IBOutlet var titleCardPlaceholder:UIView!
-	@IBOutlet weak var undoVideoButton: UIButton!
+	@IBOutlet weak var reshootVideoButton: UIButton!
 	
 	@IBOutlet var collectionView:UICollectionView!
 	
@@ -477,6 +477,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     
                     self.currentVideoSegment = nil
                     self.selectedVideo = nil
+                    self.reshootVideoButton.enabled = true
                 } catch {
                     // handle error
                 }
@@ -630,7 +631,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 //Stops the blinking
                 self.recordingIndicator.layer.removeAllAnimations()
                 
-                self.undoVideoButton.enabled = true
+//                self.reshootVideoButton.enabled = true
             }
         })
         
@@ -769,7 +770,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			}
 		}
 		
-		self.undoVideoButton.enabled = false
+		self.reshootVideoButton.enabled = false
 		self.ghostImageView.image = nil
 	}*/
 
@@ -1070,6 +1071,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
     
     @IBAction func swipedUpOnCollectionView(recognizer:UISwipeGestureRecognizer) {
+        print("Swiping disabled")
+        return
         let point = recognizer.locationInView(self.collectionView)
         if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
             let videoToDelete = self.currentLine?.videos()[indexPath.item]

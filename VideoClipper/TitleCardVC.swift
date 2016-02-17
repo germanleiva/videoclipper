@@ -869,7 +869,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //		}
 	}
 	
-	func takePicture(sender:AnyObject?) {
+	@IBAction func takePicture(sender:AnyObject?) {
 		self.importImagePopover?.dismissViewControllerAnimated(true, completion: nil)
 		
 		let picker = UIImagePickerController()

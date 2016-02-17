@@ -1107,12 +1107,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
-                                <rect key="frame" x="29" y="526" width="84" height="34"/>
-                                <state key="normal" title="Templates">
-                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-Nj-YyN">
                                 <rect key="frame" x="721" y="526" width="50" height="34"/>
                                 <state key="normal" title="Saved">
@@ -1220,6 +1214,15 @@
                                 <state key="normal" title="XX s duration"/>
                                 <connections>
                                     <action selector="showDurationPopOver:" destination="IbS-bj-HKR" eventType="touchUpInside" id="NXs-FF-0FT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plO-zN-T3u">
+                                <rect key="frame" x="29" y="526" width="33" height="33"/>
+                                <state key="normal" image="icon-image" backgroundImage="icon-image">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="takePicture:" destination="IbS-bj-HKR" eventType="touchUpInside" id="ATh-IU-YGH"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1685,6 +1688,7 @@
         <image name="fontSize-icon" width="33" height="33"/>
         <image name="ghost-selected" width="43" height="43"/>
         <image name="ghost-unselected" width="42" height="42"/>
+        <image name="icon-image" width="33" height="33"/>
         <image name="icon-picture" width="33" height="33"/>
         <image name="icon-plus" width="33" height="33"/>
         <image name="icon-trash" width="33" height="33"/>

@@ -76,17 +76,8 @@ class VideoClip: StoryElement {
                     
                     asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
                         var error:NSError?
-                        switch asset.statusOfValueForKey("tracks", error: &error) {
-                        case AVKeyValueStatus.Loaded:
-                            print("tracks Loaded: \(error.debugDescription)")
-                        case .Unknown:
-                            print("tracks Unknown: \(error.debugDescription)")
-                        case .Loading:
-                            print("tracks Loading: \(error.debugDescription)")
-                        case .Failed:
-                            print("tracks Failed: \(error.debugDescription)")
-                        case .Cancelled:
-                            print("tracks Cancelled: \(error.debugDescription)")
+                        if asset.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                            print("tracks not loaded: \(error.debugDescription)")
                         }
                         
                         dispatch_group_leave(assetLoadingGroup);

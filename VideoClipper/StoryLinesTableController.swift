@@ -63,6 +63,11 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		return self.project!.storyLines![self.selectedLinePath.section] as? StoryLine
 	}
 	
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        self.project!.freeAssets()
+    }
+    
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -164,7 +169,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		captureController.currentLine = self.currentStoryLine()
 		captureController.owner = (self.delegate as! ProjectVC).secondaryController
         
-		self.presentViewController(captureController, animated: true, completion: nil)
+        self.presentViewController(captureController, animated: true) { () -> Void in
+            captureController.scrollCollectionViewToEnd()
+        }
 		return
 		
 //		if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
@@ -608,8 +615,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	func collectionViewForDraggingPoint(point:CGPoint) -> UICollectionView? {
 		if let storyLineCellIndexPath = self.tableView.indexPathForRowAtPoint(point) {
-			let storyLineCell = self.tableView.cellForRowAtIndexPath(storyLineCellIndexPath) as! StoryLineCell
-			return storyLineCell.collectionView
+            if let storyLineCell = self.tableView.cellForRowAtIndexPath(storyLineCellIndexPath) as? StoryLineCell {
+                return storyLineCell.collectionView
+            }
 		}
 		return nil
 	}
@@ -643,9 +651,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 						}
 					}
 				}
-				
-//				print("gestureRecognizerShouldBegin FOR ROW")
-				return true
+                return true
 			}
 		}
 		return false

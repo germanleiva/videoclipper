@@ -313,8 +313,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
         }
     }
     
-    
-    
     func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
         var albumAssetCollection: PHAssetCollection!
         
@@ -425,16 +423,14 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
                 playerVC.player?.play()
             })
         })
-		
-
 	}
 	
 	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
 		if keyPath == "status" {
 			if self.player!.status == AVPlayerStatus.ReadyToPlay {
-				if self.tableController!.isCompact {
+//				if self.tableController!.isCompact {
 					self.player!.seekToTime(self.timeToSelectedStoryElement(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
-				}
+//				}w
 				self.player!.currentItem?.removeObserver(self, forKeyPath: "status")
 				self.player = nil
 			}
@@ -447,7 +443,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 			let eachStoryLine = self.project!.storyLines![lineIndex] as! StoryLine
 			
 			for elementIndex in 0..<eachStoryLine.elements!.count {
-				if lineIndex == self.currentLineIndexPath!.section && elementIndex == self.currentItemIndexPath!.item {
+				if lineIndex == self.currentLineIndexPath!.section && (self.currentItemIndexPath == nil || elementIndex == self.currentItemIndexPath!.item){
 					return cursorTime
 				}
 				if !eachStoryLine.shouldHide!.boolValue {

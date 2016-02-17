@@ -87,17 +87,8 @@ class StoryLine: NSManagedObject {
             
             eachElement.loadAsset({ (error) -> Void in
                 var error:NSError?
-                switch eachElement.asset!.statusOfValueForKey("tracks", error: &error) {
-                case AVKeyValueStatus.Loaded:
-                    print("tracks Loaded: \(error.debugDescription)")
-                case .Unknown:
-                    print("tracks Unknown: \(error.debugDescription)")
-                case .Loading:
-                    print("tracks Loading: \(error.debugDescription)")
-                case .Failed:
-                    print("tracks Failed: \(error.debugDescription)")
-                case .Cancelled:
-                    print("tracks Cancelled: \(error.debugDescription)")
+                if eachElement.asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                    print("tracks not Loaded: \(error.debugDescription)")
                 }
                 
                 dispatch_group_leave(assetLoadingGroup);
@@ -203,4 +194,9 @@ class StoryLine: NSManagedObject {
         })
     }
 	
+    func freeAssets() {
+        for eachElement in self.elements! {
+            (eachElement as! StoryElement).deleteAssetFile()
+        }
+    }
 }

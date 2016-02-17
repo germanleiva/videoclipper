@@ -118,7 +118,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         self.collectionView.backgroundColor = UIColor.clearColor()
         self.collectionView.backgroundView = UIView(frame: CGRectZero)
-	}
+    }
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -136,7 +136,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //        //        let lastIndexPath = NSIndexPath(forItem:self.currentLine!.videos().count-1,inSection:0)
 //        //        self.segmentsCollectionView.scrollToItemAtIndexPath(lastIndexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: true)
 //        self.segmentsCollectionView.setContentOffset(CGPoint(x:self.segmentsCollectionView.contentSize.width,y:0), animated: true)
-
 	}
 
 	override func viewWillDisappear(animated: Bool) {
@@ -890,17 +889,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 
                 asset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
                     var error:NSError?
-                    switch asset.statusOfValueForKey("tracks", error: &error) {
-                        case AVKeyValueStatus.Loaded:
-                            print("tracks Loaded: \(error.debugDescription)")
-                        case .Unknown:
-                            print("tracks Unknown: \(error.debugDescription)")
-                        case .Loading:
-                            print("tracks Loading: \(error.debugDescription)")
-                        case .Failed:
-                            print("tracks Failed: \(error.debugDescription)")
-                        case .Cancelled:
-                            print("tracks Cancelled: \(error.debugDescription)")
+                    if asset.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                        print("tracks not Loaded: \(error.debugDescription)")
                     }
                     
                     dispatch_group_leave(assetLoadingGroup);
@@ -1013,9 +1003,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.collectionView.reloadSections(NSIndexSet(index: 0))
         }, completion: { (completed) -> Void in
             if completed {
-                let farRightOffset = CGPoint(x:self.collectionView.contentSize.width - self.collectionView.bounds.size.width, y:0)
-                self.collectionView.setContentOffset(farRightOffset, animated: false)
-
+                self.scrollCollectionViewToEnd()
                 progressBar.hide(true)
                 self.layout().isCentered = false
                 
@@ -1026,6 +1014,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 })
             }
         })
+    }
+    
+    func scrollCollectionViewToEnd() {
+        let farRightOffset = CGPoint(x:self.collectionView.contentSize.width - self.collectionView.bounds.size.width, y:0)
+        self.collectionView.setContentOffset(farRightOffset, animated: false)
     }
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {

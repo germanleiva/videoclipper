@@ -144,6 +144,12 @@
     
     NSLog(@"Start building video from defined frames.");
     
+    [[[NSFileManager alloc] init] removeItemAtPath:videoOutputPath.path error:&error];
+    
+    if (error != nil) {
+        NSLog(@"I couldn't delete the file before using an AVAssetWriter with it: %@",error.localizedDescription);
+    }
+    
     AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:videoOutputPath
                                                            fileType:AVFileTypeQuickTimeMovie
                                                               error:&error];

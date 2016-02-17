@@ -32,4 +32,10 @@ class Project: NSManagedObject {
 		}
         super.willSave()
 	}
+    
+    func freeAssets(){
+        for each in self.storyLines! {
+            (each as! StoryLine).freeAssets()
+        }
+    }
 }

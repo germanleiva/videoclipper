@@ -75,7 +75,7 @@ class TitleCard: StoryElement {
                 })
             }
             
-            if self.videoPath == nil {
+            if self.videoPath == nil || !NSFileManager().fileExistsAtPath(self.videoPath!.path!){
                 self.writeVideoFromSnapshot({ () -> Void in
                     createAsset()
                 })

@@ -143,7 +143,7 @@ class StoryLine: NSManagedObject {
                 let range = CMTimeRangeMake(startTime, assetDuration)
                 do {
                     try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
-                    /*compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform*/
+                    compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
                     //				if sourceMetadataTrack != nil {
                     //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
                     //				}
@@ -166,13 +166,13 @@ class StoryLine: NSManagedObject {
                 
                 // create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
                 let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
-                /*layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)*/
+                layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)
                 
                 // create the composition instructions for the range of this clip
                 let videoTrackInstruction = AVMutableVideoCompositionInstruction()
                 videoTrackInstruction.timeRange = CMTimeRange(start:cursorTime, duration:assetDuration)
                 videoTrackInstruction.layerInstructions = [layerInstruction]
-                
+
                 instructions.append(videoTrackInstruction)
                 
                 cursorTime = CMTimeAdd(cursorTime, assetDuration)

@@ -906,6 +906,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     
                     do {
                         try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
+                        videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                     } catch let error as NSError {
                         errorBlock(error)
                     }

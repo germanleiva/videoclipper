@@ -625,19 +625,86 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
     }
     
     func elcImagePickerController(picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [AnyObject]!) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
         
+        let importingGroup = dispatch_group_create()
+        let window = UIApplication.sharedApplication().delegate!.window!
+        
+        let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        progressBar.show(true)
+
         for dict in info as! [[String:AnyObject]] {
             if dict[UIImagePickerControllerMediaType] as! String == ALAssetTypeVideo {
-                let fileURL = dict[UIImagePickerControllerReferenceURL] as! NSURL
-                //				let pathString = fileURL.relativePath!
+                let fileURLALAsset = dict[UIImagePickerControllerReferenceURL] as! NSURL
                 
-                //				self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
-                self.tableController!.createNewVideoForAssetURL(fileURL)
+                let currentLine = self.tableController!.currentStoryLine()
+                let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+                let elements = currentLine!.mutableOrderedSetValueForKey("elements")
+
+                elements.addObject(newVideo!)
+                
+                let currentVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
+                let videoSegments = newVideo?.mutableOrderedSetValueForKey("segments")
+
+                videoSegments?.addObject(currentVideoSegment!)
+                
+                let videoURL = currentVideoSegment?.writePath()
+                
+                currentVideoSegment?.fileName = videoURL?.lastPathComponent
+                
+                
+                dispatch_group_enter(importingGroup)
+                let fetchResult = PHAsset.fetchAssetsWithALAssetURLs([fileURLALAsset], options: nil)
+                if let phAsset = fetchResult.firstObject as? PHAsset {
+                    PHImageManager.defaultManager().requestAVAssetForVideo(phAsset, options: PHVideoRequestOptions(), resultHandler: { (asset, audioMix, info) -> Void in
+                        if let asset = asset as? AVURLAsset {
+                            let videoData = NSData(contentsOfURL: asset.URL)
+                            
+                            // optionally, write the video to the temp directory
+                            let writeResult = videoData?.writeToURL(videoURL!, atomically: true)
+                            
+                            if let writeResult = writeResult where writeResult {
+                                print("Copied movie from PhotoAlbum to VideoClipper")
+                                
+                                let generateImg = AVAssetImageGenerator(asset: asset)
+
+                                do {
+                                    let refImg = try generateImg.copyCGImageAtTime(CMTimeMake(1,1), actualTime: nil)
+                                    let thumbnailImage = UIImage(CGImage: refImg)
+                                    
+                                    newVideo!.thumbnailData = UIImagePNGRepresentation(thumbnailImage)
+
+                                    dispatch_group_leave(importingGroup)
+                            
+                                } catch {
+                                    print("Couldn't generate thumbnail image for new video")
+                                }
+                                
+                            }
+                            else {
+                                print("Couldn't copy movie file from PhotoAlbum to VideoClipper")
+                            }
+                        }
+                    })
+                }
                 
                 print(dict)
             }
         }
+        
+        dispatch_group_notify(importingGroup, dispatch_get_main_queue()) { () -> Void in
+            
+            do {
+                try self.context.save()
+            } catch {
+                print("Couldn't save imported video into DB: \(error)")
+            }
+            
+            self.tableController?.reloadData()
+            progressBar.hide(true)
+            
+            picker.dismissViewControllerAnimated(true, completion: nil)
+        }
+        
     }
     
     func elcImagePickerControllerDidCancel(picker: ELCImagePickerController!) {

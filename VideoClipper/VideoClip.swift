@@ -92,6 +92,7 @@ class VideoClip: StoryElement {
                         
                         do {
                             try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
+                            videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                         } catch let error as NSError {
                             completionHandler?(error: error)
                         }
@@ -104,7 +105,11 @@ class VideoClip: StoryElement {
                         
                         let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
                         videoCompositionInstruction.timeRange = CMTimeRange(start: time, duration: assetTrack!.timeRange.duration);
-                        videoCompositionInstruction.layerInstructions = [AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)]
+                        
+                        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
+                        layerInstruction.setTransform(assetTrack!.preferredTransform, atTime: kCMTimeZero)
+                        
+                        videoCompositionInstruction.layerInstructions = [layerInstruction]
                         instructions.append(videoCompositionInstruction)
                         
                         time = CMTimeAdd(time, assetTrack!.timeRange.duration)

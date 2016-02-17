@@ -666,6 +666,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
                                 print("Copied movie from PhotoAlbum to VideoClipper")
                                 
                                 let generateImg = AVAssetImageGenerator(asset: asset)
+                                generateImg.appliesPreferredTrackTransform = true
 
                                 do {
                                     let refImg = try generateImg.copyCGImageAtTime(CMTimeMake(1,1), actualTime: nil)

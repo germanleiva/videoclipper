@@ -12,6 +12,7 @@ import AVKit
 import AssetsLibrary
 import Photos
 import MobileCoreServices
+import Crashlytics
 
 class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, SecondaryViewControllerDelegate, ELCImagePickerControllerDelegate, UIGestureRecognizerDelegate {
 	var project:Project? = nil
@@ -222,6 +223,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		do {
 			try context.save()
 			self.tableController!.addStoryLine(storyLine)
+            
+            Answers.logCustomEventWithName("New line",
+                customAttributes: nil)
 		} catch {
 			print("Couldn't save the new story line: \(error)")
 		}
@@ -238,6 +242,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 
 		exportToPhotoAlbum(NSOrderedSet(array: elements))
+        
+        Answers.logCustomEventWithName("Export project pressed",
+            customAttributes: nil)
 	}
     
     func exportToPhotoAlbum(elements:NSOrderedSet){
@@ -330,16 +337,20 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
                         let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: albumAssetCollection)
                         albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), atIndexes: NSIndexSet(index: 0))
                     }
-                    }, completionHandler: { (success, error) -> Void in
-                        dispatch_async(dispatch_get_main_queue(), {
-                            if success {
-                                //Open Photos app
-                                UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
-                            } else {
-                                let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                                self.presentViewController(alert, animated: true, completion: nil)
-                            }
-                        })
+                }, completionHandler: { (success, error) -> Void in
+                    dispatch_async(dispatch_get_main_queue(), {
+                        if success {
+                            //Open Photos app
+                            Answers.logCustomEventWithName("Export project success",
+                                customAttributes: nil)
+                            
+                            UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
+                            
+                        } else {
+                            let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        }
+                    })
                 })
             })
         }
@@ -400,6 +411,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
     }
 	
 	@IBAction func playProjectPressed(sender:AnyObject?) {
+        Answers.logCustomEventWithName("Play project pressed",
+            customAttributes: nil)
+        
 		var elements = [AnyObject]()
 		
 		for eachLine in self.project!.storyLines! {
@@ -419,7 +433,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
             let playerVC = AVPlayerViewController()
             playerVC.player = self.player
             self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-                print("Player presented")
+                Answers.logCustomEventWithName("Play project success", customAttributes: nil)
                 playerVC.player?.play()
             })
         })

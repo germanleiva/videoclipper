@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Crashlytics
 
 class ProjectsVC: UIViewController {
 	var horribleFix = false
@@ -36,5 +37,7 @@ class ProjectsVC: UIViewController {
 	
 	@IBAction func plusPressed(sender: UIButton) {
 		self.projectsTableController?.insertNewProject()
+        
+        Answers.logCustomEventWithName("Project added", customAttributes: nil)
 	}
 }

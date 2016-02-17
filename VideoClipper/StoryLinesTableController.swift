@@ -14,6 +14,7 @@ import MediaPlayer
 import ImageIO
 import AVKit
 import Photos
+import Crashlytics
 
 struct Bundle {
 	var offset = CGPointZero
@@ -305,6 +306,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	}
 	
 	func deleteStoryLine(indexPath:NSIndexPath) {
+        Answers.logCustomEventWithName("Line deleted", customAttributes: nil)
+
 		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
 //		let previousSelectedLineWasDeleted = self.selectedLineIndexPath! == indexPath
 		
@@ -409,6 +412,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				
 				do {
 					try self.context.save()
+                    Answers.logCustomEventWithName("Line cloned", customAttributes: nil)
+
 				} catch {
 					print("Couldn't save cloned line \(error)")
 				}

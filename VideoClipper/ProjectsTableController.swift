@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Crashlytics
 
 let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
@@ -349,6 +350,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				
 				do {
 					try self.context.save()
+                    Answers.logCustomEventWithName("Project deleted", customAttributes: nil)
 					defer {
 						alert.dismissViewControllerAnimated(true, completion: nil)
 					}

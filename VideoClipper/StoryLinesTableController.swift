@@ -22,13 +22,6 @@ struct Bundle {
 	var representationImageView : UIView
 	var currentIndexPath : NSIndexPath
 	var collectionView: UICollectionView
-    
-    mutating func cell() -> UICollectionViewCell {
-        if self.sourceCell == nil {
-            self.sourceCell = collectionView.cellForItemAtIndexPath(currentIndexPath)
-        }
-        return sourceCell!
-    }
 }
 var bundle : Bundle?
 
@@ -66,7 +59,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        self.project!.freeAssets()
+//        self.project!.freeAssets()
     }
     
 	override func viewDidLoad() {
@@ -548,7 +541,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
             videoElement.loadAsset({ (error) -> Void in
                 if error != nil {
                     print(error?.localizedDescription)
-                    abort()
                 }
                 let asset = videoElement.asset!
                 let generator = AVAssetImageGenerator(asset: asset)
@@ -670,10 +662,10 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			
 			if gesture.state == UIGestureRecognizerState.Began {
 				
-				self.bundle!.cell().hidden = true
+				self.bundle!.sourceCell!.hidden = true
 				self.view.addSubview(self.bundle!.representationImageView)
 				
-				UIView.animateWithDuration(0.5, animations: { () -> Void in
+				UIView.animateWithDuration(0.3, animations: { () -> Void in
 					self.bundle!.representationImageView.alpha = 0.8
 				});
 			}
@@ -709,28 +701,42 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                             potentiallyNewCollectionView!.moveItemAtIndexPath(self.bundle!.currentIndexPath, toIndexPath: indexPath)
                             self.bundle!.currentIndexPath = indexPath
 						}
-					}
+                    } else {
+                        print("The index path is nil within same collection view")
+                    }
 				} else {
 					//We need to change collection view
+
 					if indexPath == nil && CGRectContainsPoint(potentiallyNewCollectionView!.frame, dragPointOnCollectionView) {
-                        indexPath = potentiallyNewCollectionView?.indexPathForItemAtPoint(dragPointOnCollectionView)
+                        let pointWithRightOffset = CGPoint(x: dragPointOnCollectionView.x + 50, y: dragPointOnCollectionView.y-50)
+                        indexPath = potentiallyNewCollectionView?.indexPathForItemAtPoint(pointWithRightOffset)
                         if indexPath == nil {
                             let toStoryLine = self.project!.storyLines![potentiallyNewCollectionView!.tag] as! StoryLine
                             indexPath = NSIndexPath(forItem: toStoryLine.elements!.count, inSection: 0)
                         }
-					}
+                    } else {
+                        if indexPath == nil {
+                            print("This means that the dragPointOnCollectionView is not contained in the potentiallyNewCollectionView")
+                        }
+                    }
 					
 					if let indexPath = indexPath {
 						self.moveStoryElement(bundle!.collectionView,fromIndexPath: bundle!.currentIndexPath,toCollectionView: potentiallyNewCollectionView!,toIndexPath: indexPath)
-                        bundle!.collectionView.deleteItemsAtIndexPaths([bundle!.currentIndexPath])
+                        
+                        let previousCollectionView = bundle!.collectionView
+                        let previousCell = bundle!.sourceCell!
+                        previousCollectionView.performBatchUpdates({ () -> Void in
+                            previousCollectionView.deleteItemsAtIndexPaths([self.bundle!.currentIndexPath])
+                        }, completion: { (completed) -> Void in
+                            previousCell.hidden = false
+                        })
                         potentiallyNewCollectionView!.insertItemsAtIndexPaths([indexPath])
                         let cell = potentiallyNewCollectionView!.cellForItemAtIndexPath(indexPath)
                         if cell != nil {
                             cell!.hidden = true
-                            self.bundle = Bundle(offset: bundle!.offset, sourceCell: cell, representationImageView:bundle!.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
+                            self.bundle = Bundle(offset: self.bundle!.offset, sourceCell: cell, representationImageView:self.bundle!.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
                         } else {
                             print("We are moving to a new collection view but I couldn't find a cell for that indexPath ... weird")
-                            self.bundle = Bundle(offset: bundle!.offset, sourceCell: nil, representationImageView:bundle!.representationImageView, currentIndexPath: indexPath, collectionView: potentiallyNewCollectionView!)
                         }
 					}
 				}
@@ -738,25 +744,36 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			}
 			
 			if gesture.state == UIGestureRecognizerState.Ended {
-				bundle!.cell().alpha = 0
-				bundle!.cell().hidden = false
+				bundle!.sourceCell!.alpha = 0
+				bundle!.sourceCell!.hidden = false
 				UIView.animateKeyframesWithDuration(0.1, delay: 0, options: UIViewKeyframeAnimationOptions(rawValue: 0), animations: { () -> Void in
 					
-					self.bundle!.representationImageView.frame = self.view.convertRect(self.bundle!.cell().frame, fromView: self.bundle!.collectionView)
+					self.bundle!.representationImageView.frame = self.view.convertRect(self.bundle!.sourceCell!.frame, fromView: self.bundle!.collectionView)
 					self.bundle!.representationImageView.transform = CGAffineTransformScale(self.bundle!
                         .representationImageView.transform, 1,1)
 
                 }, completion: { (completed) -> Void in
                     self.bundle!.representationImageView.removeFromSuperview()
-                    self.bundle!.cell().alpha = 1
-                    potentiallyNewCollectionView!.reloadData()
-                    self.bundle = nil
+                    self.bundle!.sourceCell!.alpha = 1
                     
-                    do {
-                        try self.context.save()
-                    } catch {
-                        print("Couldn't reorder elements: \(error)")
-                    }
+//                    let theCell = self.bundle!.sourceCell!
+//                    let cellIndexPath = potentiallyNewCollectionView!.indexPathForCell(theCell)!
+                    potentiallyNewCollectionView?.reloadData()
+                    self.bundle = nil
+//                    potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
+//                        potentiallyNewCollectionView!.reloadItemsAtIndexPaths([cellIndexPath])
+//                    }, completion: { (completed) -> Void in
+                        
+                        self.context.performBlock({ () -> Void in
+                            do {
+                                try self.context.save()
+                            } catch {
+                                print("Couldn't reorder elements: \(error)")
+                            }
+                        })
+//                    })
+                    
+                    
 				})
 				
 				//					if let delegate = self.collectionView?.delegate as? DraggableCollectionViewDelegate {

@@ -1524,6 +1524,11 @@
                                     <action selector="exportProjectPressed:" destination="d93-I1-5WA" id="siL-7C-gsx"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="42" id="cOt-fX-hoU">
+                                <connections>
+                                    <action selector="loadAllTitleCards:" destination="d93-I1-5WA" id="Lhw-bb-Wh6"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>

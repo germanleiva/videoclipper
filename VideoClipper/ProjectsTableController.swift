@@ -34,6 +34,9 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 			
 			projectVC.isNewProject = self.isNewProject
 			self.isNewProject = false
+            
+//            print("PRINTING PROJECT")
+//            projectVC.project?.projectToText()
 		}
 	}
 	

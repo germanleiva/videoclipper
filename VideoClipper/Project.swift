@@ -38,4 +38,23 @@ class Project: NSManagedObject {
             (each as! StoryLine).freeAssets()
         }
     }
+    
+    func projectToText() {
+        for eachLine in self.storyLines! {
+            print("NEW LINE")
+            for each in (eachLine as! StoryLine).elements! {
+                let eachElement = each as! StoryElement
+                if eachElement.isTitleCard() {
+                    let titleCard = eachElement as! TitleCard
+                    print("TC: \(titleCard.videoFileName)")
+                } else {
+                    let video = eachElement as! VideoClip
+                    for eachSegment in video.segments! {
+                        print("Video Segment: \((eachSegment as! VideoSegment).fileName)")
+                    }
+                    
+                }
+            }
+        }
+    }
 }

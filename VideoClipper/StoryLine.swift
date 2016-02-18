@@ -54,8 +54,9 @@ class StoryLine: NSManagedObject {
         let composition = AVMutableComposition()
         let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
         var compositionAudioTrack:AVMutableCompositionTrack? = nil
-        var compositionMetadataTrack:AVMutableCompositionTrack? = nil
+//        var compositionMetadataTrack:AVMutableCompositionTrack? = nil
         var cursorTime = kCMTimeZero
+        var lastNaturalSize = CGSizeZero
         
         //		let compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
         
@@ -81,9 +82,9 @@ class StoryLine: NSManagedObject {
             }
             
             //I only added the location timed metadata to the TitleCard
-            if eachElement.isTitleCard() && compositionMetadataTrack == nil {
-                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
-            }
+//            if eachElement.isTitleCard() && compositionMetadataTrack == nil {
+//                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
+//            }
             
             eachElement.loadAsset({ (error) -> Void in
                 var error:NSError?
@@ -116,7 +117,6 @@ class StoryLine: NSManagedObject {
                     
                     if status != AVKeyValueStatus.Loaded {
                         print("Duration was not ready: \(error!.localizedDescription)")
-                        abort()
                     }
                     
                     assetDuration = asset!.duration
@@ -138,7 +138,7 @@ class StoryLine: NSManagedObject {
                 
                 let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
                 let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
-                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
+//                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
                 
                 let range = CMTimeRangeMake(startTime, assetDuration)
                 do {
@@ -154,13 +154,12 @@ class StoryLine: NSManagedObject {
                     }
                     
                     //If there is at least one TitleCard we should have metadata
-                    if let _ = sourceMetadataTrack {
-                        try compositionMetadataTrack!.insertTimeRange(range, ofTrack: sourceMetadataTrack!, atTime: cursorTime)
-                    }
+//                    if let _ = sourceMetadataTrack {
+//                        try compositionMetadataTrack!.insertTimeRange(range, ofTrack: sourceMetadataTrack!, atTime: cursorTime)
+//                    }
                     
                 } catch {
                     print("Couldn't create composition: \(error)")
-                    abort()
                 }
                 
                 
@@ -178,7 +177,7 @@ class StoryLine: NSManagedObject {
                 cursorTime = CMTimeAdd(cursorTime, assetDuration)
                 
                 //			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
-                //			lastNaturalSize = sourceVideoTrack!.naturalSize
+                			lastNaturalSize = sourceVideoTrack!.naturalSize
             }
             
             // create our video composition which will be assigned to the player item
@@ -186,8 +185,8 @@ class StoryLine: NSManagedObject {
             videoComposition.instructions = instructions
             //		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
             videoComposition.frameDuration = CMTimeMake(1, 30)
-            //		videoComposition.renderSize = lastNaturalSize
-            videoComposition.renderSize = CGSize(width: 1920,height: 1080)
+            videoComposition.renderSize = lastNaturalSize
+//            videoComposition.renderSize = CGSize(width: 1920,height: 1080)
             
             
             completionHandler?(composition,videoComposition)

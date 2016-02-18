@@ -438,6 +438,17 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
             })
         })
 	}
+    
+    @IBAction func loadAllTitleCards(sender:AnyObject?) {
+        for each in self.project!.storyLines! {
+            for eachElement in (each as! StoryLine).elements! {
+                if (eachElement as! StoryElement).isTitleCard() {
+                    let titleCard = eachElement as! TitleCard
+                    titleCard.loadAsset(nil)
+                }
+            }
+        }
+    }
 	
 	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
 		if keyPath == "status" {

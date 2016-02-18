@@ -298,7 +298,6 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         self.video?.loadAsset({ (error:NSError?) -> Void in
             if let anError = error {
                 print("Couldn't load asset for VideoPlayer: \(anError.localizedDescription)")
-                abort()
             }
             
             let keys = ["tracks","duration"]

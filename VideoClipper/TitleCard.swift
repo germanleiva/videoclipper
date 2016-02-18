@@ -90,6 +90,14 @@ class TitleCard: StoryElement {
 
         VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: UIImage(data:self.snapshot!)) { () -> Void in
             self.videoFileName = path.lastPathComponent
+            
+            self.managedObjectContext?.performBlock({ () -> Void in
+                do {
+                    try self.managedObjectContext?.save()
+                } catch {
+                    print("DB FAILED writeVideoFromSnapshot: \(error) ")
+                }
+            })
             handler?()
         }
     }

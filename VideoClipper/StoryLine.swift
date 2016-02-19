@@ -195,7 +195,7 @@ class StoryLine: NSManagedObject {
 	
     func freeAssets() {
         for eachElement in self.elements! {
-            (eachElement as! StoryElement).deleteAssetFile()
+            (eachElement as! StoryElement).asset = nil
         }
     }
 }

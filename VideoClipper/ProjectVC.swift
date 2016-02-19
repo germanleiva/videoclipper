@@ -248,7 +248,19 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
     
     func exportToPhotoAlbum(elements:NSOrderedSet){
+        let window = UIApplication.sharedApplication().delegate!.window!
+
+        self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
+        self.progressBar!.labelText = "Preparing ..."
+
         StoryLine.createComposition(elements) { (composition,videoComposition) -> Void in
+            
+            self.progressBar!.labelText = "Exporting ..."
+
+            self.progressBar!.detailsLabelText = "Tap to cancel"
+            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
+
             self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
             
             self.exportSession!.videoComposition = videoComposition
@@ -307,14 +319,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
                     }
                 })
             }
-            
-            let window = UIApplication.sharedApplication().delegate!.window!
-            
-            self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-            self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
-            self.progressBar!.labelText = "Exporting ..."
-            self.progressBar!.detailsLabelText = "Tap to cancel"
-            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "cancelExport"))
             
             self.monitorExportProgress(self.exportSession!)
         }

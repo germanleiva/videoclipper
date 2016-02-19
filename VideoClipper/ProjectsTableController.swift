@@ -19,6 +19,9 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		self.clearsSelectionOnViewWillAppear = true
+        for eachProject in self.fetchedResultsController.fetchedObjects! {
+            (eachProject as! Project).freeAssets()
+        }
 	}
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

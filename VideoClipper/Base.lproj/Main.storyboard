@@ -791,16 +791,22 @@
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xlE-PU-OYl">
                                                             <rect key="frame" x="0.0" y="0.0" width="128" height="72"/>
                                                         </imageView>
+                                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="xqA-OA-5KF">
+                                                            <rect key="frame" x="46" y="17" width="37" height="37"/>
+                                                        </activityIndicatorView>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="xlE-PU-OYl" secondAttribute="trailing" id="5mp-gf-8Ve"/>
+                                                    <constraint firstItem="xqA-OA-5KF" firstAttribute="centerY" secondItem="xlE-PU-OYl" secondAttribute="centerY" id="CFE-Po-8T3"/>
                                                     <constraint firstAttribute="bottom" secondItem="xlE-PU-OYl" secondAttribute="bottom" id="Tsz-Tn-HCV"/>
                                                     <constraint firstItem="xlE-PU-OYl" firstAttribute="leading" secondItem="N9c-96-OhE" secondAttribute="leading" id="dmS-ch-Ra2"/>
+                                                    <constraint firstItem="xqA-OA-5KF" firstAttribute="centerX" secondItem="xlE-PU-OYl" secondAttribute="centerX" id="kME-Lz-IQE"/>
                                                     <constraint firstItem="xlE-PU-OYl" firstAttribute="top" secondItem="N9c-96-OhE" secondAttribute="top" id="os3-KG-DOR"/>
                                                 </constraints>
                                                 <connections>
+                                                    <outlet property="loader" destination="xqA-OA-5KF" id="M0L-cn-he5"/>
                                                     <outlet property="thumbnail" destination="xlE-PU-OYl" id="nu6-XV-hkN"/>
                                                 </connections>
                                             </collectionViewCell>
@@ -891,7 +897,7 @@
                                         </constraints>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="titleCardCell" rowHeight="113" id="fBp-b6-dIZ">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TitleCardTableCell" rowHeight="113" id="fBp-b6-dIZ" customClass="TitleCardTableCell" customModule="VideoClipper" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="22" width="192" height="113"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fBp-b6-dIZ" id="qct-k3-WPf">
@@ -905,9 +911,14 @@
                                                                 <constraint firstAttribute="width" constant="182" id="owK-q6-IxD"/>
                                                             </constraints>
                                                         </imageView>
+                                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Whr-mn-pQZ">
+                                                            <rect key="frame" x="86" y="46" width="20" height="20"/>
+                                                        </activityIndicatorView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstItem="JpS-Vh-1wC" firstAttribute="centerX" secondItem="qct-k3-WPf" secondAttribute="centerX" id="2gx-DJ-ewA"/>
+                                                        <constraint firstItem="Whr-mn-pQZ" firstAttribute="centerX" secondItem="JpS-Vh-1wC" secondAttribute="centerX" id="3A5-3d-2Ms"/>
+                                                        <constraint firstItem="Whr-mn-pQZ" firstAttribute="centerY" secondItem="JpS-Vh-1wC" secondAttribute="centerY" id="AlU-LM-14g"/>
                                                         <constraint firstAttribute="bottom" secondItem="JpS-Vh-1wC" secondAttribute="bottom" id="OnL-vV-Wmp"/>
                                                         <constraint firstItem="JpS-Vh-1wC" firstAttribute="top" secondItem="qct-k3-WPf" secondAttribute="top" id="R7M-oB-4gR"/>
                                                         <constraint firstItem="JpS-Vh-1wC" firstAttribute="centerY" secondItem="qct-k3-WPf" secondAttribute="centerY" id="fcC-vI-tno"/>
@@ -923,6 +934,10 @@
                                                         </mask>
                                                     </variation>
                                                 </tableViewCellContentView>
+                                                <connections>
+                                                    <outlet property="loader" destination="Whr-mn-pQZ" id="7Ri-mG-NCj"/>
+                                                    <outlet property="titleCardImage" destination="JpS-Vh-1wC" id="r86-qz-gag"/>
+                                                </connections>
                                             </tableViewCell>
                                         </prototypes>
                                         <variation key="default">

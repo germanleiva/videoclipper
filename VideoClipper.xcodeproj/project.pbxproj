@@ -16,6 +16,7 @@
 		A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423152E1BA1CC910096DF01 /* SwiftColors.swift */; };
 		A42BDD561B67EF97003CA999 /* StoryLine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */; };
 		A42BDD571B67EF97003CA999 /* StoryLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42BDD551B67EF97003CA999 /* StoryLine.swift */; };
+		A43B5AFA1C770630008298AF /* TitleCardTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43B5AF91C770630008298AF /* TitleCardTableCell.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
@@ -124,6 +125,7 @@
 		A423152E1BA1CC910096DF01 /* SwiftColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftColors.swift; path = "ALAssetsLibrary-CustomPhotoAlbum/SwiftColors.swift"; sourceTree = "<group>"; };
 		A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryLine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A42BDD551B67EF97003CA999 /* StoryLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLine.swift; sourceTree = "<group>"; };
+		A43B5AF91C770630008298AF /* TitleCardTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCardTableCell.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				A4664AF11B452D680095B27D /* StoryLineCell.swift */,
 				A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */,
 				A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */,
+				A43B5AF91C770630008298AF /* TitleCardTableCell.swift */,
 				A4664AF41B452D680095B27D /* VideoCollectionCell.swift */,
 				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
 				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
@@ -684,6 +687,7 @@
 				A4E94C531C678EB5007D4478 /* IDCaptureSessionMovieFileOutputCoordinator.m in Sources */,
 				A4664AFE1B452D680095B27D /* StoryElementCollectionCell.swift in Sources */,
 				A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */,
+				A43B5AFA1C770630008298AF /* TitleCardTableCell.swift in Sources */,
 				A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */,
 				A4664ABA1B444BA80095B27D /* AppDelegate.swift in Sources */,
 				A423152F1BA1CC910096DF01 /* SwiftColors.swift in Sources */,

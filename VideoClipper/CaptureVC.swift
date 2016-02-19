@@ -828,12 +828,21 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let video = self.currentLine!.videos()[indexPath.item]
 
-        if let image = video.thumbnailImage {
-            videoSegmentCell.thumbnail!.image = image
-        } else {
-            //TODO WORKAROUND for empty videoClip
-            videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+            video.loadAsset({ (error) -> Void in
+                videoSegmentCell.loader.stopAnimating()
+
+                if let image = video.thumbnailImage {
+                    videoSegmentCell.thumbnail!.image = image
+                } else {
+                    //TODO WORKAROUND for empty videoClip
+//                    videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
+                }
+            })
         }
+        videoSegmentCell.loader.startAnimating()
+        
+
         
 //		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
 //			if eachTagLine != videoSegmentCell.thumbnail! {
@@ -964,11 +973,18 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let titleCardCell = tableView.dequeueReusableCellWithIdentifier("titleCardCell", forIndexPath: indexPath)
-		let imageView = titleCardCell.contentView.subviews.first as! UIImageView
+		let titleCardCell = tableView.dequeueReusableCellWithIdentifier("TitleCardTableCell", forIndexPath: indexPath) as! TitleCardTableCell
 		
 		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
-		imageView.image = UIImage(data: line.firstTitleCard()!.snapshot!)
+        
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+            let titleCard = line.firstTitleCard()!
+            titleCard.loadAsset({ (error) -> Void in
+                titleCardCell.loader.stopAnimating()
+                titleCardCell.titleCardImage.image = titleCard.image
+            })
+        }
+        titleCardCell.loader.startAnimating()
 		
 		return titleCardCell
 	}

@@ -535,49 +535,61 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
 		
-		if videoElement.thumbnailImage == nil {
-			videoCell.loader?.startAnimating()
-
-            videoElement.loadAsset({ (error) -> Void in
-                if error != nil {
-                    print(error?.localizedDescription)
-                }
-                let asset = videoElement.asset!
-                let generator = AVAssetImageGenerator(asset: asset)
-                generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
-                generator.appliesPreferredTrackTransform = true
-                
-                do {
-                    let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
-                    let image = UIImage(CGImage: imageRef)
-                    //				CGImageRelease(imageRef)
-                    let imageData = NSData(data: UIImagePNGRepresentation(image)!)
-                    videoElement.thumbnailData = imageData
-                    videoElement.thumbnailImage = image
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+            let loadImageBlock = {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    videoCell.loader?.stopAnimating()
                     
-                    try self.context.save()
-                } catch {
-                    print("Couldn't generate thumbnail for video: \(error)")
+                    videoCell.thumbnail?.image = videoElement.thumbnailImage
+                })
+            }
+            
+            videoElement.loadAsset({ (error) -> Void in
+                if videoElement.thumbnailImage == nil {
+                    
+                    videoElement.loadAsset({ (error) -> Void in
+                        if error != nil {
+                            print(error?.localizedDescription)
+                        }
+                        let asset = videoElement.asset!
+                        let generator = AVAssetImageGenerator(asset: asset)
+                        generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
+                        generator.appliesPreferredTrackTransform = true
+                        
+                        do {
+                            let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
+                            let image = UIImage(CGImage: imageRef)
+                            //				CGImageRelease(imageRef)
+                            let imageData = NSData(data: UIImagePNGRepresentation(image)!)
+                            videoElement.thumbnailData = imageData
+                            videoElement.thumbnailImage = image
+                            
+                            loadImageBlock()
+                            try self.context.save()
+                        } catch {
+                            print("Couldn't generate thumbnail for video: \(error)")
+                        }
+                    })
+                } else {
+                    loadImageBlock()
                 }
             })
-		}
-
-		videoCell.loader?.stopAnimating()
-		videoCell.thumbnail?.image = videoElement.thumbnailImage
-		
-		for eachTagLine in [UIView](videoCell.contentView.subviews) {
-			if eachTagLine != videoCell.thumbnail! {
-				eachTagLine.removeFromSuperview()
-			}
-		}
-		
-		for each in videoElement.tags! {
-			let eachTagMark = each as! TagMark
-			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoCell.contentView.bounds.height))
-			newTagLine.backgroundColor = eachTagMark.color as? UIColor
-			newTagLine.frame = CGRectOffset(newTagLine.frame, videoCell.contentView.bounds.width * CGFloat(eachTagMark.time!) , 0)
-			videoCell.contentView.addSubview(newTagLine)
-		}
+        }
+        videoCell.loader!.startAnimating()
+        
+//		for eachTagLine in [UIView](videoCell.contentView.subviews) {
+//			if eachTagLine != videoCell.thumbnail! {
+//				eachTagLine.removeFromSuperview()
+//			}
+//		}
+//
+//		for each in videoElement.tags! {
+//			let eachTagMark = each as! TagMark
+//			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoCell.contentView.bounds.height))
+//			newTagLine.backgroundColor = eachTagMark.color as? UIColor
+//			newTagLine.frame = CGRectOffset(newTagLine.frame, videoCell.contentView.bounds.width * CGFloat(eachTagMark.time!) , 0)
+//			videoCell.contentView.addSubview(newTagLine)
+//		}
 
 		return videoCell
 	}
@@ -756,13 +768,16 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                     self.bundle!.representationImageView.removeFromSuperview()
                     self.bundle!.sourceCell!.alpha = 1
                     
-//                    let theCell = self.bundle!.sourceCell!
-//                    let cellIndexPath = potentiallyNewCollectionView!.indexPathForCell(theCell)!
-                    potentiallyNewCollectionView?.reloadData()
+                    let theCell = self.bundle!.sourceCell!
+                    var cellIndexPath = potentiallyNewCollectionView!.indexPathForCell(theCell)
+                    if cellIndexPath == nil {
+                        //WORK AROUND UGLY
+                        cellIndexPath = self.bundle?.currentIndexPath
+                    }
                     self.bundle = nil
-//                    potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
-//                        potentiallyNewCollectionView!.reloadItemsAtIndexPaths([cellIndexPath])
-//                    }, completion: { (completed) -> Void in
+                    potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
+                        potentiallyNewCollectionView!.reloadItemsAtIndexPaths([cellIndexPath!])
+                    }, completion: { (completed) -> Void in
                         
                         self.context.performBlock({ () -> Void in
                             do {
@@ -771,7 +786,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                                 print("Couldn't reorder elements: \(error)")
                             }
                         })
-//                    })
+                    })
                     
                     
 				})
@@ -843,8 +858,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 //					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)
 					// ... and update source so it is in sync with UI changes.
 					self.sourceIndexPath = indexPath;
-				}
-				
+                }
+            case UIGestureRecognizerState.Cancelled:
+                print("Cancelled moving row not doing anything")
 			default:
 				// Clean up.
 				//Llega indexPath nil

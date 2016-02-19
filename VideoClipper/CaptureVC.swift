@@ -836,7 +836,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     videoSegmentCell.thumbnail!.image = image
                 } else {
                     //TODO WORKAROUND for empty videoClip
-                    videoSegmentCell.thumbnail.image = currentVideoSegment!.snapshot
+                    videoSegmentCell.thumbnail.image = self.currentVideoSegment!.snapshot
                 }
             })
         }

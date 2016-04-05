@@ -297,9 +297,9 @@
 		A4563C981CB4049700DC082C /* Projects Screen */ = {
 			isa = PBXGroup;
 			children = (
-				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
 				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
 				A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */,
+				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
 				A4E759BA1B9083120076D250 /* SettingsTableController.swift */,
 			);
 			name = "Projects Screen";

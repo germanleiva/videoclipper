@@ -11,7 +11,6 @@ import CoreData
 import Crashlytics
 
 class ProjectsVC: UIViewController {
-	var horribleFix = false
 	var projectsTableController:ProjectsTableController? = nil
 	
 	@IBOutlet var addProjectButton: UIButton!

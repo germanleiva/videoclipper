@@ -60,7 +60,6 @@
 		A4CECB731B9464A100D8B342 /* AAPLTimedAnnotationWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A4CECB721B9464A100D8B342 /* AAPLTimedAnnotationWriter.m */; };
 		A4D095B31B9092BA008F4316 /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */; };
 		A4D095B51B9094B1008F4316 /* colorPalette.plist in Resources */ = {isa = PBXBuildFile; fileRef = A4D095B41B9094B1008F4316 /* colorPalette.plist */; };
-		A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */; };
 		A4DA9CD81B973F0F00839F28 /* ELCAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */; };
 		A4DA9CD91B973F0F00839F28 /* ELCAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC41B973F0F00839F28 /* ELCAsset.m */; };
 		A4DA9CDA1B973F0F00839F28 /* ELCAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A4DA9CC61B973F0F00839F28 /* ELCAssetCell.m */; };
@@ -183,7 +182,6 @@
 		A4CECB721B9464A100D8B342 /* AAPLTimedAnnotationWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLTimedAnnotationWriter.m; sourceTree = "<group>"; };
 		A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		A4D095B41B9094B1008F4316 /* colorPalette.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = colorPalette.plist; sourceTree = "<group>"; };
-		A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElementPageViewController.swift; sourceTree = "<group>"; };
 		A4DA9CC11B973F0F00839F28 /* ELCAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAlbumPickerController.h; sourceTree = "<group>"; };
 		A4DA9CC21B973F0F00839F28 /* ELCAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELCAlbumPickerController.m; sourceTree = "<group>"; };
 		A4DA9CC31B973F0F00839F28 /* ELCAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELCAsset.h; sourceTree = "<group>"; };
@@ -280,8 +278,57 @@
 				A4561B471C68F8F600AA4346 /* MarkerReusableView.swift */,
 				A4561B451C68F88600AA4346 /* CenteredFlowLayout.swift */,
 				A48F8B181B9C63A10091D607 /* CaptureVC.swift */,
+				A43B5AF91C770630008298AF /* TitleCardTableCell.swift */,
+				A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */,
 			);
 			name = CaptureVC;
+			sourceTree = "<group>";
+		};
+		A4563C971CB4048B00DC082C /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				A4561B441C68F80F00AA4346 /* CaptureVC */,
+				A4563C991CB404A000DC082C /* Project Screen */,
+				A4563C981CB4049700DC082C /* Projects Screen */,
+			);
+			name = Screens;
+			sourceTree = "<group>";
+		};
+		A4563C981CB4049700DC082C /* Projects Screen */ = {
+			isa = PBXGroup;
+			children = (
+				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
+				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
+				A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */,
+				A4E759BA1B9083120076D250 /* SettingsTableController.swift */,
+			);
+			name = "Projects Screen";
+			sourceTree = "<group>";
+		};
+		A4563C991CB404A000DC082C /* Project Screen */ = {
+			isa = PBXGroup;
+			children = (
+				A4664AEB1B452D680095B27D /* ProjectVC.swift */,
+				A4664AED1B452D680095B27D /* StoryLinesTableController.swift */,
+				A4664AF11B452D680095B27D /* StoryLineCell.swift */,
+				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
+				A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */,
+				A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */,
+				A4664AF41B452D680095B27D /* VideoCollectionCell.swift */,
+				A4563C9D1CB4054B00DC082C /* Secondary */,
+			);
+			name = "Project Screen";
+			sourceTree = "<group>";
+		};
+		A4563C9D1CB4054B00DC082C /* Secondary */ = {
+			isa = PBXGroup;
+			children = (
+				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
+				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
+				A4FFE8761CB406BA00A25E1E /* Video VC */,
+				A4FFE8751CB406B400A25E1E /* TitleCard VC */,
+			);
+			name = Secondary;
 			sourceTree = "<group>";
 		};
 		A4664AAD1B444BA80095B27D = {
@@ -323,31 +370,9 @@
 				A4F4AFF81BB3F80C0049109F /* MBFingerTipWindow.m */,
 				A4664B0D1B4539510095B27D /* Model */,
 				A4664AB91B444BA80095B27D /* AppDelegate.swift */,
-				A4664AEA1B452D680095B27D /* ProjectsVC.swift */,
-				A418D52B1BAEEB0700AC7D12 /* ProjectsTableController.swift */,
-				A4664AEB1B452D680095B27D /* ProjectVC.swift */,
-				A4664AED1B452D680095B27D /* StoryLinesTableController.swift */,
-				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
-				A4E759BA1B9083120076D250 /* SettingsTableController.swift */,
 				A44CE8F21B600B2E00953B7F /* VideoHelper.m */,
 				A44CE8F41B600B5300953B7F /* VideoHelper.h */,
-				A4664AEF1B452D680095B27D /* ProjectTableCell.swift */,
-				A4664AF11B452D680095B27D /* StoryLineCell.swift */,
-				A4664AF21B452D680095B27D /* StoryElementCollectionCell.swift */,
-				A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */,
-				A43B5AF91C770630008298AF /* TitleCardTableCell.swift */,
-				A4664AF41B452D680095B27D /* VideoCollectionCell.swift */,
-				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
-				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
-				A4FF46621B46B54100A12267 /* VideoVC.swift */,
-				A4F20B771BA9AE5F00879726 /* ModalTitleCardVC.swift */,
-				A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */,
-				A44121111B96048500BBB020 /* FilmstripView.swift */,
-				A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */,
-				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
-				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
-				A4DA9CBE1B971C2200839F28 /* StoryElementPageViewController.swift */,
-				A4561B441C68F80F00AA4346 /* CaptureVC */,
+				A4563C971CB4048B00DC082C /* Screens */,
 				A4664ABD1B444BA80095B27D /* Main.storyboard */,
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
@@ -487,6 +512,26 @@
 				A4E94C581C67DAC4007D4478 /* SCSampleBufferHolder.m */,
 			);
 			name = Recorder;
+			sourceTree = "<group>";
+		};
+		A4FFE8751CB406B400A25E1E /* TitleCard VC */ = {
+			isa = PBXGroup;
+			children = (
+				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
+				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
+				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
+			);
+			name = "TitleCard VC";
+			sourceTree = "<group>";
+		};
+		A4FFE8761CB406BA00A25E1E /* Video VC */ = {
+			isa = PBXGroup;
+			children = (
+				A4FF46621B46B54100A12267 /* VideoVC.swift */,
+				A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */,
+				A44121111B96048500BBB020 /* FilmstripView.swift */,
+			);
+			name = "Video VC";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -651,7 +696,6 @@
 				A4F8E3B41BB0469C0076A6FF /* Thumbnail+CoreDataProperties.swift in Sources */,
 				A4E94C551C678EB5007D4478 /* IDAssetWriterCoordinator.m in Sources */,
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
-				A4DA9CBF1B971C2200839F28 /* StoryElementPageViewController.swift in Sources */,
 				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
 				A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */,
 				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,

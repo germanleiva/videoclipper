@@ -410,7 +410,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
     @IBAction func cancelExport() {
         self.exportSession?.cancelExport()
         self.exportSession = nil
-        self.progressBar!.hide(true)
+        self.progressBar?.hide(true)
         self.progressBar = nil
     }
 	

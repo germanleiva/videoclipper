@@ -116,6 +116,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                 } else {
                     cell.collectionView!.reloadItemsAtIndexPaths([itemPath])
                 }
+            } else {
+                print("TODO MAL")
             }
         }
 	}

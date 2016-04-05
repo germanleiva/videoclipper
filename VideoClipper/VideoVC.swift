@@ -284,9 +284,11 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 		
 		self.playerItem = nil
-				self.realPlayerView.removeFromSuperview()
-				self.realPlayerView = nil
+        self.realPlayerView.removeFromSuperview()
+        self.realPlayerView = nil
 		self.player = nil
+        
+        self.loadedViews = false
 	}
 	
     func prepareToPlay(){

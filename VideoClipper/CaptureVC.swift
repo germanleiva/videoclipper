@@ -459,6 +459,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 try temporaryContext.save()
             } catch {
                 // handle error
+                print("Error when savingVideoSegment in the temporaryContext: \(error)")
             }
             
             self.context.performBlock({ () -> Void in
@@ -480,6 +481,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     self.reshootVideoButton.enabled = true
                 } catch {
                     // handle error
+                    print("Error when savingVideoSegment in the final context: \(error)")
                 }
             })
         }

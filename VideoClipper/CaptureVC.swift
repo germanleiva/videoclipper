@@ -638,7 +638,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         })
         
         self.collectionView?.performBatchUpdates({ () -> Void in
-            if layout.isCentered {
+            if layout.isCentered && self.collectionView?.numberOfItemsInSection(0) > 0 {
                 self.collectionView?.reloadItemsAtIndexPaths([currentIndexPath!])
             } else {
                 self.collectionView?.insertItemsAtIndexPaths([currentIndexPath!])

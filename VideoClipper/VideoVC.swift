@@ -358,13 +358,20 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	func filmstrip(filmstripView: FilmstripView, didChangeStartPoint percentage: Float) {
 		self.video!.startPoint = percentage
-		try! self.context.save()
+        do {
+            try self.context.save()
+        } catch let error as NSError {
+            print("Couldn't save DB after didChangeStartPoint: \(error.localizedDescription)")
+        }
 	}
 	
 	func filmstrip(filmstripView: FilmstripView, didChangeEndPoint percentage: Float) {
 		self.video!.endPoint = percentage
-		try! self.context.save()
-
+        do {
+            try self.context.save()
+        } catch let error as NSError {
+            print("Couldn't save DB after didChangeEndPoint : \(error.localizedDescription)")
+        }
 	}
 	
 	func setCurrentTime(time:NSTimeInterval, duration:NSTimeInterval) {

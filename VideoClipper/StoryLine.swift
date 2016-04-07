@@ -158,8 +158,8 @@ class StoryLine: NSManagedObject {
 //                        try compositionMetadataTrack!.insertTimeRange(range, ofTrack: sourceMetadataTrack!, atTime: cursorTime)
 //                    }
                     
-                } catch {
-                    print("Couldn't create composition: \(error)")
+                } catch let error as NSError {
+                    print("Couldn't create composition: \(error.localizedDescription)")
                 }
                 
                 

@@ -59,7 +59,7 @@ class VideoClip: StoryElement {
 	
             let assetLoadingGroup = dispatch_group_create();
             
-            if let allSegments = self.segments {
+            if self.segments != nil && self.segments?.count > 0 {
                 
                 let mutableComposition = AVMutableComposition()
                 let videoCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
@@ -68,7 +68,7 @@ class VideoClip: StoryElement {
                 var size = CGSizeZero
                 var time = kCMTimeZero
                 
-                let allAssets = allSegments.map({ (each) -> AVAsset in
+                let allAssets = self.segments!.map({ (each) -> AVAsset in
                     let eachSegment = each as! VideoSegment
                     let asset = eachSegment.asset!
                     
@@ -131,6 +131,11 @@ class VideoClip: StoryElement {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(error:nil)
                     })
+                })
+            } else {
+//                print("The VideoClip doesn't have segments")
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        completionHandler?(error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no segments", comment: "")]))
                 })
             }
         }

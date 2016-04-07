@@ -15,7 +15,10 @@ let TO_PROJECT_VC_SEGUE = "toProjectVC"
 class ProjectsTableController: UITableViewController, NSFetchedResultsControllerDelegate {
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 	var isNewProject = false
-
+    var unProyecto:Project? = nil
+    
+  
+    
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		self.clearsSelectionOnViewWillAppear = true

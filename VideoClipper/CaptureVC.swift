@@ -76,10 +76,20 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
     let updateTimerQueue = dispatch_queue_create("fr.lri.exsitu.QueueVideoClipper", nil)
 
+    var titleChangedObserver:NSObjectProtocol? = nil
+    
+    
+    deinit {
+        if let anObserver = titleChangedObserver {
+            NSNotificationCenter.defaultCenter().removeObserver(anObserver, name: Globals.notificationTitleCardChanged, object: nil)
+        }
+    }
+   
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+        
+		titleChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
 //			let titleCardUpdated = notification.object as! TitleCard
 //			if self.currentTitleCard == titleCardUpdated {
 //				self.needsToUpdateTitleCardPlaceholder = true
@@ -342,10 +352,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 			self.shutterButton.highlighted = true
 		}
 	}
-	
-	@IBAction func donePressed(sender: AnyObject) {
+    
+    @IBAction func donePressed(sender: AnyObject) {
         self.dismissController()
-	}
+    }
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
 		let stroke = sender!.tintColor//.colorWithAlphaComponent(0.8)
@@ -983,7 +993,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             let titleCard = line.firstTitleCard()!
             titleCard.loadAsset({ (error) -> Void in
                 titleCardCell.loader.stopAnimating()
-                titleCardCell.titleCardImage.image = titleCard.image
+                let anImage = titleCard.image
+                titleCardCell.titleCardImage.image = anImage
             })
         }
         titleCardCell.loader.startAnimating()

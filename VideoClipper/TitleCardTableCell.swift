@@ -15,7 +15,8 @@ class TitleCardTableCell: UITableViewCell {
     @IBOutlet var titleCardImage:UIImageView!
 
     override func prepareForReuse() {
-        self.titleCardImage = nil
+        //TODO Workaround, some cell's in the table where whipeout :(\
+//        self.titleCardImage.image = nil
         self.loader.startAnimating()
     }
 //    override func awakeFromNib() {

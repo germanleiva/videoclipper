@@ -20,7 +20,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 
     var isNewProject = false
 
-    var currentItemIndexPath:NSIndexPath? = nil
 	var currentLineIndexPath:NSIndexPath? {
 		get {
 			return self.tableController!.selectedLinePath
@@ -77,8 +76,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //		doubleTap.delegate = self
 		self.tableController!.view.addGestureRecognizer(doubleTap)
 		
-		self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-		
 		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationSelectedLineChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
 			let selectedLine = notification.object
 			self.tableController!.tableView.reloadData()
@@ -92,7 +89,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //	}
 	
 	func doubleTapOnPrimaryView(recognizer:UITapGestureRecognizer) {
-		self.titleTextField.resignFirstResponder()
+        if self.titleTextField.isFirstResponder() {
+            self.titleTextField.resignFirstResponder()
+        }
 	}
 	
 	func tapOnBackgroundOfPrimaryView(recognizer:UITapGestureRecognizer) {
@@ -103,10 +102,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-
-		if self.currentItemIndexPath == nil {
-			self.currentItemIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-		}
 		
 		let defaults = NSUserDefaults.standardUserDefaults()
 
@@ -393,7 +388,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		if keyPath == "status" {
 			if self.player!.status == AVPlayerStatus.ReadyToPlay {
 //				if self.tableController!.isCompact {
-					self.player!.seekToTime(self.timeToSelectedStoryElement(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+					self.player!.seekToTime(self.timeToSelectedLine(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
 //				}w
 				self.player!.currentItem?.removeObserver(self, forKeyPath: "status")
 				self.player = nil
@@ -401,13 +396,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		}
 	}
 	
-	func timeToSelectedStoryElement(timescale:Int32) -> CMTime {
+	func timeToSelectedLine(timescale:Int32) -> CMTime {
 		var cursorTime = kCMTimeZero
 		for lineIndex in 0..<self.project!.storyLines!.count {
 			let eachStoryLine = self.project!.storyLines![lineIndex] as! StoryLine
 			
 			for elementIndex in 0..<eachStoryLine.elements!.count {
-				if lineIndex == self.currentLineIndexPath!.section && (self.currentItemIndexPath == nil || elementIndex == self.currentItemIndexPath!.item){
+				if lineIndex == self.currentLineIndexPath!.section {
 					return cursorTime
 				}
 				if !eachStoryLine.shouldHide!.boolValue {
@@ -436,16 +431,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 	}
 	
 	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?,line:StoryLine?, lineIndexPath: NSIndexPath?) {
-		_ = self.currentLineIndexPath
-
-		if let _ = element {
-			if !self.tableController!.isCompact {
-				//We need to shrink and show the selected item
-			}
-		}
 		
 		if itemIndexPath != nil /*&& itemIndexPath != self.currentItemIndexPath*/ {
-			self.currentItemIndexPath = itemIndexPath
 			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:lineIndexPath!)
 		}
 
@@ -599,10 +586,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
     }
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         picker.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    @IBAction func playForLineTapped(sender:AnyObject?) {
-        self.tableController!.playTappedOnSelectedLine(sender)
     }
     
     @IBAction func hideForLineTapped(sender:AnyObject?) {

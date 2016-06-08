@@ -20,6 +20,28 @@ struct Globals {
     static var documentsDirectory = (UIApplication.sharedApplication().delegate as! AppDelegate).applicationDocumentsDirectory
 }
 
+extension UIImage
+{
+    func resizeToBoundingSquare(boundingSquareSideLength : CGFloat) -> UIImage
+    {
+        let imgScale = self.size.width > self.size.height ? boundingSquareSideLength / self.size.width : boundingSquareSideLength / self.size.height
+        let newWidth = self.size.width * imgScale
+        let newHeight = self.size.height * imgScale
+        let newSize = CGSize(width: newWidth, height: newHeight)
+        
+        UIGraphicsBeginImageContext(newSize)
+        
+        self.drawInRect(CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        
+        UIGraphicsEndImageContext();
+        
+        return resizedImage
+    }
+    
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -133,6 +155,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	    let coordinator = self.persistentStoreCoordinator
 	    var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
 	    managedObjectContext.persistentStoreCoordinator = coordinator
+        //Added by me
+        managedObjectContext.undoManager = nil
 	    return managedObjectContext
 	}()
 

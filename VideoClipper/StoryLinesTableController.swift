@@ -31,7 +31,6 @@ protocol PrimaryControllerDelegate {
 
 class StoryLinesTableController: UITableViewController, NSFetchedResultsControllerDelegate, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
 	var project:Project? = nil
-	var selectedItemPath:NSIndexPath?
 	var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
 	
 	var delegate:PrimaryControllerDelegate? = nil
@@ -40,16 +39,15 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		
 	var bundle:Bundle? = nil
 	var animating = false
-    
-    var isCompact = false
-	
+
 	let longPress: UILongPressGestureRecognizer = {
 		let recognizer = UILongPressGestureRecognizer()
 		return recognizer
 	}()
-	
+    
+    var rowSnapshot: UIView? = nil
+
 	var sourceIndexPath: NSIndexPath? = nil
-	var snapshot: UIView? = nil
 	
 	var shouldSelectRowAfterDelete = false
 		
@@ -71,7 +69,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		// Uncomment the following line to display an Edit button in the navigation bar for this view controller.
 		// self.navigationItem.rightBarButtonItem = self.editButtonItem()
 		
-		let longPressGestureRecogniser = UILongPressGestureRecognizer(target: self, action: "handleLongPressGesture:")
+        let longPressGestureRecogniser = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture))
 		
 		longPressGestureRecogniser.minimumPressDuration = 0.15
 		longPressGestureRecogniser.delegate = self
@@ -83,11 +81,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		if self.selectedItemPath != nil {
-//			let cell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: self.selectedItemPath!.section)) as! StoryLineCell
-//			cell.collectionView.reloadItemsAtIndexPaths([NSIndexPath(forRow: self.selectedItemPath!.item, inSection: 0)])
-			self.selectedItemPath = nil
-		}
 		
 		self.tableView.selectRowAtIndexPath(self.selectedLinePath, animated: true, scrollPosition: UITableViewScrollPosition.None)
 	}
@@ -246,29 +239,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
 		storyLineCell.collectionView.reloadData()
 		storyLineCell.collectionView.scrollToItemAtIndexPath(newVideoCellIndexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
-		if self.isCompact {
-			self.delegate?.primaryController(self, willSelectElement: newElement, itemIndexPath: newVideoCellIndexPath, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
-		} else {
-			self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
-		}
-		self.selectedItemPath = newVideoCellIndexPath
-	}
-	
-	func playTappedOnSelectedLine(sender:AnyObject?) {
-		self.currentStoryLine()?.createComposition({ (composition,videoComposition) -> Void in            
-            let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
-            item.videoComposition = videoComposition
-            let player = AVPlayer(playerItem: item)
-            
-            let playerVC = AVPlayerViewController()
-            playerVC.player = player
-            self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-                print("Player presented")
-                playerVC.player?.play()
-            })
-        })
 
-	}
+        self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
+    }
 	
 	func hideTappedOnSelectedLine(sender:AnyObject?) {
 		let line = self.project!.storyLines![self.selectedLinePath.section] as! StoryLine
@@ -507,9 +480,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		if segue.identifier == "toTitleCardVC" {
 			let navigation = segue.destinationViewController as! UINavigationController
 			let titleCardVC = navigation.viewControllers.first as! TitleCardVC
-			let line = self.project!.storyLines![self.selectedItemPath!.section] as! StoryLine
-
-			titleCardVC.element = line.elements![self.selectedItemPath!.item] as? StoryElement
+//			let line = self.project!.storyLines![self.selectedItemPath!.section] as! StoryLine
+//
+//			titleCardVC.element = line.elements![self.selectedItemPath!.item] as? StoryElement
 		}
 	}
 	
@@ -606,18 +579,16 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
 		let lineIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
-		self.selectedItemPath = NSIndexPath(forItem: indexPath.item, inSection: 0)
+		let selectedItemPath = NSIndexPath(forItem: indexPath.item, inSection: 0)
 
 		if !self.tableView.editing {
 			self.selectRowAtIndexPath(lineIndexPath, animated: false)
 
 			let line = self.project!.storyLines![lineIndexPath.section] as! StoryLine
-			var element:StoryElement? = nil
-			if let itemPath = self.selectedItemPath {
-				element = line.elements![itemPath.item] as? StoryElement
-			}
-			self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: self.selectedItemPath, line: line, lineIndexPath: lineIndexPath)
+			let element = line.elements![selectedItemPath.item] as? StoryElement
+			self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: selectedItemPath, line: line, lineIndexPath: lineIndexPath)
 		}
 	}
 	
@@ -638,29 +609,25 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			let pointPressedInView = gestureRecognizer.locationInView(theView)
 			
 			if let aCollectionView = self.collectionViewForDraggingPoint(pointPressedInView) {
-			
-				if !self.isCompact {
-					for cell in aCollectionView.visibleCells() as [UICollectionViewCell] {
+                for cell in aCollectionView.visibleCells() as [UICollectionViewCell] {
 
-						let cellInViewFrame = theView.convertRect(cell.frame, fromView: aCollectionView)
-						
-						if cell.reuseIdentifier != "TitleCardCollectionCell" && CGRectContainsPoint(cellInViewFrame, pointPressedInView ) {
-							let representationImage = cell.snapshotViewAfterScreenUpdates(true)
-							representationImage.frame = cellInViewFrame
-							UIView.animateWithDuration(0.1, animations: { () -> Void in
-								representationImage.transform = CGAffineTransformScale(representationImage.transform, 0.90, 0.90)
-							})
-							
-							let offset = CGPointMake(pointPressedInView.x - cellInViewFrame.origin.x, pointPressedInView.y - cellInViewFrame.origin.y)
-							
-							let indexPath : NSIndexPath = aCollectionView.indexPathForCell(cell as UICollectionViewCell)!
-							
-							self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage, currentIndexPath: indexPath, collectionView: aCollectionView)
-							
-							return true
-						}
-					}
-				}
+                    let cellInViewFrame = theView.convertRect(cell.frame, fromView: aCollectionView)
+                    
+                    if cell.reuseIdentifier! != "TitleCardCollectionCell" && CGRectContainsPoint(cellInViewFrame, pointPressedInView ) {
+                        let representationImage = cell.snapshotViewAfterScreenUpdates(true)
+                        representationImage.frame = cellInViewFrame
+                        UIView.animateWithDuration(0.1, animations: { () -> Void in
+                            representationImage.transform = CGAffineTransformScale(representationImage.transform, 0.90, 0.90)
+                        })
+                        
+                        let offset = CGPointMake(pointPressedInView.x - cellInViewFrame.origin.x, pointPressedInView.y - cellInViewFrame.origin.y)
+                        
+                        let indexPath : NSIndexPath = aCollectionView.indexPathForCell(cell as UICollectionViewCell)!
+                        
+                        self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage, currentIndexPath: indexPath, collectionView: aCollectionView)
+                        
+                    }
+                }
                 return true
 			}
 		}
@@ -826,26 +793,26 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			case UIGestureRecognizerState.Began:
 				self.sourceIndexPath = indexPath
 				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
-				snapshot = customSnapshotFromView(cell)
+				rowSnapshot = customSnapshotFromView(cell)
 				
 				var center = cell.center
-				snapshot?.center = center
-				snapshot?.alpha = 0.0
-				tableView.addSubview(snapshot!)
+				rowSnapshot?.center = center
+				rowSnapshot?.alpha = 0.0
+				tableView.addSubview(rowSnapshot!)
 				
 				UIView.animateWithDuration(0.25, animations: { () -> Void in
 					center.y = location.y
-					self.snapshot?.center = center
-					self.snapshot?.transform = CGAffineTransformMakeScale(1.05, 1.05)
-					self.snapshot?.alpha = 0.98
+					self.rowSnapshot?.center = center
+					self.rowSnapshot?.transform = CGAffineTransformMakeScale(1.05, 1.05)
+					self.rowSnapshot?.alpha = 0.98
 					cell.alpha = 0.0
 					cell.hidden = true
 				})
 				
 			case UIGestureRecognizerState.Changed:
-				var center: CGPoint = snapshot!.center
+				var center: CGPoint = rowSnapshot!.center
 				center.y = location.y
-				snapshot?.center = center
+				rowSnapshot?.center = center
 				
 				// Is destination valid and is it different from source?
 				if indexPath != self.sourceIndexPath {
@@ -874,8 +841,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					self.tableView.reloadData()
 					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
 					self.sourceIndexPath = nil
-					self.snapshot?.removeFromSuperview()
-					self.snapshot = nil;
+					self.rowSnapshot?.removeFromSuperview()
+					self.rowSnapshot = nil;
 					
 					do {
 						try self.context.save()
@@ -888,9 +855,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					cell.alpha = 0.0
 					cell.hidden = false
 					UIView.animateWithDuration(0.25, animations: { () -> Void in
-						self.snapshot?.center = cell.center
-						self.snapshot?.transform = CGAffineTransformIdentity
-						self.snapshot?.alpha = 0.0
+						self.rowSnapshot?.center = cell.center
+						self.rowSnapshot?.transform = CGAffineTransformIdentity
+						self.rowSnapshot?.alpha = 0.0
 						// Undo fade out.
 						cell.alpha = 1.0
 						
@@ -1014,7 +981,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	func scrollToElement(itemIndexPath:NSIndexPath,inLineIndex indexPath:NSIndexPath) {
 		if let lineCell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
-			lineCell.collectionView.scrollToItemAtIndexPath(itemIndexPath, atScrollPosition: UICollectionViewScrollPosition.CenteredHorizontally, animated: true)
+			lineCell.collectionView.scrollToItemAtIndexPath(itemIndexPath, atScrollPosition: UICollectionViewScrollPosition.Left, animated: true)
 		} else {
 			print("This shouldn't happen")
 		}

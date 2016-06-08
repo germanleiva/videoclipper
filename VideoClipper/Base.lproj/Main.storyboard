@@ -1455,13 +1455,13 @@
                             <constraint firstItem="8xU-TI-nOK" firstAttribute="top" secondItem="IhS-4E-uqn" secondAttribute="top" id="VqV-1s-awP"/>
                             <constraint firstItem="7pH-g7-kGs" firstAttribute="top" secondItem="SMc-pR-tlY" secondAttribute="bottom" id="WXo-jv-u42"/>
                             <constraint firstItem="8xU-TI-nOK" firstAttribute="top" secondItem="SMc-pR-tlY" secondAttribute="bottom" id="Z35-bZ-Dbq"/>
-                            <constraint firstItem="8xU-TI-nOK" firstAttribute="centerY" secondItem="7pH-g7-kGs" secondAttribute="centerY" id="ZHQ-Ei-Fc9"/>
                             <constraint firstItem="8xU-TI-nOK" firstAttribute="leading" secondItem="IhS-4E-uqn" secondAttribute="leading" id="jTe-am-6Sf"/>
                             <constraint firstAttribute="topMargin" secondItem="7pH-g7-kGs" secondAttribute="top" id="mPt-HJ-8Q5"/>
                             <constraint firstItem="i6V-ob-0f2" firstAttribute="trailing" secondItem="8xU-TI-nOK" secondAttribute="trailing" id="nCl-d0-dkd"/>
                             <constraint firstItem="7pH-g7-kGs" firstAttribute="leading" secondItem="8xU-TI-nOK" secondAttribute="trailing" id="ogg-Q3-paE"/>
                             <constraint firstItem="i6V-ob-0f2" firstAttribute="leading" secondItem="8xU-TI-nOK" secondAttribute="leading" id="pJO-Ik-cYJ"/>
                             <constraint firstItem="8xU-TI-nOK" firstAttribute="top" secondItem="SMc-pR-tlY" secondAttribute="bottom" id="slA-MZ-UuT"/>
+                            <constraint firstItem="i6V-ob-0f2" firstAttribute="top" secondItem="8xU-TI-nOK" secondAttribute="bottom" id="vkM-yt-EX2"/>
                             <constraint firstItem="8xU-TI-nOK" firstAttribute="top" secondItem="SMc-pR-tlY" secondAttribute="bottom" id="xtI-0H-2dS"/>
                         </constraints>
                         <variation key="default">

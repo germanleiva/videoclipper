@@ -46,7 +46,6 @@
 		A478D5BE1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */; };
 		A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */; };
 		A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* TextWidget.swift */; };
-		A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */; };
 		A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B161B9C5F240091D607 /* KPCameraButton.m */; };
 		A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B181B9C63A10091D607 /* CaptureVC.swift */; };
 		A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */; };
@@ -165,7 +164,6 @@
 		A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoSegmentCollectionCell.swift; sourceTree = "<group>"; };
 		A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TextWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A481EFD21B5D42940051ED93 /* TextWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextWidget.swift; sourceTree = "<group>"; };
-		A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondaryViewController.swift; sourceTree = "<group>"; };
 		A48F8B151B9C5F240091D607 /* KPCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPCameraButton.h; sourceTree = "<group>"; };
 		A48F8B161B9C5F240091D607 /* KPCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPCameraButton.m; sourceTree = "<group>"; };
 		A48F8B181B9C63A10091D607 /* CaptureVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureVC.swift; sourceTree = "<group>"; };
@@ -323,7 +321,6 @@
 		A4563C9D1CB4054B00DC082C /* Secondary */ = {
 			isa = PBXGroup;
 			children = (
-				A48D3B501B78DCA1007D1D79 /* SecondaryViewController.swift */,
 				A404A52F1B81CBA000B82B29 /* StoryElementVC.swift */,
 				A4FFE8761CB406BA00A25E1E /* Video VC */,
 				A4FFE8751CB406B400A25E1E /* TitleCard VC */,
@@ -698,7 +695,6 @@
 				A4664AF91B452D680095B27D /* StoryLinesTableController.swift in Sources */,
 				A44121121B96048500BBB020 /* FilmstripView.swift in Sources */,
 				A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */,
-				A48D3B511B78DCA1007D1D79 /* SecondaryViewController.swift in Sources */,
 				A4664AFB1B452D680095B27D /* ProjectTableCell.swift in Sources */,
 				A47570E31B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift in Sources */,
 				A4E94C591C67DAC4007D4478 /* SCSampleBufferHolder.m in Sources */,

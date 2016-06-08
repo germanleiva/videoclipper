@@ -29,9 +29,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.selectedVideo = nil
 		}
 	}
-	
-	var owner:SecondaryViewController!
-	
+    
 	var currentTitleCard:TitleCard? = nil
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
@@ -163,7 +161,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		if segue.identifier == "modalTitleCardVC" {
 			let modalTitleCardVC = segue.destinationViewController as! ModalTitleCardVC
 			modalTitleCardVC.element = self.currentTitleCard
-			modalTitleCardVC.delegate = self.owner
 		}
 	}
 	

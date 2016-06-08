@@ -163,7 +163,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		let captureController = self.storyboard!.instantiateViewControllerWithIdentifier("captureController") as! CaptureVC
 		captureController.delegate = self
 		captureController.currentLine = self.currentStoryLine()
-		captureController.owner = (self.delegate as! ProjectVC).secondaryController
         
         self.presentViewController(captureController, animated: true) { () -> Void in
             captureController.scrollCollectionViewToEnd()

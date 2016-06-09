@@ -422,7 +422,10 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
 			self.delegate?.storyElementVC(self, elementDeleted: self.video!)
 
-			alertController.dismissViewControllerAnimated(true, completion: nil)
+//			alertController.dismissViewControllerAnimated(true, completion: nil)
+            alertController.dismissViewControllerAnimated(true, completion: {
+                self.navigationController?.popViewControllerAnimated(true)
+            })
 		}))
 		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
 			alertController.dismissViewControllerAnimated(true, completion: nil)

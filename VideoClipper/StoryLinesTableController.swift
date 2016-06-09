@@ -29,7 +29,7 @@ protocol StoryLinesTableControllerDelegate {
     func storyLinesTableController(didChangeLinePath lineIndexPath: NSIndexPath?,line:StoryLine?)
 }
 
-class StoryLinesTableController: UITableViewController, NSFetchedResultsControllerDelegate, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
+class StoryLinesTableController: UITableViewController, NSFetchedResultsControllerDelegate, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate, StoryElementVCDelegate {
 	var project:Project? = nil
     var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0) {
         didSet {
@@ -102,12 +102,19 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		self.selectRowAtIndexPath(indexPath, animated: false)
 	}
 	
+    func linePathForStoryLine(storyLine:StoryLine) -> NSIndexPath? {
+        if let section = self.project!.storyLines?.indexOfObject(storyLine) {
+            return NSIndexPath(forRow: 0, inSection: section)
+        }
+        return nil
+    }
+    
     func updateElement(element:StoryElement,isNew:Bool = false) {
 		let storyLine = element.storyLine!
-        if let section = self.project!.storyLines?.indexOfObject(storyLine) {
-            let indexPath = NSIndexPath(forRow: 0, inSection: section)
+    
+        if let indexPath = self.linePathForStoryLine(storyLine) {
             if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
-                let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element) , inSection: 0)
+                let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
                 if isNew {
                     cell.collectionView!.reloadSections(NSIndexSet(index: 0))
                 } else {
@@ -597,11 +604,13 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
             
                     if element.isVideo() {
                         let videoController = self.storyboard?.instantiateViewControllerWithIdentifier("videoController") as! VideoVC
+                        videoController.delegate = self
                         videoController.element = element
                         self.navigationController?.pushViewController(videoController, animated: true)
                     } else {
                         if element.isTitleCard() {
                             let titleCardController = self.storyboard?.instantiateViewControllerWithIdentifier("titleCardController") as! TitleCardVC
+                            titleCardController.delegate = self
                             titleCardController.element = element
                             self.navigationController?.pushViewController(titleCardController, animated: true)
                         } else {
@@ -1007,4 +1016,35 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			print("This shouldn't happen")
 		}
 	}
+    
+    // MARK: - StoryElementVCDelegate
+    
+    func storyElementVC(controller: StoryElementVC, elementChanged element: StoryElement) {
+        self.updateElement(element)
+    }
+    
+    func storyElementVC(controller: StoryElementVC, elementDeleted element: StoryElement) {
+        if let line = element.storyLine {
+            let elements = line.mutableOrderedSetValueForKey("elements")
+            let itemIndex = elements.indexOfObject(element)
+            elements.removeObject(element)
+            
+            do {
+                try self.context.save()
+                
+                if let indexPath = self.linePathForStoryLine(line) {
+                    if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
+                        cell.collectionView.performBatchUpdates({ 
+                            cell.collectionView!.deleteItemsAtIndexPaths([NSIndexPath(forItem:itemIndex, inSection:0)])
+                        }, completion: nil)
+                    }
+                }
+            } catch let error as NSError {
+                print("Couldn't delete \(error)")
+            }
+
+            
+            
+        }
+    }
 }

@@ -321,15 +321,15 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				let clonedProject = projectToClone.clone() as! Project
 				clonedProject.name = "Cloned \(clonedProject.name!)"
                 
-				for eachLine in clonedProject.storyLines! {
-					for eachElement in (eachLine as! StoryLine).elements! {
-						if (eachElement as! StoryElement).isVideo() {
-                            (eachElement as! VideoClip).loadAsset(nil)
-						} else {
-							(eachElement as! TitleCard).loadAsset(nil)
-						}
-					}
-				}
+//				for eachLine in clonedProject.storyLines! {
+//					for eachElement in (eachLine as! StoryLine).elements! {
+//						if (eachElement as! StoryElement).isVideo() {
+//                            (eachElement as! VideoClip).loadAsset(nil)
+//						} else {
+//							(eachElement as! TitleCard).loadAsset(nil)
+//						}
+//					}
+//				}
 				
 				do {
 					try self.context.save()

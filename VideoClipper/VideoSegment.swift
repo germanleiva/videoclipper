@@ -49,23 +49,28 @@ class VideoSegment: NSManagedObject {
         super.didSave()
         
         if self.deleted {
-            let request = NSFetchRequest(entityName: self.entity.name!)
-            request.predicate = NSPredicate(format: "(self != %@) AND (self.fileName == %@)", argumentArray: [self.objectID,self.fileName!])
-            do {
-                if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
-                    if otherVideoSegmentsUsingSameFile.isEmpty {
-                        self.deleteVideoSegmentFile()
-                    }
-                }                
-            } catch {
-                print("Couldn't run query to verify if the video segment file should be deleted")
-            }
+            self.deleteVideoSegmentFile()
         }
     }
     
     func deleteVideoSegmentFile() {
+        let request = NSFetchRequest(entityName: self.entity.name!)
+        request.predicate = NSPredicate(format: "(self != %@) AND (self.fileName == %@)", argumentArray: [self.objectID,self.fileName!])
+        do {
+            if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
+                if otherVideoSegmentsUsingSameFile.isEmpty {
+                    self.unsafeDeleteVideoSegmentFile()
+                }
+            }
+        } catch {
+            print("Couldn't run query to verify if the video segment file should be deleted")
+        }
+    }
+    
+    func unsafeDeleteVideoSegmentFile() {
         do {
             try NSFileManager().removeItemAtURL(self.path!)
+            self.fileName = nil
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
         }

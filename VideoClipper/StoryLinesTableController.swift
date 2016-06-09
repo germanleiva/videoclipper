@@ -145,7 +145,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                 
             }
             try self.context.save()
-            newVideo!.loadAsset(nil)
 
             self.insertVideoElementInCurrentLine(newVideo)
         } catch {

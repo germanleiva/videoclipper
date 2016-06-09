@@ -128,6 +128,8 @@ class VideoClip: StoryElement {
                     
                     self.asset = mutableComposition
                     
+                    self.exportAssetToFile(self.asset!)
+                    
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(error:nil)
                     })
@@ -140,6 +142,64 @@ class VideoClip: StoryElement {
             }
         }
 	}
+    
+    func writePath() -> NSURL {
+        let segmentObjectId = self.objectID.URIRepresentation().absoluteString
+        let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
+        //        return entityFolderPath + "/" + fileName
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
+    }
+    
+    func exportAssetToFile(videoAsset:AVAsset) {
+        let fileManager = NSFileManager()
+        if let exportSession = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality) {
+
+        let path = self.writePath()
+        
+        if fileManager.fileExistsAtPath(path.absoluteString) {
+            do {
+                try fileManager.removeItemAtURL(path)
+            } catch let error as NSError {
+                print("Couldn't delete existing video path: \(error)")
+            }
+        }
+        
+        //Set the output url
+        exportSession.outputURL = path
+            
+        //Set the output file type
+        exportSession.outputFileType = AVFileTypeQuickTimeMovie
+        
+        exportSession.metadata = nil;
+            
+            //Exports!
+            exportSession.exportAsynchronouslyWithCompletionHandler({ 
+                switch exportSession.status {
+                case .Completed:
+                    print("VideoSegments merged in file - Export completed at \(exportSession.outputURL)")
+                    self.deleteSegments()
+                    self.path = path.absoluteString
+                    
+                    break
+                case .Failed:
+                    print("VideoSegments merge failed: \(exportSession.error?.localizedDescription)")
+                    break
+                default:
+                    print("VideoSegments merge cancelled or something: \(exportSession.error?.localizedDescription)")
+                    break
+                }
+            })
+        }
+    }
+    
+    func deleteSegments() {
+        //After exporting everything to a file maybe I should delete the segments
+        for each in self.segments! {
+            let eachSegment = each as! VideoSegment
+            eachSegment.deleteVideoSegmentFile()
+            self.mutableOrderedSetValueForKey("segments").removeAllObjects()
+        }
+    }
 	
 //	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
 //		super.init(entity: entity, insertIntoManagedObjectContext: context)

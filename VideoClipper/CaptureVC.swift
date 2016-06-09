@@ -851,8 +851,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
         videoSegmentCell.loader.startAnimating()
         
-
-        
 //		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
 //			if eachTagLine != videoSegmentCell.thumbnail! {
 //				eachTagLine.removeFromSuperview()

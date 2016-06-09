@@ -404,10 +404,10 @@
 			children = (
 				A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */,
 				A4BC7F341B6A1BE400D86E99 /* Project.swift */,
-				A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */,
-				A4A5F7A61B453C3F0090E98A /* StoryElement.swift */,
 				A42BDD541B67EF97003CA999 /* StoryLine+CoreDataProperties.swift */,
 				A42BDD551B67EF97003CA999 /* StoryLine.swift */,
+				A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */,
+				A4A5F7A61B453C3F0090E98A /* StoryElement.swift */,
 				A47570E51B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift */,
 				A44094E71B5CE6250061AF97 /* TitleCard.swift */,
 				A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */,

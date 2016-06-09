@@ -25,15 +25,19 @@ struct Bundle {
 }
 var bundle : Bundle?
 
-protocol PrimaryControllerDelegate {
-	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?, line:StoryLine?, lineIndexPath: NSIndexPath?)
+protocol StoryLinesTableControllerDelegate {
+    func storyLinesTableController(didChangeLinePath lineIndexPath: NSIndexPath?,line:StoryLine?)
 }
 
 class StoryLinesTableController: UITableViewController, NSFetchedResultsControllerDelegate, StoryLineCellDelegate, CaptureVCDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, /*DELETE*/ UIImagePickerControllerDelegate {
 	var project:Project? = nil
-	var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+    var selectedLinePath:NSIndexPath = NSIndexPath(forRow: 0, inSection: 0) {
+        didSet {
+            self.delegate?.storyLinesTableController(didChangeLinePath: self.selectedLinePath, line:self.currentStoryLine())
+        }
+    }
 	
-	var delegate:PrimaryControllerDelegate? = nil
+	var delegate:StoryLinesTableControllerDelegate? = nil
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 		
@@ -239,14 +243,14 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
 		storyLineCell.collectionView.reloadData()
 		storyLineCell.collectionView.scrollToItemAtIndexPath(newVideoCellIndexPath, atScrollPosition: UICollectionViewScrollPosition.Right, animated: false)
-
-        self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: self.currentStoryLine(), lineIndexPath: self.selectedLinePath)
     }
 	
 	func hideTappedOnSelectedLine(sender:AnyObject?) {
 		let line = self.project!.storyLines![self.selectedLinePath.section] as! StoryLine
 		line.shouldHide! = NSNumber(bool: !line.shouldHide!.boolValue)
-		self.tableView.reloadData()
+		self.tableView.beginUpdates()
+        self.tableView.reloadSections(NSIndexSet(index: self.selectedLinePath.section), withRowAnimation: UITableViewRowAnimation.None)
+        self.tableView.endUpdates()
 		self.tableView.selectRowAtIndexPath(self.selectedLinePath, animated: false, scrollPosition: UITableViewScrollPosition.None)
 		
 		do {
@@ -263,7 +267,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		self.tableView.insertSections(NSIndexSet(index: section!), withRowAnimation: UITableViewRowAnimation.Bottom)
 		self.tableView.endUpdates()
 		self.selectRowAtIndexPath(indexPath,animated: true)
-		self.delegate?.primaryController(self, willSelectElement: nil, itemIndexPath: nil, line: addedObject, lineIndexPath: indexPath)
 		self.tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
 	}
 	
@@ -583,12 +586,30 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		let lineIndexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
 		let selectedItemPath = NSIndexPath(forItem: indexPath.item, inSection: 0)
 
+        let isSelectingTheSameLine = self.selectedLinePath == lineIndexPath
+        
 		if !self.tableView.editing {
 			self.selectRowAtIndexPath(lineIndexPath, animated: false)
 
-			let line = self.project!.storyLines![lineIndexPath.section] as! StoryLine
-			let element = line.elements![selectedItemPath.item] as? StoryElement
-			self.delegate?.primaryController(self, willSelectElement: element, itemIndexPath: selectedItemPath, line: line, lineIndexPath: lineIndexPath)
+            if isSelectingTheSameLine {
+                let line = self.project!.storyLines![lineIndexPath.section] as! StoryLine
+                if let element = line.elements![selectedItemPath.item] as? StoryElement {
+            
+                    if element.isVideo() {
+                        let videoController = self.storyboard?.instantiateViewControllerWithIdentifier("videoController") as! VideoVC
+                        videoController.element = element
+                        self.navigationController?.pushViewController(videoController, animated: true)
+                    } else {
+                        if element.isTitleCard() {
+                            let titleCardController = self.storyboard?.instantiateViewControllerWithIdentifier("titleCardController") as! TitleCardVC
+                            titleCardController.element = element
+                            self.navigationController?.pushViewController(titleCardController, animated: true)
+                        } else {
+                            print("Who are you!?")
+                        }
+                    }
+                }
+            }
 		}
 	}
 	

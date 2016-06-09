@@ -14,7 +14,7 @@ import Photos
 import MobileCoreServices
 import Crashlytics
 
-class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegate, ELCImagePickerControllerDelegate {
+class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControllerDelegate, ELCImagePickerControllerDelegate {
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
 
@@ -66,12 +66,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		self.verticalToolbar.layer.borderColor = UIColor.blackColor().CGColor
 		self.verticalToolbar.backgroundColor = Globals.globalTint
 		
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnBackgroundOfPrimaryView))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnBackgroundOfTableView))
 		self.tableController!.tableView.backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: self.tableController!.tableView.frame.size.width, height: self.tableController!.tableView.frame.size.height))
 		self.tableController!.tableView.backgroundView?.backgroundColor = UIColor.clearColor()
 		self.tableController!.tableView.backgroundView!.addGestureRecognizer(tapGesture)
 		
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapOnPrimaryView))
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapOnTableView))
 		doubleTap.numberOfTapsRequired = 2
 //		doubleTap.delegate = self
 		self.tableController!.view.addGestureRecognizer(doubleTap)
@@ -88,13 +88,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 //		return false
 //	}
 	
-	func doubleTapOnPrimaryView(recognizer:UITapGestureRecognizer) {
+	func doubleTapOnTableView(recognizer:UITapGestureRecognizer) {
         if self.titleTextField.isFirstResponder() {
             self.titleTextField.resignFirstResponder()
         }
 	}
 	
-	func tapOnBackgroundOfPrimaryView(recognizer:UITapGestureRecognizer) {
+	func tapOnBackgroundOfTableView(recognizer:UITapGestureRecognizer) {
 		if self.titleTextField.isFirstResponder() {
 			self.titleTextField.resignFirstResponder()
 		}
@@ -129,7 +129,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
     }
 
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-		if segue.identifier == "primaryContainerSegue" {
+		if segue.identifier == "tableContainerSegue" {
 			self.tableController = segue.destinationViewController as? StoryLinesTableController
 			self.tableController!.project = self.project
 			self.tableController!.delegate = self
@@ -429,15 +429,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, PrimaryControllerDelegat
 		textField.resignFirstResponder()
 		return true
 	}
-	
-	func primaryController(primaryController: StoryLinesTableController, willSelectElement element: StoryElement?, itemIndexPath: NSIndexPath?,line:StoryLine?, lineIndexPath: NSIndexPath?) {
-		
-		if itemIndexPath != nil /*&& itemIndexPath != self.currentItemIndexPath*/ {
-			self.tableController!.scrollToElement(itemIndexPath!,inLineIndex:lineIndexPath!)
-		}
-
-		self.updateHideLineButton(line)
-	}
+    
+    func storyLinesTableController(didChangeLinePath lineIndexPath: NSIndexPath?,line:StoryLine?) {
+        self.updateHideLineButton(line)
+    }
     
     // MARK: - Story Line Vertical Toolbar
 

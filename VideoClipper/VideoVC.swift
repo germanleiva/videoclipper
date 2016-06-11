@@ -297,7 +297,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         self.realPlayerView.frame = self.playerView.frame
         self.view.addSubview(self.realPlayerView)
 
-        self.video?.loadAsset({ (asset:AVAsset?,error:NSError?) -> Void in
+        self.video?.loadAsset({ (asset,_,error) -> Void in
             if let anError = error {
                 print("Couldn't load asset for VideoPlayer: \(anError.localizedDescription)")
             }

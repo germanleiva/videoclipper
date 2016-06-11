@@ -153,7 +153,10 @@ typedef NS_ENUM( NSInteger, RecordingStatus )
 
 - (void)setCompressionSettings
 {
-    _videoCompressionSettings = [_videoDataOutput recommendedVideoSettingsForAssetWriterWithOutputFileType:AVFileTypeQuickTimeMovie];
+    NSMutableDictionary *recommendedVideoSettings = [NSMutableDictionary dictionaryWithDictionary:[_videoDataOutput recommendedVideoSettingsForAssetWriterWithOutputFileType:AVFileTypeQuickTimeMovie]];
+    recommendedVideoSettings[AVVideoWidthKey] = @1280;
+    recommendedVideoSettings[AVVideoHeightKey] = @720;
+    _videoCompressionSettings = recommendedVideoSettings;
     _audioCompressionSettings = [_audioDataOutput recommendedAudioSettingsForAssetWriterWithOutputFileType:AVFileTypeQuickTimeMovie];
 }
 

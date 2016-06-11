@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, WriterStatus){
     if (self) {
         _writingQueue = dispatch_queue_create( "com.example.assetwriter.writing", DISPATCH_QUEUE_SERIAL );
 //        _videoTrackTransform = CGAffineTransformMakeRotation(M_PI_2); //portrait orientation
-//        _videoTrackTransform = CGAffineTransformMakeRotation(0 * M_PI); //landscape right
+        _videoTrackTransform = CGAffineTransformMakeRotation(0 * M_PI); //landscape right
         _URL = URL;
     }
     return self;

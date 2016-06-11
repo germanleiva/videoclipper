@@ -202,7 +202,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.progressBar!.detailsLabelText = "Tap to cancel"
             self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.cancelExport)))
 
-            self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPresetHighestQuality)
+            self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPreset1280x720)
             
             self.exportSession!.videoComposition = videoComposition
             

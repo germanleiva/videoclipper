@@ -128,7 +128,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
     
     func createNewVideoForAssetURL(assetURL:NSURL,tags:[TagMark]=[]) {
         let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-        newVideo!.path = assetURL.absoluteString
+//        newVideo?.exportAssetToFile(AVAsset(URL:assetURL))
         
         let videoTags = newVideo!.mutableOrderedSetValueForKey("tags")
         

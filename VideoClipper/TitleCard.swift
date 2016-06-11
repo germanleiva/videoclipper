@@ -58,11 +58,13 @@ class TitleCard: StoryElement {
             if self.image == nil {
                 self.image = UIImage(data:imageData)
             }
-            completionHandler?(image: self.image,error: nil)
+        } else {
+            self.image = UIImage(named: "defaultTitleCard")
         }
+        completionHandler?(image: self.image,error: nil)
     }
     
-    override func loadAsset(completionHandler:((asset:AVAsset?,error:NSError?) -> Void)?){
+    override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
 //        if let _ = self.asset {
 //            dispatch_async(dispatch_get_main_queue(), { () -> Void in
 //                completionHandler?(error:nil)
@@ -79,7 +81,7 @@ class TitleCard: StoryElement {
                 let asset = AVAsset(URL: self.videoPath!)
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(asset:asset,error:nil)
+                        completionHandler?(asset:asset,composition:nil,error:nil)
                     })
                 })
             }
@@ -96,8 +98,9 @@ class TitleCard: StoryElement {
     
     func writeVideoFromSnapshot(handler:(() -> Void)?) {
         let path = self.potentialVideoPath()
-
-        VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: UIImage(data:self.snapshot!)) { () -> Void in
+        let image = UIImage(data:self.snapshot!)
+        
+        VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: image) { () -> Void in
             self.videoFileName = path.lastPathComponent
             
             self.managedObjectContext?.performBlock({ () -> Void in

@@ -13,9 +13,9 @@ import Foundation
 import CoreData
 
 extension VideoClip {
-
+    
     @NSManaged var endPoint: NSNumber?
-    @NSManaged var path: String?
+    @NSManaged var fileName: String?
     @NSManaged var startPoint: NSNumber?
     @NSManaged var durationValue: NSNumber?
     @NSManaged var durationTimescale: NSNumber?
@@ -32,5 +32,5 @@ extension VideoClip {
     @NSManaged var tags: NSOrderedSet?
     @NSManaged var thumbnailImages: NSOrderedSet?
     @NSManaged var segments: NSOrderedSet?
-
+    
 }

@@ -352,6 +352,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     @IBAction func donePressed(sender: AnyObject) {
         self.dismissController()
+        self.currentLine!.consolidateVideos()
     }
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
@@ -838,7 +839,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let video = self.currentLine!.videos()[indexPath.item]
 
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
-            video.loadAsset({ (error) -> Void in
+            video.loadAsset({ (asset,composition,error) -> Void in
                 videoSegmentCell.loader.stopAnimating()
 
                 if let image = video.thumbnailImage {
@@ -984,15 +985,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		
 		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
         
+        titleCardCell.loader.startAnimating()
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
             let titleCard = line.firstTitleCard()!
-            titleCard.loadAsset({ (error) -> Void in
+            titleCard.loadThumbnail({ (image, error) in
                 titleCardCell.loader.stopAnimating()
-                let anImage = titleCard.image
-                titleCardCell.titleCardImage.image = anImage
+                titleCardCell.titleCardImage.image = image
             })
         }
-        titleCardCell.loader.startAnimating()
 		
 		return titleCardCell
 	}

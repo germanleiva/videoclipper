@@ -26,7 +26,11 @@ class VideoSegment: NSManagedObject {
         }
     }
     
-    var _asset:AVAsset?
+    var _asset:AVAsset? {
+        didSet {
+            print("TAROLA")
+        }
+    }
     var asset:AVAsset? {
         get {
             if _asset == nil {

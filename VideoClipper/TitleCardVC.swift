@@ -434,8 +434,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			UIGraphicsEndImageContext()
 			
 			/* Render the screen shot at custom resolution */
-			let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
-	//		let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
+//			let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
+			let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
 
 			UIGraphicsBeginImageContextWithOptions(cropRect.size, weakSelf.canvas!.opaque, 1)
 			screenshot.drawInRect(cropRect)

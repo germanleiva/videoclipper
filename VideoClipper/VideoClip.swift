@@ -57,7 +57,7 @@ class VideoClip: StoryElement {
     func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
         if self.thumbnailImage == nil {
             //There is no data
-            self.loadAsset({ (asset, error) in
+            self.loadAsset({ (asset, _, error) in
                 if error != nil {
                     completionHandler?(image: nil,error: error)
                 } else {
@@ -94,7 +94,7 @@ class VideoClip: StoryElement {
         }
     }
     
-    override func loadAsset(completionHandler:((asset:AVAsset?,error:NSError?) -> Void)?){
+    override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
 //        if let _ = self.asset {
 //            dispatch_async(dispatch_get_main_queue(), { () -> Void in
 //                completionHandler?(error: nil)
@@ -102,18 +102,18 @@ class VideoClip: StoryElement {
 //            return
 //        }
         
-		if let path = self.path {
-			let asset = AVURLAsset(URL: NSURL(fileURLWithPath: path), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+		if let fileName = self.fileName {
+			let asset = AVURLAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(fileName), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
 			asset.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?(asset:asset,error: nil)
+                    completionHandler?(asset:asset,composition:nil,error: nil)
                 })
 			}
 		} else {
-	
-            let assetLoadingGroup = dispatch_group_create();
             
             if self.segments != nil && self.segments?.count > 0 {
+                
+                let assetLoadingGroup = dispatch_group_create();
                 
                 let mutableComposition = AVMutableComposition()
                 let videoCompositionTrack = mutableComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
@@ -122,7 +122,7 @@ class VideoClip: StoryElement {
                 var size = CGSizeZero
                 var time = kCMTimeZero
                 
-                let allAssets = self.segments!.map({ (each) -> AVAsset in
+                var allAssets = self.segments!.map({ (each) -> AVAsset in
                     let eachSegment = each as! VideoSegment
                     let asset = eachSegment.asset!
                     
@@ -139,6 +139,23 @@ class VideoClip: StoryElement {
                     return asset
                 })
                 
+                if let aFileName = self.fileName {
+                    //I have a file created so that should be my first asset
+                    let videoClipAsset = AVAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(aFileName))
+                    
+                    dispatch_group_enter(assetLoadingGroup);
+                    
+                    videoClipAsset.loadValuesAsynchronouslyForKeys(["tracks"], completionHandler: { () -> Void in
+                        var error:NSError?
+                        if videoClipAsset.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                            print("tracks not loaded: \(error.debugDescription)")
+                        }
+                        allAssets.append(videoClipAsset)
+                        
+                        dispatch_group_leave(assetLoadingGroup);
+                    })
+                }
+                
                 dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
                     for asset in allAssets {
                         let assetTrack = asset.tracksWithMediaType(AVMediaTypeVideo).first
@@ -148,13 +165,13 @@ class VideoClip: StoryElement {
                             try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
 //                            videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                         } catch let error as NSError {
-                            completionHandler?(asset:nil,error: error)
+                            completionHandler?(asset:nil,composition:nil,error: error)
                         }
                         
                         do {
                             try audioCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: audioAssetTrack!, atTime: time)
                         } catch let error as NSError {
-                            completionHandler?(asset:nil,error: error)
+                            completionHandler?(asset:nil,composition:nil,error: error)
                         }
                         
                         let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
@@ -181,13 +198,13 @@ class VideoClip: StoryElement {
                     mutableVideoComposition.renderSize = size;
                     
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(asset:mutableComposition,error:nil)
+                        completionHandler?(asset:mutableComposition,composition:mutableVideoComposition,error:nil)
                     })
                 })
             } else {
 //                print("The VideoClip doesn't have segments")
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?(asset:nil,error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no segments", comment: "")]))
+                    completionHandler?(asset:nil,composition:nil, error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no segments", comment: "")]))
                 })
             }
         }
@@ -195,40 +212,48 @@ class VideoClip: StoryElement {
     
     func writePath() -> NSURL {
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
+        let firstReplacement = segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
+        let videoName = NSString(format:"%@.mov", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
         //        return entityFolderPath + "/" + fileName
         return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
     }
     
-    func exportAssetToFile(videoAsset:AVAsset) {
+    func exportAssetToFile(videoAsset:AVAsset,composition:AVVideoComposition) {
         let fileManager = NSFileManager()
-        if let exportSession = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality) {
+        if let exportSession = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPreset1280x720) {
 
-        let path = self.writePath()
-        
-        if fileManager.fileExistsAtPath(path.absoluteString) {
-            do {
-                try fileManager.removeItemAtURL(path)
-            } catch let error as NSError {
-                print("Couldn't delete existing video path: \(error)")
-            }
-        }
-        
-        //Set the output url
-        exportSession.outputURL = path
+            let path = self.writePath()
             
-        //Set the output file type
-        exportSession.outputFileType = AVFileTypeQuickTimeMovie
-        
-        exportSession.metadata = nil;
+            if fileManager.fileExistsAtPath(path.absoluteString) {
+                do {
+                    try fileManager.removeItemAtURL(path)
+                } catch let error as NSError {
+                    print("Couldn't delete existing video path: \(error)")
+                }
+            }
+            
+            //Set the output url
+            exportSession.outputURL = path
+                
+            //Set the output file type
+            exportSession.outputFileType = AVFileTypeQuickTimeMovie
+            
+            exportSession.videoComposition = composition
             
             //Exports!
-            exportSession.exportAsynchronouslyWithCompletionHandler({ 
+            exportSession.exportAsynchronouslyWithCompletionHandler({
                 switch exportSession.status {
                 case .Completed:
                     print("VideoSegments merged in file - Export completed at \(exportSession.outputURL)")
                     self.deleteSegments()
-                    self.path = path.absoluteString
+                    self.fileName = path.lastPathComponent
+                    self.duration = videoAsset.duration
+                    
+                    do {
+                        try self.managedObjectContext!.save()
+                    } catch let error as NSError {
+                        print("Couldn't save video object model after internal export: \(error)")
+                    }
                     
                     break
                 case .Failed:
@@ -279,8 +304,35 @@ class VideoClip: StoryElement {
         }
     }
     
-    override func awakeFromFetch() {
-        super.awakeFromFetch()
-//        self.loadAsset()
+    func consolidate(){
+        if self.segments!.count == 1 {
+            let onlySegment = self.segments!.firstObject as! VideoSegment
+            let originPath = onlySegment.path
+            let destinationPath = self.writePath()
+            
+            do {
+                try NSFileManager().moveItemAtURL(originPath!, toURL: destinationPath)
+                self.fileName = self.writePath().lastPathComponent
+                
+                self.mutableOrderedSetValueForKey("segments").removeObject(onlySegment)
+                try self.managedObjectContext!.save()
+            } catch let error as NSError {
+                print("Couldn't copy segment file to video clip file: \(error.localizedDescription)")
+
+            }
+            
+        } else {
+            if self.segments!.count > 0 {
+                self.loadAsset({ (asset, composition, error) in
+                    if error == nil {
+//                        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+                            self.exportAssetToFile(asset!,composition: composition!)
+//                        }
+                    } else {
+                        print("ERROR LOCO: \(error)")
+                    }
+                })
+            }
+        }
     }
 }

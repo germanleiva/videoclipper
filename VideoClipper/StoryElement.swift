@@ -25,7 +25,7 @@ class StoryElement: NSManagedObject {
 		fatalError("Should be implemented by subclass")
 	}
     
-    func loadAsset(completionHandler:((asset:AVAsset?,error:NSError?) -> Void)?){
+    func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
         fatalError("Should be implemented by subclass")
     }
     

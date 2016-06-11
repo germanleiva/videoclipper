@@ -89,7 +89,7 @@ class StoryLine: NSManagedObject {
 //                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
 //            }
             
-            eachElement.loadAsset({ (asset,error) -> Void in
+            eachElement.loadAsset({ (asset,_,error) -> Void in
                 var error:NSError?
                 if asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
                     print("tracks not Loaded: \(error.debugDescription)")
@@ -199,6 +199,12 @@ class StoryLine: NSManagedObject {
     func freeAssets() {
         for eachElement in self.elements! {
 //            (eachElement as! StoryElement).asset = nil
+        }
+    }
+    
+    func consolidateVideos() {
+        for eachVideo in self.videos() {
+            eachVideo.consolidate()
         }
     }
 }

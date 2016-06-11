@@ -55,42 +55,18 @@ class VideoClip: StoryElement {
 	}
 	
     override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
-        if self.thumbnailImage == nil {
-            //There is no data
-            self.loadAsset({ (asset, _, error) in
-                if error != nil {
-                    completionHandler?(image: nil,error: error)
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+            if self.thumbnailImage == nil {
+                if let data = self.thumbnailData {
+                    self.thumbnailImage = UIImage(data: data)
                 } else {
-                    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
-
-                        let generator = AVAssetImageGenerator(asset: asset!)
-    //                    generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
-                        generator.maximumSize = CGSize(width: 182, height: 103)
-                        generator.appliesPreferredTrackTransform = true
-                        
-                        do {
-                            let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
-                            let image = UIImage(CGImage: imageRef)
-                            //				CGImageRelease(imageRef)
-                            let imageData = NSData(data: UIImagePNGRepresentation(image)!)
-                            self.thumbnailData = imageData
-                            self.thumbnailImage = image
-                            
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                completionHandler?(image: image,error: nil)
-                            })
-                            try self.managedObjectContext!.save()
-                        } catch let error as NSError {
-                            print("Couldn't generate thumbnail for video: \(error)")
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                completionHandler?(image: nil,error: error)
-                            })
-                        }
-                    }
+                    print("There is no thumbnail data")
                 }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                completionHandler?(image: self.thumbnailImage,error: nil)
             })
-        } else {
-            completionHandler?(image: self.thumbnailImage,error: nil)
         }
     }
     
@@ -290,19 +266,6 @@ class VideoClip: StoryElement {
 		}
 		return nil
 	}
-    
-    private var _thumbnailImage:UIImage? = nil
-    override var thumbnailImage:UIImage? {
-        get {
-            if _thumbnailImage == nil && self.thumbnailData != nil {
-                _thumbnailImage = UIImage(data: self.thumbnailData!)
-            }
-            return _thumbnailImage
-        }
-        set {
-            _thumbnailImage = newValue
-        }
-    }
     
     func consolidate(){
         if self.segments!.count == 1 {

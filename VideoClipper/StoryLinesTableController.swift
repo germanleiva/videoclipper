@@ -520,7 +520,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
         storyElement.loadThumbnail { (image, error) in
             storyElementCell.loader?.stopAnimating()
-            storyElementCell.thumbnail?.image = storyElement.thumbnailImage
+            storyElementCell.thumbnail?.image = image
         }
         
 //		for eachTagLine in [UIView](videoCell.contentView.subviews) {

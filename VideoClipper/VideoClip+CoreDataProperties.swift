@@ -19,16 +19,7 @@ extension VideoClip {
     @NSManaged var startPoint: NSNumber?
     @NSManaged var durationValue: NSNumber?
     @NSManaged var durationTimescale: NSNumber?
-    @NSManaged private var thumbnail: NSData?
-    var thumbnailData:NSData? {
-        get {
-            return self.thumbnail
-        }
-        set {
-            self.thumbnail = newValue
-            self.thumbnailImage = nil
-        }
-    }
+
     @NSManaged var tags: NSOrderedSet?
     @NSManaged var thumbnailImages: NSOrderedSet?
     @NSManaged var segments: NSOrderedSet?

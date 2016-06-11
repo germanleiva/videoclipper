@@ -16,5 +16,26 @@ extension StoryElement {
 
     @NSManaged var name: String?
     @NSManaged var storyLine: StoryLine?
+    @NSManaged private var snapshot: NSData?
+    var snapshotData:NSData? {
+        get {
+            return self.snapshot
+        }
+        set {
+            self.snapshot = newValue
+            self.snapshotImage = nil
+        }
+    }
+
+    @NSManaged private var thumbnail: NSData?
+    var thumbnailData:NSData? {
+        get {
+            return self.thumbnail
+        }
+        set {
+            self.thumbnail = newValue
+            self.thumbnailImage = nil
+        }
+    }
 
 }

@@ -20,26 +20,18 @@ struct Globals {
     static var documentsDirectory = (UIApplication.sharedApplication().delegate as! AppDelegate).applicationDocumentsDirectory
 }
 
-extension UIImage
-{
-    func resizeToBoundingSquare(boundingSquareSideLength : CGFloat) -> UIImage
-    {
-        let imgScale = self.size.width > self.size.height ? boundingSquareSideLength / self.size.width : boundingSquareSideLength / self.size.height
-        let newWidth = self.size.width * imgScale
-        let newHeight = self.size.height * imgScale
-        let newSize = CGSize(width: newWidth, height: newHeight)
-        
-        UIGraphicsBeginImageContext(newSize)
-        
-        self.drawInRect(CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
-        
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-        
-        UIGraphicsEndImageContext();
-        
-        return resizedImage
+extension UIImage {
+    func resize(newSize:CGSize) -> UIImage {
+        //UIGraphicsBeginImageContext(newSize);
+        // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
+        // Pass 1.0 to force exact pixel size.
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        self.drawInRect(CGRect(x: 0,y: 0,width: newSize.width,height: newSize.height))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
     }
-    
 }
 
 @UIApplicationMain

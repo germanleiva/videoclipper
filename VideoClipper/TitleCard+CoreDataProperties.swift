@@ -16,7 +16,6 @@ extension TitleCard {
 
     @NSManaged var backgroundColor: NSObject?
     @NSManaged var duration: NSNumber?
-    @NSManaged var snapshot: NSData?
     @NSManaged var widgets: NSOrderedSet?
     @NSManaged var images: NSOrderedSet?
     @NSManaged var videoFileName:String?

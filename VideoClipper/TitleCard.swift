@@ -52,14 +52,18 @@ class TitleCard: StoryElement {
 //	}
     
     override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
-        if let imageData = self.snapshot {
-            if self.thumbnailImage == nil {
-                self.thumbnailImage = UIImage(data:imageData)
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
+            if let thumbnailImageData = self.thumbnailData {
+                if self.thumbnailImage == nil {
+                    self.thumbnailImage = UIImage(data:thumbnailImageData)
+                }
+            } else {
+                self.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
             }
-        } else {
-            self.thumbnailImage = UIImage(named: "defaultTitleCard")
-        }
-        completionHandler?(image: self.thumbnailImage,error: nil)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                completionHandler?(image: self.thumbnailImage,error: nil)
+            })
+        })
     }
     
     override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
@@ -69,12 +73,8 @@ class TitleCard: StoryElement {
 //            })
 //            return
 //        }
-        
-        if let imageData = self.snapshot {
-            if self.thumbnailImage == nil {
-                self.thumbnailImage = UIImage(data:imageData)
-            }
-            
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
+
             let createAsset = {
                 let asset = AVAsset(URL: self.videoPath!)
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
@@ -91,14 +91,21 @@ class TitleCard: StoryElement {
             } else {
                 createAsset()
             }
-        }
+        })
     }
     
     func writeVideoFromSnapshot(handler:(() -> Void)?) {
         let path = self.potentialVideoPath()
-        let image = UIImage(data:self.snapshot!)
         
-        VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: image) { () -> Void in
+        if self.snapshotImage == nil {
+            if let data = self.snapshotData {
+                self.snapshotImage = UIImage(data: data)
+            } else {
+                self.snapshotImage = UIImage(named: "defaultTitleCard")
+            }
+        }
+        
+        VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: self.snapshotImage) { () -> Void in
             self.videoFileName = path.lastPathComponent
             
             self.managedObjectContext?.performBlock({ () -> Void in

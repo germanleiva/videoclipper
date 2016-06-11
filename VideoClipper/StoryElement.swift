@@ -11,10 +11,10 @@ import CoreData
 
 @objc(StoryElement)
 class StoryElement: NSManagedObject {
-
-// Insert code here to add functionality to your managed object subclass
-    var thumbnailImage:UIImage?
-
+    
+    var snapshotImage:UIImage?
+    internal var thumbnailImage:UIImage?
+    
 	func isVideo() -> Bool {
 		return false
 	}

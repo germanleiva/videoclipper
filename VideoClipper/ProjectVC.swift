@@ -159,7 +159,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		firstTitleCard.snapshotData = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
 		
 		do {
 			try context.save()
@@ -518,7 +518,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
                                 generateImg.appliesPreferredTrackTransform = true
 
                                 do {
-                                    let refImg = try generateImg.copyCGImageAtTime(CMTimeMake(1,1), actualTime: nil)
+                                    let refImg = try generateImg.copyCGImageAtTime(asset.duration, actualTime: nil)
                                     let thumbnailImage = UIImage(CGImage: refImg)
                                     
                                     newVideo!.thumbnailData = UIImagePNGRepresentation(thumbnailImage)

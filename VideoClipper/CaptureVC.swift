@@ -517,7 +517,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         self.currentVideoSegment!.fileName = finalPath.lastPathComponent
         
-        self.selectedVideo!.thumbnailData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!)
+        self.selectedVideo!.snapshotData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!)
+        self.selectedVideo!.thumbnailData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!.resize(CGSize(width: 192, height: 103)))
     }
 	
 	//-MARK: private start/stop helper methods
@@ -838,19 +839,17 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let video = self.currentLine!.videos()[indexPath.item]
 
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
-            video.loadAsset({ (asset,composition,error) -> Void in
-                videoSegmentCell.loader.stopAnimating()
-
-                if let image = video.thumbnailImage {
-                    videoSegmentCell.thumbnail!.image = image
-                } else {
-                    //TODO WORKAROUND for empty videoClip
-                    videoSegmentCell.thumbnail.image = self.currentVideoSegment!.snapshot
-                }
-            })
-        }
         videoSegmentCell.loader.startAnimating()
+
+        video.loadThumbnail({ (image, error) in
+            if image == nil {
+                //TODO WORKAROUND for empty videoClip
+                videoSegmentCell.thumbnail.image = self.currentVideoSegment!.snapshot?.resize(CGSize(width: 192,height: 103))
+            } else {
+                videoSegmentCell.thumbnail.image = image
+            }
+            videoSegmentCell.loader.stopAnimating()
+        })
         
 //		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
 //			if eachTagLine != videoSegmentCell.thumbnail! {
@@ -1071,7 +1070,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshot = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		firstTitleCard.snapshotData = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
 		
 		do {
 			try context.save()

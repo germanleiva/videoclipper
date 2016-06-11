@@ -442,8 +442,17 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let img = UIGraphicsGetImageFromCurrentImageContext()
 			UIGraphicsEndImageContext()
 			
-			weakSelf.titleCard?.snapshot = UIImagePNGRepresentation(img)
-			
+			weakSelf.titleCard?.snapshotData = UIImagePNGRepresentation(img)
+            
+            let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
+            
+            UIGraphicsBeginImageContextWithOptions(smallCropRect.size, weakSelf.canvas!.opaque, 1)
+            screenshot.drawInRect(smallCropRect)
+            let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+			weakSelf.titleCard?.thumbnailData = UIImagePNGRepresentation(thumbnailImg)
+            
 			for eachDeactivatedWidget in deactivatedWidgets {
 				weakSelf.activateHandlers(eachDeactivatedWidget)
 			}

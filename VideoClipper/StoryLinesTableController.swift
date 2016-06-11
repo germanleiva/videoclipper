@@ -373,13 +373,13 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
 				let clonedLine = lineToClone.cloneWithCopyCache([self.project!.objectID:self.project!]) as! StoryLine
 				
-				for eachElement in clonedLine.elements! {
-					if (eachElement as! StoryElement).isVideo() {
-						(eachElement as! VideoClip).loadAsset(nil)
-					} else {
-						(eachElement as! TitleCard).loadAsset(nil)
-					}
-				}
+//				for eachElement in clonedLine.elements! {
+//					if (eachElement as! StoryElement).isVideo() {
+//						(eachElement as! VideoClip).loadAsset(nil)
+//					} else {
+//						(eachElement as! TitleCard).loadAsset(nil)
+//					}
+//				}
 				
 				let projectLines = lineToClone.project?.mutableOrderedSetValueForKey("storyLines")
 				projectLines!.addObject(clonedLine)
@@ -517,48 +517,13 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		}
 		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
 		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
-		
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
-            let loadImageBlock = {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    videoCell.loader?.stopAnimating()
-                    
-                    videoCell.thumbnail?.image = videoElement.thumbnailImage
-                })
-            }
-            
-            videoElement.loadAsset({ (error) -> Void in
-                if videoElement.thumbnailImage == nil {
-                    
-                    videoElement.loadAsset({ (error) -> Void in
-                        if error != nil {
-                            print(error?.localizedDescription)
-                        }
-                        let asset = videoElement.asset!
-                        let generator = AVAssetImageGenerator(asset: asset)
-                        generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
-                        generator.appliesPreferredTrackTransform = true
-                        
-                        do {
-                            let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
-                            let image = UIImage(CGImage: imageRef)
-                            //				CGImageRelease(imageRef)
-                            let imageData = NSData(data: UIImagePNGRepresentation(image)!)
-                            videoElement.thumbnailData = imageData
-                            videoElement.thumbnailImage = image
-                            
-                            loadImageBlock()
-                            try self.context.save()
-                        } catch {
-                            print("Couldn't generate thumbnail for video: \(error)")
-                        }
-                    })
-                } else {
-                    loadImageBlock()
-                }
-            })
-        }
+        
         videoCell.loader!.startAnimating()
+
+        videoElement.loadThumbnail { (image, error) in
+            videoCell.loader?.stopAnimating()
+            videoCell.thumbnail?.image = videoElement.thumbnailImage
+        }
         
 //		for eachTagLine in [UIView](videoCell.contentView.subviews) {
 //			if eachTagLine != videoCell.thumbnail! {

@@ -71,7 +71,10 @@ class StoryLine: NSManagedObject {
         
         let assetLoadingGroup = dispatch_group_create();
         
+        var assetDictionary:[StoryElement:AVAsset] = [:]
+        
         for each in elements {
+            
             dispatch_group_enter(assetLoadingGroup);
             
             let eachElement = each as! StoryElement
@@ -86,30 +89,30 @@ class StoryLine: NSManagedObject {
 //                compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
 //            }
             
-            eachElement.loadAsset({ (error) -> Void in
+            eachElement.loadAsset({ (asset,error) -> Void in
                 var error:NSError?
-                if eachElement.asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                if asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
                     print("tracks not Loaded: \(error.debugDescription)")
                 }
-                
+                assetDictionary[eachElement] = asset
                 dispatch_group_leave(assetLoadingGroup);
             })
         }
         
         dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
             for eachElement in elements {
-                var asset:AVAsset? = nil
+                var asset:AVAsset? = assetDictionary[eachElement as! StoryElement]
                 var startTime = kCMTimeZero
                 var assetDuration = kCMTimeZero
                 if (eachElement as! StoryElement).isVideo() {
                     let eachVideo = eachElement as! VideoClip
-                    asset = eachVideo.asset
+                    eachVideo.duration = asset!.duration
+                    
                     startTime = eachVideo.startTime
                     assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), 1000)
                     
                 } else if (eachElement as! StoryElement).isTitleCard() {
-                    let eachTitleCard = eachElement as! TitleCard
-                    asset = eachTitleCard.asset
+//                    let eachTitleCard = eachElement as! TitleCard
                     //                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
                     
                     var error:NSError?
@@ -195,7 +198,7 @@ class StoryLine: NSManagedObject {
 	
     func freeAssets() {
         for eachElement in self.elements! {
-            (eachElement as! StoryElement).asset = nil
+//            (eachElement as! StoryElement).asset = nil
         }
     }
 }

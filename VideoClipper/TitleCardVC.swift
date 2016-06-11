@@ -448,7 +448,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				weakSelf.activateHandlers(eachDeactivatedWidget)
 			}
 			
-			weakSelf.titleCard?.asset = nil
+//			weakSelf.titleCard?.asset = nil
 			
 			NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
 			

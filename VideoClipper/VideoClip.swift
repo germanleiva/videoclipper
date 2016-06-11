@@ -17,9 +17,23 @@ class VideoClip: StoryElement {
 	override func isVideo() -> Bool {
 		return true
 	}
+    
+    var _duration:CMTime = kCMTimeZero
+    var duration:CMTime {
+        get {
+            if _duration == kCMTimeZero {
+                _duration = CMTimeMake(self.durationValue!.longLongValue, self.durationTimescale!.intValue)
+            }
+            return _duration
+        }
+        set {
+            self.durationValue = NSNumber(longLong: newValue.value)
+            self.durationTimescale = NSNumber(int: newValue.timescale)
+        }
+    }
 	
 	override func realDuration() -> NSNumber {
-		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
+		let durationInSeconds = CMTimeGetSeconds(self.duration)
 		let startPercentage = Float64(self.startPoint!)
 		
 		if self.endPoint == nil {
@@ -32,7 +46,7 @@ class VideoClip: StoryElement {
 	}
 	
 	var startTime:CMTime {
-		let durationInSeconds = CMTimeGetSeconds(self.asset!.duration)
+		let durationInSeconds = CMTimeGetSeconds(self.duration)
 		//This shouldn't be necesarry anymore
 		if self.startPoint == nil {
 			self.startPoint = 0
@@ -40,19 +54,59 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-    override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
-        if let _ = self.asset {
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                completionHandler?(error: nil)
+    func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
+        if self.thumbnailImage == nil {
+            //There is no data
+            self.loadAsset({ (asset, error) in
+                if error != nil {
+                    completionHandler?(image: nil,error: error)
+                } else {
+                    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
+
+                        let generator = AVAssetImageGenerator(asset: asset!)
+    //                    generator.maximumSize = CGSize(width: videoCell.thumbnail!.frame.size.width,height: videoCell.thumbnail!.frame.size.height)
+                        generator.maximumSize = CGSize(width: 182, height: 103)
+                        generator.appliesPreferredTrackTransform = true
+                        
+                        do {
+                            let imageRef = try generator.copyCGImageAtTime(kCMTimeZero, actualTime: nil)
+                            let image = UIImage(CGImage: imageRef)
+                            //				CGImageRelease(imageRef)
+                            let imageData = NSData(data: UIImagePNGRepresentation(image)!)
+                            self.thumbnailData = imageData
+                            self.thumbnailImage = image
+                            
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                completionHandler?(image: image,error: nil)
+                            })
+                            try self.managedObjectContext!.save()
+                        } catch let error as NSError {
+                            print("Couldn't generate thumbnail for video: \(error)")
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                completionHandler?(image: nil,error: error)
+                            })
+                        }
+                    }
+                }
             })
-            return
+        } else {
+            completionHandler?(image: self.thumbnailImage,error: nil)
         }
+    }
+    
+    override func loadAsset(completionHandler:((asset:AVAsset?,error:NSError?) -> Void)?){
+//        if let _ = self.asset {
+//            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//                completionHandler?(error: nil)
+//            })
+//            return
+//        }
         
 		if let path = self.path {
-			self.asset = AVURLAsset(URL: NSURL(fileURLWithPath: path), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
-			self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
+			let asset = AVURLAsset(URL: NSURL(fileURLWithPath: path), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+			asset.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?(error: nil)
+                    completionHandler?(asset:asset,error: nil)
                 })
 			}
 		} else {
@@ -94,13 +148,13 @@ class VideoClip: StoryElement {
                             try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
 //                            videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                         } catch let error as NSError {
-                            completionHandler?(error: error)
+                            completionHandler?(asset:nil,error: error)
                         }
                         
                         do {
                             try audioCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: audioAssetTrack!, atTime: time)
                         } catch let error as NSError {
-                            completionHandler?(error: error)
+                            completionHandler?(asset:nil,error: error)
                         }
                         
                         let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
@@ -126,18 +180,14 @@ class VideoClip: StoryElement {
                     mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
                     mutableVideoComposition.renderSize = size;
                     
-                    self.asset = mutableComposition
-                    
-                    self.exportAssetToFile(self.asset!)
-                    
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(error:nil)
+                        completionHandler?(asset:mutableComposition,error:nil)
                     })
                 })
             } else {
 //                print("The VideoClip doesn't have segments")
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no segments", comment: "")]))
+                    completionHandler?(asset:nil,error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no segments", comment: "")]))
                 })
             }
         }

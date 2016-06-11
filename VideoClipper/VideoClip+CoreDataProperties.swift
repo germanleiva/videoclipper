@@ -17,6 +17,8 @@ extension VideoClip {
     @NSManaged var endPoint: NSNumber?
     @NSManaged var path: String?
     @NSManaged var startPoint: NSNumber?
+    @NSManaged var durationValue: NSNumber?
+    @NSManaged var durationTimescale: NSNumber?
     @NSManaged private var thumbnail: NSData?
     var thumbnailData:NSData? {
         get {

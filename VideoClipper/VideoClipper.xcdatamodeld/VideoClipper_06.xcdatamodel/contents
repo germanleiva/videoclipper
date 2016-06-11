@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15F34" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Automatic">
     <entity name="ImageWidget" representedClassName="ImageWidget" syncable="YES">
         <attribute name="distanceXFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
@@ -53,8 +53,6 @@
         <relationship name="widgets" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="TextWidget" inverseName="titleCard" inverseEntity="TextWidget" syncable="YES"/>
     </entity>
     <entity name="VideoClip" representedClassName="VideoClip" parentEntity="StoryElement" syncable="YES">
-        <attribute name="durationTimescale" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="durationValue" optional="YES" attributeType="Integer 64" defaultValueString="0.0" syncable="YES"/>
         <attribute name="endPoint" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="1" syncable="YES"/>
         <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="startPoint" optional="YES" attributeType="Float" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
@@ -76,7 +74,7 @@
         <element name="TextWidget" positionX="-72" positionY="360" width="128" height="165"/>
         <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
         <element name="TitleCard" positionX="54" positionY="117" width="128" height="135"/>
-        <element name="VideoClip" positionX="304" positionY="201" width="128" height="180"/>
+        <element name="VideoClip" positionX="304" positionY="201" width="128" height="150"/>
         <element name="VideoSegment" positionX="286" positionY="528" width="128" height="75"/>
     </elements>
 </model>

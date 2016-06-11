@@ -304,8 +304,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		}
 	}
 
-	func generateThumbnails(video:VideoClip,startPercentage:NSNumber,endPercentage:NSNumber) {
-		let asset = video.asset!
+    func generateThumbnails(video:VideoClip,asset:AVAsset,startPercentage:NSNumber,endPercentage:NSNumber) {
 		
 		self.startConstraint.constant = self.frame.width * CGFloat(startPercentage)
 		self.endConstraint.constant = self.frame.width * (1 - CGFloat(endPercentage))

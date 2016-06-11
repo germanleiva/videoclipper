@@ -170,6 +170,7 @@
 		A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		A4A5F7A61B453C3F0090E98A /* StoryElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryElement.swift; sourceTree = "<group>"; };
 		A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StoryElement+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4AA38601D0C07500057F8ED /* VideoClipper_06.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_06.xcdatamodel; sourceTree = "<group>"; };
 		A4AAF6A41B8B4A3C006391DE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		A4AAF6A51B8B4A3C006391DE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		A4BC7F301B6906B100D86E99 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -1031,6 +1032,7 @@
 		A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A4AA38601D0C07500057F8ED /* VideoClipper_06.xcdatamodel */,
 				A411098A1C681EA500427EB2 /* VideoClipper_05.xcdatamodel */,
 				A4F8E3AC1BB045000076A6FF /* VideoClipper_04.xcdatamodel */,
 				A41960C01BA82E8B0000487F /* VideoClipper_03.xcdatamodel */,
@@ -1038,7 +1040,7 @@
 				A466D0F71B9DACC900CB55D1 /* VideoClipper_01.xcdatamodel */,
 				A4664AC11B444BA80095B27D /* VideoClipper.xcdatamodel */,
 			);
-			currentVersion = A411098A1C681EA500427EB2 /* VideoClipper_05.xcdatamodel */;
+			currentVersion = A4AA38601D0C07500057F8ED /* VideoClipper_06.xcdatamodel */;
 			path = VideoClipper.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -53,13 +53,22 @@ class TitleCard: StoryElement {
 //		self.asset = newAsset
 //	}
     
-    override func loadAsset(completionHandler:((error:NSError?) -> Void)?){
-        if let _ = self.asset {
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                completionHandler?(error:nil)
-            })
-            return
+    func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
+        if let imageData = self.snapshot {
+            if self.image == nil {
+                self.image = UIImage(data:imageData)
+            }
+            completionHandler?(image: self.image,error: nil)
         }
+    }
+    
+    override func loadAsset(completionHandler:((asset:AVAsset?,error:NSError?) -> Void)?){
+//        if let _ = self.asset {
+//            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//                completionHandler?(error:nil)
+//            })
+//            return
+//        }
         
         if let imageData = self.snapshot {
             if self.image == nil {
@@ -67,10 +76,10 @@ class TitleCard: StoryElement {
             }
             
             let createAsset = {
-                self.asset = AVAsset(URL: self.videoPath!)
-                self.asset!.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
+                let asset = AVAsset(URL: self.videoPath!)
+                asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(error:nil)
+                        completionHandler?(asset:asset,error:nil)
                     })
                 })
             }
@@ -132,7 +141,7 @@ class TitleCard: StoryElement {
         }
     }
     
-    override func deleteAssetFile() {
+    func deleteAssetFile() {
         if let path = self.videoPath {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
                 do {
@@ -143,7 +152,7 @@ class TitleCard: StoryElement {
             }
         }
         self.videoFileName = nil
-        super.deleteAssetFile()
+//        super.deleteAssetFile()
     }
 
 }

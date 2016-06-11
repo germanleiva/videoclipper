@@ -297,14 +297,14 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         self.realPlayerView.frame = self.playerView.frame
         self.view.addSubview(self.realPlayerView)
 
-        self.video?.loadAsset({ (error:NSError?) -> Void in
+        self.video?.loadAsset({ (asset:AVAsset?,error:NSError?) -> Void in
             if let anError = error {
                 print("Couldn't load asset for VideoPlayer: \(anError.localizedDescription)")
             }
             
             let keys = ["tracks","duration"]
             
-            self.playerItem = AVPlayerItem(asset: self.video!.asset!, automaticallyLoadedAssetKeys: keys)
+            self.playerItem = AVPlayerItem(asset: asset!, automaticallyLoadedAssetKeys: keys)
             
             self.playerItem?.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: self.observerContext)
             
@@ -570,7 +570,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			}
 			try! self.context.save()
 		}
-		self.filmStripView.generateThumbnails(self.video!,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
+        self.filmStripView.generateThumbnails(self.video!,asset:self.playerItem!.asset,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
 	}
 	
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {

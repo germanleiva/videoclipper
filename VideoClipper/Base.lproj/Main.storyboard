@@ -247,18 +247,25 @@
                                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jYF-hc-TH8">
                                                                 <rect key="frame" x="0.0" y="0.0" width="182" height="103"/>
                                                             </imageView>
+                                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="hAG-Ab-Cms">
+                                                                <rect key="frame" x="73" y="33" width="37" height="37"/>
+                                                                <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                            </activityIndicatorView>
                                                         </subviews>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </view>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstItem="jYF-hc-TH8" firstAttribute="leading" secondItem="SmF-rg-v9V" secondAttribute="leading" id="POZ-vb-nRj"/>
+                                                        <constraint firstItem="hAG-Ab-Cms" firstAttribute="centerY" secondItem="jYF-hc-TH8" secondAttribute="centerY" id="TyA-Sh-mYb"/>
                                                         <constraint firstAttribute="trailing" secondItem="jYF-hc-TH8" secondAttribute="trailing" id="YQL-tA-Y6h"/>
                                                         <constraint firstItem="jYF-hc-TH8" firstAttribute="top" secondItem="SmF-rg-v9V" secondAttribute="top" id="jLZ-Do-lQz"/>
                                                         <constraint firstAttribute="bottom" secondItem="jYF-hc-TH8" secondAttribute="bottom" id="kDG-2q-bVL"/>
+                                                        <constraint firstItem="hAG-Ab-Cms" firstAttribute="centerX" secondItem="jYF-hc-TH8" secondAttribute="centerX" id="kEf-K5-7qB"/>
                                                     </constraints>
                                                     <size key="customSize" width="182" height="103"/>
                                                     <connections>
+                                                        <outlet property="loader" destination="hAG-Ab-Cms" id="lIT-dK-z85"/>
                                                         <outlet property="thumbnail" destination="jYF-hc-TH8" id="5Jx-hh-Chx"/>
                                                     </connections>
                                                 </collectionViewCell>

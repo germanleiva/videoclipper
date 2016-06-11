@@ -54,7 +54,7 @@ class VideoClip: StoryElement {
 		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
 	}
 	
-    func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
+    override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
         if self.thumbnailImage == nil {
             //There is no data
             self.loadAsset({ (asset, _, error) in
@@ -292,7 +292,7 @@ class VideoClip: StoryElement {
 	}
     
     private var _thumbnailImage:UIImage? = nil
-    var thumbnailImage:UIImage? {
+    override var thumbnailImage:UIImage? {
         get {
             if _thumbnailImage == nil && self.thumbnailData != nil {
                 _thumbnailImage = UIImage(data: self.thumbnailData!)

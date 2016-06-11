@@ -13,7 +13,7 @@ import Crashlytics
 class ProjectsVC: UIViewController {
 	var projectsTableController:ProjectsTableController? = nil
 	
-	@IBOutlet var addProjectButton: UIButton!
+	@IBOutlet weak var addProjectButton: UIButton!
 	
     override func viewDidLoad() {
         super.viewDidLoad()

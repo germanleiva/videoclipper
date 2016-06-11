@@ -85,9 +85,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 
 	var editingTextView:UITextView? = nil
 	
-	@IBOutlet var deleteButton: UIButton!
-	@IBOutlet var fontSizeButton: UIButton!
-	@IBOutlet var saveButton: UIButton!
+	@IBOutlet weak var deleteButton: UIButton!
+	@IBOutlet weak var fontSizeButton: UIButton!
+	@IBOutlet weak var saveButton: UIButton!
 	
 	var titleCard: TitleCard? {
 		return self.element as? TitleCard
@@ -836,7 +836,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 
 	//- MARK: Color picking
-	@IBOutlet var colorButton: UIButton!
+	@IBOutlet weak var colorButton: UIButton!
 	
 	// Generate popover on button press
 	@IBAction func colorButtonPressed(sender: UIButton?) {

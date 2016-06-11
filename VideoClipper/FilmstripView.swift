@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-protocol FilmstripViewDelegate {
+protocol FilmstripViewDelegate:class {
 	func filmstrip(filmstripView:FilmstripView,tappedOnTime time:NSTimeInterval)
 	func filmstrip(filmstripView:FilmstripView,didStartScrubbing percentage:Float)
 	func filmstrip(filmstripView:FilmstripView,didChangeScrubbing percentage:Float)
@@ -84,7 +84,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	
     }
     */
-	var delegate:FilmstripViewDelegate? = nil /*{
+	weak var delegate:FilmstripViewDelegate? = nil /*{
 		willSet(aDelegate) {
 			NSNotificationCenter.defaultCenter().addObserver(self, selector: "notificationGeneratedThumbnails:", name: "THThumbnailsGeneratedNotification", object: aDelegate as? AnyObject)
 		}
@@ -92,17 +92,17 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	
 	var thumbnails = [Thumbnail]()
 	var panGesture:UIPanGestureRecognizer? = nil
-	@IBOutlet var scrubber:ExtendedInsetView!
+	@IBOutlet weak var scrubber:ExtendedInsetView!
 	
 	//TRIMMER
-	@IBOutlet var startConstraint:NSLayoutConstraint!
-	@IBOutlet var endConstraint:NSLayoutConstraint!
-	@IBOutlet var topBorder:UIView!
-	@IBOutlet var bottomBorder:UIView!
-	@IBOutlet var leftOverlayView:UIView!
-	@IBOutlet var rightOverlayView:UIView!
-	@IBOutlet var leftThumbView:TrimmerThumbView!
-	@IBOutlet var rightThumbView:TrimmerThumbView!
+	@IBOutlet weak var startConstraint:NSLayoutConstraint!
+	@IBOutlet weak var endConstraint:NSLayoutConstraint!
+	@IBOutlet weak var topBorder:UIView!
+	@IBOutlet weak var bottomBorder:UIView!
+	@IBOutlet weak var leftOverlayView:UIView!
+	@IBOutlet weak var rightOverlayView:UIView!
+	@IBOutlet weak var leftThumbView:TrimmerThumbView!
+	@IBOutlet weak var rightThumbView:TrimmerThumbView!
 	
 	var durationInSeconds = CGFloat(0)
 	var frameView:UIView!

@@ -21,9 +21,7 @@ class TitleCard: StoryElement {
             return nil
         }
     }
-    
-    var image:UIImage? = nil
-    
+        
 	override func isTitleCard() -> Bool {
 		return true
 	}
@@ -53,15 +51,15 @@ class TitleCard: StoryElement {
 //		self.asset = newAsset
 //	}
     
-    func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
+    override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
         if let imageData = self.snapshot {
-            if self.image == nil {
-                self.image = UIImage(data:imageData)
+            if self.thumbnailImage == nil {
+                self.thumbnailImage = UIImage(data:imageData)
             }
         } else {
-            self.image = UIImage(named: "defaultTitleCard")
+            self.thumbnailImage = UIImage(named: "defaultTitleCard")
         }
-        completionHandler?(image: self.image,error: nil)
+        completionHandler?(image: self.thumbnailImage,error: nil)
     }
     
     override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
@@ -73,8 +71,8 @@ class TitleCard: StoryElement {
 //        }
         
         if let imageData = self.snapshot {
-            if self.image == nil {
-                self.image = UIImage(data:imageData)
+            if self.thumbnailImage == nil {
+                self.thumbnailImage = UIImage(data:imageData)
             }
             
             let createAsset = {

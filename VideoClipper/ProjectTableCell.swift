@@ -10,10 +10,10 @@ import UIKit
 
 class ProjectTableCell: UITableViewCell {
 
-	@IBOutlet var mainLabel: UILabel!
-	@IBOutlet var linesLabel: UILabel!
-	@IBOutlet var videosLabel: UILabel!
-	@IBOutlet var updatedAtLabel: UILabel!
+	@IBOutlet weak var mainLabel: UILabel!
+	@IBOutlet weak var linesLabel: UILabel!
+	@IBOutlet weak var videosLabel: UILabel!
+	@IBOutlet weak var updatedAtLabel: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()

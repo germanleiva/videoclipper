@@ -25,7 +25,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 			return self.tableController!.selectedLinePath
 		}
 	}
-	@IBOutlet var addNewLineButton:UIButton!
+	@IBOutlet weak var addNewLineButton:UIButton!
 	
 	@IBOutlet weak var verticalToolbar: UIView!
 	
@@ -36,7 +36,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	@IBOutlet weak var titleTextField: UITextField!
 
 	@IBOutlet weak var containerView: UITableView!
-	@IBOutlet var hideLineButton:UIButton!
+	@IBOutlet weak var hideLineButton:UIButton!
 	
     var progressBar:MBProgressHUD? = nil
     var exportSession:AVAssetExportSession? = nil

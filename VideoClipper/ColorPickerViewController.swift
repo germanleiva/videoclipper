@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import UIKit
 
-protocol ColorPickerViewControllerDelegate {
+protocol ColorPickerViewControllerDelegate:class {
 	func didPickColor(colorPickerController:ColorPickerViewController,color:UIColor)
 }
 
@@ -39,7 +39,7 @@ class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UIC
 	// Global variables
 	var tag: Int = 0
 	var color: UIColor = UIColor.whiteColor()
-	var delegate: ColorPickerViewControllerDelegate? = nil
+	weak var delegate: ColorPickerViewControllerDelegate? = nil
 	
 	// This function converts from HTML colors (hex strings of the form '#ffffff') to UIColors
 	func hexStringToUIColor (hex:String) -> UIColor {

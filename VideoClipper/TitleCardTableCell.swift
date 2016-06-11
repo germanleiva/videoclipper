@@ -11,8 +11,8 @@ import UIKit
 class TitleCardTableCell: UITableViewCell {
 
     
-    @IBOutlet var loader:UIActivityIndicatorView!
-    @IBOutlet var titleCardImage:UIImageView!
+    @IBOutlet weak var loader:UIActivityIndicatorView!
+    @IBOutlet weak var titleCardImage:UIImageView!
 
     override func prepareForReuse() {
         //TODO Workaround, some cell's in the table where whipeout :(\

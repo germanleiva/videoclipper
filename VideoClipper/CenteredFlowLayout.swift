@@ -8,12 +8,12 @@
 
 import UIKit
 
-protocol CenteredFlowLayoutDelegate {
+protocol CenteredFlowLayoutDelegate:class {
     func layout(layout:CenteredFlowLayout,changedModeTo isCentered:Bool)
 }
 
 class CenteredFlowLayout: UICollectionViewFlowLayout {
-    var delegate:CenteredFlowLayoutDelegate? = nil
+    weak var delegate:CenteredFlowLayoutDelegate? = nil
     
     var isCentered = false {
         didSet {

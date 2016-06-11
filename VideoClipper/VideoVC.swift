@@ -24,7 +24,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	var playerItem:AVPlayerItem?
 	var player:AVPlayer?
-	@IBOutlet var playerView:UIView!
+	@IBOutlet weak var playerView:UIView!
 	var realPlayerView:VideoPlayerView!
 
 	var timeObserver:AnyObject? = nil
@@ -37,23 +37,23 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	var tagViewModels = [UIView:TagMark]()
 	var tagViewConstraints = [UIView:NSLayoutConstraint]()
 	
-	@IBOutlet var infoViewConstraint:NSLayoutConstraint!
+	@IBOutlet weak var infoViewConstraint:NSLayoutConstraint!
 
 	//UI
-	@IBOutlet var scrubberSlider:UISlider!
-	@IBOutlet var infoView:UIView!
-	@IBOutlet var scrubbingTimeLabel:UILabel!
-	@IBOutlet var filmStripView:FilmstripView!
-	@IBOutlet var togglePlaybackButton:UIButton!
-	@IBOutlet var currentTimeLabel:UILabel!
-	@IBOutlet var remainingTimeLabel:UILabel!
-	@IBOutlet var playerToolbar:UIToolbar!
+	@IBOutlet weak var scrubberSlider:UISlider!
+	@IBOutlet weak var infoView:UIView!
+	@IBOutlet weak var scrubbingTimeLabel:UILabel!
+	@IBOutlet weak var filmStripView:FilmstripView!
+	@IBOutlet weak var togglePlaybackButton:UIButton!
+	@IBOutlet weak var currentTimeLabel:UILabel!
+	@IBOutlet weak var remainingTimeLabel:UILabel!
+	@IBOutlet weak var playerToolbar:UIToolbar!
     @IBOutlet weak var tagButtonPanel: UIStackView!
     
 	var scrubbing = false
 	
-	@IBOutlet var filmstripScrubber:UIView!
-	@IBOutlet var filmstripScrubberLeadingConstraint:NSLayoutConstraint!
+	@IBOutlet weak var filmstripScrubber:UIView!
+	@IBOutlet weak var filmstripScrubberLeadingConstraint:NSLayoutConstraint!
 	
 	var infoViewOffset = CGFloat(0)
 	var sliderOffset = CGFloat(0)

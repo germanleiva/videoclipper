@@ -25,7 +25,7 @@ struct Bundle {
 }
 var bundle : Bundle?
 
-protocol StoryLinesTableControllerDelegate {
+protocol StoryLinesTableControllerDelegate:class {
     func storyLinesTableController(didChangeLinePath lineIndexPath: NSIndexPath?,line:StoryLine?)
 }
 
@@ -37,7 +37,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
         }
     }
 	
-	var delegate:StoryLinesTableControllerDelegate? = nil
+	weak var delegate:StoryLinesTableControllerDelegate? = nil
 
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 		
@@ -506,23 +506,21 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let storyLine = self.project!.storyLines![collectionView.tag] as! StoryLine
-		if isTitleCardStoryElement(indexPath,storyLine: storyLine) {
-			let titleCardElement = storyLine.elements![indexPath.item] as! TitleCard
-			//First item is a TitleCard
-			let titleCardCell = collectionView.dequeueReusableCellWithReuseIdentifier("TitleCardCollectionCell", forIndexPath: indexPath) as! TitleCardCollectionCell
-			if let snapshot = titleCardElement.snapshot {
-				titleCardCell.thumbnail!.image = UIImage(data: snapshot)
-            }
-            return titleCardCell
-		}
-		let videoCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! VideoCollectionCell
-		let videoElement = storyLine.elements![indexPath.item] as! VideoClip
+        var storyElementCell:StoryElementCollectionCell!
+        let storyElement = storyLine.elements![indexPath.item] as! StoryElement
         
-        videoCell.loader!.startAnimating()
+		if isTitleCardStoryElement(indexPath,storyLine: storyLine) {
+			//First item is a TitleCard
+			storyElementCell = collectionView.dequeueReusableCellWithReuseIdentifier("TitleCardCollectionCell", forIndexPath: indexPath) as! StoryElementCollectionCell
+        } else {
+            storyElementCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! StoryElementCollectionCell
+        }
+        
+        storyElementCell.loader!.startAnimating()
 
-        videoElement.loadThumbnail { (image, error) in
-            videoCell.loader?.stopAnimating()
-            videoCell.thumbnail?.image = videoElement.thumbnailImage
+        storyElement.loadThumbnail { (image, error) in
+            storyElementCell.loader?.stopAnimating()
+            storyElementCell.thumbnail?.image = storyElement.thumbnailImage
         }
         
 //		for eachTagLine in [UIView](videoCell.contentView.subviews) {
@@ -539,7 +537,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 //			videoCell.contentView.addSubview(newTagLine)
 //		}
 
-		return videoCell
+		return storyElementCell
 	}
 	
 	func selectRowAtIndexPath(indexPath:NSIndexPath,animated:Bool) {

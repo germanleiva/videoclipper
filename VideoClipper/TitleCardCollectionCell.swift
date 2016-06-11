@@ -9,8 +9,6 @@
 import UIKit
 
 class TitleCardCollectionCell: StoryElementCollectionCell {
-	@IBOutlet weak var thumbnail:UIImageView?
-
 
 	/*
 	// Only override drawRect: if you perform custom drawing.

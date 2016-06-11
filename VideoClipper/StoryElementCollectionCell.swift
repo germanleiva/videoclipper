@@ -9,5 +9,7 @@
 import UIKit
 
 class StoryElementCollectionCell: DraggableCollectionViewCell {
-	    
+    @IBOutlet weak var loader:UIActivityIndicatorView?
+    @IBOutlet weak var thumbnail:UIImageView?
+
 }

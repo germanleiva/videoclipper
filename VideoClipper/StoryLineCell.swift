@@ -14,7 +14,7 @@ protocol StoryLineCellDelegate: UICollectionViewDelegate, UICollectionViewDataSo
 
 class StoryLineCell: UITableViewCell {
 	@IBOutlet weak var collectionView: UICollectionView!
-	var delegate:StoryLineCellDelegate? = nil {
+	weak var delegate:StoryLineCellDelegate? = nil {
 		willSet(newValue) {
 			self.collectionView.delegate = newValue
 			self.collectionView.dataSource = newValue

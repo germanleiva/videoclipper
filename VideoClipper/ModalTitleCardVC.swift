@@ -11,7 +11,7 @@ import UIKit
 class ModalTitleCardVC: UIViewController {
 	var titleCardVC:TitleCardVC!
 	var element:StoryElement? = nil
-	var delegate:StoryElementVCDelegate? = nil
+	weak var delegate:StoryElementVCDelegate? = nil
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "embeddedTitleCardVC" {

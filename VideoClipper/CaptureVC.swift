@@ -13,7 +13,7 @@ import CoreData
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
 
-protocol CaptureVCDelegate {
+protocol CaptureVCDelegate:class {
 	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip)
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
@@ -33,7 +33,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var currentTitleCard:TitleCard? = nil
 	var recentTagPlaceholders = [(UIColor,Float64)]()
 	
-//	@IBOutlet var titleCardPlaceholder:UIView!
+//	@IBOutlet weak var titleCardPlaceholder:UIView!
 	@IBOutlet weak var reshootVideoButton: UIButton!
 	
 	@IBOutlet var collectionView:UICollectionView!
@@ -55,17 +55,17 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	@IBOutlet weak var stopMotionButton: UIButton!
 	@IBOutlet weak var shutterLock: UISwitch!
 	
-	@IBOutlet var ghostImageView:UIImageView!
-	@IBOutlet var taggingPanel:UIStackView!
-	@IBOutlet var plusLineButton:UIButton!
+	@IBOutlet weak var ghostImageView:UIImageView!
+	@IBOutlet weak var taggingPanel:UIStackView!
+	@IBOutlet weak var plusLineButton:UIButton!
 	@IBOutlet weak var ghostSlider: UISlider!
 	
-    @IBOutlet var titleCardTable:UITableView!
+    @IBOutlet weak var titleCardTable:UITableView!
     
 	var _captureSessionCoordinator:IDCaptureSessionCoordinator!
 	
 	var shouldUpdatePreviewLayerFrame = true
-	var delegate:CaptureVCDelegate? = nil
+	weak var delegate:CaptureVCDelegate? = nil
 	var selectedLineIndexPath:NSIndexPath? = nil
 
     var selectedVideo:VideoClip? = nil

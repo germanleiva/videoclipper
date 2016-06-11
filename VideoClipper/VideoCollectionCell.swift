@@ -18,7 +18,4 @@ class VideoCollectionCell: StoryElementCollectionCell {
     }
     */
 	
-	@IBOutlet weak var thumbnail:UIImageView?
-	@IBOutlet weak var loader:UIActivityIndicatorView?
-
 }

@@ -140,7 +140,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		takeContent.fontSize = 30
 		widgetsOnTitleCard.addObject(takeContent)
 		
-		firstTitleCard.snapshotData = UIImagePNGRepresentation(UIImage(named: "default2TitleCard")!)
+		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.5)
 		
 		do {
 			try context.save()

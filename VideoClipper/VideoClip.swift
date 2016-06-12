@@ -126,7 +126,7 @@ class VideoClip: StoryElement {
                         if videoClipAsset.statusOfValueForKey("tracks", error: &error) != .Loaded {
                             print("tracks not loaded: \(error.debugDescription)")
                         }
-                        allAssets.append(videoClipAsset)
+                        allAssets.insert(videoClipAsset,atIndex: 0)
                         
                         dispatch_group_leave(assetLoadingGroup);
                     })
@@ -186,10 +186,10 @@ class VideoClip: StoryElement {
         }
 	}
     
-    func writePath() -> NSURL {
+    func writePath(fileExtension:String="mov") -> NSURL {
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
         let firstReplacement = segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
-        let videoName = NSString(format:"%@.mov", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
+        let videoName = NSString(format:"%@.\(fileExtension)", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
         //        return entityFolderPath + "/" + fileName
         return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
     }
@@ -288,9 +288,7 @@ class VideoClip: StoryElement {
             if self.segments!.count > 0 {
                 self.loadAsset({ (asset, composition, error) in
                     if error == nil {
-//                        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
                             self.exportAssetToFile(asset!,composition: composition!)
-//                        }
                     } else {
                         print("ERROR LOCO: \(error)")
                     }

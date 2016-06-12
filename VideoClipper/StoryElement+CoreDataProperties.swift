@@ -37,5 +37,6 @@ extension StoryElement {
             self.thumbnailImage = nil
         }
     }
+    @NSManaged var snapshotFileName: String?
 
 }

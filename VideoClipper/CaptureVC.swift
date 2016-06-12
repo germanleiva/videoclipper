@@ -350,7 +350,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     @IBAction func donePressed(sender: AnyObject) {
         self.dismissController()
-        self.currentLine!.consolidateVideos()
+        self.lastSelectedVideo?.consolidate()
     }
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
@@ -519,8 +519,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     theCurrentVideoSegment.fileName = finalPath.lastPathComponent
                     
                     //TODO OPTIMIZE - both
-                    theSelectedVideo.snapshotData = UIImagePNGRepresentation(theCurrentVideoSegment.snapshot!)
-                    theSelectedVideo.thumbnailData = UIImagePNGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)))
+                    theSelectedVideo.snapshotData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!,0.5)
+                    theSelectedVideo.thumbnailData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)),1)
                 }
             }
         }
@@ -537,6 +537,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateTimeRecordedLabel()
         self.isRecording = true
 
+        self.lastSelectedVideo?.consolidate()
+        
         self.lastVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
         
         UIApplication.sharedApplication().idleTimerDisabled = true
@@ -848,7 +850,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
         video.loadThumbnail({ (image, error) in
             if image == nil {
-                //TODO OPTIMIZE (this line is not a problem but generating the snapshop is expensive) 
+                //TODO OPTIMIZE (this line is not a problem but generating the snapshop is expensive)
                 //WORKAROUND for empty videoClip
                 videoSegmentCell.thumbnail.image = self.lastVideoSegment!.snapshot?.resize(CGSize(width: 192,height: 103))
             } else {
@@ -1076,7 +1078,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshotData = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,0.5)
 		
 		do {
 			try context.save()

@@ -16,8 +16,8 @@
     </entity>
     <entity name="StoryElement" representedClassName="StoryElement" isAbstract="YES" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="snapshot" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="snapshot" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
+        <attribute name="thumbnail" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <relationship name="storyLine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryLine" inverseName="elements" inverseEntity="StoryLine" syncable="YES"/>
     </entity>
     <entity name="StoryLine" representedClassName="StoryLine" syncable="YES">

@@ -159,7 +159,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshotData = UIImagePNGRepresentation(UIImage(named: "defaultTitleCard")!)
+		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,0.5)
 		
 		do {
 			try context.save()
@@ -200,7 +200,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.progressBar!.labelText = "Exporting ..."
 
             self.progressBar!.detailsLabelText = "Tap to cancel"
-            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.cancelExport)))
+            self.progressBar!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.cancelExport(_:))))
 
             self.exportSession = AVAssetExportSession(asset: composition,presetName: AVAssetExportPreset1280x720)
             
@@ -348,11 +348,19 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         })
     }
     
-    @IBAction func cancelExport() {
-        self.exportSession?.cancelExport()
-        self.exportSession = nil
-        self.progressBar?.hide(true)
-        self.progressBar = nil
+    @IBAction func cancelExport(recognizer:UITapGestureRecognizer) {
+        let location = recognizer.locationInView(self.progressBar)
+        
+        let xDist = location.x - self.progressBar!.center.x
+        let yDist = location.y - self.progressBar!.center.y
+        let distanceToCenter = sqrt((xDist * xDist) + (yDist * yDist))
+        
+        if distanceToCenter < 90 {
+            self.exportSession?.cancelExport()
+            self.exportSession = nil
+            self.progressBar?.hide(true)
+            self.progressBar = nil
+        }
     }
 	
 	@IBAction func playProjectPressed(sender:AnyObject?) {
@@ -380,6 +388,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.presentViewController(playerVC, animated: true, completion: { () -> Void in
                 Answers.logCustomEventWithName("Play project success", customAttributes: nil)
                 playerVC.player?.play()
+                
+                for eachLine in self.project!.storyLines! {
+                    let line = eachLine as! StoryLine
+                    line.consolidateVideos()
+                }
             })
         })
 	}

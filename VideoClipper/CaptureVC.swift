@@ -25,8 +25,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var currentLine:StoryLine? = nil {
 		didSet {
 			self.currentTitleCard = self.currentLine?.firstTitleCard()
-            self.currentVideoSegment = nil
-            self.selectedVideo = nil
 		}
 	}
     
@@ -40,7 +38,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
-    var currentVideoSegment:VideoSegment? = nil
+    var lastVideoSegment:VideoSegment? = nil
+    var lastSelectedVideo:VideoClip? = nil
 	
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
@@ -68,7 +67,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	weak var delegate:CaptureVCDelegate? = nil
 	var selectedLineIndexPath:NSIndexPath? = nil
 
-    var selectedVideo:VideoClip? = nil
     
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	
@@ -448,8 +446,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateGhostImage()
 
         if error != nil {
-            self.currentVideoSegment = nil
-            self.selectedVideo = nil
+            self.lastVideoSegment = nil
+            self.lastSelectedVideo = nil
             let alert = UIAlertController(title: "Cannot create video file", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
             self.presentViewController(alert, animated: true, completion: nil)
             return
@@ -461,6 +459,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         temporaryContext.parentContext = self.context
         
         temporaryContext.performBlock { () -> Void in
+            let modifiedVideoClip = self.lastSelectedVideo
             self.saveVideoSegment(outputFileURL)
             
             do {
@@ -478,14 +477,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     }
                     try self.context.save()
                     
-                    let modifiedVideoClip = self.selectedVideo
                     
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.delegate?.captureVC(self, didChangeVideoClip: modifiedVideoClip!)
                     })
                     
-                    self.currentVideoSegment = nil
-                    self.selectedVideo = nil
+//                    self.currentVideoSegment = nil
+//                    self.selectedVideo = nil
                     self.reshootVideoButton.enabled = true
                 } catch {
                     // handle error
@@ -496,29 +494,36 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
     
     func saveVideoSegment(finalPath:NSURL) {
-        var tags = [TagMark]()
-        for (color,time) in self.currentVideoSegment!.tagsPlaceholders {
-            let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
-            newTag.color = color
-            newTag.time! = time / self.totalTimeSeconds()
-            tags.append(newTag)
+        if let theCurrentLine = self.currentLine {
+            if let theCurrentVideoSegment = self.lastVideoSegment {
+                if let theSelectedVideo = self.lastSelectedVideo {
+                    var tags = [TagMark]()
+                    for (color,time) in theCurrentVideoSegment.tagsPlaceholders {
+                        let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
+                        newTag.color = color
+                        newTag.time! = time / self.totalTimeSeconds()
+                        tags.append(newTag)
+                    }
+                    
+                    let videoSegments = theSelectedVideo.mutableOrderedSetValueForKey("segments")
+                    videoSegments.addObject(theCurrentVideoSegment)
+                    
+                    let videoTags = theSelectedVideo.mutableOrderedSetValueForKey("tags")
+                    for eachTag in tags {
+                        videoTags.addObject(eachTag)
+                    }
+                    
+                    let elements = theCurrentLine.mutableOrderedSetValueForKey("elements")
+                    elements.addObject(self.lastSelectedVideo!)
+                    
+                    theCurrentVideoSegment.fileName = finalPath.lastPathComponent
+                    
+                    //TODO OPTIMIZE - both
+                    theSelectedVideo.snapshotData = UIImagePNGRepresentation(theCurrentVideoSegment.snapshot!)
+                    theSelectedVideo.thumbnailData = UIImagePNGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)))
+                }
+            }
         }
-        
-        let videoSegments = self.selectedVideo!.mutableOrderedSetValueForKey("segments")
-        videoSegments.addObject(self.currentVideoSegment!)
-        
-        let videoTags = self.selectedVideo!.mutableOrderedSetValueForKey("tags")
-        for eachTag in tags {
-            videoTags.addObject(eachTag)
-        }
-        
-        let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
-        elements.addObject(self.selectedVideo!)
-        
-        self.currentVideoSegment!.fileName = finalPath.lastPathComponent
-        
-        self.selectedVideo!.snapshotData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!)
-        self.selectedVideo!.thumbnailData = UIImagePNGRepresentation(self.currentVideoSegment!.snapshot!.resize(CGSize(width: 192, height: 103)))
     }
 	
 	//-MARK: private start/stop helper methods
@@ -532,11 +537,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateTimeRecordedLabel()
         self.isRecording = true
 
-        self.currentVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
+        self.lastVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
         
         UIApplication.sharedApplication().idleTimerDisabled = true
         
-        self._captureSessionCoordinator.suggestedFileURL(self.currentVideoSegment!.writePath())
+        self._captureSessionCoordinator.suggestedFileURL(self.lastVideoSegment!.writePath())
         self._captureSessionCoordinator.startRecording()
         
         self.ghostImageView.hidden = true
@@ -591,12 +596,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         var pointToFind = CGPoint(x: self.collectionView!.contentOffset.x + layout.commonOffset, y: self.collectionView!.frame.height / 2)
         
         let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
+                
+        lastVideoSegment!.time = self.totalTimeSeconds()
+        lastVideoSegment!.tagsPlaceholders += self.recentTagPlaceholders
         
-        let currentSnapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-        
-        currentVideoSegment!.time = self.totalTimeSeconds()
-        currentVideoSegment!.tagsPlaceholders += self.recentTagPlaceholders
-        currentVideoSegment!.snapshot = currentSnapshot
+        //TODO OPTIMIZE
+        lastVideoSegment!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
 
         self.view.insertSubview(currentSnapshotView, aboveSubview: self.collectionView)
         
@@ -608,15 +613,15 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         currentIndexPath = self.collectionView!.indexPathForItemAtPoint(pointToFind)
 
         if layout.isCentered && currentIndexPath != nil {
-            self.selectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
+            self.lastSelectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
         } else {
-            self.selectedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+            self.lastSelectedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
             let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
             if currentIndexPath == nil {
-                elements.addObject(self.selectedVideo!)
-                currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.selectedVideo!)!, inSection: 0)
+                elements.addObject(self.lastSelectedVideo!)
+                currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.lastSelectedVideo!)!, inSection: 0)
             } else {
-                elements.insertObject(self.selectedVideo!, atIndex: currentIndexPath!.item)
+                elements.insertObject(self.lastSelectedVideo!, atIndex: currentIndexPath!.item)
             }
         }
 
@@ -843,8 +848,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
         video.loadThumbnail({ (image, error) in
             if image == nil {
-                //TODO WORKAROUND for empty videoClip
-                videoSegmentCell.thumbnail.image = self.currentVideoSegment!.snapshot?.resize(CGSize(width: 192,height: 103))
+                //TODO OPTIMIZE (this line is not a problem but generating the snapshop is expensive) 
+                //WORKAROUND for empty videoClip
+                videoSegmentCell.thumbnail.image = self.lastVideoSegment!.snapshot?.resize(CGSize(width: 192,height: 103))
             } else {
                 videoSegmentCell.thumbnail.image = image
             }

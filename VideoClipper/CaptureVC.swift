@@ -993,13 +993,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
         
         titleCardCell.loader.startAnimating()
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 )) { () -> Void in
-            let titleCard = line.firstTitleCard()!
-            titleCard.loadThumbnail({ (image, error) in
-                titleCardCell.loader.stopAnimating()
-                titleCardCell.titleCardImage.image = image
-            })
-        }
+
+        let titleCard = line.firstTitleCard()!
+        titleCard.loadThumbnail({ (image, error) in
+            titleCardCell.loader.stopAnimating()
+            titleCardCell.titleCardImage.image = image
+        })
 		
 		return titleCardCell
 	}
@@ -1078,7 +1077,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,0.5)
+		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
 		
 		do {
 			try context.save()

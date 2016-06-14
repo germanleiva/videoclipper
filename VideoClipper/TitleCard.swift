@@ -58,7 +58,13 @@ class TitleCard: StoryElement {
                     self.thumbnailImage = UIImage(data:thumbnailImageData)
                 }
             } else {
-                self.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
+                //TODO workaround
+                if self.storyLine?.project?.storyLines?.count == 1 {
+                    self.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+
+                } else {
+                    self.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
+                }
             }
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 completionHandler?(image: self.thumbnailImage,error: nil)

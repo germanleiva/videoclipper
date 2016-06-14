@@ -159,7 +159,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		widget.fontSize = 60
 		widgetsOnTitleCard.addObject(widget)
 		
-		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,0.5)
+		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
 		
 		do {
 			try context.save()

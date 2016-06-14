@@ -91,6 +91,9 @@ class StoryLine: NSManagedObject {
             
             eachElement.loadAsset({ (asset,_,error) -> Void in
                 var error:NSError?
+                if asset == nil {
+                    print("POIUYHBN")
+                }
                 if asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
                     print("tracks not Loaded: \(error.debugDescription)")
                 }

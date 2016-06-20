@@ -504,15 +504,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 
                 elements.addObject(newVideo!)
                 
-                let currentVideoSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
-                let videoSegments = newVideo?.mutableOrderedSetValueForKey("segments")
-
-                videoSegments?.addObject(currentVideoSegment!)
-                
-                let videoURL = currentVideoSegment?.writePath()
-                
-                currentVideoSegment?.fileName = videoURL?.lastPathComponent
-                
+                let videoURL = newVideo?.writePath()
                 
                 dispatch_group_enter(importingGroup)
                 let fetchResult = PHAsset.fetchAssetsWithALAssetURLs([fileURLALAsset], options: nil)
@@ -534,7 +526,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
                                     let refImg = try generateImg.copyCGImageAtTime(asset.duration, actualTime: nil)
                                     let thumbnailImage = UIImage(CGImage: refImg)
                                     
-                                    newVideo!.thumbnailData = UIImagePNGRepresentation(thumbnailImage)
+                                    newVideo!.snapshotData = UIImageJPEGRepresentation(thumbnailImage,0.5)
+                                    newVideo!.thumbnailData = UIImageJPEGRepresentation(thumbnailImage.resize(CGSize(width: 192, height: 103)),1)
+                                    
+                                    newVideo!.fileName = videoURL?.lastPathComponent
 
                                     dispatch_group_leave(importingGroup)
                             

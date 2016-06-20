@@ -171,7 +171,22 @@ class StoryLine: NSManagedObject {
                 
                 // create a layer instruction at the start of this clip to apply the preferred transform to correct orientation issues
                 let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack:compositionVideoTrack)
-                layerInstruction.setTransform(sourceVideoTrack!.preferredTransform, atTime: kCMTimeZero)
+                
+                //			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
+                lastNaturalSize = sourceVideoTrack!.naturalSize
+                
+                var transformation = sourceVideoTrack!.preferredTransform
+                
+                if lastNaturalSize != Globals.defaultRenderSize {
+                    if lastNaturalSize.width < Globals.defaultRenderSize.width || lastNaturalSize.height < Globals.defaultRenderSize.height {
+                        abort()
+                    } else {
+                        //The lastNaturalSize is bigger than the defaultRenderSize
+                        transformation = CGAffineTransformScale(transformation, Globals.defaultRenderSize.width / lastNaturalSize.width, Globals.defaultRenderSize.height / lastNaturalSize.height)
+                    }
+                }
+                
+                layerInstruction.setTransform(transformation, atTime: kCMTimeZero)
                 
                 // create the composition instructions for the range of this clip
                 let videoTrackInstruction = AVMutableVideoCompositionInstruction()
@@ -182,8 +197,7 @@ class StoryLine: NSManagedObject {
                 
                 cursorTime = CMTimeAdd(cursorTime, assetDuration)
                 
-                //			lastNaturalTimeScale = sourceVideoTrack!.naturalTimeScale
-                			lastNaturalSize = sourceVideoTrack!.naturalSize
+
             }
             
             // create our video composition which will be assigned to the player item
@@ -191,8 +205,9 @@ class StoryLine: NSManagedObject {
             videoComposition.instructions = instructions
             //		videoComposition.frameDuration = CMTimeMake(1, lastNaturalTimeScale)
             videoComposition.frameDuration = CMTimeMake(1, 30)
-            videoComposition.renderSize = lastNaturalSize
+            
 //            videoComposition.renderSize = CGSize(width: 1920,height: 1080)
+            videoComposition.renderSize = Globals.defaultRenderSize
             
             
             completionHandler?(composition,videoComposition)

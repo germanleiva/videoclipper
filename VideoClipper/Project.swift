@@ -18,7 +18,7 @@ class Project: NSManagedObject {
 		for each in self.storyLines! {
 			for element in (each as! StoryLine).elements! {
 				if (element as! StoryElement).isVideo() {
-					count++
+					count += 1
 				}
 			}
 		}

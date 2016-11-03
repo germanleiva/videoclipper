@@ -70,10 +70,10 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		
 //		self.calculateInfoViewOffset()
 		
-		self.scrubberSlider.addTarget(self, action: "showPopupUI", forControlEvents: .ValueChanged)
-		self.scrubberSlider.addTarget(self, action: "hidePopupUI", forControlEvents: .TouchUpInside)
-		self.scrubberSlider.addTarget(self, action: "hidePopupUI", forControlEvents: .TouchUpOutside)
-		self.scrubberSlider.addTarget(self, action: "unhidePopupUI", forControlEvents: .TouchDown)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.showPopupUI), forControlEvents: .ValueChanged)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), forControlEvents: .TouchUpInside)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), forControlEvents: .TouchUpOutside)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.unhidePopupUI), forControlEvents: .TouchDown)
 
 		self.filmStripView.delegate = self
 		
@@ -129,14 +129,14 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		tagView.image = UIImage(named: "tag_mark")
 		tagView.tintColor = color
 //		tagView.frame = CGRect(x: self.filmStripView.frame.origin.x - tagView.frame.width / 2, y: self.filmStripView.frame.origin.y - tagView.frame.height, width: tagView.frame.width, height: tagView.frame.height)
-		let panGesture = UIPanGestureRecognizer(target: self, action: "panningTagMark:")
+		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(VideoVC.panningTagMark(_:)))
 		tagView.addGestureRecognizer(panGesture)
 		self.view.addSubview(tagView)
 		
-		let tapGesture = UITapGestureRecognizer(target: self, action: "tappedTagMark:")
+		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(VideoVC.tappedTagMark(_:)))
 		tagView.addGestureRecognizer(tapGesture)
 		
-		let swipeUp = UISwipeGestureRecognizer(target: self, action: "swipingOutTagMark:")
+		let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(VideoVC.swipingOutTagMark(_:)))
 		swipeUp.direction = .Up
 		swipeUp.delegate = self
 		tagView.addGestureRecognizer(swipeUp)
@@ -148,7 +148,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.view.addConstraint(centerConstraint)
 		self.tagViewConstraints[tagView] = centerConstraint
 		
-		let baselineConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+		let baselineConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
 		baselineConstraint.identifier = "baselineConstraint"
 		self.view.addConstraint(baselineConstraint)
 
@@ -160,7 +160,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.tagViewModels[tagView] = tagModel
 		
 		if animated {
-			let initialConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+			let initialConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
 			self.view.addConstraint(initialConstraint)
 			baselineConstraint.active = false
 			self.view.layoutIfNeeded()
@@ -188,7 +188,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 				self.view.layoutIfNeeded()
 				
 				UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					let finalConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Baseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+					let finalConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
 					self.view.addConstraint(finalConstraint)
 					self.view.layoutIfNeeded()
 				}, completion: { (completed) -> Void in

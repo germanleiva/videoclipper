@@ -137,7 +137,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		self.panGesture = UIPanGestureRecognizer(target: self, action: "pannedScrubber:")
+		self.panGesture = UIPanGestureRecognizer(target: self, action: #selector(FilmstripView.pannedScrubber(_:)))
 		self.panGesture?.delegate = self
 		self.scrubber.addGestureRecognizer(self.panGesture!)
 	}
@@ -202,7 +202,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 			let button = UIButton(type: .Custom)
 			button.adjustsImageWhenHighlighted = false
 			button.setBackgroundImage(timedImage.image as? UIImage, forState: .Normal)
-			button.addTarget(self, action: "imageButtonTapped:", forControlEvents: .TouchUpInside)
+			button.addTarget(self, action: #selector(FilmstripView.imageButtonTapped(_:)), forControlEvents: .TouchUpInside)
 			button.frame = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
 			
 			button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: imageSize.width))
@@ -220,11 +220,11 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		self.topBorder.backgroundColor = themeColor
 		self.bottomBorder.backgroundColor = themeColor
 		
-		let leftPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: "moveLeftThumb:")
+		let leftPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(FilmstripView.moveLeftThumb(_:)))
 		self.leftThumbView.addGestureRecognizer(leftPanGestureRecognizer)
 		self.leftThumbView.layer.masksToBounds = true
 		
-		let rightPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: "moveRightThumb:")
+		let rightPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(FilmstripView.moveRightThumb(_:)))
 		self.rightThumbView.addGestureRecognizer(rightPanGestureRecognizer)
 		self.rightThumbView.layer.masksToBounds = true
 	}

@@ -459,7 +459,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		self.shouldSelectRowAfterDelete = true
 	}
 	
-	override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+	override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath?) {
 		if self.shouldSelectRowAfterDelete {
 			self.shouldSelectRowAfterDelete = false
 			
@@ -607,16 +607,16 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                     
                     if cell.reuseIdentifier! != "TitleCardCollectionCell" && CGRectContainsPoint(cellInViewFrame, pointPressedInView ) {
                         let representationImage = cell.snapshotViewAfterScreenUpdates(true)
-                        representationImage.frame = cellInViewFrame
+                        representationImage!.frame = cellInViewFrame
                         UIView.animateWithDuration(0.1, animations: { () -> Void in
-                            representationImage.transform = CGAffineTransformScale(representationImage.transform, 0.90, 0.90)
+                            representationImage!.transform = CGAffineTransformScale(representationImage!.transform, 0.90, 0.90)
                         })
                         
                         let offset = CGPointMake(pointPressedInView.x - cellInViewFrame.origin.x, pointPressedInView.y - cellInViewFrame.origin.y)
                         
                         let indexPath : NSIndexPath = aCollectionView.indexPathForCell(cell as UICollectionViewCell)!
                         
-                        self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage, currentIndexPath: indexPath, collectionView: aCollectionView)
+                        self.bundle = Bundle(offset: offset, sourceCell: cell, representationImageView:representationImage!, currentIndexPath: indexPath, collectionView: aCollectionView)
                         
                     }
                 }

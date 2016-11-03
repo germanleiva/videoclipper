@@ -210,10 +210,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
             let fileManager = NSFileManager()
             
-            if fileManager.fileExistsAtPath(file.path!) {
+            if fileManager.fileExistsAtPath(file!.path!) {
                 do {
-                    try NSFileManager().removeItemAtURL(file)
-                    print("Deleted old temporal video file: \(file.path!)")
+                    try NSFileManager().removeItemAtURL(file!)
+                    print("Deleted old temporal video file: \(file!.path!)")
                 } catch {
                     print("Couldn't delete old temporal file: \(error)")
                 }

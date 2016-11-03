@@ -85,7 +85,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         super.viewDidLoad()
 		
         
-		titleChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+		titleChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
 //			let titleCardUpdated = notification.object as! TitleCard
 //			if self.currentTitleCard == titleCardUpdated {
 //				self.needsToUpdateTitleCardPlaceholder = true
@@ -164,7 +164,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	func startTimer() {
 		self.timer?.invalidate()
-		self.timer = NSTimer(timeInterval: 0.5, target: self, selector: "updateTimeRecordedLabel", userInfo: nil, repeats: true)
+		self.timer = NSTimer(timeInterval: 0.5, target: self, selector: #selector(CaptureVC.updateTimeRecordedLabel), userInfo: nil, repeats: true)
 		NSRunLoop.mainRunLoop().addTimer(self.timer!, forMode: NSRunLoopCommonModes)
 	}
 	
@@ -605,7 +605,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         //TODO OPTIMIZE
         lastVideoSegment!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
 
-        self.view.insertSubview(currentSnapshotView, aboveSubview: self.collectionView)
+        self.view.insertSubview(currentSnapshotView!, aboveSubview: self.collectionView)
         
         if !layout.isCentered {
             pointToFind.x += halfSpacing
@@ -632,7 +632,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             //			currentSnapshot.frame = self.view.convertRect(self.segmentThumbnailsPlaceholder.frame, fromView: self.segmentThumbnailsPlaceholder)
             if let finalFrame = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(currentIndexPath!)?.frame {
-                currentSnapshotView.frame = self.view.convertRect(finalFrame, fromView: self.collectionView)
+                currentSnapshotView!.frame = self.view.convertRect(finalFrame, fromView: self.collectionView)
             }
             
             self.collectionView.alpha = 0.75
@@ -644,7 +644,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
         }, completion: { (completed) -> Void in
             if completed {
-                currentSnapshotView.removeFromSuperview()
+                currentSnapshotView!.removeFromSuperview()
                 
                 //Stops the blinking
                 self.recordingIndicator.layer.removeAllAnimations()

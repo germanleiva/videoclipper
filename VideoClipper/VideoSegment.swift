@@ -44,9 +44,9 @@ class VideoSegment: NSManagedObject {
     
     func writePath() -> NSURL {
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let videoName = NSString(format:"%@.mov", segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
+        let videoName = NSString(format:"%@.mov", segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
 //        return entityFolderPath + "/" + fileName
-        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)!
     }
     
     override func didSave() {

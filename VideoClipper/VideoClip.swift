@@ -81,7 +81,7 @@ class VideoClip: StoryElement {
 //        }
         if self.segments == nil || self.segments!.count == 0 {
             if let fileName = self.fileName {
-                let asset = AVURLAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(fileName), options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+                let asset = AVURLAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(fileName)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(asset:asset,composition:nil,error: nil)
@@ -122,7 +122,7 @@ class VideoClip: StoryElement {
             
             if let aFileName = self.fileName {
                 //I have a file created so that should be my first asset
-                let videoClipAsset = AVAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(aFileName))
+                let videoClipAsset = AVAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!)
                 
                 dispatch_group_enter(assetLoadingGroup);
                 
@@ -187,7 +187,7 @@ class VideoClip: StoryElement {
 
     func writePath(prefix:String="",fileExtension:String="mov") -> NSURL {
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let firstReplacement = segmentObjectId.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
+        let firstReplacement = segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
         var videoName = NSString(format:"%@.\(fileExtension)", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
         
         if !prefix.isEmpty {
@@ -195,7 +195,7 @@ class VideoClip: StoryElement {
         }
         
         //        return entityFolderPath + "/" + fileName
-        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)!
     }
 
     func exportAssetToFile(videoAsset:AVAsset,composition:AVVideoComposition?,usedSegments:[VideoSegment]) {

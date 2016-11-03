@@ -24,7 +24,7 @@ class StoryLineCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code		
-		let tapGesture = UITapGestureRecognizer(target: self, action: "collectionViewTapped:")
+		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(StoryLineCell.collectionViewTapped(_:)))
 		tapGesture.numberOfTapsRequired = 1
 		
 		self.collectionView.backgroundView = UIView(frame:self.collectionView.bounds)

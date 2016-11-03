@@ -129,10 +129,10 @@ class TitleCard: StoryElement {
         let titleCardObjectId = self.objectID.URIRepresentation().absoluteString
         
         let illegalFileNameCharacters = NSCharacterSet(charactersInString: "/\\?%*|\"<>")
-        let components = titleCardObjectId.stringByReplacingOccurrencesOfString("x-coredata://", withString: "").componentsSeparatedByCharactersInSet(illegalFileNameCharacters)
+        let components = titleCardObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "").componentsSeparatedByCharactersInSet(illegalFileNameCharacters)
         let videoName = components.joinWithSeparator("_")
         
-        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName + ".mov")
+        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName + ".mov")!
     }
     
     override func didSave() {

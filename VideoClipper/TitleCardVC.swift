@@ -176,7 +176,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
-		let cameraButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Camera, target: self, action: "takePicture:")
+		let cameraButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Camera, target: self, action: #selector(TitleCardVC.takePicture(_:)))
 		let navigationBar = navigationController.navigationBar
 		if let topItem = navigationBar.topItem {
 			topItem.leftBarButtonItem = cameraButton
@@ -199,7 +199,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		imagePicker.popoverPresentationController!.delegate = self
 
         // Do any additional setup after loading the view.
-		self.canvas!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tappedView:"))
+		self.canvas!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TitleCardVC.tappedView(_:))))
 	
 		for eachTextWidget in self.titleCard!.textWidgets() {
 			self.addTextInput(eachTextWidget,initialFrame: eachTextWidget.initialRect())
@@ -217,8 +217,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		self.changesDetected = false
 		
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(TitleCardVC.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(TitleCardVC.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
 		
 		self.canvas!.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 		self.colorButton.backgroundColor = self.titleCard!.backgroundColor as? UIColor
@@ -234,11 +234,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		imageWidget.imageView = imageView
 		imageView.userInteractionEnabled = true
 		
-		let panGesture = UIPanGestureRecognizer(target: self, action: "pannedImageView:")
+		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.pannedImageView(_:)))
 //		panGesture.delegate = self
 		imageView.addGestureRecognizer(panGesture)
 		
-		let pinchGesture = UIPinchGestureRecognizer(target: self, action: "pinchedImageView:")
+		let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(TitleCardVC.pinchedImageView(_:)))
 //		pinchGesture.delegate = self
 		imageView.addGestureRecognizer(pinchGesture)
 		
@@ -438,20 +438,20 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
 
 			UIGraphicsBeginImageContextWithOptions(cropRect.size, weakSelf.canvas!.opaque, 1)
-			screenshot.drawInRect(cropRect)
+			screenshot!.drawInRect(cropRect)
 			let img = UIGraphicsGetImageFromCurrentImageContext()
 			UIGraphicsEndImageContext()
 			
-			weakSelf.titleCard?.snapshotData = UIImageJPEGRepresentation(img,0.5)
+			weakSelf.titleCard?.snapshotData = UIImageJPEGRepresentation(img!,0.5)
             
             let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
             
             UIGraphicsBeginImageContextWithOptions(smallCropRect.size, weakSelf.canvas!.opaque, 1)
-            screenshot.drawInRect(smallCropRect)
+            screenshot!.drawInRect(smallCropRect)
             let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
-			weakSelf.titleCard?.thumbnailData = UIImagePNGRepresentation(thumbnailImg)
+			weakSelf.titleCard?.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
             
 			for eachDeactivatedWidget in deactivatedWidgets {
 				weakSelf.activateHandlers(eachDeactivatedWidget)
@@ -595,10 +595,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			model.textView!.textColor = model.color as? UIColor
 		}
 		
-		model.tapGesture = UITapGestureRecognizer(target: self, action: "tappedTextView:")
+		model.tapGesture = UITapGestureRecognizer(target: self, action: #selector(TitleCardVC.tappedTextView(_:)))
 		
 		model.textView!.addGestureRecognizer(model.tapGesture!)
-		model.textView!.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "pannedTextView:"))
+		model.textView!.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.pannedTextView(_:))))
 		
 		self.canvas!.addSubview(model.textView!)
 		
@@ -609,7 +609,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.leftHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.leftHandler!)
 		
-		let leftPanningRecognizer = UIPanGestureRecognizer(target: self, action: "leftPanning:")
+		let leftPanningRecognizer = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.leftPanning(_:)))
 		model.leftHandler?.addGestureRecognizer(leftPanningRecognizer)
 		leftPanningRecognizer.delegate = self
 		
@@ -618,7 +618,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.rightHandler!.translatesAutoresizingMaskIntoConstraints = false
 		self.canvas!.addSubview(model.rightHandler!)
 		
-		let rightPanningRecognizer = UIPanGestureRecognizer(target: self, action: "rightPanning:")
+		let rightPanningRecognizer = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.rightPanning(_:)))
 		model.rightHandler?.addGestureRecognizer(rightPanningRecognizer)
 		rightPanningRecognizer.delegate = self
 		

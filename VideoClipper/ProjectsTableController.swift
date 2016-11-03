@@ -245,7 +245,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		
 		// Edit the section name key path and cache name if appropriate.
 		// nil for section name key path means "no sections".
-		let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: "Master")
+		let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
 		aFetchedResultsController.delegate = self
 		_fetchedResultsController = aFetchedResultsController
 		

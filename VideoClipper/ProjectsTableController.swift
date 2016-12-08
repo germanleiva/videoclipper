@@ -220,10 +220,10 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 			cell.videosLabel.text = cell.videosLabel.text!.stringByAppendingString("s")
 		}
 		
-		var dateString = ""
+		var dateString = "Updated on "
 		
 		if let aDate = project.updatedAt {
-			dateString = NSDateFormatter.localizedStringFromDate(aDate, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
+			dateString += NSDateFormatter.localizedStringFromDate(aDate, dateStyle: NSDateFormatterStyle.ShortStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
 		}
 		
 		cell.updatedAtLabel.text = dateString

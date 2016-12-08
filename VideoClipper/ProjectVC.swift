@@ -27,7 +27,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 			return self.tableController!.selectedLinePath
 		}
 	}
-	@IBOutlet weak var addNewLineButton:UIButton!
 	
 	@IBOutlet weak var verticalToolbar: UIView!
 	
@@ -45,8 +44,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.addNewLineButton.layer.borderWidth = 0.4
-		self.addNewLineButton.layer.borderColor = UIColor.grayColor().CGColor
         // Uncomment the following line to preserve selection between presentations
 //         self.clearsSelectionOnViewWillAppear = false
 
@@ -142,7 +139,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		}
 	}
 	
-	@IBAction func addStoryLinePressed(sender:UIButton) {
+	@IBAction func addStoryLinePressed(sender:UIBarButtonItem) {
 		let j = self.project!.storyLines!.count + 1
 		
 		let storyLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine

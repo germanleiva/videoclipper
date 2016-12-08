@@ -213,6 +213,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		//addTextInput adds a new widget with the handlers activated so we need to deactivate them
 		self.deactivateHandlers(self.titleCard!.textWidgets())
 
+        self.durationButton!.layer.borderColor = UIColor.blackColor().CGColor
+        self.durationButton!.layer.borderWidth = 1.0
 		self.updateDurationButtonText(Int(self.titleCard!.duration!))
 		
 		self.changesDetected = false

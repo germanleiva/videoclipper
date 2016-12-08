@@ -85,12 +85,14 @@ class VideoClip: StoryElement {
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"]) { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(asset:asset,composition:nil,error: nil)
+                        return
                     })
                 }
             } else {
                 //Withouth segments and file something went wrong :(
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     completionHandler?(asset:nil,composition:nil, error:NSError(domain: "fr.lri.VideoClipper.loadAssetVideoErrorDomain", code: 0, userInfo: ["NSLocalizedDescriptionKey" :  NSLocalizedString("The video has no file and no segments", comment: "")]))
+                    return
                 })
             }
         } else {
@@ -147,12 +149,14 @@ class VideoClip: StoryElement {
                         //                            videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                     } catch let error as NSError {
                         completionHandler?(asset:nil,composition:nil,error: error)
+                        return
                     }
                     
                     do {
                         try audioCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: audioAssetTrack!, atTime: time)
                     } catch let error as NSError {
                         completionHandler?(asset:nil,composition:nil,error: error)
+                        return
                     }
                     
                     let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
@@ -180,6 +184,7 @@ class VideoClip: StoryElement {
                 
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     completionHandler?(asset:mutableComposition,composition:mutableVideoComposition,error:nil)
+                    return
                 })
             })
         }

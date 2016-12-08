@@ -664,7 +664,7 @@
                                     <outletCollection property="gestureRecognizers" destination="7IG-Pb-jzD" appends="YES" id="rEC-Qj-Jgl"/>
                                 </connections>
                             </view>
-                            <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jm3-Ha-A9m">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jm3-Ha-A9m">
                                 <rect key="frame" x="904" y="0.0" width="120" height="768"/>
                                 <subviews>
                                     <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgI-zh-lHz">
@@ -710,7 +710,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="cNf-sp-Dbl" firstAttribute="width" secondItem="jm3-Ha-A9m" secondAttribute="width" id="Aw2-L5-GEv"/>
                                     <constraint firstAttribute="width" constant="120" id="I5S-PS-pJH"/>
@@ -764,12 +764,12 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <view alpha="0.75" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l6R-iD-1N7">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l6R-iD-1N7">
                                 <rect key="frame" x="192" y="0.0" width="712" height="120"/>
                                 <subviews>
-                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.75" contentMode="scaleToFill" alwaysBounceHorizontal="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KRD-tb-rJw">
                                         <rect key="frame" x="0.0" y="0.0" width="712" height="120"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="120" id="3Dq-pG-rdY"/>
@@ -822,7 +822,7 @@
                                         </connections>
                                     </collectionView>
                                 </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="KRD-tb-rJw" secondAttribute="trailing" id="1hl-7p-LKb"/>
                                     <constraint firstAttribute="height" constant="120" id="HIK-ci-nzI"/>
@@ -968,7 +968,7 @@
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-unselected" translatesAutoresizingMaskIntoConstraints="NO" id="DT8-X9-Ero">
                                         <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
-                                        <color key="tintColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="25" id="LHw-Us-Tce"/>
                                             <constraint firstAttribute="height" constant="25" id="ZPI-6S-cT8"/>
@@ -987,6 +987,7 @@
                                     </slider>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ghost-selected" translatesAutoresizingMaskIntoConstraints="NO" id="196-sv-NVP">
                                         <rect key="frame" x="245" y="0.0" width="25" height="25"/>
+                                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="25" id="Fv3-Zq-aid"/>
                                             <constraint firstAttribute="height" constant="25" id="kPL-1G-guA"/>

@@ -354,51 +354,55 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
-		let stroke = sender!.tintColor//.colorWithAlphaComponent(0.8)
-		
-		let pathFrame = CGRect(x: -CGRectGetMidX(sender!.bounds), y: -CGRectGetMidY(sender!.bounds), width: sender!.bounds.width, height: sender!.bounds.height)
-//		let pathFrame = sender!.frame
-		let bezierPath = UIBezierPath(roundedRect: pathFrame, cornerRadius: sender!.frame.width / 2)
-		
-		// accounts for left/right offset and contentOffset of scroll view
-		let shapePosition = sender!.center
-		
-		let circleShape = CAShapeLayer()
-		circleShape.path = bezierPath.CGPath
-		circleShape.position = shapePosition
-		circleShape.fillColor = UIColor.clearColor().CGColor
-		circleShape.opacity = 0
-		circleShape.strokeColor = stroke.CGColor
-		circleShape.lineWidth = 10
-		
-		self.taggingPanel.layer.addSublayer(circleShape)
-		
-		CATransaction.begin()
-
-		//remove layer after animation completed
-		CATransaction.setCompletionBlock { () -> Void in
-			circleShape.removeFromSuperlayer()
-		}
-
-		let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
-		
-		scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
-		scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,4, 4, 1))
-		
-		let alphaAnimation = CABasicAnimation(keyPath: "opacity")
-		alphaAnimation.fromValue = 1
-		alphaAnimation.toValue = 0
-		
-		let animation = CAAnimationGroup()
-		animation.animations = [scaleAnimation, alphaAnimation]
-		animation.duration = 0.3
-		animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-		circleShape.addAnimation(animation, forKey: nil)
-		
-		CATransaction.commit()
+		tagFeedbackAnimation(sender)
 
 		self.recentTagPlaceholders.append((sender!.tintColor,self.totalTimeSeconds()))
 	}
+    
+    func tagFeedbackAnimation(sender:UIButton?) {
+        let stroke = sender!.tintColor//.colorWithAlphaComponent(0.8)
+
+        let pathFrame = CGRect(x: -CGRectGetMidX(sender!.bounds), y: -CGRectGetMidY(sender!.bounds), width: sender!.bounds.width, height: sender!.bounds.height)
+        //		let pathFrame = sender!.frame
+        let bezierPath = UIBezierPath(roundedRect: pathFrame, cornerRadius: sender!.frame.width / 2)
+        
+        // accounts for left/right offset and contentOffset of scroll view
+        let shapePosition = sender!.center
+        
+        let circleShape = CAShapeLayer()
+        circleShape.path = bezierPath.CGPath
+        circleShape.position = shapePosition
+        circleShape.fillColor = UIColor.clearColor().CGColor
+        circleShape.opacity = 0
+        circleShape.strokeColor = stroke.CGColor
+        circleShape.lineWidth = 10
+        
+        self.taggingPanel.layer.addSublayer(circleShape)
+        
+        CATransaction.begin()
+        
+        //remove layer after animation completed
+        CATransaction.setCompletionBlock { () -> Void in
+            circleShape.removeFromSuperlayer()
+        }
+        
+        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
+        
+        scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
+        scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,4, 4, 1))
+        
+        let alphaAnimation = CABasicAnimation(keyPath: "opacity")
+        alphaAnimation.fromValue = 1
+        alphaAnimation.toValue = 0
+        
+        let animation = CAAnimationGroup()
+        animation.animations = [scaleAnimation, alphaAnimation]
+        animation.duration = 0.3
+        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        circleShape.addAnimation(animation, forKey: nil)
+        
+        CATransaction.commit()
+    }
 
 	override func prefersStatusBarHidden() -> Bool {
 		return true
@@ -446,6 +450,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateGhostImage()
 
         if error != nil {
+            //TODO do we need to clean some variables here?
             self.lastVideoSegment = nil
             self.lastSelectedVideo = nil
             let alert = UIAlertController(title: "Cannot create video file", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
@@ -460,7 +465,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         temporaryContext.performBlock { () -> Void in
             let modifiedVideoClip = self.lastSelectedVideo
-            self.saveVideoSegment(outputFileURL)
+            self.saveVideoSegment(outputFileURL, context: self.context)
             
             do {
                 try temporaryContext.save()
@@ -493,15 +498,16 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
     }
     
-    func saveVideoSegment(finalPath:NSURL) {
+    func saveVideoSegment(finalPath:NSURL, context: NSManagedObjectContext) {
         if let theCurrentLine = self.currentLine {
             if let theCurrentVideoSegment = self.lastVideoSegment {
                 if let theSelectedVideo = self.lastSelectedVideo {
                     var tags = [TagMark]()
                     for (color,time) in theCurrentVideoSegment.tagsPlaceholders {
-                        let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
+                        let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: context) as! TagMark
                         newTag.color = color
-                        newTag.time! = time / self.totalTimeSeconds()
+                        //TODO This logic only works if the video has one segment, if this video already had a segment this is WRONG
+                        newTag.time! = time / Double(theCurrentVideoSegment.time)
                         tags.append(newTag)
                     }
                     
@@ -509,6 +515,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     videoSegments.addObject(theCurrentVideoSegment)
                     
                     let videoTags = theSelectedVideo.mutableOrderedSetValueForKey("tags")
+                    
                     for eachTag in tags {
                         videoTags.addObject(eachTag)
                     }
@@ -521,8 +528,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     //TODO OPTIMIZE - both
                     theSelectedVideo.snapshotData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!,0.5)
                     theSelectedVideo.thumbnailData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)),1)
+                } else {
+                    print("I'm saving the recently recorded segment but there is no parent video clip")
                 }
+            } else {
+                print("I'm saving the recently recorded segment but there is no segment :S")
             }
+        } else {
+            print("I'm saving the recently recorded segment but there is no storyboard line")
         }
     }
 	
@@ -577,6 +590,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 
 		self.isRecording = false
+
+        //We need to save the totalTime of the recorded segment in the segment object because it will be reset it in the _captureSessionCoordinator
+        self.lastVideoSegment!.time = self.totalTimeSeconds()
+        //TODO check if this stop recording is too fast (or slow) and the coordinator:didFinishRecordingToOutputFileURL: is being call too soon (or late)
         _captureSessionCoordinator.stopRecording()
         
 		self.ghostImageView.hidden = false
@@ -599,7 +616,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
                 
-        lastVideoSegment!.time = self.totalTimeSeconds()
         lastVideoSegment!.tagsPlaceholders += self.recentTagPlaceholders
         
         //TODO OPTIMIZE
@@ -635,14 +651,14 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 currentSnapshotView!.frame = self.view.convertRect(finalFrame, fromView: self.collectionView)
             }
             
-            self.collectionView.alpha = 0.75
-            self.topPanel.alpha = 0.75
+            self.collectionView.alpha = 1//0.75
+            self.topPanel.alpha = 1//0.75
             self.leftPanel.alpha = 0.75
-            self.rightPanel.alpha = 0.75
+            self.rightPanel.alpha = 1//0.75
             self.ghostPanel.alpha = 1
             self.recordingIndicator.alpha = 0
 
-        }, completion: { (completed) -> Void in
+        }, completion: { (completed) -> Void in 
             if completed {
                 currentSnapshotView!.removeFromSuperview()
                 
@@ -895,8 +911,31 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             })
         }
         
-        let assetLoadingGroup = dispatch_group_create();
+        tappedVideo?.loadAsset({ (asset, composition, error) in
+            if error != nil {
+                errorBlock(error!)
+            } else {
+                let playerItem = AVPlayerItem(asset: asset!)
+                playerItem.videoComposition = composition
+                
+                let player = AVPlayer(playerItem: playerItem)
+                
+                let playerController = AVPlayerViewController()
+                playerController.player = player
+                self.presentViewController(playerController, animated: true, completion: { () -> Void in
+                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                    progressBar.hide(true)
+                    playerController.view.frame = self.view.frame
+                    player.play()
+                })
+            }
+        })
         
+        
+        
+        
+        return //IGNORING THIS SHIT
+        let assetLoadingGroup = dispatch_group_create();
         if let allSegments = tappedVideo?.segments {
             
             let mutableComposition = AVMutableComposition()

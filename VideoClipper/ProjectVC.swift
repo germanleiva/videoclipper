@@ -27,6 +27,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 			return self.tableController!.selectedLinePath
 		}
 	}
+    
+    var selectedLineChangedObserver:NSObjectProtocol?
 	
 	@IBOutlet weak var verticalToolbar: UIView!
 	
@@ -41,6 +43,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	
     var progressBar:MBProgressHUD? = nil
     var exportSession:AVAssetExportSession? = nil
+    
+    deinit {
+        if let anObserver = selectedLineChangedObserver {
+            NSNotificationCenter.defaultCenter().removeObserver(anObserver)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,11 +83,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 //		doubleTap.delegate = self
 		self.tableController!.view.addGestureRecognizer(doubleTap)
 		
-		NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationSelectedLineChanged, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
-			let selectedLine = notification.object
-			self.tableController!.tableView.reloadData()
-			let section = self.project!.storyLines!.indexOfObject(selectedLine!)
-			self.tableController!.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section), animated: true)
+		selectedLineChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationSelectedLineChanged, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
+            if let selectedLine = notification.object as? StoryLine {
+                self.tableController!.tableView.reloadData()
+                let section = self.project!.storyLines!.indexOfObject(selectedLine)
+                self.tableController!.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section), animated: true)
+            }
 		}
 	}
 	
@@ -125,7 +134,6 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.isNewProject = false
 		}
 	}
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

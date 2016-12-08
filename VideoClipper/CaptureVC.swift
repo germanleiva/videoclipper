@@ -84,7 +84,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-        
 		titleChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationTitleCardChanged, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
 //			let titleCardUpdated = notification.object as! TitleCard
 //			if self.currentTitleCard == titleCardUpdated {

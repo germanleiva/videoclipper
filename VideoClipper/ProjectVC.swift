@@ -19,6 +19,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	var tableController:StoryLinesTableController?
 
     var isNewProject = false
+    var quickStart = false
+
 
 	var currentLineIndexPath:NSIndexPath? {
 		get {
@@ -116,10 +118,14 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		if self.isNewProject {
-			self.titleTextField!.becomeFirstResponder()
-			self.titleTextField.selectAll(nil)
-			
-			self.isNewProject = false
+            if self.quickStart {
+                self.captureForLineTapped(nil)
+            } else {
+                self.titleTextField!.becomeFirstResponder()
+                self.titleTextField.selectAll(nil)
+                
+            }
+            self.isNewProject = false
 		}
 	}
 

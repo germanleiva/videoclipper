@@ -13,14 +13,13 @@ import Crashlytics
 class ProjectsVC: UIViewController {
 	var projectsTableController:ProjectsTableController? = nil
 	
-	@IBOutlet weak var addProjectButton: UIButton!
+    @IBOutlet weak var quickStartButton: UIButton!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 
-		self.addProjectButton.layer.borderWidth = 0.4
-		self.addProjectButton.layer.borderColor = UIColor.grayColor().CGColor
-
+        
+        quickStartButton.layer.cornerRadius = quickStartButton.frame.width / 2
 	}
 	
 	// MARK: - Navigation
@@ -34,9 +33,15 @@ class ProjectsVC: UIViewController {
 		}
 	}
 	
-	@IBAction func plusPressed(sender: UIButton) {
+	@IBAction func plusPressed(sender: UIBarButtonItem) {
 		self.projectsTableController?.insertNewProject()
         
         Answers.logCustomEventWithName("Project added", customAttributes: nil)
 	}
+    
+    @IBAction func quickStartPressed(sender: UIButton) {
+        self.projectsTableController?.insertNewProject(quickStarted:true)
+        
+        Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+    }
 }

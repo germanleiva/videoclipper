@@ -14,7 +14,9 @@ let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
 class ProjectsTableController: UITableViewController, NSFetchedResultsControllerDelegate {
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-	var isNewProject = false
+	var creatingNewProject = false
+    var creatingWithQuickstart = false
+
     var unProyecto:Project? = nil
     
   
@@ -38,15 +40,18 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				projectVC.project = self.fetchedResultsController.objectAtIndexPath(selectedIndex) as? Project
 			}
 			
-			projectVC.isNewProject = self.isNewProject
-			self.isNewProject = false
+			projectVC.isNewProject = self.creatingNewProject
+            projectVC.quickStart = self.creatingWithQuickstart
+            
+			self.creatingNewProject = false
+            self.creatingWithQuickstart = false
             
 //            print("PRINTING PROJECT")
 //            projectVC.project?.projectToText()
 		}
 	}
 	
-	func insertNewProject() {
+    func insertNewProject(quickStarted quickStarted:Bool = false) {
 		let entity = self.fetchedResultsController.fetchRequest.entity!
 		let newProject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Project
 		
@@ -150,7 +155,8 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		
 		self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(newProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
 		
-		self.isNewProject = true
+		self.creatingNewProject = true
+        self.creatingWithQuickstart = quickStarted
 		self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
 	}
 	
@@ -339,7 +345,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
 					self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(clonedProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
 					
-					self.isNewProject = true
+					self.creatingNewProject = true
 					
 					MBProgressHUD.hideHUDForView(self.view, animated: true)
 					
@@ -378,5 +384,4 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		
 		return [deleteAction,cloneAction]
 	}
-
 }

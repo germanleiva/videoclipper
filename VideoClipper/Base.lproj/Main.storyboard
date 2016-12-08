@@ -70,7 +70,7 @@
         <!--Projects-->
         <scene sceneID="nQB-GU-P9N">
             <objects>
-                <viewController id="2eg-K2-fVx" customClass="ProjectsVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="2eg-K2-fVx" customClass="ProjectsVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ht4-B3-vrx"/>
                         <viewControllerLayoutGuide type="bottom" id="Ocs-Nm-A1f"/>
@@ -79,42 +79,34 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ev-sb-ifG">
-                                <rect key="frame" x="0.0" y="724" width="1024" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="PJp-3B-gPg"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                <state key="normal" title="+"/>
-                                <connections>
-                                    <action selector="plusPressed:" destination="2eg-K2-fVx" eventType="touchUpInside" id="eKU-vd-0LG"/>
-                                </connections>
-                            </button>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P2e-NX-aZ8">
-                                <rect key="frame" x="0.0" y="64" width="1024" height="660"/>
+                                <rect key="frame" x="0.0" y="64" width="1024" height="704"/>
                                 <connections>
                                     <segue destination="gbt-th-fzd" kind="embed" identifier="embeddedProjectsTableController" id="frb-0f-aar"/>
                                 </connections>
                             </containerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ev-sb-ifG">
+                                <rect key="frame" x="482" y="688" width="60" height="60"/>
+                                <color key="backgroundColor" red="0.53265219213811932" green="0.6658394462656666" blue="0.95949317226890751" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="eZg-L5-Wda"/>
+                                    <constraint firstAttribute="height" constant="60" id="yNm-7c-keh"/>
+                                </constraints>
+                                <state key="normal" image="icon-plus"/>
+                                <connections>
+                                    <action selector="quickStartPressed:" destination="2eg-K2-fVx" eventType="touchUpInside" id="Wvj-cO-JkD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="top" secondItem="Ht4-B3-vrx" secondAttribute="bottom" id="E3k-uw-RVC"/>
-                            <constraint firstAttribute="trailing" secondItem="P2e-NX-aZ8" secondAttribute="trailing" id="P5N-0A-tKV"/>
-                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="leading" secondItem="gxe-oW-Ny1" secondAttribute="leading" id="SUg-VL-Mev"/>
-                            <constraint firstItem="Ocs-Nm-A1f" firstAttribute="top" secondItem="P2e-NX-aZ8" secondAttribute="bottom" id="X6L-F9-67l"/>
-                            <constraint firstItem="3Ev-sb-ifG" firstAttribute="top" secondItem="P2e-NX-aZ8" secondAttribute="bottom" id="Xa7-dL-xjy"/>
-                            <constraint firstAttribute="trailing" secondItem="3Ev-sb-ifG" secondAttribute="trailing" id="YZl-j7-rZH"/>
-                            <constraint firstItem="Ocs-Nm-A1f" firstAttribute="top" secondItem="3Ev-sb-ifG" secondAttribute="bottom" id="aw8-dC-aBL"/>
-                            <constraint firstItem="3Ev-sb-ifG" firstAttribute="leading" secondItem="gxe-oW-Ny1" secondAttribute="leading" id="mg9-75-yJb"/>
-                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="top" secondItem="Ht4-B3-vrx" secondAttribute="bottom" id="qqO-he-Xhd"/>
+                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="bottom" secondItem="Ocs-Nm-A1f" secondAttribute="top" id="S7C-iF-LfQ"/>
+                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="top" secondItem="Ht4-B3-vrx" secondAttribute="bottom" id="eU4-HN-XfA"/>
+                            <constraint firstItem="Ocs-Nm-A1f" firstAttribute="top" secondItem="3Ev-sb-ifG" secondAttribute="bottom" constant="20" id="laM-nF-gij"/>
+                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="centerX" secondItem="3Ev-sb-ifG" secondAttribute="centerX" id="ycS-e2-Xaf"/>
+                            <constraint firstItem="P2e-NX-aZ8" firstAttribute="leading" secondItem="gxe-oW-Ny1" secondAttribute="leading" id="zbC-6p-eV0"/>
+                            <constraint firstAttribute="trailing" secondItem="P2e-NX-aZ8" secondAttribute="trailing" id="zeF-G4-ma8"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="qqO-he-Xhd"/>
-                                <exclude reference="X6L-F9-67l"/>
-                            </mask>
-                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Projects" id="0ff-5I-Jcd">
                         <barButtonItem key="leftBarButtonItem" title="Settings" id="y1z-oE-aFY">
@@ -122,22 +114,26 @@
                                 <segue destination="gbV-f4-DqK" kind="show" id="Ggv-Qv-PVz"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="01F-Bh-b2c"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="01F-Bh-b2c">
+                            <connections>
+                                <action selector="plusPressed:" destination="2eg-K2-fVx" id="s9Z-lE-rOy"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="addProjectButton" destination="3Ev-sb-ifG" id="y6j-YS-1KI"/>
+                        <outlet property="quickStartButton" destination="3Ev-sb-ifG" id="8yC-xU-aFV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UY1-bK-wgW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1247" y="457"/>
+            <point key="canvasLocation" x="1246.875" y="456.25"/>
         </scene>
         <!--Projects Table Controller-->
         <scene sceneID="854-lW-QRo">
             <objects>
                 <tableViewController id="gbt-th-fzd" customClass="ProjectsTableController" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" id="jPC-Fk-PD3">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="660"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="704"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
@@ -215,7 +211,7 @@
             <objects>
                 <tableViewController id="QhK-HD-P2x" customClass="StoryLinesTableController" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="119" sectionHeaderHeight="22" sectionFooterHeight="22" id="06K-8F-gde">
-                        <rect key="frame" x="0.0" y="0.0" width="974" height="552"/>
+                        <rect key="frame" x="0.0" y="0.0" width="974" height="596"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
@@ -1387,11 +1383,11 @@
                         <viewControllerLayoutGuide type="bottom" id="nQi-w3-Jbb"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="IhS-4E-uqn">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="660"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="704"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i6V-ob-0f2">
-                                <rect key="frame" x="0.0" y="616" width="974" height="44"/>
+                                <rect key="frame" x="0.0" y="660" width="974" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="sHs-fC-vIm"/>
                                 </constraints>
@@ -1402,16 +1398,16 @@
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8xU-TI-nOK">
-                                <rect key="frame" x="0.0" y="64" width="974" height="552"/>
+                                <rect key="frame" x="0.0" y="64" width="974" height="596"/>
                                 <connections>
                                     <segue destination="QhK-HD-P2x" kind="embed" identifier="tableContainerSegue" id="nSF-YQ-GA7"/>
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7pH-g7-kGs">
-                                <rect key="frame" x="974" y="0.0" width="50" height="660"/>
+                                <rect key="frame" x="974" y="0.0" width="50" height="704"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oUK-rP-zy7">
-                                        <rect key="frame" x="0.0" y="205" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="227" width="50" height="50"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="JC9-KM-exG"/>
@@ -1424,7 +1420,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4s4-AP-UZd">
-                                        <rect key="frame" x="0.0" y="405" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="427" width="50" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="QjM-Mk-F8r"/>
                                             <constraint firstAttribute="height" constant="50" id="odh-zf-S13"/>

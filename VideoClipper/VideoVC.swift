@@ -295,7 +295,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         
         self.realPlayerView = VideoPlayerView()
         self.realPlayerView.frame = self.playerView.frame
-        self.view.addSubview(self.realPlayerView)
+        self.view.insertSubview(self.realPlayerView, belowSubview: self.infoView)
 
         self.video?.loadAsset({ (asset,_,error) -> Void in
             if let anError = error {
@@ -445,7 +445,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.infoViewConstraint.constant = self.scrubberSlider.frame.origin.x + 12 + thumbRect.origin.x
 	
 		self.currentTimeLabel.text = "-- : --"
-		self.remainingTimeLabel.text = "-- : --";
+//		self.remainingTimeLabel.text = "-- : --";
 	
 		let scrubbedTime = Double(self.scrubberSlider.value)
 

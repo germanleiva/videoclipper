@@ -418,15 +418,18 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 	
 	@IBAction func deleteVideo(sender:UIButton) {
-		let alertController = UIAlertController(title: "Delete video", message: "The video will remain on the Photo Album. Do you want to remove it from the line?" , preferredStyle: UIAlertControllerStyle.Alert)
+		let alertController = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.Alert)
+        
 		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+            alertController.dismissViewControllerAnimated(false, completion: nil)
+            self.navigationController?.popViewControllerAnimated(true)
 			self.delegate?.storyElementVC(self, elementDeleted: self.video!)
-
-			alertController.dismissViewControllerAnimated(true, completion: nil)
 		}))
+        
 		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
 			alertController.dismissViewControllerAnimated(true, completion: nil)
 		}))
+        
 		self.presentViewController(alertController, animated: true, completion: nil)
 	}
 	

@@ -141,7 +141,7 @@
                                 <rect key="frame" x="0.0" y="22" width="1024" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="s54-wP-bzY" id="XaU-sD-VC7">
-                                    <rect key="frame" x="0.0" y="0.0" width="830" height="99"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="830" height="100"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="zNr-Pf-YMh">
@@ -353,7 +353,7 @@
                                     </barButtonItem>
                                     <barButtonItem style="plain" id="GYe-Js-EgW">
                                         <view key="customView" contentMode="scaleToFill" id="bkf-gD-Mb5">
-                                            <rect key="frame" x="62" y="12" width="50" height="21"/>
+                                            <rect key="frame" x="62" y="11.5" width="50" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JrG-VN-h2a">
@@ -379,7 +379,7 @@
                                     </barButtonItem>
                                     <barButtonItem style="plain" id="SgK-KT-Twr">
                                         <view key="customView" contentMode="scaleToFill" id="g1q-H1-teg">
-                                            <rect key="frame" x="759" y="12" width="50" height="21"/>
+                                            <rect key="frame" x="759" y="11.5" width="50" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qYj-mz-Nyg">
@@ -1049,17 +1049,17 @@
                                 <exclude reference="jyZ-nM-fJs"/>
                                 <exclude reference="pqy-PL-EGR"/>
                                 <exclude reference="eXk-8T-YPc"/>
+                                <exclude reference="OQo-om-KKJ"/>
+                                <exclude reference="cQZ-WO-aXm"/>
+                                <exclude reference="dwb-19-Lxp"/>
                                 <exclude reference="G02-ff-efz"/>
                                 <exclude reference="oyb-Ct-hya"/>
-                                <exclude reference="gdk-bx-k4U"/>
-                                <exclude reference="OQo-om-KKJ"/>
                                 <exclude reference="Act-nQ-CM5"/>
                                 <exclude reference="DdA-je-uZK"/>
                                 <exclude reference="s9E-h6-aM7"/>
+                                <exclude reference="gdk-bx-k4U"/>
                                 <exclude reference="Cnn-K1-Dil"/>
                                 <exclude reference="wgR-Jx-uC2"/>
-                                <exclude reference="cQZ-WO-aXm"/>
-                                <exclude reference="dwb-19-Lxp"/>
                             </mask>
                         </variation>
                         <connections>

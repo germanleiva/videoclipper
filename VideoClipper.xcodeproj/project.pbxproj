@@ -603,6 +603,7 @@
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = NJZSW7J9AZ;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Manual;
 					};
 					A4664ACC1B444BA90095B27D = {
 						CreatedOnToolsVersion = 7.0;
@@ -910,6 +911,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = NJZSW7J9AZ;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
@@ -918,6 +920,8 @@
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "fc840a45-25a4-4a71-aa56-6891d67eaa36";
+				PROVISIONING_PROFILE_SPECIFIER = VideoClipperDev;
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 2.3;
@@ -931,6 +935,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				DEVELOPMENT_TEAM = NJZSW7J9AZ;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				INFOPLIST_FILE = VideoClipper/Info.plist;
@@ -938,6 +944,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "58d18eeb-0b81-40cf-9087-2308e7810a9d";
+				PROVISIONING_PROFILE_SPECIFIER = VideClipperAdHoc;
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
 				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = 2;

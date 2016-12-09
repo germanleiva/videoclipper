@@ -563,16 +563,6 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	//-MARK: Thumbnail Generation
 	
 	func generateThumbnails() {
-		
-		//This is a fix for an old migration, if all the user have v02 of the DB this is not needed
-		if self.video!.startPoint == nil {
-			self.video!.startPoint = 0
-		
-			if self.video!.endPoint == nil {
-				self.video!.endPoint = 1
-			}
-			try! self.context.save()
-		}
         self.filmStripView.generateThumbnails(self.video!,asset:self.playerItem!.asset,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
 	}
 	

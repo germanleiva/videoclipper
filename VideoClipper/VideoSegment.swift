@@ -43,8 +43,14 @@ class VideoSegment: NSManagedObject {
     }
     
     func writePath() -> NSURL {
+        if self.objectID.temporaryID {
+            print("THIS WAS A TEMPORARY ID")
+        }
+        
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let videoName = NSString(format:"%@.mov", segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata:///\(self.entity.name!)/", withString: "")) as String
+        let firstReplacement = segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
+        let videoName = NSString(format:"%@.mov", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
+        
 //        return entityFolderPath + "/" + fileName
         return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)!
     }

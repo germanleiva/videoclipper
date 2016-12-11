@@ -435,17 +435,13 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	func showPopupUI() {
 		self.infoView.hidden = false
+        
 		let trackRect = self.scrubberSlider.trackRectForBounds(self.scrubberSlider.bounds)
 		let thumbRect = self.scrubberSlider.thumbRectForBounds(self.scrubberSlider.bounds, trackRect: trackRect, value: self.scrubberSlider.value)
 		
-//		var rect = self.infoView.frame
-//		// The +1 is a fudge factor due to the scrubber knob being larger than normal
-//		rect.origin.x = (self.sliderOffset + thumbRect.origin.x) - self.infoViewOffset
-//		self.infoView.frame = rect
 		self.infoViewConstraint.constant = self.scrubberSlider.frame.origin.x + 12 + thumbRect.origin.x
 	
 		self.currentTimeLabel.text = "-- : --"
-//		self.remainingTimeLabel.text = "-- : --";
 	
 		let scrubbedTime = Double(self.scrubberSlider.value)
 

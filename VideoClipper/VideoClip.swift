@@ -145,6 +145,9 @@ class VideoClip: StoryElement {
                     let audioAssetTrack = asset.tracksWithMediaType(AVMediaTypeAudio).first
                     
                     do {
+                        if assetTrack == nil {
+                            print("ACA")
+                        }
                         try videoCompositionTrack.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetTrack!.timeRange.duration), ofTrack: assetTrack!, atTime: time)
                         //                            videoCompositionTrack.preferredTransform = assetTrack!.preferredTransform
                     } catch let error as NSError {
@@ -191,6 +194,10 @@ class VideoClip: StoryElement {
     }
 
     func writePath(prefix:String="",fileExtension:String="mov") -> NSURL {
+        if self.objectID.temporaryID {
+            print("THIS WAS A TEMPORARY ID")
+        }
+        
         let segmentObjectId = self.objectID.URIRepresentation().absoluteString
         let firstReplacement = segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
         var videoName = NSString(format:"%@.\(fileExtension)", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String

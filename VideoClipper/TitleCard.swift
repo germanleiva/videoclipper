@@ -126,6 +126,10 @@ class TitleCard: StoryElement {
     }
 
     func potentialVideoPath() -> NSURL {
+        if self.objectID.temporaryID {
+            print("THIS WAS A TEMPORARY ID")
+        }
+        
         let titleCardObjectId = self.objectID.URIRepresentation().absoluteString
         
         let illegalFileNameCharacters = NSCharacterSet(charactersInString: "/\\?%*|\"<>")

@@ -228,6 +228,7 @@
 		A4F8E3B11BB0469C0076A6FF /* Thumbnail+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thumbnail+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A4F8E3B21BB0469C0076A6FF /* Thumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		A4F8E3B31BB0469C0076A6FF /* VideoClip+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VideoClip+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A4FA29451DFDB00100A49A6B /* VideoClipper_07.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_07.xcdatamodel; sourceTree = "<group>"; };
 		A4FF46621B46B54100A12267 /* VideoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoVC.swift; sourceTree = "<group>"; };
 		A4FF46651B46B6B100A12267 /* VideoClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClip.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1049,6 +1050,7 @@
 		A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				A4FA29451DFDB00100A49A6B /* VideoClipper_07.xcdatamodel */,
 				A4AA38601D0C07500057F8ED /* VideoClipper_06.xcdatamodel */,
 				A411098A1C681EA500427EB2 /* VideoClipper_05.xcdatamodel */,
 				A4F8E3AC1BB045000076A6FF /* VideoClipper_04.xcdatamodel */,

@@ -12,6 +12,8 @@ import CoreData
 
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
+let keyGhostEnabled = "keyGhostEnabled"
+
 
 protocol CaptureVCDelegate:class {
 	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip)
@@ -30,34 +32,37 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
 	var currentTitleCard:TitleCard? = nil
 	var recentTagPlaceholders = [(UIColor,Float64)]()
-	
-//	@IBOutlet weak var titleCardPlaceholder:UIView!
-	@IBOutlet weak var reshootVideoButton: UIButton!
-	
+		
 	@IBOutlet var collectionView:UICollectionView!
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
     var currentlyRecordedSegment:VideoSegment? = nil
+    var recordedSegment = [VideoSegment]()
+
     var lastSelectedVideo:VideoClip? = nil
 	
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
-	
+
+    @IBOutlet weak var playSegmentButton: UIButton!
+    @IBOutlet weak var reshootVideoButton: UIButton!
+
 	@IBOutlet weak var previewView: UIView!
     @IBOutlet weak var topPanel: UIView!
 	@IBOutlet weak var rightPanel: UIView!
 	@IBOutlet weak var leftPanel: UIView!
 	@IBOutlet weak var ghostPanel: UIStackView!
-	
+
+    @IBOutlet weak var shutterLock: UISwitch!
 	@IBOutlet weak var shutterButton: KPCameraButton!
 	@IBOutlet weak var stopMotionButton: UIButton!
-	@IBOutlet weak var shutterLock: UISwitch!
 	
 	@IBOutlet weak var ghostImageView:UIImageView!
 	@IBOutlet weak var taggingPanel:UIStackView!
-	@IBOutlet weak var plusLineButton:UIButton!
-	@IBOutlet weak var ghostSlider: UISlider!
+    @IBOutlet weak var plusLineButton:UIButton!
+    @IBOutlet weak var ghostSlider: UISlider!
+    @IBOutlet weak var ghostButton: UIButton!
 	
     @IBOutlet weak var titleCardTable:UITableView!
     
@@ -96,13 +101,15 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         _captureSessionCoordinator = IDCaptureSessionAssetWriterCoordinator()
         _captureSessionCoordinator.setDelegate(self, callbackQueue: dispatch_get_main_queue())
         
+        self.playSegmentButton.enabled = false
+        self.reshootVideoButton.enabled = false
+
 		let defaults = NSUserDefaults.standardUserDefaults()
 		self.shutterLock.on = !defaults.boolForKey(keyShutterHoldEnabled)
 		
 		let savedGhostLevel = defaults.floatForKey(keyGhostLevel)
 		self.ghostImageView.alpha = CGFloat(savedGhostLevel)
-		self.ghostSlider.value = savedGhostLevel
-		
+        self.toggleGhostWidgets(defaults.boolForKey(keyGhostEnabled))
 		self.updateShutterLabel(self.shutterLock!.on)
 		
 		self.shutterButton.cameraButtonMode = .VideoReady
@@ -263,15 +270,54 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //		//			})
 //	}
 	
+    func changeGhostImageAlpha(value:Float) {
+        self.ghostImageView.alpha = CGFloat(value)
+    }
+    
 	@IBAction func changedGhostSlider(sender: UISlider) {
-		self.ghostImageView.alpha = CGFloat(sender.value)
+        changeGhostImageAlpha(sender.value)
 	}
 	
 	@IBAction func touchUpGhostSlider(sender: UISlider) {
-		let defaults = NSUserDefaults.standardUserDefaults()
-		defaults.setFloat(sender.value, forKey: keyGhostLevel)
-		defaults.synchronize()
-	}
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setFloat(sender.value, forKey: keyGhostLevel)
+        toggleGhostWidgets(sender.value > 0)
+    }
+    
+    @IBAction func touchUpGhostButton(sender:UIButton) {
+        toggleGhostWidgets(!sender.selected)
+    }
+    
+    func toggleGhostWidgets(isOn:Bool) {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        var value = defaults.floatForKey(keyGhostLevel)
+        if isOn {
+            //I enabled ghost
+            if value == 0 {
+                value = 0.30
+                defaults.setFloat(value, forKey: keyGhostLevel)
+            }
+        } else {
+            //I disabled ghost
+            value = 0
+        }
+
+        defaults.setBool(isOn, forKey: keyGhostEnabled)
+        defaults.synchronize()
+
+        changeGhostImageAlpha(value)
+        ghostSlider.value = value
+        ghostButton.selected = isOn
+        
+        var tintColor = UIColor.whiteColor()
+        if self.ghostButton.selected {
+            tintColor = UIColor(hexString: "#117AFF")!
+        }
+        
+        UIView.animateWithDuration(0.2) { () -> Void in
+            self.ghostButton.tintColor = tintColor
+        }
+    }
 	
     //TODO
 //	@IBAction func tappedOnVideo(sender:UIButton) {
@@ -306,7 +352,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
     
     //TODO
-	@IBAction func undoPressed(sender:UIButton?) {
+	@IBAction func reshootPressed(sender:UIButton?) {
     }
 
 	@IBAction func stopMotionPressed(sender: UIButton) {
@@ -865,8 +911,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
 	func updateGhostImage() {
 		self.ghostImageView.image = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-//		self.ghostImageView.hidden = !self.ghostButton.selected
-
         self.ghostPanel.hidden = self.ghostImageView.image == nil
 	}
 	

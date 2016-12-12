@@ -621,7 +621,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             if currentIndexPath == nil {
                 elements.addObject(self.currentlyRecordedVideo!)
             } else {
-                elements.insertObject(self.currentlyRecordedVideo!, atIndex: max(currentIndexPath!.item,1))
+                elements.insertObject(self.currentlyRecordedVideo!, atIndex: currentIndexPath!.item + 1)
             }
         }
         

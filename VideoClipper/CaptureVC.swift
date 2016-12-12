@@ -1037,6 +1037,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let titleCardCell = tableView.dequeueReusableCellWithIdentifier("TitleCardTableCell", forIndexPath: indexPath) as! TitleCardTableCell
 		
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = Globals.globalTint
+        titleCardCell.selectedBackgroundView = bgColorView
+        
 		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
         
         titleCardCell.loader.startAnimating()
@@ -1200,7 +1204,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         marker.userInteractionEnabled = true
         marker.translatesAutoresizingMaskIntoConstraints = false
-        marker.backgroundColor = UIColor.redColor()
+        marker.backgroundColor = Globals.globalTint
         self.topPanel.insertSubview(marker, belowSubview: self.collectionView)
 //        marker.bypassToView = self.collectionView
 //        marker.delegate = self
@@ -1222,7 +1226,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             if let layer = self.fillLayer {
                 layer.removeFromSuperlayer()
             }
-            self.marker.backgroundColor = UIColor.redColor()
+            self.marker.backgroundColor = Globals.globalTint
             
             self.view.layoutIfNeeded()
 //            self.collectionView.setContentOffset(CGPointZero, animated: true)
@@ -1265,7 +1269,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                         self.fillLayer = CAShapeLayer()
                         self.fillLayer!.path = path.CGPath
                         self.fillLayer!.fillRule = kCAFillRuleEvenOdd
-                        self.fillLayer!.fillColor = UIColor.redColor().CGColor
+                        self.fillLayer!.fillColor = Globals.globalTint.CGColor
                         
                         self.marker.layer.addSublayer(self.fillLayer!)
                     }

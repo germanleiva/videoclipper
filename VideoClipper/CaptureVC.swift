@@ -40,7 +40,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     var currentlyRecordedSegment:VideoSegment? = nil
     var recordedSegment = [VideoSegment]()
 
-    var lastSelectedVideo:VideoClip? = nil
+    var currentlyRecordedVideo:VideoClip? = nil
 	
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
@@ -412,7 +412,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     @IBAction func donePressed(sender: AnyObject) {
         self.dismissController()
-        self.lastSelectedVideo?.consolidate()
+        self.currentlyRecordedVideo?.consolidate()
     }
 	
 	@IBAction func createTagTapped(sender:UIButton?) {
@@ -514,7 +514,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         if error != nil {
             //TODO do we need to clean some variables here?
             self.currentlyRecordedSegment = nil
-            self.lastSelectedVideo = nil
+            self.currentlyRecordedVideo = nil
             let alert = UIAlertController(title: "Cannot create video file", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
             self.presentViewController(alert, animated: true, completion: nil)
             return
@@ -526,7 +526,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         temporaryContext.parentContext = self.context
         
         temporaryContext.performBlock { () -> Void in
-            let modifiedVideoClip = self.lastSelectedVideo
+            let modifiedVideoClip = self.currentlyRecordedVideo
             self.saveVideoSegment(outputFileURL, context: self.context)
             
             do {
@@ -564,7 +564,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     func saveVideoSegment(finalPath:NSURL, context: NSManagedObjectContext) {
         if let theCurrentLine = self.currentLine {
             if let theCurrentVideoSegment = self.currentlyRecordedSegment {
-                if let theSelectedVideo = self.lastSelectedVideo {
+                if let theSelectedVideo = self.currentlyRecordedVideo {
                     var tags = [TagMark]()
                     for (color,time) in theCurrentVideoSegment.tagsPlaceholders {
                         let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: context) as! TagMark
@@ -584,7 +584,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     }
                     
                     let elements = theCurrentLine.mutableOrderedSetValueForKey("elements")
-                    elements.addObject(self.lastSelectedVideo!)
+                    elements.addObject(self.currentlyRecordedVideo!)
                     
                     theCurrentVideoSegment.fileName = finalPath.lastPathComponent
                     
@@ -613,7 +613,48 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateTimeRecordedLabel()
         self.isRecording = true
 
-        self.lastSelectedVideo?.consolidate()
+        let currentIndexPath = self.currentIndexPathCollectionView()
+        if layout().isCentered && currentIndexPath != nil {
+            self.currentlyRecordedVideo = self.currentLine!.videos()[currentIndexPath!.item]
+        } else {
+            self.currentlyRecordedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
+            let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
+            if currentIndexPath == nil {
+                elements.addObject(self.currentlyRecordedVideo!)
+            } else {
+                elements.insertObject(self.currentlyRecordedVideo!, atIndex: max(currentIndexPath!.item,1))
+            }
+        }
+        
+        print("BEGIN Saving in parallel?")
+        
+        let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        temporaryContext.parentContext = self.context
+        temporaryContext.performBlock { () -> Void in
+            do {
+                print("SAVING IN TEMPORARY CONTEXT")
+                try temporaryContext.save()
+            } catch {
+                print("Error when handling currentlyRecordedVideo in the temporaryContext: \(error)")
+            }
+            
+            self.context.performBlock({ () -> Void in
+                do {
+                    print("SAVING IN MAIN CONTEXT")
+                    try self.context.save()
+                } catch {
+                    print("Error when handling currentlyRecordedVideo in the final context: \(error)")
+                }
+            })
+        }
+        print("END Saving in parallel?")
+        
+        if currentlyRecordedVideo == nil {
+            print("At this point we should already have a currentlyRecordedVideo")
+            abort()
+        }
+        
+        self.currentLine?.consolidateVideos([self.currentlyRecordedVideo!])
         
         if currentlyRecordedSegment == nil {
             print("At this point we should already have a currentlyRecordedSegment")
@@ -673,44 +714,35 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.animateNewVideoSegment()
     }
     
-    func animateNewVideoSegment() {
-        var currentIndexPath:NSIndexPath? = nil
-        
+    func currentIndexPathCollectionView() -> NSIndexPath? {
         let layout = self.layout()
         let spacing = layout.itemSize.width + layout.minimumInteritemSpacing
         let halfSpacing = spacing / 2
         
         var pointToFind = CGPoint(x: self.collectionView!.contentOffset.x + layout.commonOffset, y: self.collectionView!.frame.height / 2)
         
-        let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
-                
-        currentlyRecordedSegment!.tagsPlaceholders += self.recentTagPlaceholders
-        
-        //TODO OPTIMIZE
-        currentlyRecordedSegment!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-
-        self.view.insertSubview(currentSnapshotView!, aboveSubview: self.collectionView)
-        
         if !layout.isCentered {
             pointToFind.x += halfSpacing
         }
-//        print(pointToFind)
-
-        currentIndexPath = self.collectionView!.indexPathForItemAtPoint(pointToFind)
-
-        if layout.isCentered && currentIndexPath != nil {
-            self.lastSelectedVideo = self.currentLine!.videos()[currentIndexPath!.item]
-        } else {
-            self.lastSelectedVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-            let elements = self.currentLine!.mutableOrderedSetValueForKey("elements")
-            if currentIndexPath == nil {
-                elements.addObject(self.lastSelectedVideo!)
-                currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.lastSelectedVideo!)!, inSection: 0)
-            } else {
-                elements.insertObject(self.lastSelectedVideo!, atIndex: currentIndexPath!.item)
-            }
+        //        print(pointToFind)
+        
+        return self.collectionView!.indexPathForItemAtPoint(pointToFind)
+    }
+    
+    func animateNewVideoSegment() {
+        //TODO OPTIMIZE
+        currentlyRecordedSegment!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
+        currentlyRecordedSegment!.tagsPlaceholders += self.recentTagPlaceholders
+        let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
+        self.view.insertSubview(currentSnapshotView!, aboveSubview: self.collectionView)
+        
+        var currentIndexPath = currentIndexPathCollectionView()
+        let collectionViewLayout = self.layout()
+        
+        if !collectionViewLayout.isCentered && currentIndexPath == nil {
+            currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.currentlyRecordedVideo!)!, inSection: 0)
         }
-
+        
         self.shutterButton.enabled = false
         
         UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
@@ -732,20 +764,20 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                 
                 //Stops the blinking
                 self.recordingIndicator.layer.removeAllAnimations()
-                
-//                self.reshootVideoButton.enabled = true
+                self.reshootVideoButton.enabled = true
             }
         })
         
         self.collectionView?.performBatchUpdates({ () -> Void in
-            if layout.isCentered && self.collectionView?.numberOfItemsInSection(0) > 0 {
+            if collectionViewLayout.isCentered && self.collectionView?.numberOfItemsInSection(0) > 0 {
                 self.collectionView?.reloadItemsAtIndexPaths([currentIndexPath!])
             } else {
                 self.collectionView?.insertItemsAtIndexPaths([currentIndexPath!])
             }
         }, completion: { (completed) -> Void in
-            if !layout.isCentered {
+            if !collectionViewLayout.isCentered {
                 UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    let spacing = collectionViewLayout.itemSize.width + collectionViewLayout.minimumInteritemSpacing
                     self.collectionView?.setContentOffset(CGPoint(x:max(self.collectionView!.contentOffset.x + spacing,0),y: 0), animated: false)
                 }, completion: { (completed) -> Void in
                     self.shutterButton.enabled = true

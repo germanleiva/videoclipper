@@ -220,9 +220,11 @@ class StoryLine: NSManagedObject {
         }
     }
     
-    func consolidateVideos() {
+    func consolidateVideos(ignoredVideos:[VideoClip] = []) {
         for eachVideo in self.videos() {
-            eachVideo.consolidate()
+            if !ignoredVideos.contains(eachVideo) {
+                eachVideo.consolidate()
+            }
         }
     }
 }

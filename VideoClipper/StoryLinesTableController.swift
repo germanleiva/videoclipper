@@ -661,6 +661,14 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
 				let dragPointOnCollectionView = potentiallyNewCollectionView!.convertPoint(dragPointOnCanvas, fromView: self.view)
 				var indexPath = potentiallyNewCollectionView!.indexPathForItemAtPoint(dragPointOnCollectionView)
+                
+                //This should make imposible to reorder the first item but it is not working properly
+//                if let path = indexPath {
+//                    if path.item == 0 {
+//                        indexPath = NSIndexPath(forItem:1,inSection:0)
+//                    }
+//                }
+                
 				self.checkForDraggingAtTheEdgeAndAnimatePaging(gesture,theCollectionView: potentiallyNewCollectionView)
 				
 				if potentiallyNewCollectionView! == self.bundle?.collectionView {
@@ -846,7 +854,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {
 					cell.alpha = 0.0
 					cell.hidden = false
-					UIView.animateWithDuration(0.25, animations: { () -> Void in
+					UIView.animateWithDuration(0.3, animations: { () -> Void in
 						self.rowSnapshot?.center = cell.center
 						self.rowSnapshot?.transform = CGAffineTransformIdentity
 						self.rowSnapshot?.alpha = 0.0

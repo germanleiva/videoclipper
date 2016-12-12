@@ -548,11 +548,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.delegate?.captureVC(self, didChangeVideoClip: modifiedVideoClip!)
+                        self.reshootVideoButton.enabled = true
+                        self.playSegmentButton.enabled = true
                     })
                     
-//                    self.currentVideoSegment = nil
-//                    self.selectedVideo = nil
-                    self.reshootVideoButton.enabled = true
                 } catch {
                     // handle error
                     print("Error when savingVideoSegment in the final context: \(error)")
@@ -626,13 +625,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             }
         }
         
-        print("BEGIN Saving in parallel?")
-        
         let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         temporaryContext.parentContext = self.context
         temporaryContext.performBlock { () -> Void in
             do {
-                print("SAVING IN TEMPORARY CONTEXT")
                 try temporaryContext.save()
             } catch {
                 print("Error when handling currentlyRecordedVideo in the temporaryContext: \(error)")
@@ -640,14 +636,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             
             self.context.performBlock({ () -> Void in
                 do {
-                    print("SAVING IN MAIN CONTEXT")
                     try self.context.save()
                 } catch {
                     print("Error when handling currentlyRecordedVideo in the final context: \(error)")
                 }
             })
         }
-        print("END Saving in parallel?")
         
         if currentlyRecordedVideo == nil {
             print("At this point we should already have a currentlyRecordedVideo")

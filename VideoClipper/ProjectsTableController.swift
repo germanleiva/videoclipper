@@ -21,8 +21,20 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
         didSet {
             fetchedResultsController.fetchRequest.sortDescriptors = [sortDescriptor]
             do {
+                let objectsBeforeSort = self.fetchedResultsController.fetchedObjects!
                 try self.fetchedResultsController.performFetch()
-                self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.Automatic)
+                if let objectsAfterSort = self.fetchedResultsController.fetchedObjects {
+
+                    self.tableView.beginUpdates()
+                    for index in 0..<objectsAfterSort.count {
+                        let anObjectBeforeSort = objectsBeforeSort[index]
+                        let newRow = objectsAfterSort.indexOf({ (element) -> Bool in
+                            element as! Project == anObjectBeforeSort as! Project
+                        })
+                        self.tableView.moveRowAtIndexPath(NSIndexPath(forRow: index, inSection: 0), toIndexPath: NSIndexPath(forRow: newRow!, inSection: 0))
+                    }
+                }
+                self.tableView.endUpdates()
             } catch {
                 print("Couldn't didSet sortOrder \(error)")
             }
@@ -35,9 +47,9 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
             case .recent:
                 return NSSortDescriptor(key: "updatedAt", ascending: false)
             case .alphabeticalAscending:
-                return NSSortDescriptor(key: "name", ascending: true)
+                return NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))
             case .alphabeticalDescending:
-                return NSSortDescriptor(key: "name", ascending: false)
+                return NSSortDescriptor(key: "name", ascending: false, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))
             }
         }
     }

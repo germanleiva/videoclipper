@@ -516,10 +516,10 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
             storyElementCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoCollectionCell", forIndexPath: indexPath) as! StoryElementCollectionCell
         }
         
-        storyElementCell.loader!.startAnimating()
+//        storyElementCell.loader!.startAnimating()
 
         storyElement.loadThumbnail { (image, error) in
-            storyElementCell.loader?.stopAnimating()
+//            storyElementCell.loader?.stopAnimating()
             storyElementCell.thumbnail?.image = image
         }
         
@@ -822,6 +822,13 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 //					tableView.moveRowAtIndexPath(self.sourceIndexPath!, toIndexPath: indexPath!)
                     self.tableView.beginUpdates()
 					self.tableView.moveSection(self.sourceIndexPath!.section, toSection: indexPath!.section)
+                    
+                    let array = [self.sourceIndexPath!.section]
+                    let indexSet = NSMutableIndexSet()
+                    array.forEach{indexSet.addIndex($0)}
+                    print(indexSet)
+                    self.tableView.reloadSections(indexSet, withRowAnimation: .None)
+                    
                     self.tableView.endUpdates()
 //					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)
 					// ... and update source so it is in sync with UI changes.
@@ -838,7 +845,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				
 				let completionBlock = {() -> Void in
 					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
-					self.tableView.reloadData()
+//					self.tableView.reloadData()
 					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
 					self.sourceIndexPath = nil
 					self.rowSnapshot?.removeFromSuperview()

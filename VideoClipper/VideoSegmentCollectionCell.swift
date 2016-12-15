@@ -10,5 +10,5 @@ import UIKit
 
 class VideoSegmentCollectionCell: UICollectionViewCell {
 	@IBOutlet weak var thumbnail:UIImageView!
-    @IBOutlet weak var loader:UIActivityIndicatorView!
+//    @IBOutlet weak var loader:UIActivityIndicatorView!
 }

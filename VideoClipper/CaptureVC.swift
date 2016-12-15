@@ -45,7 +45,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	@IBOutlet weak var recordingTime: UILabel!
 	@IBOutlet weak var recordingIndicator: UIView!
 
-    @IBOutlet weak var playSegmentButton: UIButton!
     @IBOutlet weak var reshootVideoButton: UIButton!
 
 	@IBOutlet weak var previewView: UIView!
@@ -101,7 +100,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         _captureSessionCoordinator = IDCaptureSessionAssetWriterCoordinator()
         _captureSessionCoordinator.setDelegate(self, callbackQueue: dispatch_get_main_queue())
         
-        self.playSegmentButton.enabled = false
         self.reshootVideoButton.enabled = false
 
 		let defaults = NSUserDefaults.standardUserDefaults()
@@ -353,6 +351,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     //TODO
 	@IBAction func reshootPressed(sender:UIButton?) {
+        //Ask for confirmation
+        
+        //Delete the last recorded segment (update the VideoClip model and the thumbnail, right?)
+        
+        //Move the marker to the corresponding position and animate the deletion of the segment (e.g. a flying thumbnail)
     }
 
 	@IBAction func stopMotionPressed(sender: UIButton) {
@@ -451,7 +454,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
         
         scaleAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
-        scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,4, 4, 1))
+        scaleAnimation.toValue =  NSValue(CATransform3D: CATransform3DScale(CATransform3DIdentity,10, 10, 1))
         
         let alphaAnimation = CABasicAnimation(keyPath: "opacity")
         alphaAnimation.fromValue = 1
@@ -549,7 +552,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.delegate?.captureVC(self, didChangeVideoClip: modifiedVideoClip!)
                         self.reshootVideoButton.enabled = true
-                        self.playSegmentButton.enabled = true
                     })
                     
                 } catch {
@@ -954,7 +956,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		let videoSegmentCell = collectionView.dequeueReusableCellWithReuseIdentifier("VideoSegmentCollectionCell", forIndexPath: indexPath) as! VideoSegmentCollectionCell
 		let video = self.currentLine!.videos()[indexPath.item]
 
-        videoSegmentCell.loader.startAnimating()
+//        videoSegmentCell.loader.startAnimating()
 
         video.loadThumbnail({ (image, error) in
             if image == nil {
@@ -964,7 +966,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             } else {
                 videoSegmentCell.thumbnail.image = image
             }
-            videoSegmentCell.loader.stopAnimating()
+//            videoSegmentCell.loader.stopAnimating()
         })
         
 //		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
@@ -1043,11 +1045,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
 		let line = self.currentLine!.project!.storyLines![indexPath.row] as! StoryLine
         
-        titleCardCell.loader.startAnimating()
+//        titleCardCell.loader.startAnimating()
 
         let titleCard = line.firstTitleCard()!
         titleCard.loadThumbnail({ (image, error) in
-            titleCardCell.loader.stopAnimating()
+//            titleCardCell.loader.stopAnimating()
             titleCardCell.titleCardImage.image = image
         })
 		

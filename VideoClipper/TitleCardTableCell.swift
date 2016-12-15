@@ -11,13 +11,13 @@ import UIKit
 class TitleCardTableCell: UITableViewCell {
 
     
-    @IBOutlet weak var loader:UIActivityIndicatorView!
+//    @IBOutlet weak var loader:UIActivityIndicatorView!
     @IBOutlet weak var titleCardImage:UIImageView!
 
     override func prepareForReuse() {
         //TODO Workaround, some cell's in the table where whipeout :(\
 //        self.titleCardImage.image = nil
-        self.loader.startAnimating()
+//        self.loader.startAnimating()
     }
 //    override func awakeFromNib() {
 //        super.awakeFromNib()

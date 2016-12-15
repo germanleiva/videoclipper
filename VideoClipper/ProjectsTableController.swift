@@ -17,9 +17,32 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	var creatingNewProject = false
     var creatingWithQuickstart = false
 
-    var unProyecto:Project? = nil
+    var sortOrder:Order = .recent {
+        didSet {
+            fetchedResultsController.fetchRequest.sortDescriptors = [sortDescriptor]
+            do {
+                try self.fetchedResultsController.performFetch()
+                self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.Automatic)
+            } catch {
+                print("Couldn't didSet sortOrder \(error)")
+            }
+        }
+    }
+        
+    var sortDescriptor:NSSortDescriptor {
+        get {
+            switch sortOrder {
+            case .recent:
+                return NSSortDescriptor(key: "updatedAt", ascending: false)
+            case .alphabeticalAscending:
+                return NSSortDescriptor(key: "name", ascending: true)
+            case .alphabeticalDescending:
+                return NSSortDescriptor(key: "name", ascending: false)
+            }
+        }
+    }
     
-  
+    var unProyecto:Project? = nil
     
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -243,9 +266,6 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		
 		// Set the batch size to a suitable number.
 		fetchRequest.fetchBatchSize = 20
-		
-		// Edit the sort key as appropriate.
-		let sortDescriptor = NSSortDescriptor(key: "updatedAt", ascending: false)
 		
 		fetchRequest.sortDescriptors = [sortDescriptor]
 		

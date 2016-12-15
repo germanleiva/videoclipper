@@ -10,6 +10,12 @@ import UIKit
 import CoreData
 import Crashlytics
 
+enum Order:Int {
+    case recent = 0
+    case alphabeticalAscending
+    case alphabeticalDescending
+}
+
 class ProjectsVC: UIViewController {
 	var projectsTableController:ProjectsTableController? = nil
 	
@@ -43,5 +49,10 @@ class ProjectsVC: UIViewController {
         self.projectsTableController?.insertNewProject(quickStarted:true)
         
         Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+    }
+    
+    @IBAction func changedSegment(sender:UISegmentedControl) {
+        guard let order = Order(rawValue: sender.selectedSegmentIndex) else { return }
+        self.projectsTableController?.sortOrder = order
     }
 }

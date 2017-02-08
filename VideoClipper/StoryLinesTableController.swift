@@ -780,6 +780,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			let location = gesture.locationInView(self.tableView)
 			var indexPath = self.tableView.indexPathForRowAtPoint(location)
 			if indexPath == nil {
+                print("indexPath@location es nil en el gesture recognizer callback")
 				if self.sourceIndexPath == nil {
                     print("TODO MAL - pero fixeado")
                     gesture.cancel()
@@ -845,7 +846,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				
 				let completionBlock = {() -> Void in
 					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
-//					self.tableView.reloadData()
+                    self.tableView.beginUpdates()
+					self.tableView.reloadData()
+                    self.tableView.endUpdates()
 					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
 					self.sourceIndexPath = nil
 					self.rowSnapshot?.removeFromSuperview()

@@ -1156,28 +1156,42 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     @IBAction func swipedDownOnCollectionView(recognizer:UISwipeGestureRecognizer) {
         let point = recognizer.locationInView(self.collectionView)
+        
+        
         if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
-            let videoToDelete = self.currentLine?.videos()[indexPath.item]
-            
-            let elements = self.currentLine?.mutableOrderedSetValueForKey("elements")
-            elements?.removeObject(videoToDelete!)
-            videoToDelete?.deleteAssociatedFiles()
-            self.context.deleteObject(videoToDelete!)
-            
-            do {
-                try self.context.save()
+            let alert = UIAlertController(title: "Delete video", message: "Do you want to delete this video?", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
+                self.deleteVideo(atIndexPath:indexPath)
                 
-                self.collectionView.performBatchUpdates({ () -> Void in
-                    self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+                alert.dismissViewControllerAnimated(true, completion: nil)
+            }))
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func deleteVideo(atIndexPath indexPath:NSIndexPath) {
+        let videoToDelete = self.currentLine?.videos()[indexPath.item]
+        
+        let elements = self.currentLine?.mutableOrderedSetValueForKey("elements")
+        elements?.removeObject(videoToDelete!)
+        videoToDelete?.deleteAssociatedFiles()
+        self.context.deleteObject(videoToDelete!)
+        
+        do {
+            try self.context.save()
+            
+            self.collectionView.performBatchUpdates({ () -> Void in
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
                 }, completion: { (completed) in
                     self.collectionView.reloadData()
-                })
-                
-                self.updateTimeRecordedLabel()
-                
-            } catch {
-                print("Couldn't delete video \(error)")
-            }
+            })
+            
+            self.updateTimeRecordedLabel()
+            
+        } catch {
+            print("Couldn't delete video \(error)")
         }
     }
     

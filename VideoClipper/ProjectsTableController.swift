@@ -390,7 +390,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
 			//			if (editingStyle == UITableViewCellEditingStyle.Delete) {
 			// handle delete (by removing the data from your array and updating the tableview)
-			let alert = UIAlertController(title: "Delete project", message: "The videos will remain in your Photo Album. Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.Alert)
+			let alert = UIAlertController(title: "Delete project", message: "Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.Alert)
 			alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
 				let projectToDelete = self.fetchedResultsController.objectAtIndexPath(index)
 				self.context.deleteObject(projectToDelete as! NSManagedObject)

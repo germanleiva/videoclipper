@@ -823,11 +823,11 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                     self.tableView.beginUpdates()
 					self.tableView.moveSection(self.sourceIndexPath!.section, toSection: indexPath!.section)
                     
-                    let array = [self.sourceIndexPath!.section]
-                    let indexSet = NSMutableIndexSet()
-                    array.forEach{indexSet.addIndex($0)}
-                    print(indexSet)
-                    self.tableView.reloadSections(indexSet, withRowAnimation: .None)
+//                    let array = [self.sourceIndexPath!.section]
+//                    let indexSet = NSMutableIndexSet()
+//                    array.forEach{indexSet.addIndex($0)}
+//                    print(indexSet)
+//                    self.tableView.reloadSections(indexSet, withRowAnimation: .None)
                     
                     self.tableView.endUpdates()
 //					self.tableView.reloadRowsAtIndexPaths([indexPath!], withRowAnimation: UITableViewRowAnimation.None)

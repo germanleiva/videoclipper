@@ -67,7 +67,7 @@
             </objects>
             <point key="canvasLocation" x="1989" y="-163"/>
         </scene>
-        <!--a-z-->
+        <!--ProjectsVC-->
         <scene sceneID="nQB-GU-P9N">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" id="2eg-K2-fVx" customClass="ProjectsVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
@@ -108,19 +108,20 @@
                             <constraint firstAttribute="trailing" secondItem="P2e-NX-aZ8" secondAttribute="trailing" id="zeF-G4-ma8"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="a-z" id="0ff-5I-Jcd">
+                    <navigationItem key="navigationItem" id="0ff-5I-Jcd">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" title="Settings" id="y1z-oE-aFY">
                             <connections>
                                 <segue destination="gbV-f4-DqK" kind="show" id="Ggv-Qv-PVz"/>
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="aE3-dj-FfW">
-                            <rect key="frame" x="308" y="7" width="409" height="30"/>
+                            <rect key="frame" x="307.5" y="7" width="409" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <segments>
                                 <segment title="Recent"/>
-                                <segment title="a-Z"/>
-                                <segment title="z-a"/>
+                                <segment title="A-Z"/>
+                                <segment title="Z-A"/>
                             </segments>
                             <connections>
                                 <action selector="changedSegment:" destination="2eg-K2-fVx" eventType="valueChanged" id="35Q-nD-Ktp"/>
@@ -157,31 +158,31 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="zNr-Pf-YMh">
-                                            <rect key="frame" x="18" y="8" width="804" height="84"/>
+                                            <rect key="frame" x="18" y="8" width="965" height="84"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o09-el-fXX">
-                                                    <rect key="frame" x="0.0" y="0.0" width="804" height="53"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="965" height="53"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GgB-18-eeG">
-                                                    <rect key="frame" x="0.0" y="53" width="804" height="31"/>
+                                                    <rect key="frame" x="0.0" y="53" width="965" height="31"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Updated on 07/12/2015, 19:21" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d0B-rC-Lbx">
-                                                            <rect key="frame" x="0.0" y="5" width="268" height="20"/>
+                                                            <rect key="frame" x="0.0" y="6" width="321.5" height="19.5"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="XX lines" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lS2-Pl-2Ag">
-                                                            <rect key="frame" x="268" y="5" width="268" height="20"/>
+                                                            <rect key="frame" x="321.5" y="6" width="322" height="19.5"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="XX videos" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X2t-gB-Bme">
-                                                            <rect key="frame" x="536" y="5" width="268" height="20"/>
+                                                            <rect key="frame" x="643.5" y="6" width="321.5" height="19.5"/>
                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
@@ -873,7 +874,7 @@
                                                 <rect key="frame" x="0.0" y="22" width="192" height="113"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fBp-b6-dIZ" id="qct-k3-WPf">
-                                                    <rect key="frame" x="0.0" y="0.0" width="192" height="112"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="192" height="112.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="JpS-Vh-1wC">
@@ -1193,6 +1194,7 @@
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Lzs-KQ-gSO" secondAttribute="height" multiplier="1:1" id="KFJ-V3-5S7"/>
                                         </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         <state key="normal" image="icon-trash"/>
                                         <connections>
                                             <action selector="deleteSelectedWidget:" destination="IbS-bj-HKR" eventType="touchUpInside" id="trK-qs-qjy"/>

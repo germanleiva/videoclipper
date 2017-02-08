@@ -1154,23 +1154,24 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		}
 	}
     
-    @IBAction func swipedUpOnCollectionView(recognizer:UISwipeGestureRecognizer) {
-        print("Swiping disabled")
-        return
+    @IBAction func swipedDownOnCollectionView(recognizer:UISwipeGestureRecognizer) {
         let point = recognizer.locationInView(self.collectionView)
         if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
             let videoToDelete = self.currentLine?.videos()[indexPath.item]
             
             let elements = self.currentLine?.mutableOrderedSetValueForKey("elements")
             elements?.removeObject(videoToDelete!)
-            
+            videoToDelete?.deleteAssociatedFiles()
             self.context.deleteObject(videoToDelete!)
             
             do {
                 try self.context.save()
+                
                 self.collectionView.performBatchUpdates({ () -> Void in
                     self.collectionView.deleteItemsAtIndexPaths([indexPath])
-                    }, completion: nil)
+                }, completion: { (completed) in
+                    self.collectionView.reloadData()
+                })
                 
                 self.updateTimeRecordedLabel()
                 

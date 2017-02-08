@@ -313,6 +313,24 @@ class VideoClip: StoryElement {
 		return nil
 	}
     
+    func deleteAssociatedFiles() {
+        if let fileName = self.fileName {
+            let path = Globals.documentsDirectory.URLByAppendingPathComponent(fileName)!
+            let fileManager = NSFileManager()
+            if fileManager.fileExistsAtPath(path.path!) {
+                do {
+                    try fileManager.removeItemAtURL(path)
+                } catch let error as NSError {
+                    print("Couldn't delete existing file video path: \(error)")
+                }
+            }
+        }
+        if self.segments!.count > 0 {
+            let segmentsToDelete = self.segments!.map { $0 as! VideoSegment }
+            self.deleteSegments(segmentsToDelete)
+        }
+    }
+    
     func consolidate(){
         if self.fileName == nil && self.segments!.count == 1 {
             let onlySegment = self.segments!.firstObject as! VideoSegment

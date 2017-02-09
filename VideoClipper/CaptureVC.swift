@@ -938,8 +938,31 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}*/
 
 	func updateGhostImage() {
-		self.ghostImageView.image = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-        self.ghostPanel.hidden = self.ghostImageView.image == nil
+//        var ghostImage:UIImage! = _captureSessionCoordinator.snapshotOfLastVideoBuffer();
+        
+        let blockToDo = { (ghostImage:UIImage!) -> Void in
+            self.ghostImageView.image = ghostImage
+            self.ghostPanel.hidden = self.ghostImageView.image == nil
+        }
+        
+        var indexPathGhost = NSIndexPath(forItem: self.currentLine!.videos().count - 1, inSection: 0)
+        if let nextIndexPath = currentIndexPathCollectionView() {
+            indexPathGhost = NSIndexPath(forItem: layout().isCentered ? nextIndexPath.item : nextIndexPath.item - 1, inSection: 0)
+        }
+        if indexPathGhost.item < 0 {
+            //There is no ghost to show, maybe we should keep using the current ghost
+        } else {
+            let videoWithGhost = self.currentLine!.videos()[indexPathGhost.item]
+            
+            videoWithGhost.loadThumbnail({ (image, error) in
+                if image != nil {
+                    blockToDo(image)
+                } else {
+                    blockToDo(self._captureSessionCoordinator.snapshotOfLastVideoBuffer())
+                }
+            })
+        }
+        
 	}
 	
 	//-MARK: Collection View Data Source
@@ -1236,6 +1259,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.layout().isCentered = false
     }
     
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        updateGhostImage()
+    }
+    
     func resetMarker(animated:Bool = true){
         self.markerWidthConstraint?.constant = markerSmallWidth
         
@@ -1258,6 +1285,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
     }
     
+    //-MARK: Marker CenterFlowLayout Delegate
     func layout(layout: CenteredFlowLayout, changedModeTo isCentered: Bool) {
         updateMarkerShape(isCentered)
         updateStopMotionWidgets()

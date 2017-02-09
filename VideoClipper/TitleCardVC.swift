@@ -370,10 +370,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		if let info = notification.userInfo {
 			let keyboardSize = info[UIKeyboardFrameBeginUserInfoKey]!.CGRectValue.size
 			let textFieldOrigin = self.view.convertPoint(self.editingTextView!.frame.origin, fromView: self.editingTextView!.superview)
+            let textFieldEnd = CGPoint(x:textFieldOrigin.x + self.editingTextView!.frame.width, y:textFieldOrigin.y + self.editingTextView!.frame.height)
 			let textFieldHeight = self.editingTextView!.frame.size.height
 			var visibleRect = self.view.frame
 			visibleRect.size.height -= keyboardSize.height
-			if (!CGRectContainsPoint(visibleRect, textFieldOrigin)){
+			if (!CGRectContainsPoint(visibleRect, textFieldOrigin) || !CGRectContainsPoint(visibleRect, textFieldEnd)){
 				let scrollPoint = CGPoint(x: 0.0, y: textFieldOrigin.y - visibleRect.size.height + textFieldHeight)
 				self.scrollView!.setContentOffset(scrollPoint, animated: true)
 			}

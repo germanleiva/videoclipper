@@ -512,7 +512,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     func coordinator(coordinator: IDCaptureSessionCoordinator!, didFinishRecordingToOutputFileURL outputFileURL: NSURL!, error: NSError!) {
         UIApplication.sharedApplication().idleTimerDisabled = false
         self.isRecording = false
-        self.updateGhostImage()
+        self.updateGhostImage(true)
 
         if error != nil {
             //TODO do we need to clean some variables here?
@@ -914,6 +914,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 //			_recorder.session = session
 //		}
 		self.updateTimeRecordedLabel()
+        //TODO check if this call to updateGhostImage is needed
 		self.updateGhostImage()
 	}
 	
@@ -937,12 +938,17 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.updateTimeRecordedLabel()
 	}*/
 
-	func updateGhostImage() {
+    func updateGhostImage(recentlyRecorded:Bool=false) {
 //        var ghostImage:UIImage! = _captureSessionCoordinator.snapshotOfLastVideoBuffer();
         
         let blockToDo = { (ghostImage:UIImage!) -> Void in
             self.ghostImageView.image = ghostImage
             self.ghostPanel.hidden = self.ghostImageView.image == nil
+        }
+        
+        if recentlyRecorded {
+            blockToDo(self._captureSessionCoordinator.snapshotOfLastVideoBuffer())
+            return
         }
         
         var indexPathGhost = NSIndexPath(forItem: self.currentLine!.videos().count - 1, inSection: 0)

@@ -1008,6 +1008,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
             let elements = line.mutableOrderedSetValueForKey("elements")
             let itemIndex = elements.indexOfObject(element)
             elements.removeObject(element)
+            self.context.deleteObject(element)
             
             do {
                 try self.context.save()

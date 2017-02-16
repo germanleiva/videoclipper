@@ -70,6 +70,8 @@ class VideoSegment: NSManagedObject {
             if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
                 if otherVideoSegmentsUsingSameFile.isEmpty {
                     self.unsafeDeleteVideoSegmentFile()
+                } else {
+                    print("There is another VideoSegment using this file, we are not deleting it")
                 }
             }
         } catch {

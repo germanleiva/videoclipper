@@ -1199,9 +1199,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         let elements = self.currentLine?.mutableOrderedSetValueForKey("elements")
         elements?.removeObject(videoToDelete!)
-        videoToDelete?.deleteAssociatedFiles()
         self.context.deleteObject(videoToDelete!)
-        
+        self.currentlyRecordedVideo = nil
+
         do {
             try self.context.save()
             

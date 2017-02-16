@@ -245,7 +245,9 @@ class VideoClip: StoryElement {
                 
                 if fileManager.fileExistsAtPath(finalPath.path!) {
                     do {
-                        try fileManager.removeItemAtURL(finalPath)
+                        //TODO
+//                        try fileManager.removeItemAtURL(finalPath)
+                        print("The writePath of this VideoClip already exist, we are not deleting but should we?")
                     } catch let error as NSError {
                         print("Couldn't delete existing final video path: \(error)")
                     }
@@ -313,21 +315,46 @@ class VideoClip: StoryElement {
 		return nil
 	}
     
+    
+    override func didSave() {
+        super.didSave()
+        
+        if self.deleted {
+            self.deleteAssociatedFiles()
+        }
+    }
+    
     func deleteAssociatedFiles() {
         if let fileName = self.fileName {
-            let path = Globals.documentsDirectory.URLByAppendingPathComponent(fileName)!
-            let fileManager = NSFileManager()
-            if fileManager.fileExistsAtPath(path.path!) {
-                do {
-                    try fileManager.removeItemAtURL(path)
-                } catch let error as NSError {
-                    print("Couldn't delete existing file video path: \(error)")
+            let request = NSFetchRequest(entityName: self.entity.name!)
+            request.predicate = NSPredicate(format: "(self != %@) AND (self.fileName == %@)", argumentArray: [self.objectID,fileName])
+            do {
+                if let otherVideoClipsUsingTheSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
+                    if otherVideoClipsUsingTheSameFile.isEmpty {
+                        self.unsafeDeleteVideoClipFile(fileName)
+                    } else {
+                        print("There is another VideoClip using this file, we are not deleting it")
+                    }
                 }
+            } catch {
+                print("Couldn't run query to verify if the video segment file should be deleted")
             }
         }
         if self.segments!.count > 0 {
             let segmentsToDelete = self.segments!.map { $0 as! VideoSegment }
             self.deleteSegments(segmentsToDelete)
+        }
+    }
+    
+    func unsafeDeleteVideoClipFile(aFileName:String) {
+        let path = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+        let fileManager = NSFileManager()
+        if fileManager.fileExistsAtPath(path.path!) {
+            do {
+                try fileManager.removeItemAtURL(path)
+            } catch let error as NSError {
+                print("Couldn't delete existing file video path: \(error)")
+            }
         }
     }
     

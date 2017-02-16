@@ -12,7 +12,7 @@ import CoreData
 
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
-let keyGhostEnabled = "keyGhostEnabled"
+let keyGhostDisabled = "keyGhostDisabled"
 
 
 protocol CaptureVCDelegate:class {
@@ -107,7 +107,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		
 		let savedGhostLevel = defaults.floatForKey(keyGhostLevel)
 		self.ghostImageView.alpha = CGFloat(savedGhostLevel)
-        self.toggleGhostWidgets(defaults.boolForKey(keyGhostEnabled))
+        self.toggleGhostWidgets(defaults.boolForKey(keyGhostDisabled))
 		self.updateShutterLabel(self.shutterLock!.on)
 		
 		self.shutterButton.cameraButtonMode = .VideoReady
@@ -286,10 +286,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         toggleGhostWidgets(!sender.selected)
     }
     
-    func toggleGhostWidgets(isOn:Bool) {
+    func toggleGhostWidgets(isOff:Bool) {
         let defaults = NSUserDefaults.standardUserDefaults()
         var value = defaults.floatForKey(keyGhostLevel)
-        if isOn {
+        if !isOff {
             //I enabled ghost
             if value == 0 {
                 value = 0.30
@@ -300,12 +300,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             value = 0
         }
 
-        defaults.setBool(isOn, forKey: keyGhostEnabled)
+        defaults.setBool(isOff, forKey: keyGhostDisabled)
         defaults.synchronize()
 
         changeGhostImageAlpha(value)
         ghostSlider.value = value
-        ghostButton.selected = isOn
+        ghostButton.selected = !isOff
         
         var tintColor = UIColor.whiteColor()
         if self.ghostButton.selected {
@@ -951,6 +951,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
         if indexPathGhost.item < 0 {
             //There is no ghost to show, maybe we should keep using the current ghost
+            blockToDo(self._captureSessionCoordinator.snapshotOfLastVideoBuffer())
         } else {
             let videoWithGhost = self.currentLine!.videos()[indexPathGhost.item]
             

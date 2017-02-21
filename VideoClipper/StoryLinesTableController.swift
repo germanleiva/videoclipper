@@ -373,14 +373,6 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 
 				let clonedLine = lineToClone.cloneWithCopyCache([self.project!.objectID:self.project!]) as! StoryLine
 				
-//				for eachElement in clonedLine.elements! {
-//					if (eachElement as! StoryElement).isVideo() {
-//						(eachElement as! VideoClip).loadAsset(nil)
-//					} else {
-//						(eachElement as! TitleCard).loadAsset(nil)
-//					}
-//				}
-				
 				let projectLines = lineToClone.project?.mutableOrderedSetValueForKey("storyLines")
 				projectLines!.addObject(clonedLine)
 
@@ -389,7 +381,15 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				do {
 					try self.context.save()
                     Answers.logCustomEventWithName("Line cloned", customAttributes: nil)
-
+                    
+                    for eachElement in clonedLine.elements! {
+                        if (eachElement as! StoryElement).isVideo() {
+                            (eachElement as! VideoClip).copyVideoFile()
+                        } else {
+                            (eachElement as! TitleCard).copyVideoFile()
+                        }
+                    }
+                    
 				} catch {
 					print("Couldn't save cloned line \(error)")
 				}

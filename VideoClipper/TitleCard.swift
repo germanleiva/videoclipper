@@ -173,5 +173,21 @@ class TitleCard: StoryElement {
         self.videoFileName = nil
 //        super.deleteAssetFile()
     }
+    
+    func copyVideoFile() {
+        if let aFileName = self.videoFileName {
+            let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+            let myFile = self.potentialVideoPath()
+            
+            do {
+                try NSFileManager().copyItemAtURL(clonedFile, toURL: myFile)
+                self.videoFileName = myFile.lastPathComponent
+                
+                try self.managedObjectContext!.save()
+            } catch let error as NSError {
+                print("Couldn't copyVideoFile in TitleCard: \(error.localizedDescription)")
+            }
+        }
+    }
 
 }

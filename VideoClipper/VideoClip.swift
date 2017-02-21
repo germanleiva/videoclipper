@@ -31,6 +31,7 @@ class VideoClip: StoryElement {
         set {
             self.durationValue = NSNumber(longLong: newValue.value)
             self.durationTimescale = NSNumber(int: newValue.timescale)
+            _duration = kCMTimeZero
         }
     }
 	
@@ -194,6 +195,9 @@ class VideoClip: StoryElement {
     }
 
     func writePath(prefix:String="",fileExtension:String="mov") -> NSURL {
+        if let _ = self.fileName {
+            print("Asking for WritePath of VideoClip while I already have a fileName")
+        }
         if self.objectID.temporaryID {
             print("THIS WAS A TEMPORARY ID")
         }
@@ -217,16 +221,9 @@ class VideoClip: StoryElement {
         let fileManager = NSFileManager()
         
         self.exportSession = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPreset1280x720)
+        
         let path = self.writePath("temp",fileExtension: "mov")
-        
-        if fileManager.fileExistsAtPath(path.path!) {
-            do {
-                try fileManager.removeItemAtURL(path)
-            } catch let error as NSError {
-                print("Couldn't delete existing temp video path: \(error)")
-            }
-        }
-        
+                
         //Set the output url
         exportSession!.outputURL = path
         
@@ -249,7 +246,7 @@ class VideoClip: StoryElement {
                         try fileManager.removeItemAtURL(finalPath)
 //                        print("The writePath of this VideoClip already exist, we are not deleting but should we?")
                     } catch let error as NSError {
-                        print("Couldn't delete existing final video path: \(error)")
+                        print("Couldn't delete existing FINAL video path: \(error)")
                     }
                 }
                 
@@ -257,14 +254,16 @@ class VideoClip: StoryElement {
                     try NSFileManager().moveItemAtURL(path, toURL: finalPath)
                     self.fileName = finalPath.lastPathComponent
                     self.duration = videoAsset.duration
+                    print("Exported duration of asset \(videoAsset.duration)")
                     
                     self.deleteSegments(usedSegments)
-                    
-                    do {
-                        try fileManager.removeItemAtURL(path)
-                    } catch let error as NSError {
-                        print("Couldn't delete existing temp video path: \(error)")
-                    }
+
+                    //I just moved so it won't be there to be deleted, right?
+//                    do {
+//                        try fileManager.removeItemAtURL(path)
+//                    } catch let error as NSError {
+//                        print("Couldn't delete existing temp video path: \(error)")
+//                    }
                     
                 } catch let error as NSError {
                     print("Couldn't copy segment file to video clip file: \(error.localizedDescription)")
@@ -348,7 +347,7 @@ class VideoClip: StoryElement {
     
     func unsafeDeleteVideoClipFile(aFileName:String) {
         let path = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
-        let fileManager = NSFilmoveIeManager()
+        let fileManager = NSFileManager()
         if fileManager.fileExistsAtPath(path.path!) {
             do {
                 try fileManager.removeItemAtURL(path)
@@ -389,6 +388,25 @@ class VideoClip: StoryElement {
                     }
                 })
             }
+        }
+    }
+    
+    func copyVideoFile() {
+        if let aFileName = self.fileName {
+            let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+            let myFile = self.writePath()
+            
+            do {
+                try NSFileManager().copyItemAtURL(clonedFile, toURL: myFile)
+                self.fileName = myFile.lastPathComponent
+                
+                try self.managedObjectContext!.save()
+            } catch let error as NSError {
+                print("Couldn't copyVideoFile in VideoClip: \(error.localizedDescription)")
+            }
+        }
+        for eachSegment in self.segments! {
+            eachSegment.copyVideoFile()
         }
     }
 }

@@ -43,6 +43,9 @@ class VideoSegment: NSManagedObject {
     }
     
     func writePath() -> NSURL {
+        if let _ = self.fileName {
+            print("Asking for WritePath of VideoSegment while I already have a fileName")
+        }
         if self.objectID.temporaryID {
             print("THIS WAS A TEMPORARY ID")
         }
@@ -85,6 +88,22 @@ class VideoSegment: NSManagedObject {
             self.fileName = nil
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
+        }
+    }
+    func copyVideoFile() {
+        if let aFileName = self.fileName {
+            let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+            let myFile = self.writePath()
+            
+            do {
+                try NSFileManager().copyItemAtURL(clonedFile, toURL: myFile)
+                self.fileName = myFile.lastPathComponent
+                
+                try self.managedObjectContext!.save()
+            } catch let error as NSError {
+                print("Couldn't copyVideoFile in Segment: \(error.localizedDescription)")
+                
+            }
         }
     }
 }

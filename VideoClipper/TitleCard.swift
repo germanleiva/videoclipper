@@ -117,11 +117,12 @@ class TitleCard: StoryElement {
             self.managedObjectContext?.performBlock({ () -> Void in
                 do {
                     try self.managedObjectContext?.save()
+                    handler?()
                 } catch {
                     print("DB FAILED writeVideoFromSnapshot: \(error) ")
+                    handler?()
                 }
             })
-            handler?()
         }
     }
 

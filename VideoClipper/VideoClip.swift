@@ -246,8 +246,8 @@ class VideoClip: StoryElement {
                 if fileManager.fileExistsAtPath(finalPath.path!) {
                     do {
                         //TODO
-//                        try fileManager.removeItemAtURL(finalPath)
-                        print("The writePath of this VideoClip already exist, we are not deleting but should we?")
+                        try fileManager.removeItemAtURL(finalPath)
+//                        print("The writePath of this VideoClip already exist, we are not deleting but should we?")
                     } catch let error as NSError {
                         print("Couldn't delete existing final video path: \(error)")
                     }
@@ -348,7 +348,7 @@ class VideoClip: StoryElement {
     
     func unsafeDeleteVideoClipFile(aFileName:String) {
         let path = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
-        let fileManager = NSFileManager()
+        let fileManager = NSFilmoveIeManager()
         if fileManager.fileExistsAtPath(path.path!) {
             do {
                 try fileManager.removeItemAtURL(path)
@@ -371,7 +371,7 @@ class VideoClip: StoryElement {
                 self.mutableOrderedSetValueForKey("segments").removeObject(onlySegment)
                 try self.managedObjectContext!.save()
             } catch let error as NSError {
-                print("Couldn't copy segment file to video clip file: \(error.localizedDescription)")
+                print("Couldn't (consolidate) copy segment file to video clip file: \(error.localizedDescription)")
 
             }
             

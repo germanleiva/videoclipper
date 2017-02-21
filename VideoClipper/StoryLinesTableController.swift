@@ -418,7 +418,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		
 		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, indexPath in
 
-			if storyLine.elements!.count == 0 {
+			if storyLine.elements == nil || storyLine.elements!.count == 0 {
 				self.deleteStoryLine(indexPath)
 				return
 			}

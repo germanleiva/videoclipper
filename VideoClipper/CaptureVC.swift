@@ -37,9 +37,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	@IBOutlet var topCollectionViewLayout:NSLayoutConstraint!
 	
-    var currentlyRecordedSegment:VideoSegment? = nil
-    var recordedSegment = [VideoSegment]()
-
+    var orphanVideoSegmentModelHolder:VideoSegment? = nil
     var currentlyRecordedVideo:VideoClip? = nil
 	
 	@IBOutlet weak var recordingTime: UILabel!
@@ -70,14 +68,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	var shouldUpdatePreviewLayerFrame = true
 	weak var delegate:CaptureVCDelegate? = nil
 	var selectedLineIndexPath:NSIndexPath? = nil
-
     
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
 	
     let updateTimerQueue = dispatch_queue_create("fr.lri.exsitu.QueueVideoClipper", nil)
 
     var titleChangedObserver:NSObjectProtocol? = nil
-    
     
     deinit {
         if let anObserver = titleChangedObserver {
@@ -130,25 +126,27 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.collectionView.backgroundView = UIView(frame: CGRectZero)
     }
     
-    func createNewVideoSegmentModelHolder(shouldSaveInDB shouldSave:Bool) {
-        if currentlyRecordedSegment == nil {
-            self.currentlyRecordedSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
+    func createNewVideoSegmentModelHolder(shouldSaveInDB shouldSave:Bool) -> VideoSegment? {
+            let newSegment = NSEntityDescription.insertNewObjectForEntityForName("VideoSegment", inManagedObjectContext: context) as? VideoSegment
             
             if shouldSave {
                 do {
                     try context.save()
+                    return newSegment
                 } catch let error as NSError {
                     print("Couldn't save the new currentlyRecordSegment: \(error.localizedDescription)")
                     abort()
                 }
             }
-        }
+            return newSegment
     }
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-        createNewVideoSegmentModelHolder(shouldSaveInDB:true)
+        if self.orphanVideoSegmentModelHolder == nil {
+            self.orphanVideoSegmentModelHolder = createNewVideoSegmentModelHolder(shouldSaveInDB:true)
+        }
         
 		//This is a workaround
 		self.ghostImageView.image = nil
@@ -516,11 +514,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
         if error != nil {
             //TODO do we need to clean some variables here?
-            self.currentlyRecordedSegment = nil
+            self.orphanVideoSegmentModelHolder = nil
             self.currentlyRecordedVideo = nil
             let alert = UIAlertController(title: "Cannot create video file", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
             self.presentViewController(alert, animated: true, completion: nil)
-            return
+            abort()
         }
         
         //This happens in background thread (check https://www.cocoanetics.com/2012/07/multi-context-coredata/)
@@ -528,8 +526,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         temporaryContext.parentContext = self.context
         
+        let modifiedVideoClip = self.currentlyRecordedVideo
+        let modifiedVideoSegment = self.orphanVideoSegmentModelHolder
         temporaryContext.performBlock { () -> Void in
-            let modifiedVideoClip = self.currentlyRecordedVideo
             self.saveVideoSegment(outputFileURL, context: self.context)
             
             do {
@@ -545,7 +544,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                         //If we need a "finally"
                         
                     }
-                    self.createNewVideoSegmentModelHolder(shouldSaveInDB: false)
+                    self.orphanVideoSegmentModelHolder = self.createNewVideoSegmentModelHolder(shouldSaveInDB: false)
 
                     try self.context.save()
                     
@@ -564,7 +563,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func saveVideoSegment(finalPath:NSURL, context: NSManagedObjectContext) {
         if let theCurrentLine = self.currentLine {
-            if let theCurrentVideoSegment = self.currentlyRecordedSegment {
+            if let theCurrentVideoSegment = self.orphanVideoSegmentModelHolder {
                 if let theSelectedVideo = self.currentlyRecordedVideo {
                     var tags = [TagMark]()
                     for (color,time) in theCurrentVideoSegment.tagsPlaceholders {
@@ -585,7 +584,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     }
                     
                     let elements = theCurrentLine.mutableOrderedSetValueForKey("elements")
-                    elements.addObject(self.currentlyRecordedVideo!)
+                    elements.addObject(theSelectedVideo)
                     
                     theCurrentVideoSegment.fileName = finalPath.lastPathComponent
                     
@@ -627,6 +626,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             }
         }
         
+        let currentVideo = self.currentlyRecordedVideo!
+        
         let temporaryContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         temporaryContext.parentContext = self.context
         temporaryContext.performBlock { () -> Void in
@@ -639,6 +640,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             self.context.performBlock({ () -> Void in
                 do {
                     try self.context.save()
+                    self.currentLine?.consolidateVideos([currentVideo])
                 } catch {
                     print("Error when handling currentlyRecordedVideo in the final context: \(error)")
                 }
@@ -650,16 +652,15 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             abort()
         }
         
-        self.currentLine?.consolidateVideos([self.currentlyRecordedVideo!])
         
-        if currentlyRecordedSegment == nil {
-            print("At this point we should already have a currentlyRecordedSegment")
+        if orphanVideoSegmentModelHolder == nil {
+            print("At this point we should already have a orphanVideoSegmentModelHolder")
             abort()
         }
         
         UIApplication.sharedApplication().idleTimerDisabled = true
         
-        self._captureSessionCoordinator.suggestedFileURL(self.currentlyRecordedSegment!.writePath())
+        self._captureSessionCoordinator.suggestedFileURL(self.orphanVideoSegmentModelHolder!.writePath())
         self._captureSessionCoordinator.startRecording()
         
         self.ghostImageView.hidden = true
@@ -697,7 +698,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.isRecording = false
 
         //We need to save the totalTime of the recorded segment in the segment object because it will be reset it in the _captureSessionCoordinator
-        self.currentlyRecordedSegment!.time = self.totalTimeSeconds()
+        self.orphanVideoSegmentModelHolder!.time = self.totalTimeSeconds()
         //TODO check if this stop recording is too fast (or slow) and the coordinator:didFinishRecordingToOutputFileURL: is being call too soon (or late)
         _captureSessionCoordinator.stopRecording()
         
@@ -727,8 +728,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func animateNewVideoSegment() {
         //TODO OPTIMIZE
-        currentlyRecordedSegment!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
-        currentlyRecordedSegment!.tagsPlaceholders += self.recentTagPlaceholders
+        orphanVideoSegmentModelHolder!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
+        orphanVideoSegmentModelHolder!.tagsPlaceholders += self.recentTagPlaceholders
         let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
         self.view.insertSubview(currentSnapshotView!, aboveSubview: self.collectionView)
         
@@ -992,7 +993,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             if image == nil {
                 //TODO OPTIMIZE (this line is not a problem but generating the snapshop is expensive)
                 //WORKAROUND for empty videoClip
-                videoSegmentCell.thumbnail.image = self.currentlyRecordedSegment!.snapshot?.resize(CGSize(width: 192,height: 103))
+                videoSegmentCell.thumbnail.image = self.orphanVideoSegmentModelHolder!.snapshot?.resize(CGSize(width: 192,height: 103))
             } else {
                 videoSegmentCell.thumbnail.image = image
             }
@@ -1137,6 +1138,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {
+        self.currentlyRecordedVideo = nil
+        
 		let project = self.currentLine!.project!
 		let j = project.storyLines!.count + 1
 		

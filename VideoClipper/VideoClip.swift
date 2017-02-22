@@ -346,14 +346,17 @@ class VideoClip: StoryElement {
     }
     
     func unsafeDeleteVideoClipFile(aFileName:String) {
-        let path = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
-        let fileManager = NSFileManager()
-        if fileManager.fileExistsAtPath(path.path!) {
-            do {
-                try fileManager.removeItemAtURL(path)
-            } catch let error as NSError {
-                print("Couldn't delete existing file video path: \(error)")
+        if let path = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName) {
+            let fileManager = NSFileManager()
+            if fileManager.fileExistsAtPath(path.path!) {
+                do {
+                    try fileManager.removeItemAtURL(path)
+                } catch let error as NSError {
+                    print("Couldn't delete existing file video path: \(error)")
+                }
             }
+        } else {
+            print("Reaching an unsafeDelete withouth a fileName sounds suspicious")
         }
     }
     

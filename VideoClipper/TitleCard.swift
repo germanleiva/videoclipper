@@ -83,7 +83,7 @@ class TitleCard: StoryElement {
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
 
             let createAsset = {
-                let asset = AVAsset(URL: self.videoPath!)
+                let asset = AVURLAsset(URL: self.videoPath!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         completionHandler?(asset:asset,composition:nil,error:nil)

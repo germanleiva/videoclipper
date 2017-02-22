@@ -125,7 +125,7 @@ class VideoClip: StoryElement {
             
             if let aFileName = self.fileName {
                 //I have a file created so that should be my first asset
-                let videoClipAsset = AVAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!)
+                let videoClipAsset = AVURLAsset(URL: Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 
                 dispatch_group_enter(assetLoadingGroup);
                 

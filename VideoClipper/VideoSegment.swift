@@ -35,7 +35,7 @@ class VideoSegment: NSManagedObject {
         get {
             if _asset == nil {
                 if let aPath = self.path {
-                    _asset = AVAsset(URL: aPath)
+                    _asset = AVURLAsset(URL: aPath, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 }
             }
             return _asset

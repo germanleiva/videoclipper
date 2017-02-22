@@ -362,6 +362,7 @@ class VideoClip: StoryElement {
     
     func consolidate(){
         if self.fileName == nil && self.segments!.count == 1 {
+            print("Consolidating VideoClip \(self.objectID) with one segment")
             let onlySegment = self.segments!.firstObject as! VideoSegment
             let originPath = onlySegment.path
             let destinationPath = self.writePath()
@@ -379,6 +380,7 @@ class VideoClip: StoryElement {
             
         } else {
             if self.segments!.count > 0 {
+                print("Consolidating VideoClip \(self.objectID) with \(self.segments!.count) segments")
                 var usedSegments:[VideoSegment] = []
                 for each in self.segments! {
                     usedSegments.append(each as! VideoSegment)
@@ -390,6 +392,8 @@ class VideoClip: StoryElement {
                         print("ERROR LOCO: \(error)")
                     }
                 })
+            } else {
+                print("Already consolidated VideoClip \(self.objectID)")
             }
         }
     }

@@ -549,7 +549,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
                                     let refImg = try generateImg.copyCGImageAtTime(asset.duration, actualTime: nil)
                                     let thumbnailImage = UIImage(CGImage: refImg)
                                     
-                                    newVideo!.snapshotData = UIImageJPEGRepresentation(thumbnailImage,0.5)
+                                    newVideo!.snapshotData = UIImageJPEGRepresentation(thumbnailImage,0.75)
                                     newVideo!.thumbnailData = UIImageJPEGRepresentation(thumbnailImage.resize(CGSize(width: 192, height: 103)),1)
                                     
                                     newVideo!.fileName = videoURL?.lastPathComponent

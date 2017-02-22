@@ -596,7 +596,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     }
                     
                     //TODO OPTIMIZE - both
-                    theSelectedVideo.snapshotData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!,0.5)
+                    theSelectedVideo.snapshotData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!,0.75)
                     theSelectedVideo.thumbnailData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)),1)
                 } else {
                     print("I'm saving the recently recorded segment but there is no parent video clip")

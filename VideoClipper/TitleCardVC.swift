@@ -445,7 +445,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let img = UIGraphicsGetImageFromCurrentImageContext()
 			UIGraphicsEndImageContext()
 			
-			weakSelf.titleCard?.snapshotData = UIImageJPEGRepresentation(img!,0.5)
+			weakSelf.titleCard?.snapshotData = UIImageJPEGRepresentation(img!,0.75)
             
             let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
             

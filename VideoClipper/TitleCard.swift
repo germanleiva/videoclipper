@@ -118,10 +118,14 @@ class TitleCard: StoryElement {
             self.managedObjectContext?.performBlock({ () -> Void in
                 do {
                     try self.managedObjectContext?.save()
-                    handler?()
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        handler?()
+                    })
                 } catch {
                     print("DB FAILED writeVideoFromSnapshot: \(error) ")
-                    handler?()
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        handler?()
+                    })
                 }
             })
         }
@@ -163,13 +167,13 @@ class TitleCard: StoryElement {
     
     func deleteAssetFile() {
         if let path = self.videoPath {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
                 do {
                     try NSFileManager().removeItemAtURL(path)
                 } catch let error as NSError {
                     print("Couldn't delete titlecard video file \(path): \(error.localizedDescription)")
                 }
-            }
+//            }
         }
         self.videoFileName = nil
 //        super.deleteAssetFile()

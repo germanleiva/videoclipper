@@ -171,7 +171,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		widgetsOnTitleCard.addObject(widget)
 		
 		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
-		
+        firstTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
+        firstTitleCard.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
+        
 		do {
 			try context.save()
 			self.tableController!.addStoryLine(storyLine)
@@ -387,7 +389,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 			}
 		}
         
-        StoryLine.createComposition(NSOrderedSet(array: elements), completionHandler: { (composition,videoComposition) -> Void in            
+        let window = UIApplication.sharedApplication().delegate!.window!
+        let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        progressBar.show(true)
+        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+
+        StoryLine.createComposition(NSOrderedSet(array: elements), completionHandler: { (composition,videoComposition) -> Void in
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
             item.videoComposition = videoComposition
             self.player = AVPlayer(playerItem: item)
@@ -396,8 +403,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             
             let playerVC = AVPlayerViewController()
             playerVC.player = self.player
+            
+            UIApplication.sharedApplication().endIgnoringInteractionEvents()
+            progressBar.hide(true)
+
             self.presentViewController(playerVC, animated: true, completion: { () -> Void in
                 Answers.logCustomEventWithName("Play project success", customAttributes: nil)
+                
                 playerVC.player?.play()
                 
                 for eachLine in self.project!.storyLines! {

@@ -240,19 +240,19 @@
                     }
                 }
                 
-                //TIMED METADATA
-                if (frameCount == 0) {
-                    NSString *iso6709Notation = @"+48.7127+002.1680+142.418/";
-                    AVMutableMetadataItem *newMetadataItem = [[AVMutableMetadataItem alloc] init];
-                    newMetadataItem.identifier = AVMetadataIdentifierQuickTimeMetadataLocationISO6709;
-                    newMetadataItem.dataType = (__bridge NSString *)kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709;
-                    newMetadataItem.value = iso6709Notation;
-                    AVTimedMetadataGroup *metadataGroup = [[AVTimedMetadataGroup alloc] initWithItems:@[newMetadataItem] timeRange:CMTimeRangeMake(frameTime, kCMTimeInvalid)];
-                    
-                    if (![assetWriterMetadataAdaptor appendTimedMetadataGroup:metadataGroup]) {
-                        NSLog(@"appendTimedMetadataGroup FAILED");
-                    }
-                }
+                //TODO TIMED METADATA
+//                if (frameCount == 0) {
+//                    NSString *iso6709Notation = @"+48.7127+002.1680+142.418/";
+//                    AVMutableMetadataItem *newMetadataItem = [[AVMutableMetadataItem alloc] init];
+//                    newMetadataItem.identifier = AVMetadataIdentifierQuickTimeMetadataLocationISO6709;
+//                    newMetadataItem.dataType = (__bridge NSString *)kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709;
+//                    newMetadataItem.value = iso6709Notation;
+//                    AVTimedMetadataGroup *metadataGroup = [[AVTimedMetadataGroup alloc] initWithItems:@[newMetadataItem] timeRange:CMTimeRangeMake(frameTime, kCMTimeInvalid)];
+//                    
+//                    if (![assetWriterMetadataAdaptor appendTimedMetadataGroup:metadataGroup]) {
+//                        NSLog(@"appendTimedMetadataGroup FAILED");
+//                    }
+//                }
                 
             }
             else {

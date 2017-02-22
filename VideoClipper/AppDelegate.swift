@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import Fabric
 import Crashlytics
+import Photos
 
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
@@ -75,6 +76,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         lagFreeField.becomeFirstResponder()
         lagFreeField.resignFirstResponder()
         lagFreeField.removeFromSuperview()
+        
+        PHPhotoLibrary.requestAuthorization { (status) in
+            switch(status) {
+            case .Authorized:
+                break
+//            case .Denied:
+//            case .NotDetermined:
+//            case .Restricted:
+            default:
+//                let alert = UIAlertController(title: "Are you sure?", message: "You cannot export your project withouth this permission", preferredStyle: UIAlertControllerStyle.Default)
+                break
+            }
+        }
         
 		return true
 	}

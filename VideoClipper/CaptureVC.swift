@@ -561,6 +561,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
     }
     
+    //This method is called save but it doesn't save actually =$
     func saveVideoSegment(finalPath:NSURL, context: NSManagedObjectContext) {
         if let theCurrentLine = self.currentLine {
             if let theCurrentVideoSegment = self.orphanVideoSegmentModelHolder {

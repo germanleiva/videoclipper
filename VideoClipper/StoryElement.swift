@@ -35,6 +35,10 @@ class StoryElement: NSManagedObject {
         fatalError("Should be implemented by subclass")
     }
     
+    func copyVideoFile() {
+        fatalError("Should be implemented by subclass")
+    }
+    
 //    func deleteAssetFile() {
 //        self.asset = nil
 //    }

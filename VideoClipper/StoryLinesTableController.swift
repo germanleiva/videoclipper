@@ -383,11 +383,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                     Answers.logCustomEventWithName("Line cloned", customAttributes: nil)
                     
                     for eachElement in clonedLine.elements! {
-                        if (eachElement as! StoryElement).isVideo() {
-                            (eachElement as! VideoClip).copyVideoFile()
-                        } else {
-                            (eachElement as! TitleCard).copyVideoFile()
-                        }
+                        (eachElement as! StoryElement).copyVideoFile()
                     }
                     
 				} catch {

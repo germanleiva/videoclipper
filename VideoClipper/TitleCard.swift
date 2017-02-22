@@ -174,7 +174,7 @@ class TitleCard: StoryElement {
 //        super.deleteAssetFile()
     }
     
-    func copyVideoFile() {
+    override func copyVideoFile() {
         if let aFileName = self.videoFileName {
             let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
             let myFile = self.potentialVideoPath()

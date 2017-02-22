@@ -391,7 +391,7 @@ class VideoClip: StoryElement {
         }
     }
     
-    func copyVideoFile() {
+    override func copyVideoFile() {
         if let aFileName = self.fileName {
             let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
             let myFile = self.writePath()

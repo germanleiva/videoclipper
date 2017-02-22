@@ -147,6 +147,7 @@ class StoryLine: NSManagedObject {
 //                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
                 
                 let range = CMTimeRangeMake(startTime, assetDuration)
+//                let range = CMTimeRangeMake(startTime,sourceVideoTrack!.timeRange.duration)
                 do {
                     try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
                     compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform

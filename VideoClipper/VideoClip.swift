@@ -54,7 +54,8 @@ class VideoClip: StoryElement {
 		if self.startPoint == nil {
 			self.startPoint = 0
 		}
-		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
+//		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
+        return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), self.duration.timescale)
 	}
 	
     override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){

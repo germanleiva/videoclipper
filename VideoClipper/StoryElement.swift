@@ -23,7 +23,7 @@ class StoryElement: NSManagedObject {
 		return false
 	}
 	
-	func realDuration() -> NSNumber {
+    func realDuration(timescale:Int32 = 44100) -> CMTime {
 		fatalError("Should be implemented by subclass")
 	}
     

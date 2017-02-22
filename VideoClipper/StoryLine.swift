@@ -112,7 +112,7 @@ class StoryLine: NSManagedObject {
                     eachVideo.duration = asset!.duration
                     
                     startTime = eachVideo.startTime
-                    assetDuration = CMTimeMakeWithSeconds(Float64(eachVideo.realDuration()), asset!.duration.timescale)
+                    assetDuration = eachVideo.realDuration()
                     
                 } else if (eachElement as! StoryElement).isTitleCard() {
 //                    let eachTitleCard = eachElement as! TitleCard

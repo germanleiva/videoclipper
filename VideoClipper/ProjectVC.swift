@@ -443,7 +443,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 				}
 				if !eachStoryLine.shouldHide!.boolValue {
 					let eachElement = eachStoryLine.elements![elementIndex] as! StoryElement
-					cursorTime = CMTimeAdd(cursorTime,CMTimeMakeWithSeconds(Float64(eachElement.realDuration()), timescale))
+					cursorTime = CMTimeAdd(cursorTime,eachElement.realDuration(timescale))
 				}
 			}
 		}

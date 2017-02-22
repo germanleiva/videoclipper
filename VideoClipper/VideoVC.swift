@@ -347,7 +347,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 
 	func filmstrip(filmstripView:FilmstripView,didChangeScrubbing percentage:Float) {
-		self.scrubberSlider.value = percentage * self.scrubberSlider.maximumValue
+		self.scrubberSlider.value = percentage / 100 * self.scrubberSlider.maximumValue
 		self.scrubberSlider.setNeedsDisplay()
 		self.showPopupUI()
 	}

@@ -35,27 +35,20 @@ class VideoClip: StoryElement {
         }
     }
 	
-	override func realDuration() -> NSNumber {
-		let durationInSeconds = CMTimeGetSeconds(self.duration)
-		let startPercentage = Float64(self.startPoint!)
+	override func realDuration(timescale:Int32 = 44100) -> CMTime {
+        let startPercentage = self.startPoint!.intValue
 		
 		if self.endPoint == nil {
-			self.endPoint = 1
+			self.endPoint = 100
 		}
 		
-		let endPercentage = Float64(self.endPoint!)
+		let endPercentage = self.endPoint!.intValue
 		
-		return durationInSeconds * (endPercentage - startPercentage)
+        return CMTimeMultiplyByRatio(self.duration, endPercentage - startPercentage,100)
 	}
 	
 	var startTime:CMTime {
-		let durationInSeconds = CMTimeGetSeconds(self.duration)
-		//This shouldn't be necesarry anymore
-		if self.startPoint == nil {
-			self.startPoint = 0
-		}
-//		return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), 1000)
-        return CMTimeMakeWithSeconds(durationInSeconds * Float64(self.startPoint!), self.duration.timescale)
+        return CMTimeMultiplyByRatio(self.duration, self.startPoint!.intValue,100)
 	}
 	
     override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){

@@ -35,8 +35,8 @@ class TitleCard: StoryElement {
 		return self.widgets!.array as! [TextWidget]
 	}
 	
-	override func realDuration() -> NSNumber {
-		return self.duration!
+	override func realDuration(timescale:Int32 = 44100) -> CMTime {
+        return CMTimeMakeWithSeconds(Float64(self.duration!), timescale)
 	}
 
 	//DEPRECATED?

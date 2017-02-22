@@ -237,8 +237,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         let state = recognizer.state
         
         let location = min(max(recognizer.locationInView(self).x,0),self.frame.width)
-        var percentage = Float(location / self.frame.width)
-        percentage = max(0,min(percentage,1))
+        let percentage = Float(max(0,min(location * 100 / self.frame.width,100)))
         
         switch state {
         case UIGestureRecognizerState.Began:
@@ -263,7 +262,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     func moveRightThumb(recognizer:UIPanGestureRecognizer) {
         let state = recognizer.state
         let potentialStartConstraint = min(max(recognizer.locationInView(self).x,0),self.frame.width)
-        let percentage = Float(potentialStartConstraint / self.frame.width)
+        let percentage = Float(potentialStartConstraint / self.frame.width) * 100
         
         switch state {
         case UIGestureRecognizerState.Began:
@@ -293,8 +292,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     func pannedScrubber(sender:UIPanGestureRecognizer) {
         let state = sender.state
         let location = sender.locationInView(self)
-        var percentage = Float(location.x / self.frame.width)
-        percentage = max(0,min(percentage,1))
+        let percentage = Float(max(0,min(location.x * 100 / self.frame.width,100)))
         
         switch(state) {
         case .Began:
@@ -310,11 +308,10 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     
     func generateThumbnails(video:VideoClip,asset:AVAsset,startPercentage:NSNumber,endPercentage:NSNumber) {
         
-        self.startConstraint.constant = self.frame.width * CGFloat(startPercentage)
-        self.endConstraint.constant = self.frame.width * (1 - CGFloat(endPercentage))
+        self.startConstraint.constant = self.frame.width * CGFloat(startPercentage) / 100
+        self.endConstraint.constant = self.frame.width * (100 - CGFloat(endPercentage)) / 100
         let duration = asset.duration
         self.durationInSeconds = CGFloat(CMTimeGetSeconds(duration))
-        
         
         if video.thumbnailImages!.count > 0 {
             self.buildScrubber(video)

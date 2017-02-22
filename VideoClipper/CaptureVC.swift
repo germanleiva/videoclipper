@@ -588,6 +588,12 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
                     
                     theCurrentVideoSegment.fileName = finalPath.lastPathComponent
                     
+                    if (theSelectedVideo.thumbnailImages?.count > 0) {
+                        //I need to delete the thumbnailImages so they can be regenerated
+                        let images = theSelectedVideo.mutableOrderedSetValueForKey("thumbnailImages")
+                        images.removeAllObjects()
+                    }
+                    
                     //TODO OPTIMIZE - both
                     theSelectedVideo.snapshotData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!,0.5)
                     theSelectedVideo.thumbnailData = UIImageJPEGRepresentation(theCurrentVideoSegment.snapshot!.resize(CGSize(width: 192, height: 103)),1)

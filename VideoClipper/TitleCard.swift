@@ -59,12 +59,13 @@ class TitleCard: StoryElement {
                 }
             } else {
                 //TODO workaround
-                if self.storyLine?.project?.storyLines?.count == 1 {
-                    self.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
-
-                } else {
-                    self.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
-                }
+//                if self.storyLine?.project?.storyLines?.count == 1 {
+//                    self.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+//
+//                } else {
+//                    self.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
+//                }
+                print("WEIRD")
             }
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 completionHandler?(image: self.thumbnailImage,error: nil)

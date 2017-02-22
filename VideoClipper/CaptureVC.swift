@@ -1179,7 +1179,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		widgetsOnTitleCard.addObject(widget)
 		
 		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
-		
+        firstTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
+        firstTitleCard.thumbnailImage = UIImage(named: "defaultTitleCard-thumbnail")
+        
 		do {
 			try context.save()
 

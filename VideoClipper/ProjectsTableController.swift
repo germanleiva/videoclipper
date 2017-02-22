@@ -352,9 +352,13 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 //			}))
 //			self.presentViewController(alert, animated: true, completion: nil)
 			self.editing = false
-			MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-			
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
+            
+            let window = UIApplication.sharedApplication().delegate!.window!
+            let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+            progressBar.show(true)
+            UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+            
+//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
 				
 				let projectToClone = self.fetchedResultsController.objectAtIndexPath(index) as! Project
 				
@@ -376,11 +380,12 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 					
 					self.creatingNewProject = true
 					
-					MBProgressHUD.hideHUDForView(self.view, animated: true)
+                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                    progressBar.hide(true)
 					
 					self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
 				})
-			})
+//			})
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		

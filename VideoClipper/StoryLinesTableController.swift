@@ -365,9 +365,12 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
 			self.editing = false
-			MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+            let window = UIApplication.sharedApplication().delegate!.window!
+            let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
+            progressBar.show(true)
+            UIApplication.sharedApplication().beginIgnoringInteractionEvents()
 			
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
+//			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
 				
 				let lineToClone = storyLine
 
@@ -390,12 +393,13 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 					print("Couldn't save cloned line \(error)")
 				}
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					MBProgressHUD.hideHUDForView(self.view, animated: true)
+                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                    progressBar.hide(true)
 					
 					self.tableView.reloadData()
 					self.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: projectLines!.indexOfObject(clonedLine)), animated: true)
 				})
-			})
+//			})
 		}
 		cloneAction.backgroundColor = UIColor.orangeColor()
 		

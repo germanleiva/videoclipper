@@ -322,8 +322,8 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
 		
 		//Generate the @2x equivalent
 		let scale = UIScreen.mainScreen().scale
-//		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * scale,height:0)
-		imageGenerator.maximumSize = CGSize(width: 92.5 * scale, height: 52 * scale)
+		imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * scale,height:0)
+//		imageGenerator.maximumSize = CGSize(width: 92.5 * scale, height: 52 * scale)
 		
 		var times = [NSValue]()
 		

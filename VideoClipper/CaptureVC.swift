@@ -728,7 +728,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func animateNewVideoSegment() {
         //TODO OPTIMIZE
-        orphanVideoSegmentModelHolder!.snapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
+        let bufferedSnapshot = _captureSessionCoordinator.snapshotOfLastVideoBuffer()
+        currentlyRecordedVideo!.snapshotImage = bufferedSnapshot
+        currentlyRecordedVideo!.thumbnailImage = bufferedSnapshot
+        orphanVideoSegmentModelHolder!.snapshot = bufferedSnapshot
         orphanVideoSegmentModelHolder!.tagsPlaceholders += self.recentTagPlaceholders
         let currentSnapshotView = self.previewView.snapshotViewAfterScreenUpdates(false)
         self.view.insertSubview(currentSnapshotView!, aboveSubview: self.collectionView)

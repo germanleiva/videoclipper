@@ -721,7 +721,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         if !layout.isCentered {
             pointToFind.x += halfSpacing
         }
-        //        print(pointToFind)
+//                print(pointToFind)
         
         return self.collectionView!.indexPathForItemAtPoint(pointToFind)
     }
@@ -741,6 +741,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         
         if !collectionViewLayout.isCentered && currentIndexPath == nil {
             currentIndexPath = NSIndexPath(forItem: self.currentLine!.videos().indexOf(self.currentlyRecordedVideo!)!, inSection: 0)
+        } else {
+            //TODO check
+            if (collectionViewLayout.isCentered && currentIndexPath == nil) {
+                currentIndexPath = NSIndexPath(forItem:0,inSection:0)
+            }
         }
         
         self.shutterButton.enabled = false

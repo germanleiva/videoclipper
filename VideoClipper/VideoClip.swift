@@ -236,9 +236,7 @@ class VideoClip: StoryElement {
                 
                 if fileManager.fileExistsAtPath(finalPath.path!) {
                     do {
-                        //TODO
                         try fileManager.removeItemAtURL(finalPath)
-//                        print("The writePath of this VideoClip already exist, we are not deleting but should we?")
                     } catch let error as NSError {
                         print("Couldn't delete existing FINAL video path: \(error)")
                     }

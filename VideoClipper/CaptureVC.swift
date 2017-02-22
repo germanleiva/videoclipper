@@ -315,21 +315,6 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         }
     }
 	
-    //TODO
-//	@IBAction func tappedOnVideo(sender:UIButton) {
-//		if let recordSession = self._recorder.session {
-//			if recordSession.segments.isEmpty {
-//				return
-//			}
-//			
-//			let playerVC = AVPlayerViewController()
-//			playerVC.player = AVPlayer(playerItem:recordSession.playerItemRepresentingSegments())
-//			self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-//				playerVC.player?.play()
-//			})
-//		}
-//	}
-	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 
@@ -800,145 +785,13 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         })
     }
 
-    //DEPRECATED
-	/*func saveCapture(completion:(()->Void)?) {
-		let titleCardPlaceHolder = self.titleCardTable.cellForRowAtIndexPath(self.selectedLineIndexPath!)!
-		let frameInBackground = self.view.convertRect(self.videoPlaceholder.frame, fromView: self.rightPanel)
-		let videoPlaceholderCopy = self.videoPlaceholder.snapshotViewAfterScreenUpdates(false)
-		self.view.addSubview(videoPlaceholderCopy)
-		videoPlaceholderCopy.frame = frameInBackground
-		self.videoPlaceholder.hidden = true
-		
-		var delay = 0.0
-		if self.stopMotionButton.selected {
-			let copies = self.segmentsCollectionView.visibleCells().map { (eachCell) -> UIView in
-				let cellCopy = eachCell.snapshotViewAfterScreenUpdates(false)
-				self.segmentsCollectionView.addSubview(cellCopy)
-				cellCopy.frame = eachCell.frame
-				return cellCopy
-			}
-			
-			self.videoSegments.removeAll()
-			self.segmentsCollectionView.reloadData()
-			
-			delay = 0.3
-			UIView.animateWithDuration(delay, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				for eachSegment in copies {
-					eachSegment.center = self.segmentsCollectionView.convertPoint(self.videoPlaceholder.center, fromView: self.rightPanel)
-				}
-			}, completion: { (completed) -> Void in
-				for eachSegment in copies {
-					eachSegment.removeFromSuperview()
-				}
-			})
-		}
-		
-		UIView.animateWithDuration(0.5, delay: delay, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-			videoPlaceholderCopy.center = titleCardPlaceHolder.center
-		}, completion: { (completed) -> Void in
-			UIView.animateWithDuration(0.3, animations: { () -> Void in
-				videoPlaceholderCopy.alpha = 0
-			}, completion: { (completed) -> Void in
-				if completed {
-					videoPlaceholderCopy.removeFromSuperview()
-				}
-			})
-            
-            //TODO
-//			if let recordSession = self._recorder.session {
-//				recordSession.mergeSegmentsUsingPreset(AVAssetExportPresetHighestQuality, completionHandler: { (url, error) -> Void in
-//					if error == nil {
-//						//This is a workaround
-//						if self._recorder.session != nil {
-//							var modelTags = [TagMark]()
-//							for eachSegment in self.videoSegments {
-//								for (color,time) in eachSegment.tagsPlaceholders {
-//									let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext) as! TagMark
-//									newTag.color = color
-//									newTag.time! = time / self.totalTimeSeconds()
-//									modelTags.append(newTag)
-//								}
-//							}
-//							
-//							self.delegate!.captureVC(self, didFinishRecordingVideoClipAtPath: url!,tags:modelTags)
-//						} else {
-//							print("THIS SHOULDN'T HAPPEN EVER!")
-//						}
-//						
-//						self.deleteSegments(false)
-//						self.updateTimeRecordedLabel()
-//						
-//						completion?()
-//					} else {
-////						self.infoLabel.text = "ERROR :("
-//						completion?()
-//						let alert = UIAlertController(title: "Error: \(error?.localizedDescription)", message: "Sorry, we couldn't save your video", preferredStyle: UIAlertControllerStyle.Alert)
-//						self.presentViewController(alert, animated: true, completion: nil)
-//					}
-//				})
-//			}
-		})
-	}*/
-	
-    //TODO
-/*	func deleteSegments(animated:Bool = true) {
-//		for eachSegment in self.segmentThumbnails {
-//			eachSegment.snapshot.removeFromSuperview()
-//		}
-		self.videoSegments.removeAll()
-//		self._recorder.session?.removeAllSegments(true)
-		
-		let copies = self.segmentsCollectionView.visibleCells().map { (eachCell) -> UIView in
-			let cellCopy = eachCell.snapshotViewAfterScreenUpdates(false)
-			self.segmentsCollectionView.addSubview(cellCopy)
-			cellCopy.frame = eachCell.frame
-			return cellCopy
-		}
-
-		self.segmentsCollectionView.reloadData()
-		
-		if animated {
-			let defaultVideoPlaceholderFrame = self.videoPlaceholder.frame
-			
-			UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-				self.videoPlaceholder.frame = CGRectOffset(self.videoPlaceholder.frame, 0, -self.videoPlaceholder.frame.height * 2)
-				for eachCopy in copies {
-					eachCopy.frame = CGRectOffset(eachCopy.frame, 0, -eachCopy.frame.height * 2)
-				}
-			}) { (completed) -> Void in
-				if completed {
-				self.videoPlaceholder.hidden = true
-				self.videoPlaceholder.frame = defaultVideoPlaceholderFrame
-					for eachCopy in copies {
-						eachCopy.removeFromSuperview()
-					}
-				}
-			}
-		}
-		
-		self.reshootVideoButton.enabled = false
-		self.ghostImageView.image = nil
-	}*/
 
 	//-MARK: SCRecorder things
     func prepareSession() {
-//		if (_recorder.session == nil) {
-//			
-//			let session = RecordSession()
-//			session.fileType = AVFileTypeQuickTimeMovie
-//			
-//			_recorder.session = session
-//		}
 		self.updateTimeRecordedLabel()
         //TODO check if this call to updateGhostImage is needed
 		self.updateGhostImage()
 	}
-	
-	/*func recorder(recorder: Recorder, didCompleteSegment segment: RecordSessionSegment?, inSession session: RecordSession, error: NSError?) {
-		print("Completed record segment at \(segment?.url): \(error?.localizedDescription) (frameRate: \(segment?.frameRate))")
-
-		self.updateGhostImage()
-	}*/
 	
 	func updateTimeRecordedLabel() {
 		let time = Int(self.totalTimeSeconds())
@@ -950,13 +803,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 		self.recordingTime.text = timeString;
 	}
 	
-	/*func recorder(recorder: Recorder, didAppendVideoSampleBufferInSession session: SCRecordSession) {
-		self.updateTimeRecordedLabel()
-	}*/
 
     func updateGhostImage(recentlyRecorded:Bool=false) {
-//        var ghostImage:UIImage! = _captureSessionCoordinator.snapshotOfLastVideoBuffer();
-        
         let blockToDo = { (ghostImage:UIImage!) -> Void in
             self.ghostImageView.image = ghostImage
             self.ghostPanel.hidden = self.ghostImageView.image == nil
@@ -1014,20 +862,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             }
 //            videoSegmentCell.loader.stopAnimating()
         })
-        
-//		for eachTagLine in [UIView](videoSegmentCell.contentView.subviews) {
-//			if eachTagLine != videoSegmentCell.thumbnail! {
-//				eachTagLine.removeFromSuperview()
-//			}
-//		}
-		
-//		for (color,time) in video.tagsPlaceholders {
-//			let newTagLine = UIView(frame: CGRect(x: 0,y: 0,width: 2,height: videoSegmentCell.contentView.frame.height))
-//			newTagLine.backgroundColor = color
-//			newTagLine.frame = CGRectOffset(newTagLine.frame, CGFloat(time / self.totalTimeSeconds()) * videoSegmentCell.contentView.frame.width, 0)
-//			videoSegmentCell.contentView.addSubview(newTagLine)
-//		}
-		
+        		
 		return videoSegmentCell
 	}
 	

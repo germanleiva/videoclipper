@@ -281,7 +281,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
     
     @IBAction func touchUpGhostButton(sender:UIButton) {
-        toggleGhostWidgets(!sender.selected)
+        toggleGhostWidgets(sender.selected)
     }
     
     func toggleGhostWidgets(isOff:Bool) {

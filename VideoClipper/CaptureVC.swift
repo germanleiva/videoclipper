@@ -277,7 +277,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	@IBAction func touchUpGhostSlider(sender: UISlider) {
         let defaults = NSUserDefaults.standardUserDefaults()
         defaults.setFloat(sender.value, forKey: keyGhostLevel)
-        toggleGhostWidgets(sender.value > 0)
+        toggleGhostWidgets(sender.value == 0)
     }
     
     @IBAction func touchUpGhostButton(sender:UIButton) {

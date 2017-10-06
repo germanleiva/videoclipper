@@ -460,7 +460,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     
     func configurePreviewLayer(){
         let previewLayer = _captureSessionCoordinator.previewLayer()
-        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
         
         previewLayer.frame = self.previewView.bounds
 

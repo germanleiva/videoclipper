@@ -648,8 +648,11 @@
                                 <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                                 <subviews>
                                     <imageView alpha="0.40000000000000002" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RFp-Dy-GI4">
-                                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                                        <rect key="frame" x="0.0" y="96" width="1024" height="576"/>
                                         <gestureRecognizers/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="576" id="Ias-te-LaY"/>
+                                        </constraints>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -657,7 +660,6 @@
                                 <constraints>
                                     <constraint firstItem="RFp-Dy-GI4" firstAttribute="centerY" secondItem="8nt-VJ-yhx" secondAttribute="centerY" id="Nh1-lS-UPN"/>
                                     <constraint firstItem="RFp-Dy-GI4" firstAttribute="width" secondItem="8nt-VJ-yhx" secondAttribute="width" id="Vrz-fV-EI2"/>
-                                    <constraint firstItem="RFp-Dy-GI4" firstAttribute="height" secondItem="8nt-VJ-yhx" secondAttribute="height" id="wvX-k2-vpN"/>
                                     <constraint firstItem="RFp-Dy-GI4" firstAttribute="centerX" secondItem="8nt-VJ-yhx" secondAttribute="centerX" id="yMk-CI-6ai"/>
                                 </constraints>
                                 <connections>

@@ -880,6 +880,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 //		}
 	}
+    
+    @IBAction func templatePressed(sender: UIButton) {
+        
+    }
 	
 	@IBAction func takePicture(sender:AnyObject?) {
 		self.importImagePopover?.dismissViewControllerAnimated(true, completion: nil)

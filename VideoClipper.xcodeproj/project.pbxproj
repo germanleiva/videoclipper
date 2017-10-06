@@ -53,6 +53,7 @@
 		A4A5F7B11B453C3F0090E98A /* StoryElement+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A5F7A71B453C3F0090E98A /* StoryElement+CoreDataProperties.swift */; };
 		A4AAF6A61B8B4A3C006391DE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AAF6A41B8B4A3C006391DE /* Fabric.framework */; };
 		A4AAF6A71B8B4A3C006391DE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4AAF6A51B8B4A3C006391DE /* Crashlytics.framework */; };
+		A4AD62BE1F87BE94006EE0FC /* TemplatePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AD62BD1F87BE94006EE0FC /* TemplatePickerController.swift */; };
 		A4BC7F321B6906B100D86E99 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */; };
 		A4BC7F351B6A1BE400D86E99 /* Project+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */; };
 		A4BC7F361B6A1BE400D86E99 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BC7F341B6A1BE400D86E99 /* Project.swift */; };
@@ -173,6 +174,7 @@
 		A4AA38601D0C07500057F8ED /* VideoClipper_06.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_06.xcdatamodel; sourceTree = "<group>"; };
 		A4AAF6A41B8B4A3C006391DE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		A4AAF6A51B8B4A3C006391DE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		A4AD62BD1F87BE94006EE0FC /* TemplatePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplatePickerController.swift; sourceTree = "<group>"; };
 		A4BC7F301B6906B100D86E99 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		A4BC7F311B6906B100D86E99 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		A4BC7F331B6A1BE400D86E99 /* Project+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Project+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 			children = (
 				A4664AF51B452D680095B27D /* TitleCardVC.swift */,
 				A4EFEAEC1B89C76900BED386 /* DurationPickerController.swift */,
+				A4AD62BD1F87BE94006EE0FC /* TemplatePickerController.swift */,
 				A4D095B21B9092BA008F4316 /* ColorPickerViewController.swift */,
 			);
 			name = "TitleCard VC";
@@ -759,6 +762,7 @@
 				A4561B481C68F8F600AA4346 /* MarkerReusableView.swift in Sources */,
 				A4F4AFF91BB3F80C0049109F /* MBFingerTipWindow.m in Sources */,
 				A47570E41B9DCA250043C8C2 /* ImageWidget.swift in Sources */,
+				A4AD62BE1F87BE94006EE0FC /* TemplatePickerController.swift in Sources */,
 				A4F057AE1B98A42F008FB9D0 /* TagMark.swift in Sources */,
 				A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */,
 			);

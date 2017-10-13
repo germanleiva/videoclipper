@@ -62,99 +62,98 @@ class ProjectsVC: UIViewController {
     func createBrainstormingProject() -> Project {
         let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
         
-        // If appropriate, configure the new managed object.
-        // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
         newProject.createdAt = NSDate()
         
         let dateString = NSDateFormatter.localizedStringFromDate(newProject.createdAt!, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
         
         newProject.name = "Project created on \(dateString)"
-        let firstStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
-        //		firstStoryLine.name = "My first story line"
         
-        newProject.storyLines = [firstStoryLine]
+        let directory = "Templates/brainstorm/"
+        let resource = "brainstorm"
         
-        let firstTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
-        firstTitleCard.name = "Untitled"
-        firstStoryLine.elements = [firstTitleCard]
+        guard let path = NSBundle.mainBundle().pathForResource("brainstorm", ofType: "json") else {
+            print("Couldn't open JSON file named \(resource) in directory \(directory)")
+            abort()
+        }
         
-        let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
-        
-        let idea = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        idea.content = "Idea"
-        idea.distanceXFromCenter = -228
-        idea.distanceYFromCenter = -82
-        idea.width = 105
-        idea.height = 52
-        idea.fontSize = 30
-        widgetsOnTitleCard.addObject(idea)
-        
-        let ideaContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        ideaContent.content = "Please write here the description of your idea"
-        ideaContent.distanceXFromCenter = 20
-        ideaContent.distanceYFromCenter = -46
-        ideaContent.width = 300
-        ideaContent.height = 124
-        ideaContent.fontSize = 30
-        widgetsOnTitleCard.addObject(ideaContent)
-        
-        let group = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        group.content = "Group"
-        group.distanceXFromCenter = 190
-        group.distanceYFromCenter = -150
-        group.width = 100
-        group.height = 52
-        group.fontSize = 30
-        widgetsOnTitleCard.addObject(group)
-        
-        let groupContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        groupContent.content = ""
-        groupContent.distanceXFromCenter = 293
-        groupContent.distanceYFromCenter = -150
-        groupContent.width = 100
-        groupContent.height = 52
-        groupContent.fontSize = 30
-        widgetsOnTitleCard.addObject(groupContent)
-        
-        let author = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        author.content = "Author"
-        author.distanceXFromCenter = -229
-        author.distanceYFromCenter = 67
-        author.width = 102
-        author.height = 52
-        author.fontSize = 30
-        widgetsOnTitleCard.addObject(author)
-        
-        let authorContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        authorContent.content = ""
-        authorContent.distanceXFromCenter = -58
-        authorContent.distanceYFromCenter = 67
-        authorContent.width = 100
-        authorContent.height = 52
-        authorContent.fontSize = 30
-        widgetsOnTitleCard.addObject(authorContent)
-        
-        let take = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        take.content = "Take"
-        take.distanceXFromCenter = -229
-        take.distanceYFromCenter = 136
-        take.width = 119
-        take.height = 52
-        take.fontSize = 30
-        widgetsOnTitleCard.addObject(take)
-        
-        let takeContent = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-        takeContent.content = ""
-        takeContent.distanceXFromCenter = -58
-        takeContent.distanceYFromCenter = 137
-        takeContent.width = 100
-        takeContent.height = 52
-        takeContent.fontSize = 30
-        widgetsOnTitleCard.addObject(takeContent)
-        
-        firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-        firstTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-        firstTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+//        if let jsonData = try NSData(contentsOfURL: NSURL(fileURLWithPath: path), options: NSDataReadingOptions.DataReadingMappedIfSafe)
+        if let jsonData = NSData(contentsOfFile: path) {
+            do {
+                let JSONStoryboard = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers)
+                if let JSONStoryLines : NSArray = JSONStoryboard["storyLines"] as? NSArray {
+                    for aJSONStoryline in JSONStoryLines {
+                        //Let's create each StoryLine
+                        let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+
+                        if let JSONTitleCards = aJSONStoryline["titleCards"] as? NSArray {
+                            for aJSONTitleCard in JSONTitleCards {
+                                if let aJSONTitleCard = aJSONTitleCard as? [String:AnyObject] {
+                                    //Let's create each TitleCard in the line
+                                    let newTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
+                                    newTitleCard.name = "Untitled"
+                                    
+                                    let textWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("widgets")
+                                    let imageWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("images")
+                                    
+                                    for (attribute, value) in aJSONTitleCard {
+                                        switch attribute {
+                                        case "duration":
+                                            newTitleCard.duration = value as? NSNumber
+                                        case "backgroundColor":
+                                            if let hexColor = value as? String {
+                                                newTitleCard.backgroundColor = UIColor(hexString:hexColor)
+                                            }
+                                        case "imageWidgets":
+                                            if let JSONImageWidgets = value as? NSArray {
+                                                for JSONImageWidget in JSONImageWidgets {
+                                                    let newImageWidget = NSEntityDescription.insertNewObjectForEntityForName("ImageWidget", inManagedObjectContext: context) as! ImageWidget
+                                                    newImageWidget.distanceXFromCenter = JSONImageWidget["distanceXFromCenter"] as? NSNumber
+                                                    newImageWidget.distanceYFromCenter = JSONImageWidget["distanceYFromCenter"] as? NSNumber
+                                                    newImageWidget.width = JSONImageWidget["width"] as? NSNumber
+                                                    newImageWidget.height = JSONImageWidget["height"] as? NSNumber
+                                                    if let imageFile = JSONImageWidget["image"] as? String {
+                                                        newImageWidget.image = UIImage(named:imageFile)
+                                                    }
+                                                    newImageWidget.locked = JSONImageWidget["locked"] as? Bool
+                                                    
+                                                    imageWidgetsOnTitleCard.addObject(newImageWidget)
+                                                }
+                                            }
+                                        case "textWidgets":
+                                            for JSONTextWidget in value as! NSArray {
+                                                let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
+                                                newTextWidget.content = JSONTextWidget["content"] as? String
+                                                newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
+                                                newTextWidget.distanceYFromCenter = JSONTextWidget["distanceYFromCenter"] as? NSNumber
+                                                newTextWidget.width = JSONTextWidget["width"] as? NSNumber
+                                                newTextWidget.height = JSONTextWidget["height"] as? NSNumber
+                                                newTextWidget.fontSize = JSONTextWidget["fontSize"] as? NSNumber
+                                                newTextWidget.locked = JSONTextWidget["locked"] as? Bool
+                                                
+                                                textWidgetsOnTitleCard.addObject(newTextWidget)
+                                            }
+                                        default:
+                                            print("Unrecognized attribute for TitleCard in JSON: \(attribute)")
+                                        }
+                                    }
+                                    
+                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+                                    
+                                    newStoryLine.mutableOrderedSetValueForKey("elements").addObject(newTitleCard)
+                                }
+                            }
+                        }
+                        
+                        //Let's add the newStoryLine to the project
+                        newProject.mutableOrderedSetValueForKey("storyLines").addObject(newStoryLine)
+                    }
+                }
+            } catch {
+                print("Error while serializing json: \(error)")
+            }
+        }
         
         do {
             try context.save()

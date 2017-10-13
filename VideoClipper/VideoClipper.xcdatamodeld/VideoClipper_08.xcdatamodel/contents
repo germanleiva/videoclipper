@@ -5,6 +5,7 @@
         <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="image" attributeType="Transformable" syncable="YES"/>
+        <attribute name="locked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="images" inverseEntity="TitleCard" syncable="YES"/>
     </entity>
@@ -39,6 +40,7 @@
         <attribute name="distanceYFromCenter" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fontSize" optional="YES" attributeType="Integer 32" minValueString="10" maxValueString="80" defaultValueString="30" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="locked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="titleCard" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TitleCard" inverseName="widgets" inverseEntity="TitleCard" syncable="YES"/>
     </entity>
@@ -69,14 +71,14 @@
         <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" ordered="YES" destinationEntity="VideoClip" inverseName="segments" inverseEntity="VideoClip" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ImageWidget" positionX="-153" positionY="81" width="128" height="133"/>
+        <element name="ImageWidget" positionX="-324" positionY="218" width="128" height="148"/>
         <element name="Project" positionX="-360" positionY="-75" width="128" height="103"/>
         <element name="StoryElement" positionX="196" positionY="-24" width="128" height="105"/>
         <element name="StoryLine" positionX="-0" positionY="-69" width="128" height="105"/>
-        <element name="TagMark" positionX="-153" positionY="81" width="128" height="90"/>
-        <element name="TextWidget" positionX="-72" positionY="360" width="128" height="180"/>
-        <element name="Thumbnail" positionX="-153" positionY="81" width="128" height="90"/>
-        <element name="TitleCard" positionX="54" positionY="117" width="128" height="120"/>
+        <element name="TagMark" positionX="81" positionY="342" width="128" height="90"/>
+        <element name="TextWidget" positionX="-162" positionY="459" width="128" height="193"/>
+        <element name="Thumbnail" positionX="54" positionY="450" width="128" height="90"/>
+        <element name="TitleCard" positionX="72" positionY="195" width="128" height="120"/>
         <element name="VideoClip" positionX="304" positionY="201" width="128" height="165"/>
         <element name="VideoSegment" positionX="286" positionY="528" width="128" height="75"/>
     </elements>

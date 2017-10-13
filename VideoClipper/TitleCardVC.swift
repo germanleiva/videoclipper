@@ -88,6 +88,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var fontSizeButton: UIButton!
     @IBOutlet weak var alignmentStack: UIStackView!
+    @IBOutlet weak var lockButton: UIButton!
 	@IBOutlet weak var saveButton: UIButton!
 	
 	var titleCard: TitleCard? {
@@ -312,20 +313,25 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	func pannedImageView(recognizer:UIPanGestureRecognizer) {
 		if let imageWidget = self.findImageWidgetForView(recognizer.view!) {
+            
 			if recognizer.state == .Began {
 				self.deactivateHandlers(self.titleCard!.textWidgets())
 				self.currentlySelectedImageWidget = imageWidget
-				self.deleteButton.enabled = true
+                self.deleteButton.enabled = true
+                self.lockButton.enabled = true
+                self.lockButton.selected = imageWidget.isLocked
 				return
 			} else if recognizer.state == .Changed {
 				if self.currentlySelectedImageWidget == nil {
 					recognizer.cancel()
 					return
 				}
-				let translation = recognizer.translationInView(self.canvas!)
-				imageWidget.centerXConstraint.constant -= translation.x
-				imageWidget.centerYConstraint.constant -= translation.y
-				recognizer.setTranslation(CGPointZero, inView: self.canvas!)
+                if !imageWidget.isLocked {
+                    let translation = recognizer.translationInView(self.canvas!)
+                    imageWidget.centerXConstraint.constant -= translation.x
+                    imageWidget.centerYConstraint.constant -= translation.y
+                    recognizer.setTranslation(CGPointZero, inView: self.canvas!)
+                }
 			} else {
 				if self.currentlySelectedImageWidget != nil {
 					//This means that the element was not deleted
@@ -335,6 +341,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
+                self.lockButton.enabled = false
 				self.updateModel()
 			}
 		}
@@ -348,6 +355,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.deactivateHandlers(self.titleCard!.textWidgets())
 				self.currentlySelectedImageWidget = imageWidget
 				self.deleteButton.enabled = true
+                self.lockButton.enabled = true
+                self.lockButton.selected = imageWidget.isLocked
 				imageWidget.lastScale = 1
 				return
 			} else if recognizer.state == .Changed {
@@ -355,18 +364,19 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 					recognizer.cancel()
 					return
 				}
-				
-				let scale = 1.0 - (imageWidget.lastScale - recognizer.scale)
-				
-//				let currentTransform = imageView.transform
-//				let newTransform = CGAffineTransformScale(currentTransform, scale, scale);
-//				
-//				imageView.transform = newTransform
-				
-				imageWidget.lastScale = recognizer.scale
-				
-				imageWidget.widthConstraint.constant = imageView.frame.width * scale
-				imageWidget.heightConstraint.constant = imageView.frame.height * scale
+				if !imageWidget.isLocked {
+                    let scale = 1.0 - (imageWidget.lastScale - recognizer.scale)
+                    
+    //				let currentTransform = imageView.transform
+    //				let newTransform = CGAffineTransformScale(currentTransform, scale, scale);
+    //				
+    //				imageView.transform = newTransform
+                    
+                    imageWidget.lastScale = recognizer.scale
+                    
+                    imageWidget.widthConstraint.constant = imageView.frame.width * scale
+                    imageWidget.heightConstraint.constant = imageView.frame.height * scale
+                }
 			} else {
 				if self.currentlySelectedImageWidget != nil {
 					//This means that the element was not deleted
@@ -375,6 +385,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				}
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
+                self.lockButton.enabled = false
 
 				self.updateModel()
 			}
@@ -451,11 +462,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 					eachTextWidget.color = eachTextWidget.textView!.textColor
 				}
 				
-				eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
-				eachTextWidget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
-				eachTextWidget.width = eachTextWidget.textView!.frame.size.width
-				eachTextWidget.height = eachTextWidget.textView!.frame.size.height
-				eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
+                eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
+                eachTextWidget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
+                eachTextWidget.width = eachTextWidget.textView!.frame.size.width
+                eachTextWidget.height = eachTextWidget.textView!.frame.size.height
+                eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
 			}
 			
 			let screenshot = UIGraphicsGetImageFromCurrentImageContext()
@@ -498,10 +509,24 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		self.updatingModelQueue.addOperation(operation)
 	}
-	
-	@IBAction func saveButtonPressed() {
-		self.saveCanvas(true)
-	}
+    
+    @IBAction func lockButtonPressed() {
+        
+        let selectedTextWidgets = self.selectedTextWidgets()
+        if !selectedTextWidgets.isEmpty {
+            let selectedTextWidget = selectedTextWidgets.first!
+            selectedTextWidget.isLocked = !selectedTextWidget.isLocked
+            lockButton.selected = selectedTextWidget.isLocked
+        }
+        if let selectedImageWidget = self.currentlySelectedImageWidget {
+            selectedImageWidget.isLocked = !selectedImageWidget.isLocked
+            lockButton.selected = selectedImageWidget.isLocked
+        }
+    }
+    
+    @IBAction func saveButtonPressed() {
+        self.saveCanvas(true)
+    }
 	
 	func saveCanvas(animated:Bool) {
 		if self.needsToSave {
@@ -708,7 +733,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	func pannedTextView(sender: UIPanGestureRecognizer) {
 		if let pannedTextWidget = findTextWidget(sender.view!) {
-			self.changesDetected = true
 
 			switch sender.state {
 			case UIGestureRecognizerState.Began:
@@ -717,13 +741,15 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			case UIGestureRecognizerState.Changed:
 //				print("textview panning began")
 //				let location = sender.locationInView(self.canvas)
-				
-				let translation = sender.translationInView(pannedTextWidget.textView)
-				if CGRectContainsRect(self.canvas!.frame,CGRectOffset(pannedTextWidget.textView!.frame, translation.x, translation.y)) {
-					pannedTextWidget.textViewCenterXConstraint.constant += translation.x
-					pannedTextWidget.textViewCenterYConstraint.constant += translation.y
-					sender.setTranslation(CGPointZero, inView: pannedTextWidget.textView)
-				}
+                if !pannedTextWidget.isLocked {
+                    self.changesDetected = true
+                    let translation = sender.translationInView(pannedTextWidget.textView)
+                    if CGRectContainsRect(self.canvas!.frame,CGRectOffset(pannedTextWidget.textView!.frame, translation.x, translation.y)) {
+                        pannedTextWidget.textViewCenterXConstraint.constant += translation.x
+                        pannedTextWidget.textViewCenterYConstraint.constant += translation.y
+                        sender.setTranslation(CGPointZero, inView: pannedTextWidget.textView)
+                    }
+                }
 				
 			case UIGestureRecognizerState.Cancelled:
 				print("textview panning cancelled")
@@ -760,15 +786,17 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //			print("\(handlerId) panning began at point \(sender.locationInView(self.view))")
 			break
 		case UIGestureRecognizerState.Changed:
-//			print("\(handlerId) panning began")
-			let translation = sender.translationInView(handlerView)
-			let delta = translation.x * factor
-//			print("moving delta \(delta)")
-			
-			textWidget.textViewWidthConstraint.constant =  max(textWidget.textViewWidthConstraint.constant + delta,textWidget.textViewMinWidthConstraint.constant)
-			textWidget.textViewCenterXConstraint.constant = textWidget.textViewCenterXConstraint.constant + (delta / 2) * factor
-			
-			sender.setTranslation(CGPointZero, inView: handlerView)
+            if !textWidget.isLocked {
+    //			print("\(handlerId) panning began")
+                let translation = sender.translationInView(handlerView)
+                let delta = translation.x * factor
+    //			print("moving delta \(delta)")
+                
+                textWidget.textViewWidthConstraint.constant =  max(textWidget.textViewWidthConstraint.constant + delta,textWidget.textViewMinWidthConstraint.constant)
+                textWidget.textViewCenterXConstraint.constant = textWidget.textViewCenterXConstraint.constant + (delta / 2) * factor
+                
+                sender.setTranslation(CGPointZero, inView: handlerView)
+            }
 			
 		case UIGestureRecognizerState.Cancelled:
 			print("\(handlerId) panning cancelled")
@@ -781,12 +809,20 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			print("\(handlerId) not handled state \(sender.state)")
 		}
 	}
+    
+    func toggleAlignmentStack(isEnable:Bool) {
+        for eachSubview in alignmentStack.subviews {
+            (eachSubview as! UIButton).enabled = isEnable
+        }
+    }
 	
 	func activateHandlers(textWidget:TextWidget){
 		deactivateHandlers(self.titleCard!.textWidgets().filter { $0 != textWidget })
 		self.deleteButton.enabled = true
 		self.fontSizeButton.enabled = true
-        self.alignmentStack.hidden = false
+        toggleAlignmentStack(true)
+        self.lockButton.enabled = true
+        self.lockButton.selected = textWidget.isLocked
 
 		textWidget.textView!.editable = true
 		textWidget.textView!.selectable = true
@@ -807,7 +843,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	func deactivateHandlers(textWidgets:[TextWidget],fake:Bool = false) -> [TextWidget] {
 		self.deleteButton.enabled = false
 		self.fontSizeButton.enabled = false
-        self.alignmentStack.hidden = true
+        toggleAlignmentStack(false)
+        self.lockButton.enabled = false
 		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
 		var deactivatedTextWidgets = [TextWidget]()

@@ -41,5 +41,14 @@ class TextWidget: NSManagedObject {
         }
         return nil
     }
+    
+    var isLocked:Bool {
+        get {
+            return self.locked!.boolValue
+        }
+        set (newValue) {
+            self.locked = NSNumber(bool:newValue)
+        }
+    }
 
 }

@@ -19,5 +19,5 @@ extension ImageWidget {
     @NSManaged var distanceYFromCenter: NSNumber?
     @NSManaged var height: NSNumber?
     @NSManaged var width: NSNumber?
-
+    @NSManaged var locked: NSNumber?
 }

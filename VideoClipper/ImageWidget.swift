@@ -20,4 +20,14 @@ class ImageWidget: NSManagedObject {
 	var imageView:UIImageView!
 	
 	var lastScale:CGFloat = 1
+    
+    
+    var isLocked:Bool {
+        get {
+            return self.locked!.boolValue
+        }
+        set (newValue) {
+            self.locked = NSNumber(bool:newValue)
+        }
+    }
 }

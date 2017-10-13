@@ -22,4 +22,5 @@ extension TextWidget {
 	@NSManaged var fontSize: NSNumber?
 	@NSManaged var color:NSObject?
     @NSManaged var titleCard: TitleCard?
+    @NSManaged var alignment: NSNumber?
 }

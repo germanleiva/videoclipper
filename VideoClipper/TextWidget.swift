@@ -34,5 +34,12 @@ class TextWidget: NSManagedObject {
 		self.content = ""
 		self.color = UIColor.blackColor()
 	}
+    
+    var textAlignment:NSTextAlignment? {
+        if let rawValue = self.alignment {
+            return NSTextAlignment.init(rawValue: rawValue.integerValue)
+        }
+        return nil
+    }
 
 }

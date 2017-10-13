@@ -85,8 +85,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 
 	var editingTextView:UITextView? = nil
 	
-	@IBOutlet weak var deleteButton: UIButton!
-	@IBOutlet weak var fontSizeButton: UIButton!
+    @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var fontSizeButton: UIButton!
+    @IBOutlet weak var alignmentStack: UIStackView!
 	@IBOutlet weak var saveButton: UIButton!
 	
 	var titleCard: TitleCard? {
@@ -106,7 +107,31 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		queue.maxConcurrentOperationCount = 1
 		return queue
 	}()
-	
+    
+    @IBAction func textAlignLeft() {
+        self.setAlignment(NSTextAlignment.Left)
+    }
+    
+    @IBAction func textAlignCenter() {
+        self.setAlignment(NSTextAlignment.Center)
+    }
+    
+    @IBAction func textAlignRight() {
+        self.setAlignment(NSTextAlignment.Right)
+    }
+    
+    func setAlignment(alignment:NSTextAlignment) {
+        let selectedTextWidgets = self.selectedTextWidgets()
+        if !selectedTextWidgets.isEmpty {
+            let selectedTextWidget = selectedTextWidgets.first!
+            selectedTextWidget.alignment = alignment.rawValue
+            
+            selectedTextWidget.textView?.textAlignment = alignment
+            updateModel()
+        }
+        
+    }
+    
 	@IBAction func showFontSizePopOver(sender:UIButton?) {
 		if self.durationPickerController == nil {
 			self.durationPickerController = self.storyboard?.instantiateViewControllerWithIdentifier("durationController") as? DurationPickerController
@@ -578,7 +603,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.textView!.textColor = model.color as? UIColor
 		model.textView!.delegate = self
 		model.textView!.font = UIFont.systemFontOfSize(CGFloat(model.fontSize!))
-		model.textView!.textAlignment = NSTextAlignment.Center
+		model.textView!.textAlignment = model.textAlignment!
 		model.textView!.editable = false
 		model.textView!.selectable = false
 		model.textView!.showsHorizontalScrollIndicator = false
@@ -761,6 +786,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		deactivateHandlers(self.titleCard!.textWidgets().filter { $0 != textWidget })
 		self.deleteButton.enabled = true
 		self.fontSizeButton.enabled = true
+        self.alignmentStack.hidden = false
 
 		textWidget.textView!.editable = true
 		textWidget.textView!.selectable = true
@@ -781,6 +807,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	func deactivateHandlers(textWidgets:[TextWidget],fake:Bool = false) -> [TextWidget] {
 		self.deleteButton.enabled = false
 		self.fontSizeButton.enabled = false
+        self.alignmentStack.hidden = true
 		self.colorButton.backgroundColor = self.canvas!.backgroundColor
 
 		var deactivatedTextWidgets = [TextWidget]()

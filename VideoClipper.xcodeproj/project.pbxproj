@@ -22,6 +22,7 @@
 		A43B5AFA1C770630008298AF /* TitleCardTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43B5AF91C770630008298AF /* TitleCardTableCell.swift */; };
 		A44094E91B5CE6250061AF97 /* TitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44094E71B5CE6250061AF97 /* TitleCard.swift */; };
 		A44121121B96048500BBB020 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44121111B96048500BBB020 /* FilmstripView.swift */; };
+		A44C115D1F9D154A0082C314 /* interview_00001.png in Resources */ = {isa = PBXBuildFile; fileRef = A44C115C1F9D154A0082C314 /* interview_00001.png */; };
 		A44C2DAA1B4ACE9E00985D5C /* DraggableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */; };
 		A44CE8F31B600B2E00953B7F /* VideoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A44CE8F21B600B2E00953B7F /* VideoHelper.m */; };
 		A454C6841BB1FA210018D0DB /* NSManagedObject+Cloner.m in Sources */ = {isa = PBXBuildFile; fileRef = A454C6831BB1FA210018D0DB /* NSManagedObject+Cloner.m */; };
@@ -153,6 +154,7 @@
 		A43B5AF91C770630008298AF /* TitleCardTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCardTableCell.swift; sourceTree = "<group>"; };
 		A44094E71B5CE6250061AF97 /* TitleCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCard.swift; sourceTree = "<group>"; };
 		A44121111B96048500BBB020 /* FilmstripView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
+		A44C115C1F9D154A0082C314 /* interview_00001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = interview_00001.png; sourceTree = "<group>"; };
 		A44C2DA91B4ACE9E00985D5C /* DraggableCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableCollectionViewCell.swift; sourceTree = "<group>"; };
 		A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoClipper-Bridging-Header.h"; sourceTree = "<group>"; };
 		A44CE8F21B600B2E00953B7F /* VideoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoHelper.m; sourceTree = "<group>"; };
@@ -613,6 +615,7 @@
 			isa = PBXGroup;
 			children = (
 				A4FF6FAC1F90F55200C209D3 /* interview.json */,
+				A44C115C1F9D154A0082C314 /* interview_00001.png */,
 			);
 			path = interview;
 			sourceTree = "<group>";
@@ -771,6 +774,7 @@
 				A4664AC41B444BA80095B27D /* Assets.xcassets in Resources */,
 				A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */,
 				A4FF6FB41F90F55200C209D3 /* interview.json in Resources */,
+				A44C115D1F9D154A0082C314 /* interview_00001.png in Resources */,
 				A4FF6FC41F91086D00C209D3 /* brainstorm_00003.png in Resources */,
 				A4FF6FC21F91086D00C209D3 /* brainstorm_00001.png in Resources */,
 				A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */,

@@ -21,6 +21,11 @@ struct Globals {
     static var documentsDirectory = (UIApplication.sharedApplication().delegate as! AppDelegate).applicationDocumentsDirectory
     
     static var defaultRenderSize = CGSize(width: 1280,height: 720)
+    
+    static var videoHelperGroup = dispatch_group_create()
+    
+    static var videoHelperQueue = dispatch_queue_create("fr.lri.VideoClipper.VideoHelper", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_BACKGROUND, 0));
+
 }
 
 extension UIImage {

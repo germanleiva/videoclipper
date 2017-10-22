@@ -1,42 +1,46 @@
 {
-    "titleCards": [
+    "storyLines": [
                    {
-                   "duration":,
-                   "backgroundColor" : ,
-                   "imageWidgets": [
-                                    {
-                                    "distanceXFromCenter": 640,
-                                    "distanceYFromCenter": 360,
-                                    "width": 1280,
-                                    "height": 720,
-                                    "image": "brainstorming.png",
-                                    "locked": true
-                                    }
-                                    ],
-                   "textWidgets": [
-                                   {
-                                   "distanceXFromCenter":640,
-                                   "distanceYFromCenter":360,
-                                   "width":100,
-                                   "height":100,
-                                   "alignment":0,
-                                   "color":"black",
-                                   "fontSize":30,
-                                   "content":"Some content",
-                                   "locked":false
-                                   },
-                                   {
-                                   "distanceXFromCenter":640,
-                                   "distanceYFromCenter":460,
-                                   "width":100,
-                                   "height":100,
-                                   "alignment":1,
-                                   "color":"black",
-                                   "fontSize":30,
-                                   "content":"Some other content",
-                                   "locked":false
-                                   }
-                                   ]
+                   "titleCards": [
+                                  {
+                                  "duration": 2,
+                                  "backgroundColor" : "#ffffff",
+                                  "imageWidgets": [
+                                                   {
+                                                   "distanceXFromCenter": 0,
+                                                   "distanceYFromCenter": 0,
+                                                   "width": 742,
+                                                   "height": 417,
+                                                   "image": "interview_00001.png",
+                                                   "locked": true
+                                                   }
+                                                   ],
+                                  "textWidgets": [
+                                                  {
+                                                  "distanceXFromCenter":0,
+                                                  "distanceYFromCenter":0,
+                                                  "width":100,
+                                                  "height":100,
+                                                  "alignment":0,
+                                                  "color":"#000000",
+                                                  "fontSize":30,
+                                                  "content":"Some content",
+                                                  "locked":false
+                                                  },
+                                                  {
+                                                  "distanceXFromCenter":0,
+                                                  "distanceYFromCenter":100,
+                                                  "width":100,
+                                                  "height":100,
+                                                  "alignment":1,
+                                                  "color":"#000000",
+                                                  "fontSize":30,
+                                                  "content":"Some other content",
+                                                  "locked":false
+                                                  }
+                                                  ]
+                                  }
+                                  ]
                    }
-                   ]
+                ]
 }

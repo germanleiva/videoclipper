@@ -1140,12 +1140,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 
 //		[self dismissModalViewControllerAnimated:YES];
 		if mediaType == String(kUTTypeImage) {
-			let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+			needsToSave = true
+            
+            let image = info[UIImagePickerControllerOriginalImage] as! UIImage
 			
 			if self.shouldDismissPicker {
 				UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
 			}
-			
+            
 			let newImageWidget = NSEntityDescription.insertNewObjectForEntityForName("ImageWidget", inManagedObjectContext: self.context) as! ImageWidget
 			newImageWidget.image = image
 			newImageWidget.distanceXFromCenter = 0
@@ -1156,17 +1158,12 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			let titleCardImages = self.titleCard!.mutableOrderedSetValueForKey("images")
 			titleCardImages.addObject(newImageWidget)
 			
-			do {
-				try self.context.save()
-				self.addImageWidget(newImageWidget)
-				if shouldDismissPicker {
-					picker.dismissViewControllerAnimated(true, completion: { () -> Void in
-						self.shouldDismissPicker = false
-					})
-				}
-			} catch {
-				print("Couldn't create image widget: \(error)")
-			}
+            self.addImageWidget(newImageWidget)
+            if shouldDismissPicker {
+                picker.dismissViewControllerAnimated(true, completion: { () -> Void in
+                    self.shouldDismissPicker = false
+                })
+            }
 		}
 	}
 	

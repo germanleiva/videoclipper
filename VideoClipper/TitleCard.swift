@@ -13,6 +13,7 @@ import CoreData
 class TitleCard: StoryElement {
 
 // Insert code here to add functionality to your managed object subclass
+    
     var videoPath:NSURL? {
         get {
             if let aName = videoFileName {
@@ -21,7 +22,7 @@ class TitleCard: StoryElement {
             return nil
         }
     }
-        
+    
 	override func isTitleCard() -> Bool {
 		return true
 	}
@@ -73,8 +74,9 @@ class TitleCard: StoryElement {
 //            })
 //            return
 //        }
+        
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
-
+        
             let createAsset = {
                 let asset = AVURLAsset(URL: self.videoPath!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
@@ -85,9 +87,11 @@ class TitleCard: StoryElement {
             }
             
             if self.videoPath == nil || !NSFileManager().fileExistsAtPath(self.videoPath!.path!){
-                self.writeVideoFromSnapshot({ () -> Void in
-                    createAsset()
-                })
+                dispatch_sync(Globals.videoHelperQueue) {
+                    self.writeVideoFromSnapshot({ () -> Void in
+                        createAsset()
+                    })
+                }
             } else {
                 createAsset()
             }
@@ -106,6 +110,7 @@ class TitleCard: StoryElement {
         }
         
         VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: self.snapshotImage) { () -> Void in
+
             self.videoFileName = path.lastPathComponent
             
             self.managedObjectContext?.performBlock({ () -> Void in

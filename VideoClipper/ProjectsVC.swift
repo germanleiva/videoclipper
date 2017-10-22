@@ -25,7 +25,6 @@ class ProjectsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
         quickStartButton.layer.cornerRadius = quickStartButton.frame.width / 2
 	}
 	
@@ -44,9 +43,9 @@ class ProjectsVC: UIViewController {
         
         let alert = UIAlertController(title: "New project", message: "Please, select an appropiate template for your new project", preferredStyle: UIAlertControllerStyle.Alert)
         
-        for (templateName,templateSelector) in ["Interview":#selector(createInterviewProject),"Brainstorming":#selector(createBrainstormingProject),"Prototyping":#selector(createPrototypingProject)] {
-            alert.addAction(UIAlertAction(title: templateName, style: UIAlertActionStyle.Default, handler: { (action) in
-                let newProject = self.performSelector(templateSelector).takeRetainedValue() as! Project
+        for templateName in ["interview","brainstorm","prototype"] {
+            alert.addAction(UIAlertAction(title: templateName.capitalizedString, style: UIAlertActionStyle.Default, handler: { (action) in
+                let newProject = self.createProject(templateName)
                 self.projectsTableController?.insertNewProject(newProject)
                 Answers.logCustomEventWithName("Project added", customAttributes: nil)
             }))
@@ -55,11 +54,7 @@ class ProjectsVC: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func createInterviewProject() -> Project {
-        return createBrainstormingProject()
-    }
-    
-    func createBrainstormingProject() -> Project {
+    func createProject(projectTemplateName:String) -> Project {
         let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
         
         newProject.createdAt = NSDate()
@@ -68,11 +63,11 @@ class ProjectsVC: UIViewController {
         
         newProject.name = "Project created on \(dateString)"
         
-        let directory = "Templates/brainstorm/"
-        let resource = "brainstorm"
+//        let directory = "Templates/brainstorm/"
+//        let resource = "brainstorm"
         
-        guard let path = NSBundle.mainBundle().pathForResource("brainstorm", ofType: "json") else {
-            print("Couldn't open JSON file named \(resource) in directory \(directory)")
+        guard let path = NSBundle.mainBundle().pathForResource(projectTemplateName, ofType: "json") else {
+            print("Couldn't open JSON file named \(projectTemplateName)")
             abort()
         }
         
@@ -91,7 +86,8 @@ class ProjectsVC: UIViewController {
                                     //Let's create each TitleCard in the line
                                     let newTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
                                     newTitleCard.name = "Untitled"
-                                    
+                                    newStoryLine.mutableOrderedSetValueForKey("elements").addObject(newTitleCard)
+
                                     let textWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("widgets")
                                     let imageWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("images")
                                     
@@ -112,7 +108,11 @@ class ProjectsVC: UIViewController {
                                                     newImageWidget.width = JSONImageWidget["width"] as? NSNumber
                                                     newImageWidget.height = JSONImageWidget["height"] as? NSNumber
                                                     if let imageFile = JSONImageWidget["image"] as? String {
-                                                        newImageWidget.image = UIImage(named:imageFile)
+                                                        if let cachedImage = UIImage(named:imageFile) {
+                                                            newImageWidget.image = UIImage(CGImage: cachedImage.CGImage!)
+                                                        } else {
+                                                            print("Couldn't find image named \(imageFile)")
+                                                        }
                                                     }
                                                     newImageWidget.locked = JSONImageWidget["locked"] as? Bool
                                                     
@@ -140,8 +140,6 @@ class ProjectsVC: UIViewController {
                                     newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
                                     newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
                                     newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
-                                    
-                                    newStoryLine.mutableOrderedSetValueForKey("elements").addObject(newTitleCard)
                                 }
                             }
                         }
@@ -164,13 +162,9 @@ class ProjectsVC: UIViewController {
         return newProject
     }
     
-    func createPrototypingProject() -> Project {
-        return createBrainstormingProject()
-    }
-    
     
     @IBAction func quickStartPressed(sender: UIButton) {
-        let newProject = self.createPrototypingProject()
+        let newProject = self.createProject("prototype")
 
         self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
         

@@ -65,7 +65,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	@IBOutlet weak var durationButton:UIButton?
 	
 	var durationPickerController:DurationPickerController?
-	var scheduledTimer:NSTimer? = nil
 	
 	var changesDetected = false
 		
@@ -109,6 +108,21 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		return queue
 	}()
     
+    var _completionBlock:(()->())? = nil
+    var completionBlock:()->() {
+        get {
+            if _completionBlock == nil {
+                _completionBlock = {
+                    self.navigationController?.popViewControllerAnimated(true)
+                }
+            }
+            return _completionBlock!
+        }
+        set(newValue) {
+            _completionBlock = newValue
+        }
+    }
+    
     @IBAction func textAlignLeft() {
         self.setAlignment(NSTextAlignment.Left)
     }
@@ -128,7 +142,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
             selectedTextWidget.alignment = alignment.rawValue
             
             selectedTextWidget.textView?.textAlignment = alignment
-            updateModel()
+            //TODONOW: we should update only what's needed
+//            updateModel()
+            needsToSave = true
         }
         
     }
@@ -198,7 +214,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
-		self.updateModel()
+        //TODONOW: we should update only what's needed
+//		self.updateModel()
+        needsToSave = true
+
 	}
 	
 	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
@@ -253,7 +272,20 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 		self.effectiveCanvas!.layer.borderColor = UIColor.blackColor().CGColor
 		self.effectiveCanvas!.layer.borderWidth = 1;
-	}
+        
+        if let _ = navigationController {
+            createBarButtons()
+        }
+    }
+    
+    func createBarButtons() {
+        let discardButton = UIBarButtonItem(title: "Discard", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(discardButtonPressed))
+        navigationItem.leftBarButtonItem = discardButton
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,target: self, action: #selector(doneButtonPressed))
+        navigationItem.rightBarButtonItem = doneButton
+        
+    }
 	
 	func addImageWidget(imageWidget:ImageWidget) {
 		let imageView = UIImageView(image: imageWidget.image as? UIImage)
@@ -296,10 +328,56 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.view.addConstraint(imageWidget.centerYConstraint)
 	}
 	
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		self.saveCanvas(false)
-	}
+    func discardButtonPressed(sender:UIBarButtonItem?) {
+        if !needsToSave {
+            completionBlock()
+            return
+        }
+
+        let alert = UIAlertController(title: "Unsaved changes", message: "Your changes will be discarded", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        alert.addAction(
+            UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (discardAction) in
+//                alert.dismissViewControllerAnimated(true, completion: {
+                    self.completionBlock()
+//                })
+            })
+        )
+        
+        alert.addAction(
+            UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (cancelAction) in
+                alert.dismissViewControllerAnimated(true, completion: {
+                    
+                })
+            })
+        )
+        
+        presentViewController(alert, animated: true, completion: nil)
+        
+    }
+    
+    func doneButtonPressed(sender:UIBarButtonItem?) {
+        if !needsToSave {
+            completionBlock()
+            return
+        }
+        
+        let alert = UIAlertController(title: "Unsaved changes", message: "Do you want to save your changes?", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        alert.addAction(
+            UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (discardAction) in
+                alert.dismissViewControllerAnimated(true, completion: self.completionBlock)
+            })
+        )
+        
+        alert.addAction(
+            UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (saveAction) in
+                self.saveCanvas(true,completion:self.completionBlock)
+            })
+        )
+        
+        presentViewController(alert, animated: true, completion: nil)
+    }
 	
 	func findImageWidgetForView(view:UIView) -> ImageWidget? {
 		for each in self.titleCard!.images! {
@@ -342,7 +420,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
                 self.lockButton.enabled = false
-				self.updateModel()
+                //TODONOW: we should update only what's needed
+//				self.updateModel()
+                needsToSave = true
+
 			}
 		}
 		
@@ -387,7 +468,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.deleteButton.enabled = false
                 self.lockButton.enabled = false
 
-				self.updateModel()
+                //TODONOW: we should update only what's needed
+//				self.updateModel()
+                needsToSave = true
+
 			}
 		}
 	}
@@ -426,6 +510,22 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.scrollView!.setContentOffset(CGPointZero, animated: true)
 	}
 	
+    
+    func updateTextWidgetModel(eachTextWidget:TextWidget) {
+        if eachTextWidget.textView!.isPlaceholder() {
+            eachTextWidget.content = ""
+            eachTextWidget.displayedContent = EMPTY_TEXT
+        } else {
+            eachTextWidget.color = eachTextWidget.textView!.textColor
+        }
+        
+        eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
+        eachTextWidget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
+        eachTextWidget.width = eachTextWidget.textView!.frame.size.width
+        eachTextWidget.height = eachTextWidget.textView!.frame.size.height
+        eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
+    }
+    
 	func updateModel() {
 //		let overlayView = UIView(frame: UIScreen.mainScreen().bounds)
 //		overlayView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
@@ -455,18 +555,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			weakSelf.canvas!.layer.renderInContext(UIGraphicsGetCurrentContext()!)
 
 			for eachTextWidget in weakSelf.titleCard!.textWidgets() {
-				if eachTextWidget.textView!.isPlaceholder() {
-					eachTextWidget.content = ""
-				} else {
-					eachTextWidget.content = eachTextWidget.textView!.text
-					eachTextWidget.color = eachTextWidget.textView!.textColor
-				}
-				
-                eachTextWidget.distanceXFromCenter = eachTextWidget.textViewCenterXConstraint.constant
-                eachTextWidget.distanceYFromCenter = eachTextWidget.textViewCenterYConstraint.constant
-                eachTextWidget.width = eachTextWidget.textView!.frame.size.width
-                eachTextWidget.height = eachTextWidget.textView!.frame.size.height
-                eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
+				self.updateTextWidgetModel(eachTextWidget)
 			}
 			
 			let screenshot = UIGraphicsGetImageFromCurrentImageContext()
@@ -528,7 +617,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         self.saveCanvas(true)
     }
 	
-	func saveCanvas(animated:Bool) {
+    func saveCanvas(animated:Bool,completion:(()->())? = nil) {
 		if self.needsToSave {
 			var progressIndicator:MBProgressHUD? = nil
 			
@@ -541,19 +630,81 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			}
 			
 			do {
+                for eachTextWidget in titleCard!.textWidgets() {
+                    self.updateTextWidgetModel(eachTextWidget)
+                }
+                
                 //We need to regenerate the asset
                 self.titleCard?.deleteAssetFile()
+                
+                createTitleCardSnapshots()
+                
                 try self.context.save()
 				
                 self.needsToSave = false
 				if animated {
 					progressIndicator!.hide(true)
 				}
-			} catch {
-				print("Couldn't save the canvas on the DB")
+                completion?()
+			} catch let error as NSError {
+                print("Couldn't save the canvas on the DB: \(error.localizedDescription)")
+                
+                let alert = UIAlertController(title: "Error", message: "Couldn't save TitleCard in the DB: \(error.localizedDescription)", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(
+                    UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) in
+                        alert.dismissViewControllerAnimated(true, completion: nil)
+                    })
+                )
+                presentViewController(alert, animated: true, completion: nil)
 			}
 		}
 	}
+    
+    func createTitleCardSnapshots() {
+        let deactivatedWidgets = deactivateHandlers(titleCard!.textWidgets(),fake:true)
+        
+        /* Capture the screen shoot at native resolution */
+        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, UIScreen.mainScreen().scale)
+        let graphicContext = UIGraphicsGetCurrentContext()!
+        
+        UIColor.whiteColor().setFill()
+        CGContextFillRect(graphicContext, CGRect(x: 0.0, y: 0.0, width: canvas!.bounds.size.width, height: canvas!.bounds.size.height))
+        
+        canvas!.layer.renderInContext(graphicContext)
+        
+        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        /* Render the screen shot at custom resolution */
+        //let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
+        let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
+        
+        UIGraphicsBeginImageContextWithOptions(cropRect.size, canvas!.opaque, 1)
+        screenshot!.drawInRect(cropRect)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        titleCard?.snapshotData = UIImageJPEGRepresentation(img!,0.75)
+        
+        let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
+        
+        UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.opaque, 1)
+        screenshot!.drawInRect(smallCropRect)
+        let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        titleCard?.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
+
+        for eachDeactivatedWidget in deactivatedWidgets {
+            activateHandlers(eachDeactivatedWidget)
+        }
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
+        
+        if let elDelegado = delegate {
+            elDelegado.storyElementVC(self, elementChanged: titleCard!)
+        }
+    }
 	
 	func selectedTextWidgets() -> [TextWidget] {
 		return self.titleCard!.textWidgets().filter { (eachTextWidget) -> Bool in
@@ -594,7 +745,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let modelWidgets = self.titleCard?.mutableOrderedSetValueForKey("widgets")
 		modelWidgets?.removeObject(aTextWidget)
 		
-		self.updateModel()
+        //TODONOW: we should update only what's needed
+//		self.updateModel()
+        needsToSave = true
+
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
@@ -644,7 +798,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			model.textView!.text = EMPTY_TEXT
 			model.textView!.textColor = EMPTY_COLOR
 		} else {
-			model.textView!.text = model.content!
+			model.textView!.text = model.textToDisplay()
 			model.textView!.textColor = model.color as? UIColor
 		}
 		
@@ -757,7 +911,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				print("textview panning failed")
 			case UIGestureRecognizerState.Ended:
 //				print("textview panning ended <=====")
-				self.updateModel()
+                //TODONOW: we should update only what's needed
+//				self.updateModel()
+                needsToSave = true
+
+                break;
 			default:
 				print("not handled textview state \(sender.state)")
 			}
@@ -804,7 +962,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			print("\(handlerId) panning failed")
 		case UIGestureRecognizerState.Ended:
 //			print("\(handlerId) panning ended <========")
-			self.updateModel()
+            //TODONOW: we should update only what's needed
+//			self.updateModel()
+            needsToSave = true
+
+            break;
 		default:
 			print("\(handlerId) not handled state \(sender.state)")
 		}
@@ -876,10 +1038,17 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			if textView.isPlaceholder() {
 				textView.text = EMPTY_TEXT
 				textView.textColor = EMPTY_COLOR
-			}
+            } else {
+                textWidget.displayedContent = textWidget.textToDisplay(textView.text)
+                textWidget.content = textView.text
+                textView.text = textWidget.displayedContent
+            }
 	//		print("textViewDidEndEditing <====")
 		}
-		self.updateModel()
+        //TODONOW: we should update only what's needed
+//		self.updateModel()
+        needsToSave = true
+
 		self.editingTextView = nil
 	}
 	
@@ -899,7 +1068,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			} else {
 				textView.textColor = UIColor.blackColor()
 			}
-		}
+        } else {
+            textView.text = potentialTextWidget?.content
+        }
 	}
 	
 	//- MARK: Gesture Recognizer Delegate
@@ -1025,7 +1196,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 		
 		colorPicker.dismissViewControllerAnimated(true, completion: { () -> Void in
-			self.updateModel()
+            //TODONOW: we should update only what's needed
+//			self.updateModel()
+            self.needsToSave = true
+
 		})
 	}
 	

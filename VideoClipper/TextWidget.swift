@@ -12,7 +12,8 @@ import UIKit
 
 @objc(TextWidget)
 class TextWidget: NSManagedObject {
-
+    let defaults = NSUserDefaults.standardUserDefaults()
+    
 	var textViewMinWidthConstraint: NSLayoutConstraint!
 	var textViewMinHeightConstraint: NSLayoutConstraint!
 	var textViewWidthConstraint: NSLayoutConstraint!
@@ -49,6 +50,24 @@ class TextWidget: NSManagedObject {
         set (newValue) {
             self.locked = NSNumber(bool:newValue)
         }
+    }
+    
+    func textToDisplay(textToAnalyze:String? = nil)->String {
+        let currentContent = textToAnalyze ?? content ?? ""
+        
+        if currentContent.hasPrefix("#") {
+            if let dictionaryOfVariables = defaults.dictionaryForKey("VARIABLES") {
+                let variableName = currentContent.substringFromIndex(currentContent.startIndex.successor()).uppercaseString
+
+                if let variableValue = dictionaryOfVariables[variableName] as? String {
+                    if variableValue.characters.count > 0 {
+                        return variableValue
+                    }
+                }
+            }
+        }
+        
+        return currentContent
     }
 
 }

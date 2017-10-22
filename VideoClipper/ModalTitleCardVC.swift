@@ -18,12 +18,19 @@ class ModalTitleCardVC: UIViewController {
 			self.titleCardVC = segue.destinationViewController as! TitleCardVC
 			self.titleCardVC.element = self.element
 			self.titleCardVC.delegate = self.delegate
+            self.titleCardVC.completionBlock = {
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }
 		}
 	}
 	
 	@IBAction func doneButtonPressed(sender:AnyObject) {
-		self.dismissViewControllerAnimated(true, completion: nil)
-	}
+        titleCardVC.doneButtonPressed(nil)
+    }
+    
+    @IBAction func discardButtonPressed(sender:AnyObject) {
+        titleCardVC.discardButtonPressed(nil)
+    }
 	
     override func prefersStatusBarHidden() -> Bool {
         return true

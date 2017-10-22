@@ -8,8 +8,36 @@
 
 import UIKit
 
-class SettingsTableController: UITableViewController {
+class SettingsTableController: UITableViewController, UITextFieldDelegate {
 	@IBOutlet var keyboardAutocompletionSwitch:UISwitch!
+    
+    @IBOutlet var titleField:UITextField!
+    @IBOutlet var groupField:UITextField!
+    @IBOutlet var member1Field:UITextField!
+    @IBOutlet var member2Field:UITextField!
+    @IBOutlet var member3Field:UITextField!
+    @IBOutlet var member4Field:UITextField!
+    @IBOutlet var member5Field:UITextField!
+    
+    let defaults = NSUserDefaults.standardUserDefaults()
+    
+    static let dictionaryOfVariablesKeys = ["GROUP","TITLE","MEMBER1","MEMBER2","MEMBER3","MEMBER4","MEMBER5"]
+    
+    class func createDictionaryOfVariables() {
+        let standardUserDefaults = NSUserDefaults.standardUserDefaults()
+        if let _ = standardUserDefaults.dictionaryForKey("VARIABLES") {
+        } else {
+            var dictionary = [String:String]()
+            
+            for eachKey in dictionaryOfVariablesKeys {
+                dictionary[eachKey] = ""
+            }
+            
+            standardUserDefaults.setValue(dictionary, forKey: "VARIABLES")
+            standardUserDefaults.synchronize()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -18,8 +46,17 @@ class SettingsTableController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-		let defaults = NSUserDefaults.standardUserDefaults()
-		self.keyboardAutocompletionSwitch!.on = !defaults.boolForKey("keyboardAutocompletionOff")
+		keyboardAutocompletionSwitch!.on = !defaults.boolForKey("keyboardAutocompletionOff")
+        
+        if let dictionaryOfVariables = defaults.dictionaryForKey("VARIABLES") {
+            groupField.text = dictionaryOfVariables["GROUP"] as? String
+            titleField.text = dictionaryOfVariables["TITLE"] as? String
+            member1Field.text = dictionaryOfVariables["MEMBER1"] as? String
+            member2Field.text = dictionaryOfVariables["MEMBER2"] as? String
+            member3Field.text = dictionaryOfVariables["MEMBER3"] as? String
+            member4Field.text = dictionaryOfVariables["MEMBER4"] as? String
+            member5Field.text = dictionaryOfVariables["MEMBER5"] as? String
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,10 +77,54 @@ class SettingsTableController: UITableViewController {
 //    }
 	
 	@IBAction func keyboardAutocompletionSwitchChanged(sender:UISwitch?) {
-		let defaults = NSUserDefaults.standardUserDefaults()
 		defaults.setBool(!sender!.on, forKey: "keyboardAutocompletionOff")
 		defaults.synchronize()
 	}
+    
+    @available(iOS 10.0, *)
+    func textFieldDidEndEditing(textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        updateTextField(textField)
+    }
+    
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        updateTextField(textField)
+        return true
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func updateTextField(textField:UITextField) {
+        guard let value = textField.text else {
+            return
+        }
+        
+        let dictionaryOfVariables = NSMutableDictionary(dictionary: defaults.dictionaryForKey("VARIABLES")!)
+        
+        switch textField {
+        case titleField:
+            dictionaryOfVariables.setValue(value, forKey: "TITLE")
+        case groupField:
+            dictionaryOfVariables.setValue(value, forKey: "GROUP")
+        case member1Field:
+            dictionaryOfVariables.setValue(value, forKey: "MEMBER1")
+        case member2Field:
+            dictionaryOfVariables.setValue(value, forKey: "MEMBER2")
+        case member3Field:
+            dictionaryOfVariables.setValue(value, forKey: "MEMBER3")
+        case member4Field:
+            dictionaryOfVariables.setValue(value, forKey: "MEMBER4")
+        case member5Field:
+            dictionaryOfVariables.setValue(value, forKey: "MEMBER5")
+        default:
+            print("Unrecognized textField")
+        }
+        
+        defaults.setValue(dictionaryOfVariables, forKey: "VARIABLES")
+        defaults.synchronize()
+    }
 
     /*
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

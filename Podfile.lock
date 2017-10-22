@@ -1,0 +1,12 @@
+PODS:
+  - BackButtonHandler (1.0.0)
+
+DEPENDENCIES:
+  - BackButtonHandler
+
+SPEC CHECKSUMS:
+  BackButtonHandler: 8ace60d1e870b4242b5d462203d6ecbe9e40e652
+
+PODFILE CHECKSUM: 8f0aa855395cf9053e843d8d52f971e4f0c77956
+
+COCOAPODS: 1.2.1

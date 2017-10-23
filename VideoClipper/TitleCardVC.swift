@@ -18,13 +18,6 @@ extension UIGestureRecognizer {
 	}
 }
 
-class MyScrollView:UIScrollView {
-    override func setContentOffset(contentOffset: CGPoint, animated: Bool) {
-        super.setContentOffset(contentOffset, animated: animated)
-        print("setContentOffset CALLED <========")
-    }
-}
-
 extension UITextView {
 	func isPlaceholder() -> Bool {
 		if self.tag == -1 {

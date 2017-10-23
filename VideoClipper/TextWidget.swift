@@ -70,6 +70,7 @@ class TextWidget: NSManagedObject {
 	var tapGesture:UITapGestureRecognizer?
 
 	func initialRect() -> CGRect {
+        //These are not the actual x and y coordinates, but it works for the initialization in (0,0)
 		return CGRect(x:CGFloat(self.distanceXFromCenter!),y:CGFloat(self.distanceYFromCenter!),width:CGFloat(self.width!),height:CGFloat(self.height!))
 	}
 	

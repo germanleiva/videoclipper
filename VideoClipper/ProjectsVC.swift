@@ -45,16 +45,17 @@ class ProjectsVC: UIViewController {
         
         for templateName in ["interview","brainstorm","prototype"] {
             alert.addAction(UIAlertAction(title: templateName.capitalizedString, style: UIAlertActionStyle.Default, handler: { (action) in
-                let newProject = self.createProject(templateName)
-                self.projectsTableController?.insertNewProject(newProject)
-                Answers.logCustomEventWithName("Project added", customAttributes: nil)
+                if let newProject = self.createProject(templateName) {
+                    self.projectsTableController?.insertNewProject(newProject)
+                    Answers.logCustomEventWithName("Project added", customAttributes: nil)
+                }
             }))
         }
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func createProject(projectTemplateName:String) -> Project {
+    func createProject(projectTemplateName:String) -> Project? {
         let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
         
         newProject.createdAt = NSDate()
@@ -149,27 +150,34 @@ class ProjectsVC: UIViewController {
                         newProject.mutableOrderedSetValueForKey("storyLines").addObject(newStoryLine)
                     }
                 }
-            } catch {
-                print("Error while serializing json: \(error)")
+            } catch let error as NSError {
+                Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", error: error, completion: {
+                    self.context.deleteObject(newProject)
+                })
+                
+                return nil
             }
         }
         
         do {
             try context.save()
-
-        } catch {
-            print("Couldn't save the new project: \(error)")
+        } catch let error as NSError {
+            Globals.presentSimpleAlert(self, title: "Couldn't save the new project in the database", error: error, completion: {
+                self.context.deleteObject(newProject)
+            })
+            return nil
         }
+        
         return newProject
     }
     
     
     @IBAction func quickStartPressed(sender: UIButton) {
-        let newProject = self.createProject("prototype")
-
-        self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
-        
-        Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+        if let newProject = self.createProject("prototype") {
+            self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
+            
+            Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+        }
     }
     
     @IBAction func changedSegment(sender:UISegmentedControl) {

@@ -86,12 +86,24 @@ class TitleCard: StoryElement {
         //Add image widgets
         for eachImageWidget in imageWidgets() {
             let newImageView = eachImageWidget.imageViewFor()
+            
+            let width = CGFloat(eachImageWidget.width!.doubleValue)
+            let height = CGFloat(eachImageWidget.height!.doubleValue)
+            let xPosition = canvas!.center.x - CGFloat(eachImageWidget.distanceXFromCenter!.doubleValue) - width / 2
+            let yPosition = canvas!.center.y - CGFloat(eachImageWidget.distanceYFromCenter!.doubleValue) - height / 2
+            newImageView.frame = CGRect(x: xPosition, y: yPosition, width: width, height: height)
             canvas?.addSubview(newImageView)
         }
         
         //Add text widgets
         for eachTextWidget in textWidgets() {
             let newTextView = eachTextWidget.textViewFor(eachTextWidget.initialRect())
+            newTextView.sizeToFit()
+            let width = newTextView.frame.width
+            let height = newTextView.frame.height
+            let xPosition = canvas!.center.x + CGFloat(eachTextWidget.distanceXFromCenter!.doubleValue) - width / 2
+            let yPosition = canvas!.center.y + CGFloat(eachTextWidget.distanceYFromCenter!.doubleValue) - height / 2
+            newTextView.frame = CGRect(x: xPosition, y: yPosition, width: width, height: height)
             canvas?.addSubview(newTextView)
         }
         

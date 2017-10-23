@@ -333,7 +333,7 @@
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="aE3-dj-FfW">
-                            <rect key="frame" x="307.5" y="7" width="409" height="30"/>
+                            <rect key="frame" x="308" y="7" width="409" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <segments>
                                 <segment title="Recent"/>
@@ -1534,7 +1534,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="1024" height="44"/>
                                 <items>
                                     <navigationItem id="Adl-Jc-Xhn">
-                                        <barButtonItem key="leftBarButtonItem" title="Close" style="plain" id="7uK-Ug-Y0D">
+                                        <barButtonItem key="leftBarButtonItem" title="Close" id="7uK-Ug-Y0D">
                                             <connections>
                                                 <action selector="closeButtonPressed:" destination="WKl-nH-FNn" id="D0m-Fz-40O"/>
                                             </connections>

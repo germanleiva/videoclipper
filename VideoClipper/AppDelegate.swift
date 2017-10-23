@@ -27,6 +27,16 @@ struct Globals {
     static var videoHelperQueue = dispatch_queue_create("fr.lri.VideoClipper.VideoHelper", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_BACKGROUND, 0));
 
     static var canvasBackground:UIView? = nil
+    
+    static func presentSimpleAlert(presenter:UIViewController,title:String,error:NSError,completion:(()->Void)?) {
+        let alert = UIAlertController(title: title, message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(
+            UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) in
+                alert.dismissViewControllerAnimated(true, completion: nil)
+            })
+        )
+        presenter.presentViewController(alert, animated: true, completion: completion)
+    }
 }
 
 extension UIImage {

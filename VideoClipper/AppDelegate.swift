@@ -26,6 +26,7 @@ struct Globals {
     
     static var videoHelperQueue = dispatch_queue_create("fr.lri.VideoClipper.VideoHelper", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_BACKGROUND, 0));
 
+    static var canvasBackground:UIView? = nil
 }
 
 extension UIImage {

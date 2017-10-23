@@ -30,4 +30,16 @@ class ImageWidget: NSManagedObject {
             self.locked = NSNumber(bool:newValue)
         }
     }
+    
+    func initializeImageView() {
+        self.imageView = imageViewFor()
+    }
+    
+    func imageViewFor() -> UIImageView {
+        let imageView = UIImageView(image: image as? UIImage)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        imageView.userInteractionEnabled = true
+        return imageView
+    }
 }

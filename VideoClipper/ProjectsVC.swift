@@ -137,9 +137,10 @@ class ProjectsVC: UIViewController {
                                         }
                                     }
                                     
-                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+                                    newTitleCard.createSnapshots()
+//                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+//                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+//                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
                                 }
                             }
                         }

@@ -453,7 +453,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" tag="-1" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="oX6-u2-0Dw">
-                                            <rect key="frame" x="0.0" y="5" width="550" height="108"/>
+                                            <rect key="frame" x="0.0" y="5" width="974" height="108"/>
                                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="5" id="9p7-U9-e7c">
                                                 <size key="itemSize" width="192" height="108"/>
@@ -463,7 +463,7 @@
                                             </collectionViewFlowLayout>
                                             <cells>
                                                 <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TitleCardCollectionCell" id="SmF-rg-v9V" customClass="TitleCardCollectionCell" customModule="VideoClipper" customModuleProvider="target">
-                                                    <rect key="frame" x="5" y="2.5" width="182" height="103"/>
+                                                    <rect key="frame" x="5" y="3" width="182" height="103"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                         <rect key="frame" x="0.0" y="0.0" width="182" height="103"/>
@@ -487,7 +487,7 @@
                                                     </connections>
                                                 </collectionViewCell>
                                                 <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="VideoCollectionCell" id="tMx-5g-fVi" customClass="VideoCollectionCell" customModule="VideoClipper" customModuleProvider="target">
-                                                    <rect key="frame" x="192" y="2.5" width="192" height="103"/>
+                                                    <rect key="frame" x="192" y="3" width="192" height="103"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                         <rect key="frame" x="0.0" y="0.0" width="192" height="103"/>
@@ -1302,7 +1302,7 @@
         <!--Title CardVC-->
         <scene sceneID="QS4-oc-rRK">
             <objects>
-                <viewController storyboardIdentifier="titleCardController" id="IbS-bj-HKR" customClass="TitleCardVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="titleCardController" automaticallyAdjustsScrollViewInsets="NO" id="IbS-bj-HKR" customClass="TitleCardVC" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="e4f-XP-brD"/>
                         <viewControllerLayoutGuide type="bottom" id="zHt-XW-yPb"/>
@@ -1311,7 +1311,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gs1-LF-5XS">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gs1-LF-5XS" customClass="MyScrollView" customModule="VideoClipper" customModuleProvider="target">
                                 <rect key="frame" x="29" y="92" width="742" height="417"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jfr-Mu-juV">
@@ -1343,7 +1343,7 @@
                                 </constraints>
                             </scrollView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="e0E-jv-YSd">
-                                <rect key="frame" x="37" y="52" width="726" height="33"/>
+                                <rect key="frame" x="29" y="52" width="742" height="33"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M13-BE-b8R">
                                         <rect key="frame" x="0.0" y="0.0" width="33" height="33"/>
@@ -1357,7 +1357,7 @@
                                         </connections>
                                     </button>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="17" translatesAutoresizingMaskIntoConstraints="NO" id="MXa-72-Vwa">
-                                        <rect key="frame" x="112" y="0.0" width="166" height="33"/>
+                                        <rect key="frame" x="115" y="0.0" width="166" height="33"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="klh-mY-7G1">
                                                 <rect key="frame" x="0.0" y="0.0" width="44" height="33"/>
@@ -1398,7 +1398,7 @@
                                         </subviews>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J1u-gm-0LU">
-                                        <rect key="frame" x="357" y="0.0" width="33" height="33"/>
+                                        <rect key="frame" x="363.5" y="0.0" width="33" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="J1u-gm-0LU" secondAttribute="height" multiplier="1:1" id="gyK-s3-MGT"/>
                                         </constraints>
@@ -1410,7 +1410,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8x-js-bpn">
-                                        <rect key="frame" x="469" y="0.0" width="33" height="33"/>
+                                        <rect key="frame" x="478.5" y="0.0" width="33" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="F8x-js-bpn" secondAttribute="height" multiplier="1:1" id="fWX-77-c7U"/>
                                         </constraints>
@@ -1420,7 +1420,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TzP-G1-yFU">
-                                        <rect key="frame" x="581" y="0.0" width="33" height="33"/>
+                                        <rect key="frame" x="594" y="0.0" width="33" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="TzP-G1-yFU" secondAttribute="height" multiplier="1:1" id="O1R-6h-7VW"/>
                                         </constraints>
@@ -1430,7 +1430,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lzs-KQ-gSO">
-                                        <rect key="frame" x="693" y="0.0" width="33" height="33"/>
+                                        <rect key="frame" x="709" y="0.0" width="33" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Lzs-KQ-gSO" secondAttribute="height" multiplier="1:1" id="KFJ-V3-5S7"/>
                                         </constraints>
@@ -1446,13 +1446,24 @@
                                 <rect key="frame" x="29" y="525" width="742" height="36"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Saved" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iJC-Iq-dpN">
-                                        <rect key="frame" x="0.0" y="8" width="47" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="8" width="130" height="20.5"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="IaH-di-zwD"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u7i-xx-aXh">
+                                        <rect key="frame" x="354.5" y="1.5" width="33" height="33"/>
+                                        <state key="normal" image="lock-open"/>
+                                        <state key="selected" image="lock-close"/>
+                                        <connections>
+                                            <action selector="lockButtonPressed" destination="IbS-bj-HKR" eventType="touchUpInside" id="eAz-KO-bxk"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whV-Vq-JaQ">
-                                        <rect key="frame" x="309.5" y="0.0" width="130" height="36"/>
+                                        <rect key="frame" x="612" y="0.0" width="130" height="36"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="130" id="9mM-LH-2De"/>
                                         </constraints>
@@ -1464,34 +1475,26 @@
                                             <action selector="showDurationPopOver:" destination="IbS-bj-HKR" eventType="touchUpInside" id="NXs-FF-0FT"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u7i-xx-aXh">
-                                        <rect key="frame" x="709" y="1.5" width="33" height="33"/>
-                                        <state key="normal" image="lock-open"/>
-                                        <state key="selected" image="lock-close"/>
-                                        <connections>
-                                            <action selector="lockButtonPressed" destination="IbS-bj-HKR" eventType="touchUpInside" id="eAz-KO-bxk"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" red="0.42352941179999998" green="0.71764705880000002" blue="0.84313725490000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="Dv2-vY-cbE"/>
+                            <constraint firstItem="e0E-jv-YSd" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="DyO-00-ZpE"/>
+                            <constraint firstItem="e0E-jv-YSd" firstAttribute="width" secondItem="Gs1-LF-5XS" secondAttribute="width" id="S9B-Jv-cYO"/>
                             <constraint firstItem="jAS-Ag-Yig" firstAttribute="centerX" secondItem="Lmj-n3-BFu" secondAttribute="centerX" id="T8g-Fx-ufM"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="centerY" secondItem="Lmj-n3-BFu" secondAttribute="centerY" id="b2T-Ei-rsf"/>
                             <constraint firstItem="jAS-Ag-Yig" firstAttribute="width" secondItem="Gs1-LF-5XS" secondAttribute="width" id="gf5-VQ-GQN"/>
                             <constraint firstItem="e0E-jv-YSd" firstAttribute="trailing" secondItem="yhB-Bi-Rum" secondAttribute="trailing" id="gtm-h6-rPb"/>
                             <constraint firstItem="yhB-Bi-Rum" firstAttribute="top" secondItem="e0E-jv-YSd" secondAttribute="bottom" constant="15" id="kRv-uF-QXJ"/>
                             <constraint firstItem="Gs1-LF-5XS" firstAttribute="top" secondItem="e0E-jv-YSd" secondAttribute="bottom" constant="7" id="kTt-ZX-Wyp"/>
-                            <constraint firstItem="e0E-jv-YSd" firstAttribute="width" secondItem="yhB-Bi-Rum" secondAttribute="width" id="oDr-A7-ggk"/>
-                            <constraint firstItem="e0E-jv-YSd" firstAttribute="centerX" secondItem="yhB-Bi-Rum" secondAttribute="centerX" id="rGW-A9-Olf"/>
                             <constraint firstItem="jAS-Ag-Yig" firstAttribute="top" secondItem="Gs1-LF-5XS" secondAttribute="bottom" constant="16" id="uoc-WK-Bxk"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="gtm-h6-rPb"/>
                                 <exclude reference="kRv-uF-QXJ"/>
+                                <exclude reference="gtm-h6-rPb"/>
                             </mask>
                         </variation>
                     </view>

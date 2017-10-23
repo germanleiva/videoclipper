@@ -11,7 +11,7 @@ import CoreData
 
 @objc(TitleCard)
 class TitleCard: StoryElement {
-
+    
 // Insert code here to add functionality to your managed object subclass
     
     var videoPath:NSURL? {
@@ -35,6 +35,10 @@ class TitleCard: StoryElement {
 	func textWidgets() -> [TextWidget] {
 		return self.widgets!.array as! [TextWidget]
 	}
+    
+    func imageWidgets() -> [ImageWidget] {
+        return self.images!.array as! [ImageWidget]
+    }
 	
 	override func realDuration(timescale:Int32 = 44100) -> CMTime {
         return CMTimeMakeWithSeconds(Float64(self.duration!), timescale)
@@ -65,6 +69,66 @@ class TitleCard: StoryElement {
                 completionHandler?(image: self.thumbnailImage,error: nil)
             })
         })
+    }
+    
+    func createSnapshots() {
+        let width = 742
+        let height = 417
+        let margin = 16
+        let canvas:UIView? = UIView(frame: CGRect(x: 0,y: 0,width: 742,height: 417))
+        canvas?.translatesAutoresizingMaskIntoConstraints = false
+        let effectiveCanvas = UIView(frame: CGRect(x: margin / 2, y: margin / 2, width: width - margin, height: height - margin))
+        effectiveCanvas.translatesAutoresizingMaskIntoConstraints = false
+        canvas?.addSubview(effectiveCanvas)
+        effectiveCanvas.layer.borderColor = UIColor.blackColor().CGColor
+        effectiveCanvas.layer.borderWidth = 1.0
+        
+        //Add image widgets
+        for eachImageWidget in imageWidgets() {
+            let newImageView = eachImageWidget.imageViewFor()
+            canvas?.addSubview(newImageView)
+        }
+        
+        //Add text widgets
+        for eachTextWidget in textWidgets() {
+            let newTextView = eachTextWidget.textViewFor(eachTextWidget.initialRect())
+            canvas?.addSubview(newTextView)
+        }
+        
+        /* Capture the screen shoot at native resolution */
+        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, UIScreen.mainScreen().scale)
+        let graphicContext = UIGraphicsGetCurrentContext()!
+        
+        UIColor.whiteColor().setFill()
+        CGContextFillRect(graphicContext, CGRect(x: 0.0, y: 0.0, width: canvas!.bounds.size.width, height: canvas!.bounds.size.height))
+        
+        canvas!.layer.renderInContext(graphicContext)
+        
+        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        /* Render the screen shot at custom resolution */
+        //let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
+        let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
+        
+        UIGraphicsBeginImageContextWithOptions(cropRect.size, canvas!.opaque, 1)
+        screenshot!.drawInRect(cropRect)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        self.snapshotData = UIImageJPEGRepresentation(img!,0.75)
+        
+        let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
+        
+        UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.opaque, 1)
+        screenshot!.drawInRect(smallCropRect)
+        let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        self.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
+        
+//        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
+        
     }
     
     override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){

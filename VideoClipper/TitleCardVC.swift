@@ -11,17 +11,18 @@ import CoreData
 import MobileCoreServices
 import Photos
 
-let EMPTY_TEXT = "Text"
-let EMPTY_COLOR = UIColor.lightGrayColor()
-
-let TEXT_INITIAL_WIDTH = CGFloat(100)
-let TEXT_INITIAL_HEIGHT = CGFloat(30)
-
 extension UIGestureRecognizer {
 	func cancel() {
 		self.enabled = false
 		self.enabled = true
 	}
+}
+
+class MyScrollView:UIScrollView {
+    override func setContentOffset(contentOffset: CGPoint, animated: Bool) {
+        super.setContentOffset(contentOffset, animated: animated)
+        print("setContentOffset CALLED <========")
+    }
 }
 
 extension UITextView {
@@ -63,7 +64,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	@IBOutlet weak var scrollView:UIScrollView?
 	@IBOutlet weak var durationButton:UIButton?
-	
+	    
 	var durationPickerController:DurationPickerController?
 	
 	var changesDetected = false
@@ -227,6 +228,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			topItem.leftBarButtonItem = cameraButton
 		}
 	}
+    
+//    override func viewDidAppear(animated: Bool) {
+//        super.viewDidAppear(animated)
+//        scrollView!.setContentOffset(CGPointZero, animated: false)
+//    }
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -263,10 +269,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.updateDurationButtonText(Int(self.titleCard!.duration!))
 		
 		self.changesDetected = false
-		
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(TitleCardVC.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(TitleCardVC.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
-		
+        
+        NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillShowNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
+            self.keyboardWillShow(notification)
+        }
+        NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillHideNotification, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
+            self.keyboardWillHide(notification)
+        }
+
 		self.canvas!.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 		self.colorButton.backgroundColor = self.titleCard!.backgroundColor as? UIColor
 		
@@ -283,18 +293,15 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         navigationItem.leftBarButtonItem = closeButton
         
         let saveButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Save,target: self, action: #selector(saveButtonPressed))
-        saveButton.title = "banana"
         navigationItem.rightBarButtonItem = saveButton
         
     }
 	
 	func addImageWidget(imageWidget:ImageWidget) {
-		let imageView = UIImageView(image: imageWidget.image as? UIImage)
-		imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageWidget.initializeImageView()
 		
-		imageWidget.imageView = imageView
-		imageView.userInteractionEnabled = true
-		
+        let imageView = imageWidget.imageView
+        
 		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.pannedImageView(_:)))
 //		panGesture.delegate = self
 		imageView.addGestureRecognizer(panGesture)
@@ -501,7 +508,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     func updateTextWidgetModel(eachTextWidget:TextWidget) {
         if eachTextWidget.textView!.isPlaceholder() {
             eachTextWidget.content = ""
-            eachTextWidget.displayedContent = EMPTY_TEXT
+            eachTextWidget.displayedContent = TextWidget.EMPTY_TEXT
         } else {
             eachTextWidget.color = eachTextWidget.textView!.textColor
         }
@@ -755,35 +762,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func addTextInput(model:TextWidget, initialFrame:CGRect) {
-		var effectiveFrame = initialFrame
-		if initialFrame == CGRectZero {
-			effectiveFrame = CGRect(x: 0,y: 0,width: TEXT_INITIAL_WIDTH,height: TEXT_INITIAL_WIDTH)
-		}
-		
-		model.textView = UITextView(frame: effectiveFrame)
-		model.textView!.backgroundColor = UIColor.clearColor()
-		model.textView!.textColor = model.color as? UIColor
-		model.textView!.delegate = self
-		model.textView!.font = UIFont.systemFontOfSize(CGFloat(model.fontSize!))
-		model.textView!.textAlignment = model.textAlignment!
-		model.textView!.editable = false
-		model.textView!.selectable = false
-		model.textView!.showsHorizontalScrollIndicator = false
-		model.textView!.showsVerticalScrollIndicator = false
-		model.textView!.scrollEnabled = false
-		
-		model.textView!.translatesAutoresizingMaskIntoConstraints = false
-		
-		model.textView!.layer.borderColor = UIColor.blackColor().CGColor
-		model.textView!.isPlaceholder(model.content!.isEmpty)
-
-		if model.textView!.isPlaceholder() {
-			model.textView!.text = EMPTY_TEXT
-			model.textView!.textColor = EMPTY_COLOR
-		} else {
-			model.textView!.text = model.textToDisplay()
-			model.textView!.textColor = model.color as? UIColor
-		}
+		model.initializeTextView(initialFrame)
+        model.textView!.delegate = self
 		
 		model.tapGesture = UITapGestureRecognizer(target: self, action: #selector(TitleCardVC.tappedTextView(_:)))
 		
@@ -817,13 +797,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		model.rightHandler!.addConstraint(NSLayoutConstraint(item: model.rightHandler!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
 		model.rightHandler!.addConstraint(NSLayoutConstraint(item: model.rightHandler!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: handlerSize))
 		
-		model.textViewWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: effectiveFrame.size.width)
+		model.textViewWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: model.textView!.frame.size.width)
 		model.textView!.addConstraint(model.textViewWidthConstraint)
 		
-		model.textViewMinWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_WIDTH)
+		model.textViewMinWidthConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TextWidget.TEXT_INITIAL_WIDTH)
 		model.textView!.addConstraint(model.textViewMinWidthConstraint)
 		
-		model.textViewMinHeightConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TEXT_INITIAL_HEIGHT)
+		model.textViewMinHeightConstraint = NSLayoutConstraint(item: model.textView!, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.GreaterThanOrEqual, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: TextWidget.TEXT_INITIAL_HEIGHT)
 		model.textView!.addConstraint(model.textViewMinHeightConstraint)
 		
 //		textWidget.textView!.addConstraint(NSLayoutConstraint(item: textWidget.textView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: textWidget.textView!, attribute: NSLayoutAttribute.Height, multiplier: 16/9, constant: 0))
@@ -1019,8 +999,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			
 			textView.isPlaceholder(textView.text.isEmpty)
 			if textView.isPlaceholder() {
-				textView.text = EMPTY_TEXT
-				textView.textColor = EMPTY_COLOR
+				textView.text = TextWidget.EMPTY_TEXT
+				textView.textColor = TextWidget.EMPTY_COLOR
             } else {
                 textWidget.displayedContent = textWidget.textToDisplay(textView.text)
                 textWidget.content = textView.text

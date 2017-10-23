@@ -12,6 +12,13 @@ import UIKit
 
 @objc(TextWidget)
 class TextWidget: NSManagedObject {
+    
+    static var EMPTY_TEXT = "Text"
+    static var EMPTY_COLOR = UIColor.lightGrayColor()
+    
+    static var TEXT_INITIAL_WIDTH = CGFloat(100)
+    static var TEXT_INITIAL_HEIGHT = CGFloat(30)
+    
     let defaults = NSUserDefaults.standardUserDefaults()
     
 	var textViewMinWidthConstraint: NSLayoutConstraint!
@@ -22,7 +29,43 @@ class TextWidget: NSManagedObject {
 	
 	var leftHandler:UIView?
 	var rightHandler:UIView?
-	var textView:UITextView?
+    var textView:UITextView?
+    
+    func initializeTextView(initialFrame:CGRect) {
+        self.textView = textViewFor(initialFrame)
+    }
+    func textViewFor(initialFrame:CGRect) -> UITextView {
+        var effectiveFrame = initialFrame
+        if effectiveFrame == CGRectZero {
+            effectiveFrame = CGRect(x: 0,y: 0,width: TextWidget.TEXT_INITIAL_WIDTH,height: TextWidget.TEXT_INITIAL_WIDTH)
+        }
+        
+        let textView = UITextView(frame: effectiveFrame)
+        textView.backgroundColor = UIColor.clearColor()
+        textView.textColor = self.color as? UIColor
+        textView.font = UIFont.systemFontOfSize(CGFloat(self.fontSize!))
+        textView.textAlignment = self.textAlignment!
+        textView.editable = false
+        textView.selectable = false
+        textView.showsHorizontalScrollIndicator = false
+        textView.showsVerticalScrollIndicator = false
+        textView.scrollEnabled = false
+        
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        
+        textView.layer.borderColor = UIColor.blackColor().CGColor
+        textView.isPlaceholder(self.content!.isEmpty)
+        
+        if textView.isPlaceholder() {
+            textView.text = TextWidget.EMPTY_TEXT
+            textView.textColor = TextWidget.EMPTY_COLOR
+        } else {
+            textView.text = self.textToDisplay()
+            textView.textColor = self.color as? UIColor
+        }
+        
+        return textView
+    }
 		
 	var tapGesture:UITapGestureRecognizer?
 

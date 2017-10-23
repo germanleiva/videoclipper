@@ -70,13 +70,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
 	var needsToSave = false {
 		didSet {
+            let saveLabelText:String
 			if self.needsToSave {
-				self.saveButton.enabled = true
-				self.saveButton.setTitle("Save", forState: UIControlState.Normal)
+                saveLabelText = "Not saved"
 			} else {
-				self.saveButton.enabled = false
-				self.saveButton.setTitle("Saved", forState: UIControlState.Normal)
+                saveLabelText = "Saved"
 			}
+            self.saveLabel.text = saveLabelText
 		}
 	}
 
@@ -88,7 +88,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     @IBOutlet weak var fontSizeButton: UIButton!
     @IBOutlet weak var alignmentStack: UIStackView!
     @IBOutlet weak var lockButton: UIButton!
-	@IBOutlet weak var saveButton: UIButton!
+	@IBOutlet weak var saveLabel: UILabel!
 	
 	var titleCard: TitleCard? {
 		return self.element as? TitleCard
@@ -282,8 +282,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(closeButtonPressed))
         navigationItem.leftBarButtonItem = closeButton
         
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,target: self, action: #selector(doneButtonPressed))
-        navigationItem.rightBarButtonItem = doneButton
+        let saveButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Save,target: self, action: #selector(saveButtonPressed))
+        saveButton.title = "banana"
+        navigationItem.rightBarButtonItem = saveButton
         
     }
 	
@@ -356,27 +357,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         
     }
     
-    func doneButtonPressed(sender:UIBarButtonItem?) {
+    func saveButtonPressed(sender:UIBarButtonItem?) {
         if !needsToSave {
             completionBlock()
             return
         }
         
-        let alert = UIAlertController(title: "Unsaved changes", message: "Do you want to save your changes?", preferredStyle: UIAlertControllerStyle.Alert)
-        
-        alert.addAction(
-            UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (discardAction) in
-                alert.dismissViewControllerAnimated(true, completion: self.completionBlock)
-            })
-        )
-        
-        alert.addAction(
-            UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (saveAction) in
-                self.saveCanvas(true,completion:self.completionBlock)
-            })
-        )
-        
-        presentViewController(alert, animated: true, completion: nil)
+        self.saveCanvas(true,completion:self.completionBlock)
     }
 	
 	func findImageWidgetForView(view:UIView) -> ImageWidget? {
@@ -611,10 +598,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
             selectedImageWidget.isLocked = !selectedImageWidget.isLocked
             lockButton.selected = selectedImageWidget.isLocked
         }
-    }
-    
-    @IBAction func saveButtonPressed() {
-        self.saveCanvas(true)
     }
 	
     func saveCanvas(animated:Bool,completion:(()->())? = nil) {

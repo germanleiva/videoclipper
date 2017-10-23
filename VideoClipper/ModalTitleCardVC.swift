@@ -24,8 +24,8 @@ class ModalTitleCardVC: UIViewController {
 		}
 	}
 	
-	@IBAction func doneButtonPressed(sender:AnyObject) {
-        titleCardVC.doneButtonPressed(nil)
+	@IBAction func saveButtonPressed(sender:AnyObject) {
+        titleCardVC.saveButtonPressed(nil)
     }
     
     @IBAction func closeButtonPressed(sender:AnyObject) {

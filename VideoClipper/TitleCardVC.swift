@@ -279,8 +279,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     }
     
     func createBarButtons() {
-        let discardButton = UIBarButtonItem(title: "Discard", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(discardButtonPressed))
-        navigationItem.leftBarButtonItem = discardButton
+        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(closeButtonPressed))
+        navigationItem.leftBarButtonItem = closeButton
         
         let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,target: self, action: #selector(doneButtonPressed))
         navigationItem.rightBarButtonItem = doneButton
@@ -328,7 +328,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.view.addConstraint(imageWidget.centerYConstraint)
 	}
 	
-    func discardButtonPressed(sender:UIBarButtonItem?) {
+    func closeButtonPressed(sender:UIBarButtonItem?) {
         if !needsToSave {
             completionBlock()
             return

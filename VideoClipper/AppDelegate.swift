@@ -28,8 +28,8 @@ struct Globals {
 
     static var canvasBackground:UIView? = nil
     
-    static func presentSimpleAlert(presenter:UIViewController,title:String,error:NSError,completion:(()->Void)?) {
-        let alert = UIAlertController(title: title, message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
+    static func presentSimpleAlert(presenter:UIViewController,title:String,message:String,completion:(()->Void)?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(
             UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) in
                 alert.dismissViewControllerAnimated(true, completion: nil)

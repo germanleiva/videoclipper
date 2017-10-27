@@ -45,9 +45,18 @@ class ProjectsVC: UIViewController {
         
         for templateName in ["interview","brainstorm","prototype"] {
             alert.addAction(UIAlertAction(title: templateName.capitalizedString, style: UIAlertActionStyle.Default, handler: { (action) in
-                if let newProject = self.createProject(templateName) {
-                    self.projectsTableController?.insertNewProject(newProject)
-                    Answers.logCustomEventWithName("Project added", customAttributes: nil)
+                //Start activity indicator
+                let window = UIApplication.sharedApplication().delegate!.window!
+                
+                let progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
+                progressIndicator.show(true)
+                
+                self.createProject(templateName) { newProject in
+                    progressIndicator.hide(true)
+                    if let newProject = newProject {
+                        self.projectsTableController?.insertNewProject(newProject)
+                        Answers.logCustomEventWithName("Project added", customAttributes: nil)
+                    }
                 }
             }))
         }
@@ -55,7 +64,7 @@ class ProjectsVC: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func createProject(projectTemplateName:String) -> Project? {
+    func createProject(projectTemplateName:String,completion:(Project?->Void)?) {
         let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
         
         newProject.createdAt = NSDate()
@@ -69,114 +78,129 @@ class ProjectsVC: UIViewController {
         
         guard let path = NSBundle.mainBundle().pathForResource(projectTemplateName, ofType: "json") else {
             print("Couldn't open JSON file named \(projectTemplateName)")
-            abort()
+            
+            Globals.presentSimpleAlert(self, title: "Couldn't open JSON file named \(projectTemplateName).json", message: "", completion: nil)
+            completion?(nil)
+            return
         }
         
 //        if let jsonData = try NSData(contentsOfURL: NSURL(fileURLWithPath: path), options: NSDataReadingOptions.DataReadingMappedIfSafe)
-        if let jsonData = NSData(contentsOfFile: path) {
-            do {
-                let JSONStoryboard = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers)
-                if let JSONStoryLines : NSArray = JSONStoryboard["storyLines"] as? NSArray {
-                    for aJSONStoryline in JSONStoryLines {
-                        //Let's create each StoryLine
-                        let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+        dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 )) {
+            if let jsonData = NSData(contentsOfFile: path) {
+                do {
+                    let JSONStoryboard = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers)
+                    if let JSONStoryLines : NSArray = JSONStoryboard["storyLines"] as? NSArray {
+                        for aJSONStoryline in JSONStoryLines {
+                            //Let's create each StoryLine
+                            let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: self.context) as! StoryLine
 
-                        if let JSONTitleCards = aJSONStoryline["titleCards"] as? NSArray {
-                            for aJSONTitleCard in JSONTitleCards {
-                                if let aJSONTitleCard = aJSONTitleCard as? [String:AnyObject] {
-                                    //Let's create each TitleCard in the line
-                                    let newTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
-                                    newTitleCard.name = "Untitled"
-                                    newStoryLine.mutableOrderedSetValueForKey("elements").addObject(newTitleCard)
+                            if let JSONTitleCards = aJSONStoryline["titleCards"] as? NSArray {
+                                for aJSONTitleCard in JSONTitleCards {
+                                    if let aJSONTitleCard = aJSONTitleCard as? [String:AnyObject] {
+                                        //Let's create each TitleCard in the line
+                                        let newTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: self.context) as! TitleCard
+                                        newTitleCard.name = "Untitled"
+                                        newStoryLine.mutableOrderedSetValueForKey("elements").addObject(newTitleCard)
 
-                                    let textWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("widgets")
-                                    let imageWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("images")
-                                    
-                                    for (attribute, value) in aJSONTitleCard {
-                                        switch attribute {
-                                        case "duration":
-                                            newTitleCard.duration = value as? NSNumber
-                                        case "backgroundColor":
-                                            if let hexColor = value as? String {
-                                                newTitleCard.backgroundColor = UIColor(hexString:hexColor)
-                                            }
-                                        case "imageWidgets":
-                                            if let JSONImageWidgets = value as? NSArray {
-                                                for JSONImageWidget in JSONImageWidgets {
-                                                    let newImageWidget = NSEntityDescription.insertNewObjectForEntityForName("ImageWidget", inManagedObjectContext: context) as! ImageWidget
-                                                    newImageWidget.distanceXFromCenter = JSONImageWidget["distanceXFromCenter"] as? NSNumber
-                                                    newImageWidget.distanceYFromCenter = JSONImageWidget["distanceYFromCenter"] as? NSNumber
-                                                    newImageWidget.width = JSONImageWidget["width"] as? NSNumber
-                                                    newImageWidget.height = JSONImageWidget["height"] as? NSNumber
-                                                    if let imageFile = JSONImageWidget["image"] as? String {
-                                                        if let cachedImage = UIImage(named:imageFile) {
-                                                            newImageWidget.image = UIImage(CGImage: cachedImage.CGImage!)
-                                                        } else {
-                                                            print("Couldn't find image named \(imageFile)")
-                                                        }
-                                                    }
-                                                    newImageWidget.locked = JSONImageWidget["locked"] as? Bool
-                                                    
-                                                    imageWidgetsOnTitleCard.addObject(newImageWidget)
+                                        let textWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("widgets")
+                                        let imageWidgetsOnTitleCard = newTitleCard.mutableOrderedSetValueForKey("images")
+                                        
+                                        for (attribute, value) in aJSONTitleCard {
+                                            switch attribute {
+                                            case "duration":
+                                                newTitleCard.duration = value as? NSNumber
+                                            case "backgroundColor":
+                                                if let hexColor = value as? String {
+                                                    newTitleCard.backgroundColor = UIColor(hexString:hexColor)
                                                 }
+                                            case "imageWidgets":
+                                                if let JSONImageWidgets = value as? NSArray {
+                                                    for JSONImageWidget in JSONImageWidgets {
+                                                        let newImageWidget = NSEntityDescription.insertNewObjectForEntityForName("ImageWidget", inManagedObjectContext: self.context) as! ImageWidget
+                                                        newImageWidget.distanceXFromCenter = JSONImageWidget["distanceXFromCenter"] as? NSNumber
+                                                        newImageWidget.distanceYFromCenter = JSONImageWidget["distanceYFromCenter"] as? NSNumber
+                                                        newImageWidget.width = JSONImageWidget["width"] as? NSNumber
+                                                        newImageWidget.height = JSONImageWidget["height"] as? NSNumber
+                                                        if let imageFile = JSONImageWidget["image"] as? String {
+                                                            if let cachedImage = UIImage(named:imageFile) {
+                                                                newImageWidget.image = UIImage(CGImage: cachedImage.CGImage!)
+                                                            } else {
+                                                                print("Couldn't find image named \(imageFile)")
+                                                            }
+                                                        }
+                                                        newImageWidget.locked = JSONImageWidget["locked"] as? Bool
+                                                        
+                                                        imageWidgetsOnTitleCard.addObject(newImageWidget)
+                                                    }
+                                                }
+                                            case "textWidgets":
+                                                for JSONTextWidget in value as! NSArray {
+                                                    let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+                                                    newTextWidget.content = JSONTextWidget["content"] as? String
+                                                    newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
+                                                    newTextWidget.distanceYFromCenter = JSONTextWidget["distanceYFromCenter"] as? NSNumber
+                                                    newTextWidget.width = JSONTextWidget["width"] as? NSNumber
+                                                    newTextWidget.height = JSONTextWidget["height"] as? NSNumber
+                                                    newTextWidget.fontSize = JSONTextWidget["fontSize"] as? NSNumber
+                                                    newTextWidget.locked = JSONTextWidget["locked"] as? Bool
+                                                    
+                                                    textWidgetsOnTitleCard.addObject(newTextWidget)
+                                                }
+                                            default:
+                                                print("Unrecognized attribute for TitleCard in JSON: \(attribute)")
                                             }
-                                        case "textWidgets":
-                                            for JSONTextWidget in value as! NSArray {
-                                                let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: context) as! TextWidget
-                                                newTextWidget.content = JSONTextWidget["content"] as? String
-                                                newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
-                                                newTextWidget.distanceYFromCenter = JSONTextWidget["distanceYFromCenter"] as? NSNumber
-                                                newTextWidget.width = JSONTextWidget["width"] as? NSNumber
-                                                newTextWidget.height = JSONTextWidget["height"] as? NSNumber
-                                                newTextWidget.fontSize = JSONTextWidget["fontSize"] as? NSNumber
-                                                newTextWidget.locked = JSONTextWidget["locked"] as? Bool
-                                                
-                                                textWidgetsOnTitleCard.addObject(newTextWidget)
-                                            }
-                                        default:
-                                            print("Unrecognized attribute for TitleCard in JSON: \(attribute)")
                                         }
+                                        
+                                        dispatch_sync(dispatch_get_main_queue()) {
+                                            newTitleCard.createSnapshots()
+                                        }
+    //                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+    //                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
+    //                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
                                     }
-                                    
-                                    newTitleCard.createSnapshots()
-//                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-//                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-//                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
                                 }
                             }
+                            
+                            //Let's add the newStoryLine to the project
+                            newProject.mutableOrderedSetValueForKey("storyLines").addObject(newStoryLine)
                         }
+                    }
+                    
+                    //Finished parsing
+                    dispatch_async(dispatch_get_main_queue()) {
+                        do {
+                            try self.context.save()
+                            completion?(newProject)
+                        } catch let error as NSError {
+                            Globals.presentSimpleAlert(self, title: "Couldn't save the new project in the database", message: error.localizedDescription, completion: {
+                                self.context.deleteObject(newProject)
+                            })
+                            completion?(nil)
+                        }
+                    }
+                    
+                } catch let error as NSError {
+                    
+                    dispatch_async(dispatch_get_main_queue()) {
+                        Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", message: error.localizedDescription, completion: {
+                            self.context.deleteObject(newProject)
+                        })
                         
-                        //Let's add the newStoryLine to the project
-                        newProject.mutableOrderedSetValueForKey("storyLines").addObject(newStoryLine)
+                        completion?(nil)
                     }
                 }
-            } catch let error as NSError {
-                Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", error: error, completion: {
-                    self.context.deleteObject(newProject)
-                })
-                
-                return nil
             }
         }
         
-        do {
-            try context.save()
-        } catch let error as NSError {
-            Globals.presentSimpleAlert(self, title: "Couldn't save the new project in the database", error: error, completion: {
-                self.context.deleteObject(newProject)
-            })
-            return nil
-        }
-        
-        return newProject
     }
     
     
     @IBAction func quickStartPressed(sender: UIButton) {
-        if let newProject = self.createProject("prototype") {
-            self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
-            
-            Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+        self.createProject("prototype") { newProject in
+            if let newProject = newProject {
+                self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
+                Answers.logCustomEventWithName("Project quick started", customAttributes: nil)
+            }
         }
     }
     

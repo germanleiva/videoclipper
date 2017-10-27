@@ -96,6 +96,10 @@ class ProjectsVC: UIViewController {
                             //Let's create each StoryLine
                             let newStoryLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: self.context) as! StoryLine
 
+                            if let isHidden = aJSONStoryline["hidden"] as? Bool {
+                                newStoryLine.shouldHide = isHidden
+                            }
+                            
                             if let JSONTitleCards = aJSONStoryline["titleCards"] as? NSArray {
                                 for aJSONTitleCard in JSONTitleCards {
                                     if let aJSONTitleCard = aJSONTitleCard as? [String:AnyObject] {
@@ -154,7 +158,7 @@ class ProjectsVC: UIViewController {
                                             }
                                         }
                                         
-                                        dispatch_async(dispatch_get_main_queue()) {
+                                        dispatch_sync(dispatch_get_main_queue()) {
                                             dispatch_group_enter(snapshotGroup)
                                             newTitleCard.createSnapshots()
                                             dispatch_group_leave(snapshotGroup)

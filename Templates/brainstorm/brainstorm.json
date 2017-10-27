@@ -52,7 +52,7 @@
                 "distanceXFromCenter": -88,
                 "distanceYFromCenter": 106,
                 "width": 120,
-                "height": 50,
+                "height": 40,
                 "alignment": 0,
                 "color": "#000000",
                 "fontSize": 20,
@@ -73,7 +73,7 @@
             {
                 "distanceXFromCenter": 8,
                 "distanceYFromCenter": -44,
-                "width": 450,
+                "width": 40,
                 "height": 50,
                 "alignment": 1,
                 "color": "#000000",

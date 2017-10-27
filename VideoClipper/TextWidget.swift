@@ -80,6 +80,9 @@ class TextWidget: NSManagedObject {
 		self.color = UIColor.blackColor()
 	}
     
+    //aligment == 0 => textAlignment left aligned
+    //aligment == 1 => textAlignment center aligned
+    //aligment == 2 => textAlignment right aligned
     var textAlignment:NSTextAlignment? {
         if let rawValue = self.alignment {
             return NSTextAlignment.init(rawValue: rawValue.integerValue)

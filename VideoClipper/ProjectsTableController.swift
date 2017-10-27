@@ -68,7 +68,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
     
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		self.clearsSelectionOnViewWillAppear = true
+		self.clearsSelectionOnViewWillAppear = false
         for eachProject in self.fetchedResultsController.fetchedObjects! {
             (eachProject as! Project).freeAssets()
         }
@@ -262,7 +262,9 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		case .Delete:
 			tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
 		case .Update:
-			self.configureCell(tableView.cellForRowAtIndexPath(indexPath!)!, atIndexPath: indexPath!)
+            if let visibleCell = tableView.cellForRowAtIndexPath(indexPath!) {
+                self.configureCell(visibleCell, atIndexPath: indexPath!)
+            }
 		case .Move:
 			tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
 			tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)

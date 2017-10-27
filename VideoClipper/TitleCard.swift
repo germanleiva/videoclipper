@@ -98,7 +98,7 @@ class TitleCard: StoryElement {
         //Add text widgets
         for eachTextWidget in textWidgets() {
             let newTextView = eachTextWidget.textViewFor(eachTextWidget.initialRect())
-            newTextView.sizeToFit()
+//            newTextView.sizeToFit()
             let width = newTextView.frame.width
             let height = newTextView.frame.height
             let xPosition = canvas!.center.x + CGFloat(eachTextWidget.distanceXFromCenter!.doubleValue) - width / 2

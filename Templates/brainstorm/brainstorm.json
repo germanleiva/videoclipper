@@ -1,508 +1,999 @@
 {
     "storyLines": [
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00001.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00001.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00002.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00002.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00003.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00003.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00004.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00004.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00005.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00005.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00006.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00006.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00007.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00007.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00008.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00008.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00009.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00009.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00010.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00010.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00011.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        },
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00011.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
         {
-            "titleCards": [
-                {
-                    "duration": 2,
-                    "backgroundColor" : "#ffffff",
-                    "imageWidgets": [
-                        {
-                            "distanceXFromCenter": 0,
-                            "distanceYFromCenter": 0,
-                            "width": 742,
-                            "height": 417,
-                            "image": "brainstorm_00012.png",
-                            "locked": true
-                        }
-                    ],
-                    "textWidgets": [
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":0,
-                            "width":100,
-                            "height":100,
-                            "alignment":0,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some content",
-                            "locked":false
-                        },
-                        {
-                            "distanceXFromCenter":0,
-                            "distanceYFromCenter":100,
-                            "width":100,
-                            "height":100,
-                            "alignment":1,
-                            "color":"#000000",
-                            "fontSize":30,
-                            "content":"Some other content",
-                            "locked":false
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "brainstorm_00012.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -162,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -128,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#idea",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 212,
+                "distanceYFromCenter": -92,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#take",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": 106,
+                "width": 120,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -70,
+                "distanceYFromCenter": -164,
+                "width": 193,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -44,
+                "width": 450,
+                "height": 50,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    }]
 }

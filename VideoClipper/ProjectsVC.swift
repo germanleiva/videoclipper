@@ -85,6 +85,8 @@ class ProjectsVC: UIViewController {
         }
         
 //        if let jsonData = try NSData(contentsOfURL: NSURL(fileURLWithPath: path), options: NSDataReadingOptions.DataReadingMappedIfSafe)
+        let snapshotGroup = dispatch_group_create()
+        
         dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 )) {
             if let jsonData = NSData(contentsOfFile: path) {
                 do {
@@ -137,6 +139,7 @@ class ProjectsVC: UIViewController {
                                                 for JSONTextWidget in value as! NSArray {
                                                     let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
                                                     newTextWidget.content = JSONTextWidget["content"] as? String
+                                                    newTextWidget.alignment = JSONTextWidget["alignment"] as? NSNumber
                                                     newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
                                                     newTextWidget.distanceYFromCenter = JSONTextWidget["distanceYFromCenter"] as? NSNumber
                                                     newTextWidget.width = JSONTextWidget["width"] as? NSNumber
@@ -151,8 +154,10 @@ class ProjectsVC: UIViewController {
                                             }
                                         }
                                         
-                                        dispatch_sync(dispatch_get_main_queue()) {
+                                        dispatch_async(dispatch_get_main_queue()) {
+                                            dispatch_group_enter(snapshotGroup)
                                             newTitleCard.createSnapshots()
+                                            dispatch_group_leave(snapshotGroup)
                                         }
     //                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
     //                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
@@ -167,7 +172,7 @@ class ProjectsVC: UIViewController {
                     }
                     
                     //Finished parsing
-                    dispatch_async(dispatch_get_main_queue()) {
+                    dispatch_group_notify(snapshotGroup, dispatch_get_main_queue()) {
                         do {
                             try self.context.save()
                             completion?(newProject)
@@ -181,7 +186,7 @@ class ProjectsVC: UIViewController {
                     
                 } catch let error as NSError {
                     
-                    dispatch_async(dispatch_get_main_queue()) {
+                    dispatch_sync(dispatch_get_main_queue()) {
                         Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", message: error.localizedDescription, completion: {
                             self.context.deleteObject(newProject)
                         })

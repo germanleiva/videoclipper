@@ -282,7 +282,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     }
     
     func createBarButtons() {
-        let closeButton = UIBarButtonItem(title: "Close", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(closeButtonPressed))
+        let closeButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(cancelButtonPressed))
         navigationItem.leftBarButtonItem = closeButton
         
         let saveButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Save,target: self, action: #selector(saveButtonPressed))
@@ -329,7 +329,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		self.view.addConstraint(imageWidget.centerYConstraint)
 	}
 	
-    func closeButtonPressed(sender:UIBarButtonItem?) {
+    func cancelButtonPressed(sender:UIBarButtonItem?) {
         if !needsToSave {
             completionBlock()
             return

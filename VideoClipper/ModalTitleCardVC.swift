@@ -28,8 +28,8 @@ class ModalTitleCardVC: UIViewController {
         titleCardVC.saveButtonPressed(nil)
     }
     
-    @IBAction func closeButtonPressed(sender:AnyObject) {
-        titleCardVC.closeButtonPressed(nil)
+    @IBAction func cancelButtonPressed(sender:AnyObject) {
+        titleCardVC.cancelButtonPressed(nil)
     }
 	
     override func prefersStatusBarHidden() -> Bool {

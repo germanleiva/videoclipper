@@ -204,7 +204,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func updateDurationButtonText(newDuration:Int){
-		self.durationButton!.setTitle("\(newDuration) s duration", forState: UIControlState.Normal)
+		self.durationButton!.setTitle("\(newDuration)s duration", forState: UIControlState.Normal)
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {

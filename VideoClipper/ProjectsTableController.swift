@@ -12,10 +12,20 @@ import Crashlytics
 
 let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
+
 class ProjectsTableController: UITableViewController, NSFetchedResultsControllerDelegate {
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 	var creatingNewProject = false
     var creatingWithQuickstart = false
+    
+    class var dateThresholdToProtect: NSDate {
+        let comps = NSDateComponents()
+        comps.day = 27
+        comps.month = 10
+        comps.year = 2017
+        
+        return NSCalendar.currentCalendar().dateFromComponents(comps)!
+    }
 
     var sortOrder:Order = .recent {
         didSet {
@@ -63,13 +73,44 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
             (eachProject as! Project).freeAssets()
         }
 	}
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if (identifier == TO_PROJECT_VC_SEGUE) {
+            guard let selectedIndex = self.tableView.indexPathForSelectedRow else {
+                return false
+            }
+            if isProtected(selectedIndex) {
+                return false
+            }
+            return true
+        }
+        return true
+    }
+    
+    func isProtected(projectIndexPath:NSIndexPath) -> Bool {
+        guard let selectedProject = self.fetchedResultsController.objectAtIndexPath(projectIndexPath) as? Project else {
+            return false
+        }
+        
+        //The selectedProject was created before the thresholdDate so it is protected
+        return selectedProject.createdAt!.earlierDate(ProjectsTableController.dateThresholdToProtect).isEqualToDate(selectedProject.createdAt!)
+    }
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		// Get the new view controller using [segue destinationViewController].
 		// Pass the selected object to the new view controller.
 		
 		if (segue.identifier == TO_PROJECT_VC_SEGUE) {
-			let projectVC = segue.destinationViewController as! ProjectVC
+            guard let selectedIndex = self.tableView.indexPathForSelectedRow else {
+                return
+            }
+            guard let selectedProject = self.fetchedResultsController.objectAtIndexPath(selectedIndex) as? Project else {
+                return
+            }
+            
+            let projectVC = segue.destinationViewController as! ProjectVC
+            projectVC.project = selectedProject
+
 			//			projectVC.useLayoutToLayoutNavigationTransitions = true
 			if let selectedIndex = self.tableView.indexPathForSelectedRow {
 				projectVC.project = self.fetchedResultsController.objectAtIndexPath(selectedIndex) as? Project
@@ -113,7 +154,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	
 	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
 		// Return false if you do not want the specified item to be editable.
-		return true
+        return !isProtected(indexPath)
 	}
 	
 	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -240,7 +281,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	self.tableView.reloadData()
 	}
 	*/
-	
+    
 	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
 		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
 //			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)

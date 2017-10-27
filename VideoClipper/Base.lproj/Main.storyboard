@@ -1468,7 +1468,7 @@
                                             <constraint firstAttribute="width" constant="130" id="9mM-LH-2De"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="XX s duration">
+                                        <state key="normal" title="XXs duration">
                                             <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                         </state>
                                         <connections>

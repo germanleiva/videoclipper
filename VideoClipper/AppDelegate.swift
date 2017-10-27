@@ -37,6 +37,7 @@ struct Globals {
         )
         presenter.presentViewController(alert, animated: true, completion: completion)
     }
+    
 }
 
 extension UIImage {

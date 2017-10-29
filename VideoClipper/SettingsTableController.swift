@@ -20,6 +20,9 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
     @IBOutlet var member5Field:UITextField!
     
     let defaults = NSUserDefaults.standardUserDefaults()
+    let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
+
+    var modifiedVariableNames = Set<String>()
     
     static let dictionaryOfVariablesKeys = ["GROUP","TITLE","MEMBER1","MEMBER2","MEMBER3","MEMBER4","MEMBER5"]
     
@@ -37,6 +40,42 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
             standardUserDefaults.setValue(dictionary, forKey: "VARIABLES")
             standardUserDefaults.synchronize()
         }
+    }
+    
+    func deleteSnapshotsOfRelatedTitleCards() {
+        //Start activity indicator
+        let window = UIApplication.sharedApplication().delegate!.window!
+        
+        let progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        progressIndicator.labelText = "Updating Title Cards"
+        progressIndicator.show(true)
+
+        dispatch_async(dispatch_get_main_queue()) {
+            let fetchRequest = NSFetchRequest(entityName: "TextWidget")
+            var all = [String]()
+            all += self.modifiedVariableNames
+            all += self.modifiedVariableNames.map {$0.lowercaseString }
+            
+            fetchRequest.predicate = NSPredicate(format: "self.content IN %@",all)
+            do {
+                if let result = try self.context.executeFetchRequest(fetchRequest) as? [TextWidget] {
+                    let relatedTitleCards = Set(result.map {$0.titleCard!} )
+                    for aTitleCard in relatedTitleCards {
+                        aTitleCard.createSnapshots()
+                    }
+                }
+                try self.context.save()
+                progressIndicator.hide(true)
+            } catch let error as NSError {
+                progressIndicator.hide(true)
+                Globals.presentSimpleAlert(self, title: "Error", message: error.localizedDescription, completion: nil)
+            }
+        }
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        deleteSnapshotsOfRelatedTitleCards()
     }
     
     override func viewDidLoad() {
@@ -107,18 +146,25 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
         switch textField {
         case titleField:
             dictionaryOfVariables.setValue(value, forKey: "TITLE")
+            modifiedVariableNames.insert("#TITLE")
         case groupField:
             dictionaryOfVariables.setValue(value, forKey: "GROUP")
+            modifiedVariableNames.insert("#GROUP")
         case member1Field:
             dictionaryOfVariables.setValue(value, forKey: "MEMBER1")
+            modifiedVariableNames.insert("#MEMBER1")
         case member2Field:
             dictionaryOfVariables.setValue(value, forKey: "MEMBER2")
+            modifiedVariableNames.insert("#MEMBER2")
         case member3Field:
             dictionaryOfVariables.setValue(value, forKey: "MEMBER3")
+            modifiedVariableNames.insert("#MEMBER3")
         case member4Field:
             dictionaryOfVariables.setValue(value, forKey: "MEMBER4")
+            modifiedVariableNames.insert("#MEMBER4")
         case member5Field:
             dictionaryOfVariables.setValue(value, forKey: "MEMBER5")
+            modifiedVariableNames.insert("#MEMBER5")
         default:
             print("Unrecognized textField")
         }

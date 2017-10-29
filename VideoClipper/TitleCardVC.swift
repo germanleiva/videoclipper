@@ -67,7 +67,12 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
 
-	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    lazy var context:NSManagedObjectContext = {
+        let mainContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
+        managedObjectContext.parentContext = mainContext
+        return managedObjectContext
+    }()
 
 	var editingTextView:UITextView? = nil
 	
@@ -80,10 +85,14 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     
     @IBOutlet weak var lockButton: UIButton!
 	@IBOutlet weak var saveLabel: UILabel!
-	
-	var titleCard: TitleCard? {
-		return self.element as? TitleCard
-	}
+    
+    lazy var titleCard: TitleCard? = {
+        return self.context.objectWithID(self.element!.objectID) as? TitleCard
+    }()
+    
+    lazy var mainContextTitleCard: TitleCard? = {
+        return self.element as? TitleCard
+    }()
 	
 	var currentlySelectedImageWidget:ImageWidget? = nil
 	
@@ -339,6 +348,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         
         alert.addAction(
             UIAlertAction(title: "Discard", style: UIAlertActionStyle.Destructive, handler: { (discardAction) in
+                self.context.reset()
 //                alert.dismissViewControllerAnimated(true, completion: {
                     self.completionBlock()
 //                })
@@ -616,13 +626,13 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
                 for eachTextWidget in titleCard!.textWidgets() {
                     self.updateTextWidgetModel(eachTextWidget)
                 }
-                
+                try self.context.save() //Saving the child (this push the changes to the parent)
+
                 //We need to regenerate the asset
-                self.titleCard?.deleteAssetFile()
-                
+                mainContextTitleCard!.deleteAssetFile()
                 createTitleCardSnapshots()
                 
-                try self.context.save()
+                try self.context.parentContext?.save() //Saving the parent
 				
                 self.needsToSave = false
 				if animated {
@@ -676,16 +686,16 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        titleCard?.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
+        mainContextTitleCard!.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
 
         for eachDeactivatedWidget in deactivatedWidgets {
             activateHandlers(eachDeactivatedWidget)
         }
         
-        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
+        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: mainContextTitleCard!)
         
         if let elDelegado = delegate {
-            elDelegado.storyElementVC(self, elementChanged: titleCard!)
+            elDelegado.storyElementVC(self, elementChanged: mainContextTitleCard!)
         }
     }
 	

@@ -52,6 +52,7 @@ class ProjectsVC: UIViewController {
                 progressIndicator.show(true)
                 
                 self.createProject(templateName) { newProject in
+                    //Stop activity indicator
                     progressIndicator.hide(true)
                     if let newProject = newProject {
                         self.projectsTableController?.insertNewProject(newProject)
@@ -84,10 +85,7 @@ class ProjectsVC: UIViewController {
             return
         }
         
-//        if let jsonData = try NSData(contentsOfURL: NSURL(fileURLWithPath: path), options: NSDataReadingOptions.DataReadingMappedIfSafe)
-        let snapshotGroup = dispatch_group_create()
-        
-        dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 )) {
+        dispatch_async(dispatch_get_main_queue()) {
             if let jsonData = NSData(contentsOfFile: path) {
                 do {
                     let JSONStoryboard = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers)
@@ -158,14 +156,7 @@ class ProjectsVC: UIViewController {
                                             }
                                         }
                                         
-                                        dispatch_sync(dispatch_get_main_queue()) {
-                                            dispatch_group_enter(snapshotGroup)
-                                            newTitleCard.createSnapshots()
-                                            dispatch_group_leave(snapshotGroup)
-                                        }
-    //                                    newTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-    //                                    newTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "default2TitleCard")!,0.75)
-    //                                    newTitleCard.thumbnailImage = UIImage(named: "default2TitleCard-thumbnail")
+                                        newTitleCard.createSnapshots()
                                     }
                                 }
                             }
@@ -176,27 +167,23 @@ class ProjectsVC: UIViewController {
                     }
                     
                     //Finished parsing
-                    dispatch_group_notify(snapshotGroup, dispatch_get_main_queue()) {
-                        do {
-                            try self.context.save()
-                            completion?(newProject)
-                        } catch let error as NSError {
-                            Globals.presentSimpleAlert(self, title: "Couldn't save the new project in the database", message: error.localizedDescription, completion: {
-                                self.context.deleteObject(newProject)
-                            })
-                            completion?(nil)
-                        }
+                    do {
+                        try self.context.save()
+                        completion?(newProject)
+                    } catch let error as NSError {
+                        Globals.presentSimpleAlert(self, title: "Couldn't save the new project in the database", message: error.localizedDescription, completion: {
+                            self.context.deleteObject(newProject)
+                        })
+                        completion?(nil)
                     }
                     
                 } catch let error as NSError {
                     
-                    dispatch_sync(dispatch_get_main_queue()) {
-                        Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", message: error.localizedDescription, completion: {
-                            self.context.deleteObject(newProject)
-                        })
-                        
-                        completion?(nil)
-                    }
+                    Globals.presentSimpleAlert(self, title: "Error while loading JSON file \(projectTemplateName)", message: error.localizedDescription, completion: {
+                        self.context.deleteObject(newProject)
+                    })
+                    
+                    completion?(nil)
                 }
             }
         }
@@ -205,7 +192,16 @@ class ProjectsVC: UIViewController {
     
     
     @IBAction func quickStartPressed(sender: UIButton) {
+        //Start activity indicator
+        let window = UIApplication.sharedApplication().delegate!.window!
+        
+        let progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
+        progressIndicator.detailsLabelText = "Creating prototype ..."
+        progressIndicator.show(true)
+        
         self.createProject("prototype") { newProject in
+            //Stop activity indicator
+            progressIndicator.hide(true)
             if let newProject = newProject {
                 self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
                 Answers.logCustomEventWithName("Project quick started", customAttributes: nil)

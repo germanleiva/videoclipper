@@ -845,20 +845,23 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				}
 				
 				let completionBlock = {() -> Void in
-					let selectedIndexPath = self.tableView.indexPathForSelectedRow!
-                    self.tableView.beginUpdates()
-					self.tableView.reloadData()
-                    self.tableView.endUpdates()
-					self.selectRowAtIndexPath(selectedIndexPath, animated: false)
-					self.sourceIndexPath = nil
-					self.rowSnapshot?.removeFromSuperview()
-					self.rowSnapshot = nil;
-					
-					do {
-						try self.context.save()
-					} catch {
-						print("Couldn't reorder lines: \(error)")
-					}
+                    if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+                        self.tableView.beginUpdates()
+                        self.tableView.reloadData()
+                        self.tableView.endUpdates()
+                        self.selectRowAtIndexPath(selectedIndexPath, animated: false)
+                        self.sourceIndexPath = nil
+                        self.rowSnapshot?.removeFromSuperview()
+                        self.rowSnapshot = nil;
+                        
+                        do {
+                            try self.context.save()
+                        } catch {
+                            print("Couldn't reorder lines: \(error)")
+                        }
+                    } else {
+                        print("Should not happen !!!")
+                    }
 				}
 				
 				if let cell = tableView.cellForRowAtIndexPath(indexPath!) {

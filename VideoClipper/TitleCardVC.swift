@@ -20,18 +20,11 @@ extension UIGestureRecognizer {
 
 extension UITextView {
 	func isPlaceholder() -> Bool {
-		if self.tag == -1 {
-			return true
-		}
-		return false
+		return self.tag == -1
 	}
 	
 	func isPlaceholder(value:Bool) -> Void {
-		if value {
-			self.tag = -1
-		} else {
-			self.tag = 1
-		}
+        self.tag = value ? -1 : 1
 	}
 }
 
@@ -81,6 +74,10 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var fontSizeButton: UIButton!
     @IBOutlet weak var alignmentStack: UIStackView!
+    @IBOutlet weak var leftAlignmentButton: UIButton!
+    @IBOutlet weak var centerAlignmentButton: UIButton!
+    @IBOutlet weak var rightAlignmentButton: UIButton!
+    
     @IBOutlet weak var lockButton: UIButton!
 	@IBOutlet weak var saveLabel: UILabel!
 	
@@ -136,6 +133,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
             selectedTextWidget.alignment = alignment.rawValue
             
             selectedTextWidget.textView?.textAlignment = alignment
+            
+            updateHighlightingAlignmentStack(true,textWidget:selectedTextWidget)
+            
             //TODONOW: we should update only what's needed
 //            updateModel()
             needsToSave = true
@@ -928,9 +928,43 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 	}
     
-    func toggleAlignmentStack(isEnable:Bool) {
-        for eachSubview in alignmentStack.subviews {
-            (eachSubview as! UIButton).enabled = isEnable
+    func updateHighlightingAlignmentStack(isEnable:Bool,textWidget:TextWidget?) {
+        var alignmentButtonToHighlight:UIButton?
+        var alignmentButtonsToUnhighlight = [leftAlignmentButton,centerAlignmentButton,rightAlignmentButton]
+        
+        if let textWidgetAlignment = textWidget?.textAlignment {
+            if isEnable {
+                switch textWidgetAlignment {
+                case .Left:
+                    alignmentButtonToHighlight = leftAlignmentButton
+                    alignmentButtonsToUnhighlight = [centerAlignmentButton,rightAlignmentButton]
+                case .Center:
+                    alignmentButtonToHighlight = centerAlignmentButton
+                    alignmentButtonsToUnhighlight = [leftAlignmentButton,rightAlignmentButton]
+                case .Right:
+                    alignmentButtonToHighlight = rightAlignmentButton
+                    alignmentButtonsToUnhighlight = [centerAlignmentButton,leftAlignmentButton]
+                default:
+                    print("Aligment \(textWidgetAlignment) not supported")
+                    alignmentButtonToHighlight = nil
+                }
+            }
+        }
+        
+        if let buttonToHighlight = alignmentButtonToHighlight {
+            buttonToHighlight.backgroundColor = UIColor.whiteColor()
+        }
+        
+        for buttonToUnhighlight in alignmentButtonsToUnhighlight {
+            buttonToUnhighlight.backgroundColor = UIColor.clearColor()
+        }
+    }
+    
+    func toggleAlignmentStack(isEnable:Bool,textWidget:TextWidget? = nil) {
+        updateHighlightingAlignmentStack(isEnable,textWidget: textWidget)
+        
+        for eachAlignmentButton in alignmentStack.subviews as! [UIButton] {
+            eachAlignmentButton.enabled = isEnable
         }
     }
 	
@@ -938,7 +972,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		deactivateHandlers(self.titleCard!.textWidgets().filter { $0 != textWidget })
 		self.deleteButton.enabled = true
 		self.fontSizeButton.enabled = true
-        toggleAlignmentStack(true)
+        toggleAlignmentStack(true,textWidget: textWidget)
         self.lockButton.enabled = true
         self.lockButton.selected = textWidget.isLocked
 

@@ -1,0 +1,119 @@
+{
+    "storyLines": [
+    {
+        "titleCards": [
+        {
+            "duration": 6,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "intro_00000.png",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 6,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "intro_00001.png",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 3,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "intro_00002.png",
+                "locked": true
+            }],
+
+            "textWidgets": [
+            {
+                "distanceXFromCenter": -18,
+                "distanceYFromCenter": -85,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -14,
+                "width": 575,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 7,
+                "width": 575,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member2",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 29,
+                "width": 575,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member3",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 51,
+                "width": 575,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member4",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 122,
+                "width": 575,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#title",
+                "locked": true
+            }]
+        }]
+    }]
+}

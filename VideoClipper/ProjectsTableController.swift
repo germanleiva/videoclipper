@@ -12,7 +12,6 @@ import Crashlytics
 
 let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
-
 class ProjectsTableController: UITableViewController, NSFetchedResultsControllerDelegate {
 	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 	var creatingNewProject = false

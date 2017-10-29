@@ -26,6 +26,18 @@ class ProjectsVC: UIViewController {
         super.viewDidLoad()
 
         quickStartButton.layer.cornerRadius = quickStartButton.frame.width / 2
+        
+        
+        let ALREADY_OPENED_APP = "ALREADY_OPENED_APP"
+        let standardUserDefaults = NSUserDefaults.standardUserDefaults()
+        if !standardUserDefaults.boolForKey(ALREADY_OPENED_APP) {
+            //This is the first time we are opening the app, so we create the intro project
+            
+            standardUserDefaults.setBool(true, forKey: ALREADY_OPENED_APP)
+            standardUserDefaults.synchronize()
+            
+            self.createProject("intro",projectName:"Welcome - Enter and Press Play",completion: nil)
+        }
 	}
 	
 	// MARK: - Navigation
@@ -51,7 +63,7 @@ class ProjectsVC: UIViewController {
                 let progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
                 progressIndicator.show(true)
                 
-                self.createProject(templateName) { newProject in
+                self.createProject(templateName,projectName: nil) { newProject in
                     //Stop activity indicator
                     progressIndicator.hide(true)
                     if let newProject = newProject {
@@ -65,14 +77,18 @@ class ProjectsVC: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
-    func createProject(projectTemplateName:String,completion:(Project?->Void)?) {
+    func createProject(projectTemplateName:String,projectName:String?,completion:(Project?->Void)?) {
         let newProject = NSEntityDescription.insertNewObjectForEntityForName("Project", inManagedObjectContext: context) as! Project
         
         newProject.createdAt = NSDate()
         
         let dateString = NSDateFormatter.localizedStringFromDate(newProject.createdAt!, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
         
-        newProject.name = "Project created on \(dateString)"
+        if let projectName = projectName {
+            newProject.name = projectName
+        } else {
+            newProject.name = "Project created on \(dateString)"
+        }
         
 //        let directory = "Templates/brainstorm/"
 //        let resource = "brainstorm"
@@ -140,6 +156,7 @@ class ProjectsVC: UIViewController {
                                             case "textWidgets":
                                                 for JSONTextWidget in value as! NSArray {
                                                     let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+                                                    newTextWidget.createdAt = NSDate()
                                                     newTextWidget.content = JSONTextWidget["content"] as? String
                                                     newTextWidget.alignment = JSONTextWidget["alignment"] as? NSNumber
                                                     newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
@@ -199,7 +216,7 @@ class ProjectsVC: UIViewController {
         progressIndicator.detailsLabelText = "Creating prototype ..."
         progressIndicator.show(true)
         
-        self.createProject("prototype") { newProject in
+        self.createProject("prototype",projectName:nil) { newProject in
             //Stop activity indicator
             progressIndicator.hide(true)
             if let newProject = newProject {

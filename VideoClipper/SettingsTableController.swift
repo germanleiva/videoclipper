@@ -26,6 +26,7 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
     class func createDictionaryOfVariables() {
         let standardUserDefaults = NSUserDefaults.standardUserDefaults()
         if let _ = standardUserDefaults.dictionaryForKey("VARIABLES") {
+            
         } else {
             var dictionary = [String:String]()
             

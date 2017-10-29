@@ -13,7 +13,8 @@ import Foundation
 import CoreData
 
 extension TextWidget {
-    
+
+    @NSManaged var createdAt: NSDate?
     @NSManaged var content: String?
     @NSManaged var displayedContent: String?
     @NSManaged var height: NSNumber?

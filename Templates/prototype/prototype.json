@@ -1,6 +1,23 @@
 {
     "storyLines": [
     {
+        "hidden":true,
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "prototype_00000.png",
+                "locked": true
+            }]
+        }]
+    },
+    {
         "titleCards": [
         {
             "duration": 2,
@@ -16,7 +33,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 212,
+                "distanceXFromCenter": 278,
                 "distanceYFromCenter": -162,
                 "width": 100,
                 "height": 40,
@@ -27,41 +44,41 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 5,
-                "distanceYFromCenter": -115,
-                "width": 450,
-                "height": 40,
-                "alignment": 1,
-                "color": "#000000",
-                "fontSize": 20,
-                "content": "System Name",
-                "locked": true
-            },
-            {
-                "distanceXFromCenter": 5,
-                "distanceYFromCenter": 10,
-                "width": 450,
-                "height": 40,
-                "alignment": 1,
-                "color": "#000000",
-                "fontSize": 20,
-                "content": "Setting",
-                "locked": true
-            },
-            {
                 "distanceXFromCenter": 8,
-                "distanceYFromCenter": 76,
-                "width": 450,
+                "distanceYFromCenter": -84,
+                "width": 575,
                 "height": 40,
                 "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
-                "content": "Personas",
+                "content": "",
                 "locked": true
             },
             {
-                "distanceXFromCenter": 232,
-                "distanceYFromCenter": 165,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 10,
+                "width": 575,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 100,
+                "width": 575,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 276,
+                "distanceYFromCenter": 166,
                 "width": 100,
                 "height": 40,
                 "alignment": 0,
@@ -88,11 +105,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -116,11 +133,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -144,11 +161,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -172,11 +189,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -200,11 +217,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -228,11 +245,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -256,11 +273,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -284,11 +301,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -312,11 +329,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -340,11 +357,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -368,11 +385,11 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
                 "height": 40,
-                "alignment": 0,
+                "alignment": 1,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "",
@@ -396,7 +413,35 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 212,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -12,
+                "width": 575,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "prototype_00014.png",
+                "locked": true
+            }],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": 278,
                 "distanceYFromCenter": -162,
                 "width": 100,
                 "height": 40,
@@ -407,9 +452,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": -115,
-                "width": 450,
+                "distanceXFromCenter": 8,
+                "distanceYFromCenter": -84,
+                "width": 575,
                 "height": 40,
                 "alignment": 1,
                 "color": "#000000",
@@ -418,9 +463,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": 22,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 18,
+                "width": 575,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -429,9 +474,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": 62,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 38,
+                "width": 575,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -440,9 +485,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": 102,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 60,
+                "width": 575,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -451,14 +496,25 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 6,
-                "distanceYFromCenter": 142,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 82,
+                "width": 575,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
                 "fontSize": 20,
                 "content": "#member4",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 276,
+                "distanceYFromCenter": 166,
+                "width": 100,
+                "height": 40,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#VP",
                 "locked": true
             }]
         }]

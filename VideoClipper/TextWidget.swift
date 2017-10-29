@@ -10,6 +10,8 @@ import Foundation
 import CoreData
 import UIKit
 
+let formatter = NSDateFormatter()
+
 @objc(TextWidget)
 class TextWidget: NSManagedObject {
     
@@ -110,6 +112,17 @@ class TextWidget: NSManagedObject {
                     if variableValue.characters.count > 0 {
                         return variableValue
                     }
+                }
+                
+                switch variableName {
+                case "DATE":
+                    formatter.dateFormat = "dd-MM-yy"
+                    return formatter.stringFromDate(createdAt!)
+                case "TIME":
+                    formatter.dateFormat = "HH:mm"
+                    return formatter.stringFromDate(createdAt!)
+                default:
+                    ""
                 }
             }
         }

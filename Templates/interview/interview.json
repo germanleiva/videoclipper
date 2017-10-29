@@ -1,6 +1,23 @@
 {
     "storyLines": [
     {
+        "hidden":true,
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 0,
+                "width": 742,
+                "height": 417,
+                "image": "interview_00000.png",
+                "locked": true
+            }]
+        }]
+    },
+    {
         "titleCards": [
         {
             "duration": 2,
@@ -16,7 +33,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": 212,
+                "distanceXFromCenter": 280,
                 "distanceYFromCenter": -162,
                 "width": 100,
                 "height": 40,
@@ -27,7 +44,7 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -19,
+                "distanceXFromCenter": -88,
                 "distanceYFromCenter": -164,
                 "width": 200,
                 "height": 40,
@@ -38,8 +55,8 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -19,
-                "distanceYFromCenter": -124,
+                "distanceXFromCenter": -88,
+                "distanceYFromCenter": -126,
                 "width": 200,
                 "height": 40,
                 "alignment": 0,
@@ -49,9 +66,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 4,
-                "distanceYFromCenter": -38,
-                "width": 450,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -42,
+                "width": 576,
                 "height": 40,
                 "alignment": 1,
                 "color": "#000000",
@@ -60,8 +77,30 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 112,
-                "distanceYFromCenter": -50,
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 28,
+                "width": 576,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": -138,
+                "distanceYFromCenter": 82,
+                "width": 300,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 280,
+                "distanceYFromCenter": 83,
                 "width": 100,
                 "height": 40,
                 "alignment": 0,
@@ -71,41 +110,8 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 3,
-                "distanceYFromCenter": 32,
-                "width": 450,
-                "height": 40,
-                "alignment": 1,
-                "color": "#000000",
-                "fontSize": 20,
-                "content": "",
-                "locked": true
-            },
-            {
-                "distanceXFromCenter": -124,
-                "distanceYFromCenter": 89,
-                "width": 200,
-                "height": 40,
-                "alignment": 1,
-                "color": "#000000",
-                "fontSize": 20,
-                "content": "",
-                "locked": true
-            },
-            {
-                "distanceXFromCenter": 220,
-                "distanceYFromCenter": 90,
-                "width": 100,
-                "height": 40,
-                "alignment": 0,
-                "color": "#000000",
-                "fontSize": 20,
-                "content": "#date",
-                "locked": true
-            },
-            {
-                "distanceXFromCenter": 220,
-                "distanceYFromCenter": 130,
+                "distanceXFromCenter": 280,
+                "distanceYFromCenter": 126,
                 "width": 100,
                 "height": 40,
                 "alignment": 0,
@@ -115,8 +121,8 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": 220,
-                "distanceYFromCenter": 170,
+                "distanceXFromCenter": 280,
+                "distanceYFromCenter": 165,
                 "width": 100,
                 "height": 40,
                 "alignment": 0,
@@ -162,7 +168,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": -92,
+                "distanceXFromCenter": -156,
                 "distanceYFromCenter": -148,
                 "width": 100,
                 "height": 40,
@@ -190,7 +196,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": -92,
+                "distanceXFromCenter": -156,
                 "distanceYFromCenter": -148,
                 "width": 100,
                 "height": 40,
@@ -218,7 +224,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": -92,
+                "distanceXFromCenter": -156,
                 "distanceYFromCenter": -148,
                 "width": 100,
                 "height": 40,
@@ -246,7 +252,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": -92,
+                "distanceXFromCenter": -156,
                 "distanceYFromCenter": -148,
                 "width": 100,
                 "height": 40,
@@ -274,7 +280,7 @@
             }],
             "textWidgets": [
             {
-                "distanceXFromCenter": -92,
+                "distanceXFromCenter": -156,
                 "distanceYFromCenter": -148,
                 "width": 100,
                 "height": 40,

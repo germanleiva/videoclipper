@@ -162,6 +162,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		
 		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
 		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+        widget.createdAt = NSDate()
 		widget.content = ""
 		widget.distanceXFromCenter = 0
 		widget.distanceYFromCenter = 0

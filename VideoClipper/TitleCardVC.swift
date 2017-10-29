@@ -736,6 +736,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
 		let newModel = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
+        newModel.createdAt = NSDate()
 		newModel.fontSize = 30
 
 		self.addTextInput(newModel, initialFrame: CGRectZero)

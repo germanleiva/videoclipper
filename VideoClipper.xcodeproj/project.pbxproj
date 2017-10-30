@@ -64,6 +64,7 @@
 		A4664AFF1B452D680095B27D /* TitleCardCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF31B452D680095B27D /* TitleCardCollectionCell.swift */; };
 		A4664B001B452D680095B27D /* VideoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF41B452D680095B27D /* VideoCollectionCell.swift */; };
 		A4664B011B452D680095B27D /* TitleCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4664AF51B452D680095B27D /* TitleCardVC.swift */; };
+		A473DD431FA731FE0028C7EC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A473DD421FA731FE0028C7EC /* GoogleService-Info.plist */; };
 		A47570E31B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E11B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift */; };
 		A47570E41B9DCA250043C8C2 /* ImageWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E21B9DCA250043C8C2 /* ImageWidget.swift */; };
 		A47570E61B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47570E51B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift */; };
@@ -235,6 +236,7 @@
 		A4664AF41B452D680095B27D /* VideoCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCollectionCell.swift; sourceTree = "<group>"; };
 		A4664AF51B452D680095B27D /* TitleCardVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleCardVC.swift; sourceTree = "<group>"; };
 		A466D0F71B9DACC900CB55D1 /* VideoClipper_01.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VideoClipper_01.xcdatamodel; sourceTree = "<group>"; };
+		A473DD421FA731FE0028C7EC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A47570E11B9DCA250043C8C2 /* ImageWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A47570E21B9DCA250043C8C2 /* ImageWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageWidget.swift; sourceTree = "<group>"; };
 		A47570E51B9DCAE70043C8C2 /* TitleCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TitleCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -506,6 +508,7 @@
 				A4664AC31B444BA80095B27D /* Assets.xcassets */,
 				A4664AC51B444BA80095B27D /* LaunchScreen.storyboard */,
 				A4664AC81B444BA80095B27D /* Info.plist */,
+				A473DD421FA731FE0028C7EC /* GoogleService-Info.plist */,
 				A4D095B41B9094B1008F4316 /* colorPalette.plist */,
 				A4664AC01B444BA80095B27D /* VideoClipper.xcdatamodeld */,
 				A44CE8F11B600B2D00953B7F /* VideoClipper-Bridging-Header.h */,
@@ -868,6 +871,7 @@
 				A4DA9CE31B973F0F00839F28 /* Overlay@2x.png in Resources */,
 				A4FF6FB41F90F55200C209D3 /* interview.json in Resources */,
 				A4FF6FC41F91086D00C209D3 /* brainstorm_00003.png in Resources */,
+				A473DD431FA731FE0028C7EC /* GoogleService-Info.plist in Resources */,
 				A4FF6FC21F91086D00C209D3 /* brainstorm_00001.png in Resources */,
 				A4664ABF1B444BA80095B27D /* Main.storyboard in Resources */,
 				A40D74901FA6510900764429 /* interview_00000.png in Resources */,

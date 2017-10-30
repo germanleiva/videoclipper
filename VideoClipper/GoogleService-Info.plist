@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>591397964181-r9snfi5npvs2nm8tqgvg1mqf910n6ca1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.591397964181-r9snfi5npvs2nm8tqgvg1mqf910n6ca1</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCxXtSmIFCziTlcAMsMBZAng_bYqb0voqg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>591397964181</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>fr.lri.exsitu.VideoClipper</string>
+	<key>PROJECT_ID</key>
+	<string>videoclipper-43c3b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>videoclipper-43c3b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:591397964181:ios:f1bb6c5be275953a</string>
+	<key>DATABASE_URL</key>
+	<string>https://videoclipper-43c3b.firebaseio.com</string>
+</dict>
+</plist>

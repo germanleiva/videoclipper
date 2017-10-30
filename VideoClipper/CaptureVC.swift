@@ -16,7 +16,8 @@ let keyGhostDisabled = "keyGhostDisabled"
 
 
 protocol CaptureVCDelegate:class {
-	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip)
+    func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip)
+    func captureVC(captureController:CaptureVC, didDeleteVideoClip storyLine:StoryLine)
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine)
 }
 
@@ -1043,9 +1044,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     @IBAction func swipedDownOnCollectionView(recognizer:UISwipeGestureRecognizer) {
         let point = recognizer.locationInView(self.collectionView)
         
-        
         if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
-            let alert = UIAlertController(title: "Delete video", message: "Do you want to delete this video?", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
                 self.deleteVideo(atIndexPath:indexPath)
                 
@@ -1064,10 +1064,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         elements?.removeObject(videoToDelete!)
         self.context.deleteObject(videoToDelete!)
         self.currentlyRecordedVideo = nil
-
+    
         do {
             try self.context.save()
-            
+            self.delegate?.captureVC(self, didDeleteVideoClip: self.currentLine!)
+
             self.collectionView.performBatchUpdates({ () -> Void in
                 self.collectionView.deleteItemsAtIndexPaths([indexPath])
                 }, completion: { (completed) in

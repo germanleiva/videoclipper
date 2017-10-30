@@ -109,16 +109,16 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
         return nil
     }
     
-    func updateElement(element:StoryElement,isNew:Bool = false) {
-		let storyLine = element.storyLine!
-    
+    func updateElement(element:StoryElement?,storyLine:StoryLine,isNew:Bool = false) {
         if let indexPath = self.linePathForStoryLine(storyLine) {
             if let cell = self.tableView.cellForRowAtIndexPath(indexPath) as? StoryLineCell {
-                let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
                 if isNew {
                     cell.collectionView!.reloadSections(NSIndexSet(index: 0))
                 } else {
-                    cell.collectionView!.reloadItemsAtIndexPaths([itemPath])
+                    if let element = element {
+                        let itemPath = NSIndexPath(forItem: storyLine.elements!.indexOfObject(element), inSection: 0)
+                        cell.collectionView!.reloadItemsAtIndexPaths([itemPath])
+                    }
                 }
             } else {
                 print("TODO MAL")
@@ -152,10 +152,14 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
             print(error)
         }
     }
-	
-	func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip) {
-        self.updateElement(videoClip,isNew:true)
-	}
+    
+    func captureVC(captureController:CaptureVC, didChangeVideoClip videoClip:VideoClip) {
+        self.updateElement(videoClip,storyLine: videoClip.storyLine!,isNew:true)
+    }
+    
+    func captureVC(captureController:CaptureVC, didDeleteVideoClip storyLine:StoryLine) {
+        self.updateElement(nil,storyLine: storyLine,isNew:true)
+    }
 	
 	func captureVC(captureController:CaptureVC, didChangeStoryLine storyLine:StoryLine) {
 		let section = self.project!.storyLines!.indexOfObject(storyLine)
@@ -1003,7 +1007,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
     // MARK: - StoryElementVCDelegate
     
     func storyElementVC(controller: StoryElementVC, elementChanged element: StoryElement) {
-        self.updateElement(element)
+        self.updateElement(element,storyLine: element.storyLine!)
     }
     
     func storyElementVC(controller: StoryElementVC, elementDeleted element: StoryElement) {

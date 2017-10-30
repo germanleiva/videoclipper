@@ -11,6 +11,7 @@ import CoreData
 import Fabric
 import Crashlytics
 import Photos
+import Firebase
 
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
@@ -37,7 +38,6 @@ struct Globals {
         )
         presenter.presentViewController(alert, animated: true, completion: completion)
     }
-    
 }
 
 extension UIImage {
@@ -108,6 +108,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         SettingsTableController.createDictionaryOfVariables()
+        
+        FirebaseApp.configure()
+        
+        Analytics.setUserProperty(UIDevice.currentDevice().name, forName: "deviceName")
         
 		return true
 	}

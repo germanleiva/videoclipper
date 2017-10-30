@@ -1025,6 +1025,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         } else {
             textView.text = potentialTextWidget?.content
         }
+        
+        needsToSave = true
 	}
 	
 	//- MARK: Gesture Recognizer Delegate

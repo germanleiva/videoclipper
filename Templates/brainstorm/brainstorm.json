@@ -66,9 +66,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -79,7 +79,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -149,9 +149,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -162,7 +162,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -398,9 +398,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -411,7 +411,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -481,9 +481,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -494,7 +494,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -730,9 +730,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -743,7 +743,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -896,9 +896,9 @@
                 "locked": true
             },
             {
-                "distanceXFromCenter": -148,
+                "distanceXFromCenter": 40,
                 "distanceYFromCenter": 110,
-                "width": 120,
+                "width": 500,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",
@@ -909,7 +909,7 @@
             {
                 "distanceXFromCenter": -74,
                 "distanceYFromCenter": -128,
-                "width": 193,
+                "width": 426,
                 "height": 40,
                 "alignment": 0,
                 "color": "#000000",

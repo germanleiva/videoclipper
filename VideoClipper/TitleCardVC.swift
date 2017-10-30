@@ -299,9 +299,9 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		
         let imageView = imageWidget.imageView
         
-		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.pannedImageView(_:)))
-//		panGesture.delegate = self
-		imageView.addGestureRecognizer(panGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(TitleCardVC.pannedImageView(_:)))
+        //		panGesture.delegate = self
+        imageView.addGestureRecognizer(panGesture)
 		
 		let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(TitleCardVC.pinchedImageView(_:)))
 //		pinchGesture.delegate = self

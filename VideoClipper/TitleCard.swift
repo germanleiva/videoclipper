@@ -107,8 +107,15 @@ class TitleCard: StoryElement {
             canvas?.addSubview(newTextView)
         }
         
+        loadSnapshotData(canvas)
+        
+    }
+    
+    func loadSnapshotData(canvas:UIView?) {
         /* Capture the screen shoot at native resolution */
-        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, UIScreen.mainScreen().scale)
+        let scale = UIScreen.mainScreen().scale
+    
+        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, scale)
         let graphicContext = UIGraphicsGetCurrentContext()!
         
         UIColor.whiteColor().setFill()
@@ -130,7 +137,7 @@ class TitleCard: StoryElement {
         
         self.snapshotData = UIImageJPEGRepresentation(img!,0.75)
         
-        let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
+        let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192 * scale,height: 103 * scale)
         
         UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.opaque, 1)
         screenshot!.drawInRect(smallCropRect)
@@ -139,8 +146,7 @@ class TitleCard: StoryElement {
         
         self.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
         
-//        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
-        
+        //        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
     }
     
     override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){

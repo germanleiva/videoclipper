@@ -145,8 +145,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
             
             updateHighlightingAlignmentStack(true,textWidget:selectedTextWidget)
             
-            //TODONOW: we should update only what's needed
-//            updateModel()
             needsToSave = true
         }
         
@@ -217,10 +215,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
-        //TODONOW: we should update only what's needed
-//		self.updateModel()
         needsToSave = true
-
 	}
 	
 	func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
@@ -417,8 +412,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.currentlySelectedImageWidget = nil
 				self.deleteButton.enabled = false
                 self.lockButton.enabled = false
-                //TODONOW: we should update only what's needed
-//				self.updateModel()
+
                 needsToSave = true
 
 			}
@@ -465,10 +459,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				self.deleteButton.enabled = false
                 self.lockButton.enabled = false
 
-                //TODONOW: we should update only what's needed
-//				self.updateModel()
                 needsToSave = true
-
 			}
 		}
 	}
@@ -523,6 +514,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
         eachTextWidget.fontSize = eachTextWidget.textView!.font!.pointSize
     }
     
+    //Deprecated, but this is needed if we want the save to happen in the background automatically (needs to be called in every call to needsToUpdate = true)
 	func updateModel() {
 //		let overlayView = UIView(frame: UIScreen.mainScreen().bounds)
 //		overlayView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
@@ -656,38 +648,8 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     func createTitleCardSnapshots() {
         let deactivatedWidgets = deactivateHandlers(titleCard!.textWidgets(),fake:true)
         
-        /* Capture the screen shoot at native resolution */
-        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, UIScreen.mainScreen().scale)
-        let graphicContext = UIGraphicsGetCurrentContext()!
+        mainContextTitleCard?.loadSnapshotData(canvas)
         
-        UIColor.whiteColor().setFill()
-        CGContextFillRect(graphicContext, CGRect(x: 0.0, y: 0.0, width: canvas!.bounds.size.width, height: canvas!.bounds.size.height))
-        
-        canvas!.layer.renderInContext(graphicContext)
-        
-        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        /* Render the screen shot at custom resolution */
-        //let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
-        let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
-        
-        UIGraphicsBeginImageContextWithOptions(cropRect.size, canvas!.opaque, 1)
-        screenshot!.drawInRect(cropRect)
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        titleCard?.snapshotData = UIImageJPEGRepresentation(img!,0.75)
-        
-        let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192,height: 103)
-        
-        UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.opaque, 1)
-        screenshot!.drawInRect(smallCropRect)
-        let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        mainContextTitleCard!.thumbnailData = UIImagePNGRepresentation(thumbnailImg!)
-
         for eachDeactivatedWidget in deactivatedWidgets {
             activateHandlers(eachDeactivatedWidget)
         }
@@ -738,10 +700,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		let modelWidgets = self.titleCard?.mutableOrderedSetValueForKey("widgets")
 		modelWidgets?.removeObject(aTextWidget)
 		
-        //TODONOW: we should update only what's needed
-//		self.updateModel()
         needsToSave = true
-
 	}
 	
 	@IBAction func addCenteredTextInput(sender:UIButton) {
@@ -878,8 +837,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 				print("textview panning failed")
 			case UIGestureRecognizerState.Ended:
 //				print("textview panning ended <=====")
-                //TODONOW: we should update only what's needed
-//				self.updateModel()
                 needsToSave = true
 
                 break;
@@ -929,8 +886,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 			print("\(handlerId) panning failed")
 		case UIGestureRecognizerState.Ended:
 //			print("\(handlerId) panning ended <========")
-            //TODONOW: we should update only what's needed
-//			self.updateModel()
             needsToSave = true
 
             break;
@@ -1046,8 +1001,6 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
             }
 	//		print("textViewDidEndEditing <====")
 		}
-        //TODONOW: we should update only what's needed
-//		self.updateModel()
         needsToSave = true
 
 		self.editingTextView = nil
@@ -1194,10 +1147,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 		}
 		
 		colorPicker.dismissViewControllerAnimated(true, completion: { () -> Void in
-            //TODONOW: we should update only what's needed
-//			self.updateModel()
             self.needsToSave = true
-
 		})
 	}
 	

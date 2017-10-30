@@ -158,6 +158,9 @@ class ProjectsVC: UIViewController {
                                                     let newTextWidget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
                                                     newTextWidget.createdAt = NSDate()
                                                     newTextWidget.content = JSONTextWidget["content"] as? String
+                                                    if let hexColor = JSONTextWidget["color"] as? String {
+                                                        newTextWidget.color =  UIColor(hexString:hexColor)
+                                                    }
                                                     newTextWidget.alignment = JSONTextWidget["alignment"] as? NSNumber
                                                     newTextWidget.distanceXFromCenter = JSONTextWidget["distanceXFromCenter"] as? NSNumber
                                                     newTextWidget.distanceYFromCenter = JSONTextWidget["distanceYFromCenter"] as? NSNumber

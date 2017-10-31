@@ -33,7 +33,11 @@ class TitleCard: StoryElement {
 	}
 	
 	func textWidgets() -> [TextWidget] {
-		return self.widgets!.array as! [TextWidget]
+        if let _ = self.widgets {
+            return self.widgets!.array as! [TextWidget]
+        }
+        self.widgets = NSOrderedSet(array: [])
+        return self.widgets!.array as! [TextWidget]
 	}
     
     func imageWidgets() -> [ImageWidget] {

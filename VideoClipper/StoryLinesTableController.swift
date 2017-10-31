@@ -15,6 +15,7 @@ import ImageIO
 import AVKit
 import Photos
 import Crashlytics
+import FirebaseAnalytics
 
 struct Bundle {
 	var offset = CGPointZero
@@ -86,6 +87,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
+        Analytics.setScreenName("storyLinesTableController", screenClass: "StoryLinesTableController")
+
 		self.tableView.selectRowAtIndexPath(self.selectedLinePath, animated: true, scrollPosition: UITableViewScrollPosition.None)
 	}
 	

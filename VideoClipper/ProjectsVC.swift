@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import Crashlytics
+import FirebaseAnalytics
 
 enum Order:Int {
     case recent = 0
@@ -22,6 +23,11 @@ class ProjectsVC: UIViewController {
 
     @IBOutlet weak var quickStartButton: UIButton!
 	
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        Analytics.setScreenName("projectsVC", screenClass: "ProjectsVC")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

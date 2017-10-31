@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import FirebaseAnalytics
 
 let STATUS_KEYPATH  = "status"
 let REFRESH_INTERVAL = Float64(0.5)
@@ -95,6 +96,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+        Analytics.setScreenName("videoVC", screenClass: "VideoVC")
+
 		self.prepareToPlay()
 	}
 	

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAnalytics
 
 class ModalTitleCardVC: UIViewController {
 	var titleCardVC:TitleCardVC!
@@ -23,6 +24,11 @@ class ModalTitleCardVC: UIViewController {
             }
 		}
 	}
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        Analytics.setScreenName("modalTitleCardVC", screenClass: "ModalTitleCardVC")
+    }
 	
 	@IBAction func saveButtonPressed(sender:AnyObject) {
         titleCardVC.saveButtonPressed(nil)

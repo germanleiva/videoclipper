@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAnalytics
 
 class SettingsTableController: UITableViewController, UITextFieldDelegate {
 	@IBOutlet var keyboardAutocompletionSwitch:UISwitch!
@@ -71,6 +72,12 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
                 Globals.presentSimpleAlert(self, title: "Error", message: error.localizedDescription, completion: nil)
             }
         }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        Analytics.setScreenName("settingsTableController", screenClass: "SettingsTableController")
     }
     
     override func viewWillDisappear(animated: Bool) {

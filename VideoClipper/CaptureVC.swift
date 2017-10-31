@@ -9,6 +9,7 @@
 import UIKit
 import AVKit
 import CoreData
+import FirebaseAnalytics
 
 let keyShutterHoldEnabled = "shutterHoldEnabled"
 let keyGhostLevel = "keyGhostLevel"
@@ -144,6 +145,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+        Analytics.setScreenName("captureVC", screenClass: "CaptureVC")
 		
         if self.orphanVideoSegmentModelHolder == nil {
             self.orphanVideoSegmentModelHolder = createNewVideoSegmentModelHolder(shouldSaveInDB:true)

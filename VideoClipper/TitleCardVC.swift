@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import MobileCoreServices
 import Photos
+import FirebaseAnalytics
 
 extension UIGestureRecognizer {
 	func cancel() {
@@ -230,6 +231,11 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
 //        super.viewDidAppear(animated)
 //        scrollView!.setContentOffset(CGPointZero, animated: false)
 //    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        Analytics.setScreenName("titleCardVC", screenClass: "TitleCardVC")
+    }
 	
     override func viewDidLoad() {
         super.viewDidLoad()

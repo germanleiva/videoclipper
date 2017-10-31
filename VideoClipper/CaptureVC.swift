@@ -172,6 +172,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	func dismissController() {
+        Analytics.logEvent("capture_view_closed", parameters: [:])
+
 		self.dismissViewControllerAnimated(true) { () -> Void in
             self._captureSessionCoordinator.stopRecording()
         }
@@ -345,8 +347,11 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
 
 	@IBAction func stopMotionPressed(sender: UIButton) {
+
         self.layout().changeMode()
         self.updateStopMotionWidgets()
+        
+        Analytics.logEvent("capture_view_append_mode", parameters: ["on" : self.layout().isCentered])
 	}
 	
 	func updateStopMotionWidgets(){
@@ -600,6 +605,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	//-MARK: private start/stop helper methods
 	
 	func startCapture() {
+        Analytics.logEvent("capture_view_start_capture", parameters: [:])
+
         if self.shutterLock.on {
             self.shutterButton.setTitle("", forState: UIControlState.Normal)
             self.shutterButton.cameraButtonMode = .VideoRecording
@@ -683,6 +690,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 
 	func stopCapture() {
+        Analytics.logEvent("capture_view_stop_capture", parameters: [:])
+
         //Remember to check coordinator:didFinishRecordingToOutputFileURL:
         
 		if self.shutterLock.on {
@@ -991,6 +1000,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
 	
 	@IBAction func addStoryLinePressed(sender:UIButton) {
+        Analytics.logEvent("capture_view_created_line", parameters: [:])
+
         self.currentlyRecordedVideo = nil
         
 		let project = self.currentLine!.project!
@@ -1049,8 +1060,10 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         if let indexPath = self.collectionView.indexPathForItemAtPoint(point) {
             let alert = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-                self.deleteVideo(atIndexPath:indexPath)
                 
+                Analytics.logEvent("capture_view_delete_video", parameters: [:])
+
+                self.deleteVideo(atIndexPath:indexPath)
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
                 alert.dismissViewControllerAnimated(true, completion: nil)

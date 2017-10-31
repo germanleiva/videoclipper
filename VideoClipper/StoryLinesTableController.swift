@@ -174,6 +174,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		captureController.delegate = self
 		captureController.currentLine = self.currentStoryLine()
         
+        Analytics.logEvent("capture_view_opened", parameters: [:])
+        
         self.presentViewController(captureController, animated: true) { () -> Void in
             captureController.scrollCollectionViewToEnd()
         }
@@ -640,7 +642,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			let dragPointOnCanvas = gesture.locationInView(self.view)
 			
 			if gesture.state == UIGestureRecognizerState.Began {
-				
+                Analytics.logEvent("dragged_element", parameters: ["indexPath":self.bundle?.currentIndexPath.description ?? "not_available"])
+
 				self.bundle!.sourceCell!.hidden = true
 				self.view.addSubview(self.bundle!.representationImageView)
 				
@@ -749,6 +752,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                         //WORK AROUND UGLY
                         cellIndexPath = self.bundle?.currentIndexPath
                     }
+                    
+                    Analytics.logEvent("dropped_element", parameters: ["indexPath":cellIndexPath?.description ?? "not available"])
+                    
                     self.bundle = nil
                     potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
                         potentiallyNewCollectionView!.reloadItemsAtIndexPaths([cellIndexPath!])
@@ -799,6 +805,9 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			switch (state) {
 				
 			case UIGestureRecognizerState.Began:
+                
+                Analytics.logEvent("dragged_line", parameters: ["indexPath":indexPath?.description ?? "not available"])
+
 				self.sourceIndexPath = indexPath
 				let cell = tableView.cellForRowAtIndexPath(indexPath!)!
 				rowSnapshot = customSnapshotFromView(cell)

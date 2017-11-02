@@ -325,7 +325,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change:
 		[NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-			if context == &VideoVC.observerContext && (object as! AVPlayerItem) == self.playerItem! {
+			if context! == &VideoVC.observerContext && (object as! AVPlayerItem) == self.playerItem! {
 				DispatchQueue.main.async(execute: { () -> Void in
 					
 					if self.playerItem?.status == AVPlayerItemStatus.readyToPlay {

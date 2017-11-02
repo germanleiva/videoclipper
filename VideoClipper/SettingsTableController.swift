@@ -62,6 +62,7 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
                 if let result = try self.context.fetch(fetchRequest) as? [TextWidget] {
                     let relatedTitleCards = Set(result.map {$0.titleCard!} )
                     for aTitleCard in relatedTitleCards {
+                        aTitleCard.deleteAssetFile()
                         aTitleCard.createSnapshots()
                     }
                 }

@@ -15,8 +15,8 @@ import CoreData
 extension Project {
 
     @NSManaged var name: String?
-    @NSManaged var createdAt: NSDate?
-	@NSManaged var updatedAt: NSDate?
+    @NSManaged var createdAt: Date?
+	@NSManaged var updatedAt: Date?
     @NSManaged var storyLines: NSOrderedSet?
 
 }

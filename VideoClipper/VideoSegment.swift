@@ -17,10 +17,10 @@ class VideoSegment: NSManagedObject {
     var time = Float64(0)
     var tagsPlaceholders = [(UIColor,Float64)]()
     
-    var path:NSURL? {
+    var path:URL? {
         get {
             if let aName = self.fileName {
-                return Globals.documentsDirectory.URLByAppendingPathComponent(aName)
+                return Globals.documentsDirectory.appendingPathComponent(aName)
             }
             return nil
         }
@@ -35,42 +35,42 @@ class VideoSegment: NSManagedObject {
         get {
             if _asset == nil {
                 if let aPath = self.path {
-                    _asset = AVURLAsset(URL: aPath, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+                    _asset = AVURLAsset(url: aPath, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
                 }
             }
             return _asset
         }
     }
     
-    func writePath() -> NSURL {
+    func writePath() -> URL {
         if let _ = self.fileName {
             print("Asking for WritePath of VideoSegment while I already have a fileName")
         }
-        if self.objectID.temporaryID {
+        if self.objectID.isTemporaryID {
             print("THIS WAS A TEMPORARY ID")
         }
         
-        let segmentObjectId = self.objectID.URIRepresentation().absoluteString
-        let firstReplacement = segmentObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "")
-        let videoName = NSString(format:"%@.mov", firstReplacement.stringByReplacingOccurrencesOfString("/", withString: "_")) as String
+        let segmentObjectId = self.objectID.uriRepresentation().absoluteString
+        let firstReplacement = segmentObjectId.replacingOccurrences(of: "x-coredata://", with: "")
+        let videoName = NSString(format:"%@.mov", firstReplacement.replacingOccurrences(of: "/", with: "_")) as String
         
 //        return entityFolderPath + "/" + fileName
-        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName)!
+        return Globals.documentsDirectory.appendingPathComponent(videoName)
     }
     
     override func didSave() {
         super.didSave()
         
-        if self.deleted {
+        if self.isDeleted {
             self.deleteVideoSegmentFile()
         }
     }
     
     func deleteVideoSegmentFile() {
-        let request = NSFetchRequest(entityName: self.entity.name!)
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: self.entity.name!)
         request.predicate = NSPredicate(format: "(self != %@) AND (self.fileName == %@)", argumentArray: [self.objectID,self.fileName!])
         do {
-            if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
+            if let otherVideoSegmentsUsingSameFile = try self.managedObjectContext?.fetch(request) {
                 if otherVideoSegmentsUsingSameFile.isEmpty {
                     self.unsafeDeleteVideoSegmentFile()
                 } else {
@@ -84,7 +84,7 @@ class VideoSegment: NSManagedObject {
     
     func unsafeDeleteVideoSegmentFile() {
         do {
-            try NSFileManager().removeItemAtURL(self.path!)
+            try FileManager().removeItem(at: self.path!)
             self.fileName = nil
         } catch let error as NSError {
             print("Couldn't delete file \(self.path): \(error.localizedDescription)")
@@ -92,11 +92,11 @@ class VideoSegment: NSManagedObject {
     }
     func copyVideoFile() {
         if let aFileName = self.fileName {
-            let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+            let clonedFile = Globals.documentsDirectory.appendingPathComponent(aFileName)
             let myFile = self.writePath()
             
             do {
-                try NSFileManager().copyItemAtURL(clonedFile, toURL: myFile)
+                try FileManager().copyItem(at: clonedFile, to: myFile)
                 self.fileName = myFile.lastPathComponent
                 
                 try self.managedObjectContext!.save()

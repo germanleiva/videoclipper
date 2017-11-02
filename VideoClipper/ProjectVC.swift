@@ -15,6 +15,7 @@ import MobileCoreServices
 import Crashlytics
 
 class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControllerDelegate, ELCImagePickerControllerDelegate {
+
 	var project:Project? = nil
 	var tableController:StoryLinesTableController?
 
@@ -22,9 +23,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
     var quickStart = false
 
 
-	var currentLineIndexPath:NSIndexPath? {
+	var currentLineIndexPath:IndexPath? {
 		get {
-			return self.tableController!.selectedLinePath
+			return self.tableController!.selectedLinePath as IndexPath
 		}
 	}
     
@@ -33,9 +34,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	@IBOutlet weak var verticalToolbar: UIView!
 	
 	var player:AVPlayer? = nil
-	let observerContext = UnsafeMutablePointer<Void>()
+//	let observerContext: UnsafeMutableRawPointer
+    private static var observerContext = 0
 
-	let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
+	let context = (UIApplication.shared.delegate as! AppDelegate!).managedObjectContext
 	@IBOutlet weak var titleTextField: UITextField!
 
 	@IBOutlet weak var containerView: UITableView!
@@ -46,7 +48,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
     
     deinit {
         if let anObserver = selectedLineChangedObserver {
-            NSNotificationCenter.defaultCenter().removeObserver(anObserver)
+            NotificationCenter.default.removeObserver(anObserver)
         }
     }
 
@@ -70,12 +72,12 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		self.titleTextField!.text = self.project!.name
 		
 		self.verticalToolbar.layer.borderWidth = 0.4
-		self.verticalToolbar.layer.borderColor = UIColor.blackColor().CGColor
+		self.verticalToolbar.layer.borderColor = UIColor.black.cgColor
 		self.verticalToolbar.backgroundColor = Globals.globalTint
 		
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapOnBackgroundOfTableView))
 		self.tableController!.tableView.backgroundView = UIView(frame: CGRect(x: 0, y: 0, width: self.tableController!.tableView.frame.size.width, height: self.tableController!.tableView.frame.size.height))
-		self.tableController!.tableView.backgroundView?.backgroundColor = UIColor.clearColor()
+		self.tableController!.tableView.backgroundView?.backgroundColor = UIColor.clear
 		self.tableController!.tableView.backgroundView!.addGestureRecognizer(tapGesture)
 		
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapOnTableView))
@@ -83,11 +85,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 //		doubleTap.delegate = self
 		self.tableController!.view.addGestureRecognizer(doubleTap)
 		
-		selectedLineChangedObserver = NSNotificationCenter.defaultCenter().addObserverForName(Globals.notificationSelectedLineChanged, object: nil, queue: NSOperationQueue.mainQueue()) { [unowned self] (notification) -> Void in
+		selectedLineChangedObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: Globals.notificationSelectedLineChanged), object: nil, queue: OperationQueue.main) { [unowned self] (notification) -> Void in
             if let selectedLine = notification.object as? StoryLine {
                 self.tableController!.tableView.reloadData()
-                let section = self.project!.storyLines!.indexOfObject(selectedLine)
-                self.tableController!.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: section), animated: true)
+                let section = self.project!.storyLines!.index(of: selectedLine)
+                self.tableController!.selectRowAtIndexPath(IndexPath(row: 0, section: section), animated: true)
             }
 		}
 	}
@@ -96,32 +98,32 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 //		return false
 //	}
 	
-	func doubleTapOnTableView(recognizer:UITapGestureRecognizer) {
-        if self.titleTextField.isFirstResponder() {
+	func doubleTapOnTableView(_ recognizer:UITapGestureRecognizer) {
+        if self.titleTextField.isFirstResponder {
             self.titleTextField.resignFirstResponder()
         }
 	}
 	
-	func tapOnBackgroundOfTableView(recognizer:UITapGestureRecognizer) {
-		if self.titleTextField.isFirstResponder() {
+	func tapOnBackgroundOfTableView(_ recognizer:UITapGestureRecognizer) {
+		if self.titleTextField.isFirstResponder {
 			self.titleTextField.resignFirstResponder()
 		}
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		let defaults = NSUserDefaults.standardUserDefaults()
+		let defaults = UserDefaults.standard
 
-		var autocorrectionType = UITextAutocorrectionType.Default
-		if defaults.boolForKey("keyboardAutocompletionOff") {
-			autocorrectionType = .No
+		var autocorrectionType = UITextAutocorrectionType.default
+		if defaults.bool(forKey: "keyboardAutocompletionOff") {
+			autocorrectionType = .no
 		}
 		
 		self.titleTextField.autocorrectionType = autocorrectionType
 	}
 	
-	override func viewDidAppear(animated: Bool) {
+	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		if self.isNewProject {
             if self.quickStart {
@@ -139,37 +141,37 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         // Dispose of any resources that can be recreated.
     }
 
-	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "tableContainerSegue" {
-			self.tableController = segue.destinationViewController as? StoryLinesTableController
+			self.tableController = segue.destination as? StoryLinesTableController
 			self.tableController!.project = self.project
 			self.tableController!.delegate = self
 		}
 	}
 	
-	@IBAction func addStoryLinePressed(sender:UIBarButtonItem) {
+	@IBAction func addStoryLinePressed(_ sender:UIBarButtonItem) {
 		let j = self.project!.storyLines!.count + 1
 		
-		let storyLine = NSEntityDescription.insertNewObjectForEntityForName("StoryLine", inManagedObjectContext: context) as! StoryLine
+		let storyLine = NSEntityDescription.insertNewObject(forEntityName: "StoryLine", into: context) as! StoryLine
 		storyLine.name = "StoryLine \(j)"
 
-		let storyLines = self.project?.mutableOrderedSetValueForKey("storyLines")
-		storyLines?.addObject(storyLine)
+		let storyLines = self.project?.mutableOrderedSetValue(forKey: "storyLines")
+		storyLines?.add(storyLine)
 
-		let firstTitleCard = NSEntityDescription.insertNewObjectForEntityForName("TitleCard", inManagedObjectContext: context) as! TitleCard
+		let firstTitleCard = NSEntityDescription.insertNewObject(forEntityName: "TitleCard", into: context) as! TitleCard
 		firstTitleCard.name = "Untitled"
 		storyLine.elements = [firstTitleCard]
 		
-		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValueForKey("widgets")
-		let widget = NSEntityDescription.insertNewObjectForEntityForName("TextWidget", inManagedObjectContext: self.context) as! TextWidget
-        widget.createdAt = NSDate()
+		let widgetsOnTitleCard = firstTitleCard.mutableOrderedSetValue(forKey: "widgets")
+		let widget = NSEntityDescription.insertNewObject(forEntityName: "TextWidget", into: self.context) as! TextWidget
+        widget.createdAt = Date()
 		widget.content = ""
 		widget.distanceXFromCenter = 0
 		widget.distanceYFromCenter = 0
 		widget.width = 500
 		widget.height = 50
 		widget.fontSize = 60
-		widgetsOnTitleCard.addObject(widget)
+		widgetsOnTitleCard.add(widget)
 		
 		firstTitleCard.snapshotData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
         firstTitleCard.thumbnailData = UIImageJPEGRepresentation(UIImage(named: "defaultTitleCard")!,1)
@@ -179,34 +181,36 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 			try context.save()
 			self.tableController!.addStoryLine(storyLine)
             
-            Answers.logCustomEventWithName("New line",
+            Answers.logCustomEvent(withName: "New line",
                 customAttributes: nil)
 		} catch {
 			print("Couldn't save the new story line: \(error)")
 		}
 	}
 	
-	@IBAction func exportProjectPressed(sender:AnyObject?) {
-		var elements = [AnyObject]()
+	@IBAction func exportProjectPressed(_ sender:AnyObject?) {
+        var elements = [Any]()
 		
 		for eachLine in self.project!.storyLines! {
 			let line = eachLine as! StoryLine
 			if !line.shouldHide!.boolValue {
-				elements += line.elements!
+                for eachElement in line.elements! {
+                    elements.append(eachElement)
+                }
 			}
 		}
 
 		exportToPhotoAlbum(NSOrderedSet(array: elements))
         
-        Answers.logCustomEventWithName("Export project pressed",
+        Answers.logCustomEvent(withName: "Export project pressed",
             customAttributes: nil)
 	}
     
-    func exportToPhotoAlbum(elements:NSOrderedSet){
-        let window = UIApplication.sharedApplication().delegate!.window!
+    func exportToPhotoAlbum(_ elements:NSOrderedSet){
+        let window = UIApplication.shared.delegate!.window!
 
-        self.progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-        self.progressBar!.mode = MBProgressHUDMode.DeterminateHorizontalBar
+        self.progressBar = MBProgressHUD.showAdded(to: window, animated: true)
+        self.progressBar!.mode = MBProgressHUDMode.determinateHorizontalBar
         self.progressBar!.labelText = "Preparing ..."
 
         StoryLine.createComposition(elements) { (composition,videoComposition) -> Void in
@@ -221,13 +225,13 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.exportSession!.videoComposition = videoComposition
             
             //		let filePath:String? = NSHomeDirectory().stringByAppendingPathComponent("Documents").stringByAppendingPathComponent("test_output.mov")
-            let file = Globals.documentsDirectory.URLByAppendingPathComponent("test_output.mov")
-            let fileManager = NSFileManager()
+            let file = Globals.documentsDirectory.appendingPathComponent("test_output.mov")
+            let fileManager = FileManager()
             
-            if fileManager.fileExistsAtPath(file!.path!) {
+            if fileManager.fileExists(atPath: file.path) {
                 do {
-                    try NSFileManager().removeItemAtURL(file!)
-                    print("Deleted old temporal video file: \(file!.path!)")
+                    try FileManager().removeItem(at: file)
+                    print("Deleted old temporal video file: \(file.path)")
                 } catch {
                     print("Couldn't delete old temporal file: \(error)")
                 }
@@ -240,11 +244,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             
             print("Starting exportAsynchronouslyWithCompletionHandler")
             
-            self.exportSession!.exportAsynchronouslyWithCompletionHandler {
-                dispatch_async(dispatch_get_main_queue(), {
+            self.exportSession!.exportAsynchronously {
+                DispatchQueue.main.async(execute: {
                     if let anExportSession = self.exportSession {
                         switch anExportSession.status {
-                        case AVAssetExportSessionStatus.Completed:
+                        case AVAssetExportSessionStatus.completed:
                             print("Export Complete, trying to write on the photo album")
                             self.writeExportedVideoToAssetsLibrary(anExportSession.outputURL!)
                             //                            					let sourceAsset = AVURLAsset(URL: self.exportSession!.outputURL!)
@@ -254,10 +258,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
                             //                            						writer.writeMetadataGroups(metadataGroups)
                             //                            						self.writeExportedVideoToAssetsLibrary(writer.outputURL!)
                             //                            					})
-                        case AVAssetExportSessionStatus.Cancelled:
+                        case AVAssetExportSessionStatus.cancelled:
                             print("Export Cancelled");
                             print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
-                        case AVAssetExportSessionStatus.Failed:
+                        case AVAssetExportSessionStatus.failed:
                             print("Export Failed");
                             print("ExportSessionError: \(anExportSession.error?.localizedDescription)")
                         default:
@@ -265,9 +269,9 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
                         }
                         
                         if let error = self.exportSession!.error {
-                            let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: { () -> Void in
+                            let alert = UIAlertController(title: "Couldn't export the video", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
+                            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+                            self.present(alert, animated: true, completion: { () -> Void in
                                 print("Nothing after the alert")
                             })
                         }
@@ -279,35 +283,35 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         }
     }
     
-    func writeExportedVideoToAssetsLibrary(outputURL:NSURL) {
+    func writeExportedVideoToAssetsLibrary(_ outputURL:URL) {
         var albumAssetCollection: PHAssetCollection!
         
-        let albumName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
+        let albumName = Foundation.Bundle.main.infoDictionary!["CFBundleName"] as! String
         
         let fetchOptions = PHFetchOptions()
         fetchOptions.predicate = NSPredicate(format: "title = %@", albumName)
-        let collection = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: fetchOptions)
+        let collection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOptions)
         
         let blockSaveToAlbum = {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
-                PHPhotoLibrary.sharedPhotoLibrary().performChanges({() -> Void in
-                    if let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(outputURL) {
+            DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async(execute: {
+                PHPhotoLibrary.shared().performChanges({() -> Void in
+                    if let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputURL) {
                         let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
-                        let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: albumAssetCollection)
-                        albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), atIndexes: NSIndexSet(index: 0))
+                        let albumChangeRequest = PHAssetCollectionChangeRequest(for: albumAssetCollection)
+                        albumChangeRequest!.insertAssets(NSSet(object: assetPlaceholder!), at: IndexSet(integer: 0))
                     }
                 }, completionHandler: { (success, error) -> Void in
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         if success {
                             //Open Photos app
-                            Answers.logCustomEventWithName("Export project success",
+                            Answers.logCustomEvent(withName: "Export project success",
                                 customAttributes: nil)
                             
-                            UIApplication.sharedApplication().openURL(NSURL(string: "photos-redirect://")!)
+                            UIApplication.shared.openURL(URL(string: "photos-redirect://")!)
                             
                         } else {
-                            let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.Alert)
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            let alert = UIAlertController(title: "Couldn't export project to Photo Library", message: error!.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
+                            self.present(alert, animated: true, completion: nil)
                         }
                     })
                 })
@@ -317,34 +321,34 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         // Create the album if does not exist
         if let theAlbum = collection.firstObject{
             //found the album
-            albumAssetCollection = theAlbum as! PHAssetCollection
+            albumAssetCollection = theAlbum 
             blockSaveToAlbum()
         } else {
             //Album placeholder for the asset collection, used to reference collection in completion handler
             var albumPlaceholder:PHObjectPlaceholder!
             //create the folder
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle(albumName)
+            PHPhotoLibrary.shared().performChanges({
+                let request = PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: albumName)
                 albumPlaceholder = request.placeholderForCreatedAssetCollection
                 },
                 completionHandler: {(success, error)in
                     if(success){
-                        let collection = PHAssetCollection.fetchAssetCollectionsWithLocalIdentifiers([albumPlaceholder.localIdentifier], options: nil)
-                        albumAssetCollection = collection.firstObject as! PHAssetCollection
+                        let collection = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: [albumPlaceholder.localIdentifier], options: nil)
+                        albumAssetCollection = collection.firstObject!
                         blockSaveToAlbum()
                     }
             })
         }        
     }
     
-    func monitorExportProgress(exportSession:AVAssetExportSession) {
+    func monitorExportProgress(_ exportSession:AVAssetExportSession) {
         let delta = Int64(NSEC_PER_SEC / 10)
         
-        let popTime = dispatch_time(DISPATCH_TIME_NOW, delta)
+        let popTime = DispatchTime.now() + Double(delta) / Double(NSEC_PER_SEC)
         
-        dispatch_after(popTime, dispatch_get_main_queue(), {
+        DispatchQueue.main.asyncAfter(deadline: popTime, execute: {
             let status = exportSession.status
-            if status == AVAssetExportSessionStatus.Exporting {
+            if status == AVAssetExportSessionStatus.exporting {
                 self.progressBar!.progress = exportSession.progress
                 if exportSession.progress == 1 {
                     self.progressBar!.labelText = "Saving ..."
@@ -362,8 +366,8 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         })
     }
     
-    @IBAction func cancelExport(recognizer:UITapGestureRecognizer) {
-        let location = recognizer.locationInView(self.progressBar)
+    @IBAction func cancelExport(_ recognizer:UITapGestureRecognizer) {
+        let location = recognizer.location(in: self.progressBar)
         
         let xDist = location.x - self.progressBar!.center.x
         let yDist = location.y - self.progressBar!.center.y
@@ -377,23 +381,25 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         }
     }
 	
-	@IBAction func playProjectPressed(sender:AnyObject?) {
-        Answers.logCustomEventWithName("Play project pressed",
+	@IBAction func playProjectPressed(_ sender:AnyObject?) {
+        Answers.logCustomEvent(withName: "Play project pressed",
             customAttributes: nil)
         
-		var elements = [AnyObject]()
+		var elements = [Any]()
 		
 		for eachLine in self.project!.storyLines! {
 			let line = eachLine as! StoryLine
 			if !line.shouldHide!.boolValue {
-				elements += line.elements!
-			}
+                for eachElement in line.elements! {
+                    elements.append(eachElement)
+                }
+            }
 		}
         
-        let window = UIApplication.sharedApplication().delegate!.window!
-        let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-        progressBar.show(true)
-        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+        let window = UIApplication.shared.delegate!.window!
+        let progressBar = MBProgressHUD.showAdded(to: window, animated: true)
+        progressBar?.show(true)
+        UIApplication.shared.beginIgnoringInteractionEvents()
 
         StoryLine.createComposition(NSOrderedSet(array: elements), completionHandler: { (composition,videoComposition) -> Void in
             let item = AVPlayerItem(asset: composition.copy() as! AVAsset)
@@ -405,11 +411,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             let playerVC = AVPlayerViewController()
             playerVC.player = self.player
             
-            UIApplication.sharedApplication().endIgnoringInteractionEvents()
-            progressBar.hide(true)
+            UIApplication.shared.endIgnoringInteractionEvents()
+            progressBar?.hide(true)
 
-            self.presentViewController(playerVC, animated: true, completion: { () -> Void in
-                Answers.logCustomEventWithName("Play project success", customAttributes: nil)
+            self.present(playerVC, animated: true, completion: { () -> Void in
+                Answers.logCustomEvent(withName: "Play project success", customAttributes: nil)
                 
                 playerVC.player?.play()
                 
@@ -421,11 +427,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         })
 	}
 	
-	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 		if keyPath == "status" {
-			if self.player!.status == AVPlayerStatus.ReadyToPlay {
+			if self.player!.status == AVPlayerStatus.readyToPlay {
 //				if self.tableController!.isCompact {
-					self.player!.seekToTime(self.timeToSelectedLine(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+					self.player!.seek(to: self.timeToSelectedLine(self.player!.currentItem!.asset.duration.timescale), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
 //				}w
 				self.player!.currentItem?.removeObserver(self, forKeyPath: "status")
 				self.player = nil
@@ -433,7 +439,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		}
 	}
 	
-	func timeToSelectedLine(timescale:Int32) -> CMTime {
+	func timeToSelectedLine(_ timescale:Int32) -> CMTime {
 		var cursorTime = kCMTimeZero
 		for lineIndex in 0..<self.project!.storyLines!.count {
 			let eachStoryLine = self.project!.storyLines![lineIndex] as! StoryLine
@@ -451,7 +457,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		return cursorTime
 	}
 		
-	func textFieldDidEndEditing(textField: UITextField) {
+	func textFieldDidEndEditing(_ textField: UITextField) {
 		if project!.name != textField.text {
 			self.project!.name = textField.text
 			do {
@@ -462,18 +468,18 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		}
 	}
 	
-	func textFieldShouldReturn(textField: UITextField) -> Bool {
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		textField.resignFirstResponder()
 		return true
 	}
     
-    func storyLinesTableController(didChangeLinePath lineIndexPath: NSIndexPath?,line:StoryLine?) {
+    func storyLinesTableController(didChangeLinePath lineIndexPath: IndexPath?,line:StoryLine?) {
         self.updateHideLineButton(line)
     }
     
     // MARK: - Story Line Vertical Toolbar
 
-	func updateHideLineButton(line:StoryLine?) {
+	func updateHideLineButton(_ line:StoryLine?) {
 		if line == nil || !line!.shouldHide!.boolValue{
 			self.hideLineButton.alpha = 1
 		} else {
@@ -481,24 +487,24 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 		}
 	}
 	
-    @IBAction func captureForLineTapped(sender:AnyObject?) {
+    @IBAction func captureForLineTapped(_ sender:AnyObject?) {
         self.tableController!.recordTappedOnSelectedLine(sender)
     }
     
-    @IBAction func importForLineTapped(sender:AnyObject?) {
+    @IBAction func importForLineTapped(_ sender:AnyObject?) {
         print("Long press selector triggered")
         
         
         let picker = ELCImagePickerController(imagePicker: ())
         
         
-        picker.maximumImagesCount = 100 //Set the maximum number of images to select to 100
-        picker.returnsOriginalImage = true //Only return the fullScreenImage, not the fullResolutionImage
-        picker.returnsImage = true //Return UIimage if YES. If NO, only return asset location information
-        picker.onOrder = true //For multiple image selection, display and return order of selected images
-        picker.mediaTypes = [kUTTypeMovie] //Support only movie types
+        picker?.maximumImagesCount = 100 //Set the maximum number of images to select to 100
+        picker?.returnsOriginalImage = true //Only return the fullScreenImage, not the fullResolutionImage
+        picker?.returnsImage = true //Return UIimage if YES. If NO, only return asset location information
+        picker?.onOrder = true //For multiple image selection, display and return order of selected images
+        picker?.mediaTypes = [kUTTypeMovie] //Support only movie types
         
-        picker.imagePickerDelegate = self
+        picker?.imagePickerDelegate = self
         
         //		let picker = UIImagePickerController()
         //		picker.delegate = self
@@ -507,63 +513,62 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         //		picker.mediaTypes = [String(kUTTypeMovie)]
         //		picker.videoQuality = UIImagePickerControllerQualityType.TypeIFrame1280x720
         
-        self.presentViewController(picker, animated: true, completion: nil)
+        self.present(picker!, animated: true, completion: nil)
     }
     
-    func elcImagePickerController(picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [AnyObject]!) {
+    public func elcImagePickerController(_ picker: ELCImagePickerController!, didFinishPickingMediaWithInfo info: [Any]!) {
         
-        let importingGroup = dispatch_group_create()
-        let window = UIApplication.sharedApplication().delegate!.window!
+        let importingGroup = DispatchGroup()
+        let window = UIApplication.shared.delegate!.window!
         
-        let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-        progressBar.show(true)
+        let progressBar = MBProgressHUD.showAdded(to: window, animated: true)
+        progressBar?.show(true)
 
         for dict in info as! [[String:AnyObject]] {
             if dict[UIImagePickerControllerMediaType] as! String == ALAssetTypeVideo {
-                let fileURLALAsset = dict[UIImagePickerControllerReferenceURL] as! NSURL
+                let fileURLALAsset = dict[UIImagePickerControllerReferenceURL] as! URL
                 
                 let currentLine = self.tableController!.currentStoryLine()
-                let newVideo = NSEntityDescription.insertNewObjectForEntityForName("VideoClip", inManagedObjectContext: self.context) as? VideoClip
-                let elements = currentLine!.mutableOrderedSetValueForKey("elements")
+                let newVideo = NSEntityDescription.insertNewObject(forEntityName: "VideoClip", into: self.context) as? VideoClip
+                let elements = currentLine!.mutableOrderedSetValue(forKey: "elements")
 
-                elements.addObject(newVideo!)
+                elements.add(newVideo!)
                 
                 let videoURL = newVideo?.writePath()
                 
-                dispatch_group_enter(importingGroup)
-                let fetchResult = PHAsset.fetchAssetsWithALAssetURLs([fileURLALAsset], options: nil)
-                if let phAsset = fetchResult.firstObject as? PHAsset {
-                    PHImageManager.defaultManager().requestAVAssetForVideo(phAsset, options: PHVideoRequestOptions(), resultHandler: { (asset, audioMix, info) -> Void in
+                importingGroup.enter()
+                let fetchResult = PHAsset.fetchAssets(withALAssetURLs: [fileURLALAsset], options: nil)
+                if let phAsset = fetchResult.firstObject {
+                    PHImageManager.default().requestAVAsset(forVideo: phAsset, options: PHVideoRequestOptions(), resultHandler: { (asset, audioMix, info) -> Void in
                         if let asset = asset as? AVURLAsset {
-                            let videoData = NSData(contentsOfURL: asset.URL)
                             
-                            // optionally, write the video to the temp directory
-                            let writeResult = videoData?.writeToURL(videoURL!, atomically: true)
-                            
-                            if let writeResult = writeResult where writeResult {
+                            do {
+                                let videoData = try Data(contentsOf: asset.url)
+
+                                // optionally, write the video to the temp directory
+                                try videoData.write(to: videoURL!, options: [.atomic])
+
                                 print("Copied movie from PhotoAlbum to VideoClipper")
-                                
+                                    
                                 let generateImg = AVAssetImageGenerator(asset: asset)
                                 generateImg.appliesPreferredTrackTransform = true
-
+                                
                                 do {
-                                    let refImg = try generateImg.copyCGImageAtTime(asset.duration, actualTime: nil)
-                                    let thumbnailImage = UIImage(CGImage: refImg)
+                                    let refImg = try generateImg.copyCGImage(at: asset.duration, actualTime: nil)
+                                    let thumbnailImage = UIImage(cgImage: refImg)
                                     
                                     newVideo!.snapshotData = UIImageJPEGRepresentation(thumbnailImage,0.75)
                                     newVideo!.thumbnailData = UIImageJPEGRepresentation(thumbnailImage.resize(CGSize(width: 192, height: 103)),1)
                                     
                                     newVideo!.fileName = videoURL?.lastPathComponent
-
-                                    dispatch_group_leave(importingGroup)
-                            
+                                    
+                                    importingGroup.leave()
+                                    
                                 } catch {
                                     print("Couldn't generate thumbnail image for new video")
                                 }
-                                
-                            }
-                            else {
-                                print("Couldn't copy movie file from PhotoAlbum to VideoClipper")
+                            } catch let error as NSError {
+                                print("Couldn't copy movie file from PhotoAlbum to VideoClipper \(error.localizedDescription)")
                             }
                         }
                     })
@@ -573,7 +578,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             }
         }
         
-        dispatch_group_notify(importingGroup, dispatch_get_main_queue()) { () -> Void in
+        importingGroup.notify(queue: DispatchQueue.main) { () -> Void in
             
             do {
                 try self.context.save()
@@ -582,28 +587,28 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             }
             
             self.tableController?.reloadData()
-            progressBar.hide(true)
+            progressBar?.hide(true)
             
-            picker.dismissViewControllerAnimated(true, completion: nil)
+            picker.dismiss(animated: true, completion: nil)
         }
         
     }
     
-    func elcImagePickerControllerDidCancel(picker: ELCImagePickerController!) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func elcImagePickerControllerDidCancel(_ picker: ELCImagePickerController!) {
+        picker.dismiss(animated: true, completion: nil)
     }
     
     //MARK: imagePickerControllerDelegate
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        let fileURL = info[UIImagePickerControllerMediaURL] as! NSURL
-        let pathString = fileURL.relativePath!
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        let fileURL = info[UIImagePickerControllerMediaURL] as! URL
+        let pathString = fileURL.relativePath
         //		let library = ALAssetsLibrary()
         
         //		library.assetForURL(NSURL(fileURLWithPath: pathString), resultBlock: { (alAsset) -> Void in
         //			let representation = alAsset.defaultRepresentation()
-        picker.dismissViewControllerAnimated(true, completion: nil)
+        picker.dismiss(animated: true, completion: nil)
         
-        self.tableController!.createNewVideoForAssetURL(NSURL(fileURLWithPath: pathString))
+        self.tableController!.createNewVideoForAssetURL(URL(fileURLWithPath: pathString))
         
         //			}) { (error) -> Void in
         //				print("Couldn't open Asset from Photo Album: \(error)")
@@ -611,11 +616,11 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         //		}
         
     }
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func hideForLineTapped(sender:AnyObject?) {
+    @IBAction func hideForLineTapped(_ sender:AnyObject?) {
         self.tableController!.hideTappedOnSelectedLine(sender)
         self.updateHideLineButton(self.project!.storyLines![self.currentLineIndexPath!.section] as? StoryLine)
     }

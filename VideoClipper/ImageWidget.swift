@@ -27,7 +27,7 @@ class ImageWidget: NSManagedObject {
             return self.locked!.boolValue
         }
         set (newValue) {
-            self.locked = NSNumber(bool:newValue)
+            self.locked = NSNumber(value: newValue as Bool)
         }
     }
     
@@ -39,7 +39,7 @@ class ImageWidget: NSManagedObject {
         let imageView = UIImageView(image: image as? UIImage)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
-        imageView.userInteractionEnabled = true
+        imageView.isUserInteractionEnabled = true
         return imageView
     }
 }

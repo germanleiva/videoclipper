@@ -9,8 +9,8 @@
 import UIKit
 
 protocol StoryElementVCDelegate:class {
-	func storyElementVC(controller:StoryElementVC, elementChanged element:StoryElement)
-	func storyElementVC(controller:StoryElementVC, elementDeleted element:StoryElement)
+	func storyElementVC(_ controller:StoryElementVC, elementChanged element:StoryElement)
+	func storyElementVC(_ controller:StoryElementVC, elementDeleted element:StoryElement)
 }
 
 class StoryElementVC: UIViewController {
@@ -38,7 +38,7 @@ class StoryElementVC: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-	func shouldRecognizeSwiping(locationInView:CGPoint) -> Bool {
+	func shouldRecognizeSwiping(_ locationInView:CGPoint) -> Bool {
 		preconditionFailure("This method must be overridden")
 	}
 

@@ -31,30 +31,30 @@ THE SOFTWARE.
 import UIKit
 
 protocol ColorPickerViewControllerDelegate:class {
-	func didPickColor(colorPickerController:ColorPickerViewController,color:UIColor)
+	func didPickColor(_ colorPickerController:ColorPickerViewController,color:UIColor)
 }
 
 class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	
 	// Global variables
 	var tag: Int = 0
-	var color: UIColor = UIColor.whiteColor()
+	var color: UIColor = UIColor.white
 	weak var delegate: ColorPickerViewControllerDelegate? = nil
 	
 	// This function converts from HTML colors (hex strings of the form '#ffffff') to UIColors
-	func hexStringToUIColor (hex:String) -> UIColor {
-		var cString:String = hex.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet() as NSCharacterSet).uppercaseString
+	func hexStringToUIColor (_ hex:String) -> UIColor {
+        var cString:String = hex.trimmingCharacters(in:CharacterSet.whitespacesAndNewlines).uppercased()
 		
 		if (cString.hasPrefix("#")) {
-			cString = cString.substringFromIndex(cString.startIndex.advancedBy(1))
+			cString = cString.substring(from: cString.characters.index(cString.startIndex, offsetBy: 1))
 		}
 		
 		if (cString.characters.count != 6) {
-			return UIColor.whiteColor()
+			return UIColor.white
 		}
 		
 		var rgbValue:UInt32 = 0
-		NSScanner(string: cString).scanHexInt(&rgbValue)
+		Scanner(string: cString).scanHexInt32(&rgbValue)
 		
 		return UIColor(
 			red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
@@ -66,38 +66,40 @@ class ColorPickerViewController: UIViewController, UICollectionViewDelegate, UIC
 	
 	// UICollectionViewDataSource Protocol:
 	// Returns the number of rows in collection view
-	internal func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+	internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return 10
 	}
 	// UICollectionViewDataSource Protocol:
 	// Returns the number of columns in collection view
-	internal func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+	internal func numberOfSections(in collectionView: UICollectionView) -> Int {
 		return 16
 	}
 	// UICollectionViewDataSource Protocol:
 	// Inilitializes the collection view cells
-	internal func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+	internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		
-		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath)
-		cell.backgroundColor = UIColor.clearColor()
-		cell.tag = tag++
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+		cell.backgroundColor = UIColor.clear
+        
+        tag += 1
+		cell.tag = tag
 		
 		return cell
 	}
 	
 	// Recognizes and handles when a collection view cell has been selected
-	internal func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+	internal func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		
 		var colorPalette: Array<String>
 		
 		// Get colorPalette array from plist file
-		let path = NSBundle.mainBundle().pathForResource("colorPalette", ofType: "plist")
+		let path = Foundation.Bundle.main.path(forResource: "colorPalette", ofType: "plist")
 		let pListArray = NSArray(contentsOfFile: path!)
 		
 		if let colorPalettePlistFile = pListArray {
 			colorPalette = colorPalettePlistFile as! [String]
 			
-			let cell  = collectionView.cellForItemAtIndexPath(indexPath)!
+			let cell  = collectionView.cellForItem(at: indexPath)!
 			let hexString = colorPalette[cell.tag]
 			color = hexStringToUIColor(hexString)
 //			self.view.backgroundColor = color

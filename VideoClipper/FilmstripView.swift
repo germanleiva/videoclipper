@@ -10,12 +10,12 @@ import UIKit
 import CoreData
 
 protocol FilmstripViewDelegate:class {
-    func filmstrip(filmstripView:FilmstripView,tappedOnTime time:NSTimeInterval)
-    func filmstrip(filmstripView:FilmstripView,didStartScrubbing percentage:Float)
-    func filmstrip(filmstripView:FilmstripView,didChangeScrubbing percentage:Float)
-    func filmstrip(filmstripView:FilmstripView,didEndScrubbing percentage:Float)
-    func filmstrip(filmstripView:FilmstripView,didChangeStartPoint percentage:Float)
-    func filmstrip(filmstripView:FilmstripView,didChangeEndPoint percentage:Float)
+    func filmstrip(_ filmstripView:FilmstripView,tappedOnTime time:TimeInterval)
+    func filmstrip(_ filmstripView:FilmstripView,didStartScrubbing percentage:Float)
+    func filmstrip(_ filmstripView:FilmstripView,didChangeScrubbing percentage:Float)
+    func filmstrip(_ filmstripView:FilmstripView,didEndScrubbing percentage:Float)
+    func filmstrip(_ filmstripView:FilmstripView,didChangeStartPoint percentage:Float)
+    func filmstrip(_ filmstripView:FilmstripView,didChangeEndPoint percentage:Float)
 }
 
 class TrimmerThumbView:UIView {
@@ -23,7 +23,7 @@ class TrimmerThumbView:UIView {
     var isRight:Bool
     
     required init?(coder aDecoder: NSCoder) {
-        self.color = UIColor.orangeColor()
+        self.color = UIColor.orange
         self.isRight = false
         super.init(coder: aDecoder)
     }
@@ -36,45 +36,45 @@ class TrimmerThumbView:UIView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.color = UIColor.orangeColor()
+        self.color = UIColor.orange
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         // Drawing code
         //// Frames
         let bubbleFrame = self.bounds
         
         //// Rounded Rectangle Drawing
-        let roundedRectangleRect = CGRect(x: CGRectGetMinX(bubbleFrame), y: CGRectGetMinY(bubbleFrame), width: CGRectGetWidth(bubbleFrame), height: CGRectGetHeight(bubbleFrame))
-        var roundingCorners:UIRectCorner = [.TopLeft,.BottomLeft]
+        let roundedRectangleRect = CGRect(x: bubbleFrame.minX, y: bubbleFrame.minY, width: bubbleFrame.width, height: bubbleFrame.height)
+        var roundingCorners:UIRectCorner = [.topLeft,.bottomLeft]
         if self.isRight {
-            roundingCorners = [.TopRight,.BottomRight]
+            roundingCorners = [.topRight,.bottomRight]
         }
         let roundedRectanglePath = UIBezierPath(roundedRect: roundedRectangleRect, byRoundingCorners: roundingCorners, cornerRadii: CGSize(width: 3, height: 3))
         
-        roundedRectanglePath.closePath()
+        roundedRectanglePath.close()
         self.color.setFill()
         roundedRectanglePath.fill()
         
-        let decoratingRect = CGRect(x: CGRectGetMinX(bubbleFrame)+CGRectGetWidth(bubbleFrame)/2.5, y: CGRectGetMinY(bubbleFrame)+CGRectGetHeight(bubbleFrame)/4, width: 1.5, height: CGRectGetHeight(bubbleFrame)/2)
-        let decoratingPath = UIBezierPath(roundedRect: decoratingRect, byRoundingCorners: [.TopLeft,.BottomLeft,.BottomRight], cornerRadii: CGSize(width: 1, height: 1))
+        let decoratingRect = CGRect(x: bubbleFrame.minX+bubbleFrame.width/2.5, y: bubbleFrame.minY+bubbleFrame.height/4, width: 1.5, height: bubbleFrame.height/2)
+        let decoratingPath = UIBezierPath(roundedRect: decoratingRect, byRoundingCorners: [.topLeft,.bottomLeft,.bottomRight], cornerRadii: CGSize(width: 1, height: 1))
         
-        decoratingPath.closePath()
+        decoratingPath.close()
         UIColor(white: 1, alpha: 0.5).setFill()
         decoratingPath.fill()
     }
 }
 
 class ExtendedInsetView:UIView {
-    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let hitTestEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: -10, right: -10)
         let hitFrame = UIEdgeInsetsInsetRect(self.bounds, hitTestEdgeInsets)
-        return CGRectContainsPoint(hitFrame, point)
+        return hitFrame.contains(point)
     }
 }
 
 class FilmstripView: UIView, UIGestureRecognizerDelegate {
-    var context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
+    var context = (UIApplication.shared.delegate as! AppDelegate!).managedObjectContext
     
     /*
      // Only override drawRect: if you perform custom drawing.
@@ -107,8 +107,8 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     var durationInSeconds = CGFloat(0)
     var frameView:UIView!
     var overlayWidth = CGFloat(0)
-    var rightStartPoint = CGPointZero
-    var leftStartPoint = CGPointZero
+    var rightStartPoint = CGPoint.zero
+    var leftStartPoint = CGPoint.zero
     
     var thumbWidth = CGFloat(10)
     var maxLength = CGFloat(15)
@@ -132,7 +132,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func awakeFromNib() {
@@ -142,11 +142,11 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         self.scrubber.addGestureRecognizer(self.panGesture!)
     }
     
-    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
-        return self.leftThumbView.frame.contains(point) || self.rightThumbView.frame.contains(point) || super.pointInside(point, withEvent: event)
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return self.leftThumbView.frame.contains(point) || self.rightThumbView.frame.contains(point) || super.point(inside: point, with: event)
     }
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
     
@@ -160,7 +160,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
     //		}
     //	}
     
-    func buildScrubber(video:VideoClip) {
+    func buildScrubber(_ video:VideoClip) {
         self.thumbnails.removeAll()
         
         //This deletes the old thumbnails if we are reusing this view
@@ -192,8 +192,8 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         let size = anImage.size
         
         // Scale retina image down to appropriate size
-        let scale = UIScreen.mainScreen().scale
-        let imageSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(1/scale, 1/scale))
+        let scale = UIScreen.main.scale
+        let imageSize = size.applying(CGAffineTransform(scaleX: 1/scale, y: 1/scale))
         //		let imageSize = CGSize(width:self.frame.size.width/8,height:self.frame.size.height)
         //		let imageSize = CGSize(width: 84,height: 52)
         //		let imageRect = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
@@ -203,14 +203,14 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         
         for i in 0 ..< self.thumbnails.count {
             let timedImage = self.thumbnails[i]
-            let button = UIButton(type: .Custom)
+            let button = UIButton(type: .custom)
             button.adjustsImageWhenHighlighted = false
-            button.setBackgroundImage(timedImage.image as? UIImage, forState: .Normal)
-            button.addTarget(self, action: #selector(FilmstripView.imageButtonTapped(_:)), forControlEvents: .TouchUpInside)
+            button.setBackgroundImage(timedImage.image as? UIImage, for: UIControlState())
+            button.addTarget(self, action: #selector(FilmstripView.imageButtonTapped(_:)), for: .touchUpInside)
             button.frame = CGRect(x: currentX, y: 0, width: imageSize.width, height: imageSize.height)
             
-            button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: imageSize.width))
-            button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: imageSize.height))
+            button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: imageSize.width))
+            button.addConstraint(NSLayoutConstraint(item: button, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: imageSize.height))
             
             button.tag = i
             self.insertSubview(button, belowSubview: self.leftOverlayView)
@@ -219,7 +219,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         
         self.maxLength = self.frame.width
         
-        let themeColor = UIColor.orangeColor()
+        let themeColor = UIColor.orange
         
         self.topBorder.backgroundColor = themeColor
         self.bottomBorder.backgroundColor = themeColor
@@ -233,16 +233,16 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         self.rightThumbView.layer.masksToBounds = true
     }
     
-    func moveLeftThumb(recognizer:UIPanGestureRecognizer) {
+    func moveLeftThumb(_ recognizer:UIPanGestureRecognizer) {
         let state = recognizer.state
         
-        let location = min(max(recognizer.locationInView(self).x,0),self.frame.width)
+        let location = min(max(recognizer.location(in: self).x,0),self.frame.width)
         let percentage = Float(max(0,min(location * 100 / self.frame.width,100)))
         
         switch state {
-        case UIGestureRecognizerState.Began:
+        case UIGestureRecognizerState.began:
             self.delegate?.filmstrip(self, didStartScrubbing: percentage)
-        case UIGestureRecognizerState.Changed:
+        case UIGestureRecognizerState.changed:
             self.startConstraint.constant = location
             let potentialEndConstraint = self.frame.width - self.startConstraint.constant
             if potentialEndConstraint < self.endConstraint.constant {
@@ -250,7 +250,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
             }
             self.delegate?.filmstrip(self, didChangeScrubbing: percentage)
             
-        case UIGestureRecognizerState.Ended:
+        case UIGestureRecognizerState.ended:
             self.delegate?.filmstrip(self, didEndScrubbing: percentage)
             self.delegate?.filmstrip(self, didChangeStartPoint: percentage)
             
@@ -259,21 +259,21 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         }
     }
     
-    func moveRightThumb(recognizer:UIPanGestureRecognizer) {
+    func moveRightThumb(_ recognizer:UIPanGestureRecognizer) {
         let state = recognizer.state
-        let potentialStartConstraint = min(max(recognizer.locationInView(self).x,0),self.frame.width)
+        let potentialStartConstraint = min(max(recognizer.location(in: self).x,0),self.frame.width)
         let percentage = Float(potentialStartConstraint / self.frame.width) * 100
         
         switch state {
-        case UIGestureRecognizerState.Began:
+        case UIGestureRecognizerState.began:
             self.delegate?.filmstrip(self, didStartScrubbing: percentage)
-        case UIGestureRecognizerState.Changed:
+        case UIGestureRecognizerState.changed:
             self.endConstraint.constant = self.frame.width - potentialStartConstraint
             if potentialStartConstraint < self.startConstraint.constant {
                 self.startConstraint.constant = potentialStartConstraint
             }
             self.delegate?.filmstrip(self, didChangeScrubbing: percentage)
-        case UIGestureRecognizerState.Ended:
+        case UIGestureRecognizerState.ended:
             self.delegate?.filmstrip(self, didEndScrubbing: percentage)
             self.delegate?.filmstrip(self, didChangeEndPoint: percentage)
             
@@ -283,30 +283,30 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         }
     }
     
-    func imageButtonTapped(sender:UIButton?) {
+    func imageButtonTapped(_ sender:UIButton?) {
         let image = self.thumbnails[sender!.tag]
         let time = CMTimeMakeFromDictionary(image.time as! NSDictionary)
         self.delegate?.filmstrip(self, tappedOnTime: CMTimeGetSeconds(time))
     }
     
-    func pannedScrubber(sender:UIPanGestureRecognizer) {
+    func pannedScrubber(_ sender:UIPanGestureRecognizer) {
         let state = sender.state
-        let location = sender.locationInView(self)
+        let location = sender.location(in: self)
         let percentage = Float(max(0,min(location.x * 100 / self.frame.width,100)))
         
         switch(state) {
-        case .Began:
+        case .began:
             self.delegate?.filmstrip(self, didStartScrubbing: percentage)
-        case UIGestureRecognizerState.Changed:
+        case UIGestureRecognizerState.changed:
             self.delegate?.filmstrip(self, didChangeScrubbing: percentage)
-        case .Ended:
+        case .ended:
             self.delegate?.filmstrip(self, didEndScrubbing: percentage)
         default:
             break
         }
     }
     
-    func generateThumbnails(video:VideoClip,asset:AVAsset,startPercentage:NSNumber,endPercentage:NSNumber) {
+    func generateThumbnails(_ video:VideoClip,asset:AVAsset,startPercentage:NSNumber,endPercentage:NSNumber) {
         
         self.startConstraint.constant = self.frame.width * CGFloat(startPercentage) / 100
         self.endConstraint.constant = self.frame.width * (100 - CGFloat(endPercentage)) / 100
@@ -322,7 +322,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         imageGenerator.appliesPreferredTrackTransform = true
         
         //Generate the @2x equivalent
-        let scale = UIScreen.mainScreen().scale
+        let scale = UIScreen.main.scale
         imageGenerator.maximumSize = CGSize(width:self.frame.size.width/8 * scale,height:0)
         //		imageGenerator.maximumSize = CGSize(width: 92.5 * scale, height: 52 * scale)
         
@@ -334,7 +334,7 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         // 8 times
         for _ in 0..<8 {
             let time = CMTimeMakeWithSeconds(currentValue,duration.timescale)
-            times.append(NSValue(CMTime:time))
+            times.append(NSValue(time:time))
             currentValue += increment
         }
         
@@ -342,9 +342,9 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
         var images = [(UIImage,CMTime)]()
         var errorFound = false
         
-        imageGenerator.generateCGImagesAsynchronouslyForTimes(times) { (requestedTime, imageRef, actualTime, result, error) -> Void in
-            if result == AVAssetImageGeneratorResult.Succeeded {
-                let image = UIImage(CGImage: imageRef!)
+        imageGenerator.generateCGImagesAsynchronously(forTimes: times) { (requestedTime, imageRef, actualTime, result, error) -> Void in
+            if result == AVAssetImageGeneratorResult.succeeded {
+                let image = UIImage(cgImage: imageRef!)
                 images.append((image,actualTime))
             } else {
                 print("Error: \(error!.localizedDescription)")
@@ -352,18 +352,19 @@ class FilmstripView: UIView, UIGestureRecognizerDelegate {
             }
             
             // If the decremented image count is at 0, we're all done.
-            if (--imageCount == 0 && !errorFound) {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            imageCount -= 1
+            if (imageCount == 0 && !errorFound) {
+                DispatchQueue.main.async(execute: { () -> Void in
                     //					NSNotificationCenter.defaultCenter().postNotificationName("THThumbnailsGeneratedNotification", object: self, userInfo: ["images":images])
-                    let modelThumbnails = video.mutableOrderedSetValueForKey("thumbnailImages")
+                    let modelThumbnails = video.mutableOrderedSetValue(forKey: "thumbnailImages")
                     modelThumbnails.removeAllObjects()
                     
                     for (image,time) in images {
-                        let thumbnail = NSEntityDescription.insertNewObjectForEntityForName("Thumbnail", inManagedObjectContext: self.context) as! Thumbnail
+                        let thumbnail = NSEntityDescription.insertNewObject(forEntityName: "Thumbnail", into: self.context) as! Thumbnail
                         thumbnail.image = image
                         thumbnail.time = CMTimeCopyAsDictionary(time,kCFAllocatorDefault)
                         thumbnail.video = video
-                        modelThumbnails.addObject(thumbnail)
+                        modelThumbnails.add(thumbnail)
                     }
                     
                     self.buildScrubber(video)

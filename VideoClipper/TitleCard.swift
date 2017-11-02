@@ -14,10 +14,10 @@ class TitleCard: StoryElement {
     
 // Insert code here to add functionality to your managed object subclass
     
-    var videoPath:NSURL? {
+    var videoPath:URL? {
         get {
             if let aName = videoFileName {
-                return Globals.documentsDirectory.URLByAppendingPathComponent(aName)
+                return Globals.documentsDirectory.appendingPathComponent(aName)
             }
             return nil
         }
@@ -29,7 +29,7 @@ class TitleCard: StoryElement {
 	
 	override func awakeFromInsert() {
 		super.awakeFromInsert()
-		self.backgroundColor = UIColor.whiteColor()
+		self.backgroundColor = UIColor.white
 	}
 	
 	func textWidgets() -> [TextWidget] {
@@ -43,7 +43,7 @@ class TitleCard: StoryElement {
         return self.images!.array as! [ImageWidget]
     }
 	
-	override func realDuration(timescale:Int32 = 44100) -> CMTime {
+	override func realDuration(_ timescale:Int32 = 44100) -> CMTime {
         return CMTimeMakeWithSeconds(Float64(self.duration!), timescale)
 	}
 
@@ -59,17 +59,17 @@ class TitleCard: StoryElement {
 //		self.asset = newAsset
 //	}
     
-    override func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
+    override func loadThumbnail(_ completionHandler:((_ image:UIImage?,_ error:NSError?) -> Void)?){
+        DispatchQueue.global( priority: DispatchQueue.GlobalQueuePriority.high).async(execute: { () -> Void in
             if let thumbnailImageData = self.thumbnailData {
                 if self.thumbnailImage == nil {
-                    self.thumbnailImage = UIImage(data:thumbnailImageData)
+                    self.thumbnailImage = UIImage(data:thumbnailImageData as Data)
                 }
             } else {
                 print("WEIRD")
             }
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                completionHandler?(image: self.thumbnailImage,error: nil)
+            DispatchQueue.main.async(execute: { () -> Void in
+                completionHandler?(self.thumbnailImage,nil)
             })
         })
     }
@@ -83,7 +83,7 @@ class TitleCard: StoryElement {
         let effectiveCanvas = UIView(frame: CGRect(x: margin / 2, y: margin / 2, width: width - margin, height: height - margin))
         effectiveCanvas.translatesAutoresizingMaskIntoConstraints = false
         canvas?.addSubview(effectiveCanvas)
-        effectiveCanvas.layer.borderColor = UIColor.blackColor().CGColor
+        effectiveCanvas.layer.borderColor = UIColor.black.cgColor
         effectiveCanvas.layer.borderWidth = 1.0
         
         //Add image widgets
@@ -114,17 +114,17 @@ class TitleCard: StoryElement {
         
     }
     
-    func loadSnapshotData(canvas:UIView?) {
+    func loadSnapshotData(_ canvas:UIView?) {
         /* Capture the screen shoot at native resolution */
-        let scale = UIScreen.mainScreen().scale
+        let scale = UIScreen.main.scale
     
-        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.opaque, scale)
+        UIGraphicsBeginImageContextWithOptions(canvas!.bounds.size, canvas!.isOpaque, scale)
         let graphicContext = UIGraphicsGetCurrentContext()!
         
-        UIColor.whiteColor().setFill()
-        CGContextFillRect(graphicContext, CGRect(x: 0.0, y: 0.0, width: canvas!.bounds.size.width, height: canvas!.bounds.size.height))
+        UIColor.white.setFill()
+        graphicContext.fill(CGRect(x: 0.0, y: 0.0, width: canvas!.bounds.size.width, height: canvas!.bounds.size.height))
         
-        canvas!.layer.renderInContext(graphicContext)
+        canvas!.layer.render(in: graphicContext)
         
         let screenshot = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -133,8 +133,8 @@ class TitleCard: StoryElement {
         //let cropRect = CGRect(x: 0 ,y: 0 ,width: 1920,height: 1080)
         let cropRect = CGRect(x: 0 ,y: 0 ,width: 1280,height: 720)
         
-        UIGraphicsBeginImageContextWithOptions(cropRect.size, canvas!.opaque, 1)
-        screenshot!.drawInRect(cropRect)
+        UIGraphicsBeginImageContextWithOptions(cropRect.size, canvas!.isOpaque, 1)
+        screenshot!.draw(in: cropRect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
@@ -142,8 +142,8 @@ class TitleCard: StoryElement {
         
         let smallCropRect = CGRect(x: 0 ,y: 0 ,width: 192 * scale,height: 103 * scale)
         
-        UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.opaque, 1)
-        screenshot!.drawInRect(smallCropRect)
+        UIGraphicsBeginImageContextWithOptions(smallCropRect.size, canvas!.isOpaque, 1)
+        screenshot!.draw(in: smallCropRect)
         let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
@@ -152,7 +152,7 @@ class TitleCard: StoryElement {
         //        NSNotificationCenter.defaultCenter().postNotificationName(Globals.notificationTitleCardChanged, object: self.titleCard!)
     }
     
-    override func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
+    override func loadAsset(_ completionHandler:((_ asset:AVAsset?,_ composition:AVVideoComposition?,_ error:NSError?) -> Void)?){
 //        if let _ = self.asset {
 //            dispatch_async(dispatch_get_main_queue(), { () -> Void in
 //                completionHandler?(error:nil)
@@ -160,19 +160,19 @@ class TitleCard: StoryElement {
 //            return
 //        }
         
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), { () -> Void in
+        DispatchQueue.global( priority: DispatchQueue.GlobalQueuePriority.high).async(execute: { () -> Void in
         
             let createAsset = {
-                let asset = AVURLAsset(URL: self.videoPath!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
-                asset.loadValuesAsynchronouslyForKeys(["tracks","duration"], completionHandler: { () -> Void in
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler?(asset:asset,composition:nil,error:nil)
+                let asset = AVURLAsset(url: self.videoPath!, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
+                asset.loadValuesAsynchronously(forKeys: ["tracks","duration"], completionHandler: { () -> Void in
+                    DispatchQueue.main.async(execute: { () -> Void in
+                        completionHandler?(asset,nil,nil)
                     })
                 })
             }
             
-            if self.videoPath == nil || !NSFileManager().fileExistsAtPath(self.videoPath!.path!){
-                dispatch_sync(Globals.videoHelperQueue) {
+            if self.videoPath == nil || !FileManager().fileExists(atPath: self.videoPath!.path){
+                Globals.videoHelperQueue.sync {
                     self.writeVideoFromSnapshot({ () -> Void in
                         createAsset()
                     })
@@ -183,30 +183,30 @@ class TitleCard: StoryElement {
         })
     }
     
-    func writeVideoFromSnapshot(handler:(() -> Void)?) {
+    func writeVideoFromSnapshot(_ handler:(() -> Void)?) {
         let path = self.potentialVideoPath()
         
         if self.snapshotImage == nil {
             if let data = self.snapshotData {
-                self.snapshotImage = UIImage(data: data)
+                self.snapshotImage = UIImage(data: data as Data)
             } else {
                 self.snapshotImage = UIImage(named: "defaultTitleCard")
             }
         }
         
-        VideoHelper().createMovieAtPath(path, duration: self.duration!.intValue, withImage: self.snapshotImage) { () -> Void in
+        VideoHelper().createMovie(atPath: path, duration: self.duration!.int32Value, with: self.snapshotImage) { () -> Void in
 
             self.videoFileName = path.lastPathComponent
             
-            self.managedObjectContext?.performBlock({ () -> Void in
+            self.managedObjectContext?.perform({ () -> Void in
                 do {
                     try self.managedObjectContext?.save()
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    DispatchQueue.main.async(execute: { () -> Void in
                         handler?()
                     })
                 } catch {
                     print("DB FAILED writeVideoFromSnapshot: \(error) ")
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    DispatchQueue.main.async(execute: { () -> Void in
                         handler?()
                     })
                 }
@@ -214,29 +214,29 @@ class TitleCard: StoryElement {
         }
     }
 
-    func potentialVideoPath() -> NSURL {
-        if self.objectID.temporaryID {
+    func potentialVideoPath() -> URL {
+        if self.objectID.isTemporaryID {
             print("THIS WAS A TEMPORARY ID")
         }
         
-        let titleCardObjectId = self.objectID.URIRepresentation().absoluteString
+        let titleCardObjectId = self.objectID.uriRepresentation().absoluteString
         
-        let illegalFileNameCharacters = NSCharacterSet(charactersInString: "/\\?%*|\"<>")
-        let components = titleCardObjectId!.stringByReplacingOccurrencesOfString("x-coredata://", withString: "").componentsSeparatedByCharactersInSet(illegalFileNameCharacters)
-        let videoName = components.joinWithSeparator("_")
+        let illegalFileNameCharacters = CharacterSet(charactersIn: "/\\?%*|\"<>")
+        let components = titleCardObjectId.replacingOccurrences(of: "x-coredata://", with: "").components(separatedBy: illegalFileNameCharacters)
+        let videoName = components.joined(separator: "_")
         
-        return Globals.documentsDirectory.URLByAppendingPathComponent(videoName + ".mov")!
+        return Globals.documentsDirectory.appendingPathComponent(videoName + ".mov")
     }
     
     override func didSave() {
         super.didSave()
         
-        if self.deleted {
+        if self.isDeleted {
             if let aVideoFileName = self.videoFileName {
-                let request = NSFetchRequest(entityName: self.entity.name!)
+                let request = NSFetchRequest<NSFetchRequestResult>(entityName: self.entity.name!)
                 request.predicate = NSPredicate(format: "(self != %@) AND (self.videoFileName == %@)", argumentArray: [self.objectID,aVideoFileName])
                 do {
-                    if let otherTitleCardsUsingSameFile = try self.managedObjectContext?.executeFetchRequest(request) {
+                    if let otherTitleCardsUsingSameFile = try self.managedObjectContext?.fetch(request) {
                         if otherTitleCardsUsingSameFile.isEmpty {
                             deleteAssetFile()
                         }
@@ -252,7 +252,7 @@ class TitleCard: StoryElement {
         if let path = self.videoPath {
 //            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
                 do {
-                    try NSFileManager().removeItemAtURL(path)
+                    try FileManager().removeItem(at: path)
                 } catch let error as NSError {
                     print("Couldn't delete titlecard video file \(path): \(error.localizedDescription)")
                 }
@@ -264,11 +264,11 @@ class TitleCard: StoryElement {
     
     override func copyVideoFile() {
         if let aFileName = self.videoFileName {
-            let clonedFile = Globals.documentsDirectory.URLByAppendingPathComponent(aFileName)!
+            let clonedFile = Globals.documentsDirectory.appendingPathComponent(aFileName)
             let myFile = self.potentialVideoPath()
             
             do {
-                try NSFileManager().copyItemAtURL(clonedFile, toURL: myFile)
+                try FileManager().copyItem(at: clonedFile, to: myFile)
                 self.videoFileName = myFile.lastPathComponent
                 
                 try self.managedObjectContext!.save()

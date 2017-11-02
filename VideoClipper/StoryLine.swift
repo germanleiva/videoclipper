@@ -30,33 +30,33 @@ class StoryLine: NSManagedObject {
 	
 	func nextLine() -> StoryLine? {
 		let storyLines = self.project!.storyLines!
-		let nextIndex = storyLines.indexOfObject(self) + 1
+		let nextIndex = storyLines.index(of: self) + 1
 		if storyLines.count > nextIndex {
-			return self.project!.storyLines!.objectAtIndex(nextIndex) as? StoryLine
+			return self.project!.storyLines!.object(at: nextIndex) as? StoryLine
 		}
 		return nil
 	}
 	
 	func previousLine() -> StoryLine? {
 		let storyLines = self.project!.storyLines!
-		let previousIndex = storyLines.indexOfObject(self) - 1
+		let previousIndex = storyLines.index(of: self) - 1
 		if previousIndex >= 0 {
-			return self.project!.storyLines!.objectAtIndex(previousIndex) as? StoryLine
+			return self.project!.storyLines!.object(at: previousIndex) as? StoryLine
 		}
 		return nil
 	}
     
-    func createComposition(completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
+    func createComposition(_ completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
         StoryLine.createComposition(self.elements!, completionHandler: completionHandler)
     }
     
-    class func createComposition(elements:NSOrderedSet,completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
+    class func createComposition(_ elements:NSOrderedSet,completionHandler:((AVMutableComposition,AVMutableVideoComposition) -> Void)?) {
         let composition = AVMutableComposition()
-        let compositionVideoTrack = composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
+        let compositionVideoTrack = composition.addMutableTrack(withMediaType: AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
         var compositionAudioTrack:AVMutableCompositionTrack? = nil
 //        var compositionMetadataTrack:AVMutableCompositionTrack? = nil
         var cursorTime = kCMTimeZero
-        var lastNaturalSize = CGSizeZero
+        var lastNaturalSize = CGSize.zero
         
         //		let compositionMetadataTrack = composition.addMutableTrackWithMediaType(AVMediaTypeMetadata, preferredTrackID: kCMPersistentTrackID_Invalid)
         
@@ -69,19 +69,19 @@ class StoryLine: NSManagedObject {
         //		locationMetadata.value = "+48.701697+002.188952"
         //		metadataItems.append(locationMetadata)
         
-        let assetLoadingGroup = dispatch_group_create();
+        let assetLoadingGroup = DispatchGroup();
         
         var assetDictionary:[StoryElement:AVAsset] = [:]
         
         for each in elements {
             
-            dispatch_group_enter(assetLoadingGroup);
+            assetLoadingGroup.enter();
             
             let eachElement = each as! StoryElement
             
             if eachElement.isVideo() && compositionAudioTrack == nil {
                 //I need to create a mutable track for the sound
-                compositionAudioTrack = composition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
+                compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaTypeAudio, preferredTrackID: kCMPersistentTrackID_Invalid)
             }
             
             //I only added the location timed metadata to the TitleCard
@@ -94,15 +94,15 @@ class StoryLine: NSManagedObject {
                 if asset == nil {
                     print("POIUYHBN")
                 }
-                if asset!.statusOfValueForKey("tracks", error: &error) != .Loaded {
+                if asset!.statusOfValue(forKey: "tracks", error: &error) != .loaded {
                     print("tracks not Loaded: \(error.debugDescription)")
                 }
                 assetDictionary[eachElement] = asset
-                dispatch_group_leave(assetLoadingGroup);
+                assetLoadingGroup.leave();
             })
         }
         
-        dispatch_group_notify(assetLoadingGroup, dispatch_get_main_queue(), {
+        assetLoadingGroup.notify(queue: DispatchQueue.main, execute: {
             for eachElement in elements {
                 var asset:AVAsset? = assetDictionary[eachElement as! StoryElement]
                 var startTime = kCMTimeZero
@@ -119,9 +119,9 @@ class StoryLine: NSManagedObject {
                     //                    assetDuration = CMTimeMake(Int64(eachTitleCard.duration!.intValue), 1)
                     
                     var error:NSError?
-                    let status = asset!.statusOfValueForKey("duration", error: &error)
+                    let status = asset!.statusOfValue(forKey: "duration", error: &error)
                     
-                    if status != AVKeyValueStatus.Loaded {
+                    if status != AVKeyValueStatus.loaded {
                         print("Duration was not ready: \(error!.localizedDescription)")
                     }
                     
@@ -142,14 +142,14 @@ class StoryLine: NSManagedObject {
                     timedMetadataGroups.append(group)*/
                 }
                 
-                let sourceVideoTrack = asset!.tracksWithMediaType(AVMediaTypeVideo).first
-                let sourceAudioTrack = asset!.tracksWithMediaType(AVMediaTypeAudio).first
+                let sourceVideoTrack = asset!.tracks(withMediaType: AVMediaTypeVideo).first
+                let sourceAudioTrack = asset!.tracks(withMediaType: AVMediaTypeAudio).first
 //                let sourceMetadataTrack = asset!.tracksWithMediaType(AVMediaTypeMetadata).first
                 
                 let range = CMTimeRangeMake(startTime, assetDuration)
 //                let range = CMTimeRangeMake(startTime,sourceVideoTrack!.timeRange.duration)
                 do {
-                    try compositionVideoTrack.insertTimeRange(range, ofTrack: sourceVideoTrack!, atTime: cursorTime)
+                    try compositionVideoTrack.insertTimeRange(range, of: sourceVideoTrack!, at: cursorTime)
                     compositionVideoTrack.preferredTransform = sourceVideoTrack!.preferredTransform
                     //				if sourceMetadataTrack != nil {
                     //					try compositionMetadataTrack.insertTimeRange(range, ofTrack: sourceMetadataTrack!,atTime:cursorTime)
@@ -157,7 +157,7 @@ class StoryLine: NSManagedObject {
                     
                     //In the case of having only one TitleCard there is no sound track
                     if let _ = sourceAudioTrack {
-                        try compositionAudioTrack!.insertTimeRange(range, ofTrack: sourceAudioTrack!, atTime: cursorTime)
+                        try compositionAudioTrack!.insertTimeRange(range, of: sourceAudioTrack!, at: cursorTime)
                     }
                     
                     //If there is at least one TitleCard we should have metadata
@@ -183,11 +183,11 @@ class StoryLine: NSManagedObject {
                         abort()
                     } else {
                         //The lastNaturalSize is bigger than the defaultRenderSize
-                        transformation = CGAffineTransformScale(transformation, Globals.defaultRenderSize.width / lastNaturalSize.width, Globals.defaultRenderSize.height / lastNaturalSize.height)
+                        transformation = transformation.scaledBy(x: Globals.defaultRenderSize.width / lastNaturalSize.width, y: Globals.defaultRenderSize.height / lastNaturalSize.height)
                     }
                 }
                 
-                layerInstruction.setTransform(transformation, atTime: kCMTimeZero)
+                layerInstruction.setTransform(transformation, at: kCMTimeZero)
                 
                 // create the composition instructions for the range of this clip
                 let videoTrackInstruction = AVMutableVideoCompositionInstruction()
@@ -221,7 +221,7 @@ class StoryLine: NSManagedObject {
         }
     }
     
-    func consolidateVideos(ignoredVideos:[VideoClip] = []) {
+    func consolidateVideos(_ ignoredVideos:[VideoClip] = []) {
         for eachVideo in self.videos() {
             if !ignoredVideos.contains(eachVideo) {
                 eachVideo.consolidate()

@@ -820,17 +820,17 @@
 					A4664AB51B444BA80095B27D = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = NJZSW7J9AZ;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Manual;
 					};
 					A4664ACC1B444BA90095B27D = {
 						CreatedOnToolsVersion = 7.0;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						TestTargetID = A4664AB51B444BA80095B27D;
 					};
 					A4664AD71B444BA90095B27D = {
 						CreatedOnToolsVersion = 7.0;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						TestTargetID = A4664AB51B444BA80095B27D;
 					};
 				};
@@ -1327,7 +1327,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = VideoClipperDev;
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -1354,7 +1354,7 @@
 				PROVISIONING_PROFILE = "d0e01b17-2f5d-4c09-8ed2-82f8fc725784";
 				PROVISIONING_PROFILE_SPECIFIER = VideoClipperAdHoc;
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
@@ -1368,7 +1368,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipperTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VideoClipper.app/VideoClipper";
 			};
 			name = Debug;
@@ -1382,7 +1382,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipperTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VideoClipper.app/VideoClipper";
 			};
 			name = Release;
@@ -1395,7 +1395,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipperUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = VideoClipper;
 				USES_XCTRUNNER = YES;
 			};
@@ -1409,7 +1409,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipperUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = VideoClipper;
 				USES_XCTRUNNER = YES;
 			};

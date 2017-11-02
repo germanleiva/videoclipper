@@ -9,7 +9,7 @@
 import UIKit
 
 protocol StoryLineCellDelegate: UICollectionViewDelegate, UICollectionViewDataSource {
-	func storyLineCell(cell:StoryLineCell,didSelectCollectionViewAtIndex indexPath:NSIndexPath)
+	func storyLineCell(_ cell:StoryLineCell,didSelectCollectionViewAtIndex indexPath:IndexPath)
 }
 
 class StoryLineCell: UITableViewCell {
@@ -37,13 +37,13 @@ class StoryLineCell: UITableViewCell {
 		self.selectedBackgroundView = bgColorView
     }
 	
-	func collectionViewTapped(gesture:UITapGestureRecognizer) {
+	func collectionViewTapped(_ gesture:UITapGestureRecognizer) {
 //		let tableView = self.superview?.superview as! UITableView
-		let indexPath = NSIndexPath(forRow: 0, inSection: collectionView.tag)
+		let indexPath = IndexPath(row: 0, section: collectionView.tag)
 		self.delegate?.storyLineCell(self,didSelectCollectionViewAtIndex:indexPath)
 	}
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

@@ -21,9 +21,9 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
         // Do any additional setup after loading the view.
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		let index = self.values.indexOf(self.currentValue)
+		let index = self.values.index(of: self.currentValue)
 		self.pickerView.reloadAllComponents()
 		self.pickerView.selectRow(index!, inComponent: 0, animated: true)
 	}
@@ -43,19 +43,19 @@ class DurationPickerController: UIViewController, UIPickerViewDataSource, UIPick
     }
     */
 	
-	func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+	func numberOfComponents(in pickerView: UIPickerView) -> Int {
 		return 1
 	}
 	
-	func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+	func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
 		return self.values.count
 	}
 	
-	func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+	func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
 		return "\(self.values[row])"
 	}
 	
-	func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+	func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
 		if let block = self.valueChangedBlock {
 			block(self.values[row])
 		}

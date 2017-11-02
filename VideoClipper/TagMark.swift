@@ -15,6 +15,6 @@ class TagMark: NSManagedObject {
 // Insert code here to add functionality to your managed object subclass
 	override func awakeFromInsert() {
 		super.awakeFromInsert()
-		self.color = UIColor.yellowColor()
+		self.color = UIColor.yellow
 	}
 }

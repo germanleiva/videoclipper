@@ -20,16 +20,16 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
     @IBOutlet var member4Field:UITextField!
     @IBOutlet var member5Field:UITextField!
     
-    let defaults = NSUserDefaults.standardUserDefaults()
-    let context = (UIApplication.sharedApplication().delegate as! AppDelegate!).managedObjectContext
+    let defaults = UserDefaults.standard
+    let context = (UIApplication.shared.delegate as! AppDelegate!).managedObjectContext
 
     var modifiedVariableNames = Set<String>()
     
     static let dictionaryOfVariablesKeys = ["GROUP","TITLE","MEMBER1","MEMBER2","MEMBER3","MEMBER4","MEMBER5"]
     
     class func createDictionaryOfVariables() {
-        let standardUserDefaults = NSUserDefaults.standardUserDefaults()
-        if let _ = standardUserDefaults.dictionaryForKey("VARIABLES") {
+        let standardUserDefaults = UserDefaults.standard
+        if let _ = standardUserDefaults.dictionary(forKey: "VARIABLES") {
             
         } else {
             var dictionary = [String:String]()
@@ -45,42 +45,42 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
     
     func deleteSnapshotsOfRelatedTitleCards() {
         //Start activity indicator
-        let window = UIApplication.sharedApplication().delegate!.window!
+        let window = UIApplication.shared.delegate!.window!
         
-        let progressIndicator = MBProgressHUD.showHUDAddedTo(window, animated: true)
-        progressIndicator.labelText = "Updating Title Cards"
-        progressIndicator.show(true)
+        let progressIndicator = MBProgressHUD.showAdded(to: window, animated: true)
+        progressIndicator?.labelText = "Updating Title Cards"
+        progressIndicator?.show(true)
 
-        dispatch_async(dispatch_get_main_queue()) {
-            let fetchRequest = NSFetchRequest(entityName: "TextWidget")
+        DispatchQueue.main.async {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "TextWidget")
             var all = [String]()
             all += self.modifiedVariableNames
-            all += self.modifiedVariableNames.map {$0.lowercaseString }
+            all += self.modifiedVariableNames.map {$0.lowercased() }
             
             fetchRequest.predicate = NSPredicate(format: "self.content IN %@",all)
             do {
-                if let result = try self.context.executeFetchRequest(fetchRequest) as? [TextWidget] {
+                if let result = try self.context.fetch(fetchRequest) as? [TextWidget] {
                     let relatedTitleCards = Set(result.map {$0.titleCard!} )
                     for aTitleCard in relatedTitleCards {
                         aTitleCard.createSnapshots()
                     }
                 }
                 try self.context.save()
-                progressIndicator.hide(true)
+                progressIndicator?.hide(true)
             } catch let error as NSError {
-                progressIndicator.hide(true)
+                progressIndicator?.hide(true)
                 Globals.presentSimpleAlert(self, title: "Error", message: error.localizedDescription, completion: nil)
             }
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         Analytics.setScreenName("settingsTableController", screenClass: "SettingsTableController")
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         deleteSnapshotsOfRelatedTitleCards()
     }
@@ -93,9 +93,9 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-		keyboardAutocompletionSwitch!.on = !defaults.boolForKey("keyboardAutocompletionOff")
+		keyboardAutocompletionSwitch!.isOn = !defaults.bool(forKey: "keyboardAutocompletionOff")
         
-        if let dictionaryOfVariables = defaults.dictionaryForKey("VARIABLES") {
+        if let dictionaryOfVariables = defaults.dictionary(forKey: "VARIABLES") {
             groupField.text = dictionaryOfVariables["GROUP"] as? String
             titleField.text = dictionaryOfVariables["TITLE"] as? String
             member1Field.text = dictionaryOfVariables["MEMBER1"] as? String
@@ -123,32 +123,32 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
 //        return 0
 //    }
 	
-	@IBAction func keyboardAutocompletionSwitchChanged(sender:UISwitch?) {
-		defaults.setBool(!sender!.on, forKey: "keyboardAutocompletionOff")
+	@IBAction func keyboardAutocompletionSwitchChanged(_ sender:UISwitch?) {
+		defaults.set(!sender!.isOn, forKey: "keyboardAutocompletionOff")
 		defaults.synchronize()
 	}
     
     @available(iOS 10.0, *)
-    func textFieldDidEndEditing(textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
         updateTextField(textField)
     }
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         updateTextField(textField)
         return true
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
-    func updateTextField(textField:UITextField) {
+    func updateTextField(_ textField:UITextField) {
         guard let value = textField.text else {
             return
         }
         
-        let dictionaryOfVariables = NSMutableDictionary(dictionary: defaults.dictionaryForKey("VARIABLES")!)
+        let dictionaryOfVariables = NSMutableDictionary(dictionary: defaults.dictionary(forKey: "VARIABLES")!)
         
         switch textField {
         case titleField:

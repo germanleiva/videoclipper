@@ -14,17 +14,17 @@ import FirebaseAnalytics
 let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
 class ProjectsTableController: UITableViewController, NSFetchedResultsControllerDelegate {
-	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+	let context = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
 	var creatingNewProject = false
     var creatingWithQuickstart = false
     
-    class var dateThresholdToProtect: NSDate {
-        let comps = NSDateComponents()
+    class var dateThresholdToProtect: Date {
+        var comps = DateComponents()
         comps.day = 27
         comps.month = 10
         comps.year = 2017
         
-        return NSCalendar.currentCalendar().dateFromComponents(comps)!
+        return Calendar.current.date(from: comps)!
     }
 
     var sortOrder:Order = .recent {
@@ -38,10 +38,10 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
                     self.tableView.beginUpdates()
                     for index in 0..<objectsAfterSort.count {
                         let anObjectBeforeSort = objectsBeforeSort[index]
-                        let newRow = objectsAfterSort.indexOf({ (element) -> Bool in
+                        let newRow = objectsAfterSort.index(where: { (element) -> Bool in
                             element as! Project == anObjectBeforeSort as! Project
                         })
-                        self.tableView.moveRowAtIndexPath(NSIndexPath(forRow: index, inSection: 0), toIndexPath: NSIndexPath(forRow: newRow!, inSection: 0))
+                        self.tableView.moveRow(at: IndexPath(row: index, section: 0), to: IndexPath(row: newRow!, section: 0))
                     }
                 }
                 self.tableView.endUpdates()
@@ -66,7 +66,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
     
     var unProyecto:Project? = nil
     
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
         Analytics.setScreenName("projectsTableController", screenClass: "ProjectsTableController")
 
@@ -76,7 +76,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
         }
 	}
     
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if (identifier == TO_PROJECT_VC_SEGUE) {
             guard let selectedIndex = self.tableView.indexPathForSelectedRow else {
                 return false
@@ -89,16 +89,16 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
         return true
     }
     
-    func isProtected(projectIndexPath:NSIndexPath) -> Bool {
-        guard let selectedProject = self.fetchedResultsController.objectAtIndexPath(projectIndexPath) as? Project else {
+    func isProtected(_ projectIndexPath:IndexPath) -> Bool {
+        guard let selectedProject = self.fetchedResultsController.object(at: projectIndexPath) as? Project else {
             return false
         }
         
         //The selectedProject was created before the thresholdDate so it is protected
-        return selectedProject.createdAt!.earlierDate(ProjectsTableController.dateThresholdToProtect).isEqualToDate(selectedProject.createdAt!)
+        return ((selectedProject.createdAt! as NSDate).earlierDate(ProjectsTableController.dateThresholdToProtect) == selectedProject.createdAt!)
     }
 	
-	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		// Get the new view controller using [segue destinationViewController].
 		// Pass the selected object to the new view controller.
 		
@@ -106,16 +106,16 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
             guard let selectedIndex = self.tableView.indexPathForSelectedRow else {
                 return
             }
-            guard let selectedProject = self.fetchedResultsController.objectAtIndexPath(selectedIndex) as? Project else {
+            guard let selectedProject = self.fetchedResultsController.object(at: selectedIndex) as? Project else {
                 return
             }
             
-            let projectVC = segue.destinationViewController as! ProjectVC
+            let projectVC = segue.destination as! ProjectVC
             projectVC.project = selectedProject
 
 			//			projectVC.useLayoutToLayoutNavigationTransitions = true
 			if let selectedIndex = self.tableView.indexPathForSelectedRow {
-				projectVC.project = self.fetchedResultsController.objectAtIndexPath(selectedIndex) as? Project
+				projectVC.project = self.fetchedResultsController.object(at: selectedIndex) as? Project
 			}
 			
 			projectVC.isNewProject = self.creatingNewProject
@@ -129,37 +129,37 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		}
 	}
 	
-    func insertNewProject(newProject:Project, quickStarted:Bool = false) {
-		self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(newProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
+    func insertNewProject(_ newProject:Project, quickStarted:Bool = false) {
+		self.tableView.selectRow(at: self.fetchedResultsController.indexPath(forObject: newProject), animated: true, scrollPosition: UITableViewScrollPosition.top)
 		
 		self.creatingNewProject = true
         self.creatingWithQuickstart = quickStarted
-		self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
+		self.performSegue(withIdentifier: TO_PROJECT_VC_SEGUE, sender: nil)
 	}
 	
 	// MARK: - Table View
 	
-	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+	override func numberOfSections(in tableView: UITableView) -> Int {
 		return self.fetchedResultsController.sections?.count ?? 0
 	}
 	
-	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		let sectionInfo = self.fetchedResultsController.sections![section]
 		return sectionInfo.numberOfObjects
 	}
 	
-	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier("ProjectTableCell", forIndexPath: indexPath)
+	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		let cell = tableView.dequeueReusableCell(withIdentifier: "ProjectTableCell", for: indexPath)
 		self.configureCell(cell, atIndexPath: indexPath)
 		return cell
 	}
 	
-	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
 		// Return false if you do not want the specified item to be editable.
         return !isProtected(indexPath)
 	}
 	
-	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
 		// you need to implement this method too or you can't swipe to display the actions
 	}
 	
@@ -179,28 +179,28 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 //		}
 //	}
 	
-	func configureCell(aCell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
+	func configureCell(_ aCell: UITableViewCell, atIndexPath indexPath: IndexPath) {
 		let cell = aCell as! ProjectTableCell
-		let project = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Project
+		let project = self.fetchedResultsController.object(at: indexPath) as! Project
 		
 		cell.mainLabel.text = project.name
 		
 		let storyLineCount = project.storyLines!.count
 		cell.linesLabel.text = "\(storyLineCount) line"
 		if storyLineCount != 1 {
-			cell.linesLabel.text = cell.linesLabel.text!.stringByAppendingString("s")
+			cell.linesLabel.text = cell.linesLabel.text! + "s"
 		}
 		
 		let videoCount = project.videosCount()
 		cell.videosLabel.text = "\(videoCount) video"
 		if videoCount != 1 {
-			cell.videosLabel.text = cell.videosLabel.text!.stringByAppendingString("s")
+			cell.videosLabel.text = cell.videosLabel.text! + "s"
 		}
 		
 		var dateString = "Updated on "
 		
 		if let aDate = project.updatedAt {
-			dateString += NSDateFormatter.localizedStringFromDate(aDate, dateStyle: NSDateFormatterStyle.ShortStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
+			dateString += DateFormatter.localizedString(from: aDate, dateStyle: DateFormatter.Style.short, timeStyle: DateFormatter.Style.short)
 		}
 		
 		cell.updatedAtLabel.text = dateString
@@ -208,14 +208,14 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	
 	// MARK: - Fetched results controller
 	
-	var fetchedResultsController: NSFetchedResultsController {
+	var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> {
 		if _fetchedResultsController != nil {
 			return _fetchedResultsController!
 		}
 		
-		let fetchRequest = NSFetchRequest()
+		let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
 		// Edit the entity name as appropriate.
-		let entity = NSEntityDescription.entityForName("Project", inManagedObjectContext: self.context)
+		let entity = NSEntityDescription.entity(forEntityName: "Project", in: self.context)
 		fetchRequest.entity = entity
 		
 		// Set the batch size to a suitable number.
@@ -240,40 +240,40 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 		
 		return _fetchedResultsController!
 	}
-	var _fetchedResultsController: NSFetchedResultsController? = nil
+	var _fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>? = nil
 	
-	func controllerWillChangeContent(controller: NSFetchedResultsController) {
+	func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
 		self.tableView.beginUpdates()
 	}
 	
-	func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+	func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
 		switch type {
-		case .Insert:
-			self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-		case .Delete:
-			self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+		case .insert:
+			self.tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+		case .delete:
+			self.tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
 		default:
 			return
 		}
 	}
 	
-	func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+	func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
 		switch type {
-		case .Insert:
-			tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
-		case .Delete:
-			tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
-		case .Update:
-            if let visibleCell = tableView.cellForRowAtIndexPath(indexPath!) {
+		case .insert:
+			tableView.insertRows(at: [newIndexPath!], with: .fade)
+		case .delete:
+			tableView.deleteRows(at: [indexPath!], with: .fade)
+		case .update:
+            if let visibleCell = tableView.cellForRow(at: indexPath!) {
                 self.configureCell(visibleCell, atIndexPath: indexPath!)
             }
-		case .Move:
-			tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
-			tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+		case .move:
+			tableView.deleteRows(at: [indexPath!], with: .fade)
+			tableView.insertRows(at: [newIndexPath!], with: .fade)
 		}
 	}
 	
-	func controllerDidChangeContent(controller: NSFetchedResultsController) {
+	func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
 		self.tableView.endUpdates()
 	}
 	
@@ -286,23 +286,23 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 	}
 	*/
     
-	override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-		let cloneAction = UITableViewRowAction(style: .Default, title: "Clone") { action, index in
+	override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+		let cloneAction = UITableViewRowAction(style: .default, title: "Clone") { action, index in
 //			let alert = UIAlertController(title: "Clone button tapped", message: "Sorry, this feature is not ready yet", preferredStyle: UIAlertControllerStyle.Alert)
 //			alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (ACTION) -> Void in
 //				alert.dismissViewControllerAnimated(true, completion: nil)
 //			}))
 //			self.presentViewController(alert, animated: true, completion: nil)
-			self.editing = false
+			self.isEditing = false
             
-            let window = UIApplication.sharedApplication().delegate!.window!
-            let progressBar = MBProgressHUD.showHUDAddedTo(window, animated: true)
-            progressBar.show(true)
-            UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+            let window = UIApplication.shared.delegate!.window!
+            let progressBar = MBProgressHUD.showAdded(to: window, animated: true)
+            progressBar?.show(true)
+            UIApplication.shared.beginIgnoringInteractionEvents()
             
 //			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
 				
-				let projectToClone = self.fetchedResultsController.objectAtIndexPath(index) as! Project
+				let projectToClone = self.fetchedResultsController.object(at: index) as! Project
 				
 				let clonedProject = projectToClone.clone() as! Project
 				clonedProject.name = "Cloned \(clonedProject.name!)"
@@ -317,46 +317,46 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 				} catch {
 					print("Couldn't save cloned project \(error)")
 				}
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					self.tableView.selectRowAtIndexPath(self.fetchedResultsController.indexPathForObject(clonedProject), animated: true, scrollPosition: UITableViewScrollPosition.Top)
+				DispatchQueue.main.async(execute: { () -> Void in
+					self.tableView.selectRow(at: self.fetchedResultsController.indexPath(forObject: clonedProject), animated: true, scrollPosition: UITableViewScrollPosition.top)
 					
 					self.creatingNewProject = true
 					
-                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
-                    progressBar.hide(true)
+                    UIApplication.shared.endIgnoringInteractionEvents()
+                    progressBar?.hide(true)
 					
-					self.performSegueWithIdentifier(TO_PROJECT_VC_SEGUE, sender: nil)
+					self.performSegue(withIdentifier: TO_PROJECT_VC_SEGUE, sender: nil)
 				})
 //			})
 		}
-		cloneAction.backgroundColor = UIColor.orangeColor()
+		cloneAction.backgroundColor = UIColor.orange
 		
-		let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { action, index in
+		let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.destructive, title: "Delete") { action, index in
 			//			if (editingStyle == UITableViewCellEditingStyle.Delete) {
 			// handle delete (by removing the data from your array and updating the tableview)
-			let alert = UIAlertController(title: "Delete project", message: "Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.Alert)
-			alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-				let projectToDelete = self.fetchedResultsController.objectAtIndexPath(index)
-				self.context.deleteObject(projectToDelete as! NSManagedObject)
+			let alert = UIAlertController(title: "Delete project", message: "Do you want to delete the project?", preferredStyle: UIAlertControllerStyle.alert)
+			alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive, handler: { (action) -> Void in
+				let projectToDelete = self.fetchedResultsController.object(at: index)
+				self.context.delete(projectToDelete as! NSManagedObject)
 				
 				do {
 					try self.context.save()
-                    Answers.logCustomEventWithName("Project deleted", customAttributes: nil)
+                    Answers.logCustomEvent(withName: "Project deleted", customAttributes: nil)
 					defer {
-						alert.dismissViewControllerAnimated(true, completion: nil)
+						alert.dismiss(animated: true, completion: nil)
 					}
 				} catch {
 					print("Couldn't delete project \(projectToDelete): \(error)")
 				}
 				
 			}))
-			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-				alert.dismissViewControllerAnimated(true, completion: nil)
+			alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
+				alert.dismiss(animated: true, completion: nil)
 			}))
-			self.presentViewController(alert, animated: true, completion: nil)
+			self.present(alert, animated: true, completion: nil)
 			//			}
 		}
-		deleteAction.backgroundColor = UIColor.redColor()
+		deleteAction.backgroundColor = UIColor.red
 		
 		return [deleteAction,cloneAction]
 	}

@@ -26,8 +26,8 @@ class Project: NSManagedObject {
 	}
 	
 	override func willSave() {
-		let now = NSDate()
-		if self.updatedAt == nil || now.timeIntervalSinceDate(self.updatedAt!) > 1.0 {
+		let now = Date()
+		if self.updatedAt == nil || now.timeIntervalSince(self.updatedAt! as Date) > 1.0 {
 			self.updatedAt = now;
 		}
         super.willSave()

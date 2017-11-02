@@ -23,15 +23,15 @@ class StoryElement: NSManagedObject {
 		return false
 	}
 	
-    func realDuration(timescale:Int32 = 44100) -> CMTime {
+    func realDuration(_ timescale:Int32 = 44100) -> CMTime {
 		fatalError("Should be implemented by subclass")
 	}
     
-    func loadThumbnail(completionHandler:((image:UIImage?,error:NSError?) -> Void)?){
+    func loadThumbnail(_ completionHandler:((_ image:UIImage?,_ error:NSError?) -> Void)?){
         fatalError("Should be implemented by subclass")
     }
     
-    func loadAsset(completionHandler:((asset:AVAsset?,composition:AVVideoComposition?,error:NSError?) -> Void)?){
+    func loadAsset(_ completionHandler:((_ asset:AVAsset?,_ composition:AVVideoComposition?,_ error:NSError?) -> Void)?){
         fatalError("Should be implemented by subclass")
     }
     

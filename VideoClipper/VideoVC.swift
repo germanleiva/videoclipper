@@ -14,8 +14,10 @@ let STATUS_KEYPATH  = "status"
 let REFRESH_INTERVAL = Float64(0.5)
 
 class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegate {
-	let observerContext = UnsafeMutablePointer<Void>()
-	let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    private static var observerContext = 0
+//	let observerContext: UnsafeMutableRawPointer = nil
+    
+	let context = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
 
 	var video:VideoClip? {
 		return self.element as? VideoClip
@@ -64,17 +66,17 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		
 		self.view.backgroundColor = Globals.globalTint
 
-		self.scrubberSlider.setThumbImage(UIImage(named: "knob"), forState:UIControlState.Normal)
-		self.scrubberSlider.setThumbImage(UIImage(named: "knob_highlighted"),forState:UIControlState.Highlighted)
+		self.scrubberSlider.setThumbImage(UIImage(named: "knob"), for:UIControlState())
+		self.scrubberSlider.setThumbImage(UIImage(named: "knob_highlighted"),for:UIControlState.highlighted)
 		
-		self.infoView.hidden = true
+		self.infoView.isHidden = true
 		
 //		self.calculateInfoViewOffset()
 		
-		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.showPopupUI), forControlEvents: .ValueChanged)
-		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), forControlEvents: .TouchUpInside)
-		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), forControlEvents: .TouchUpOutside)
-		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.unhidePopupUI), forControlEvents: .TouchDown)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.showPopupUI), for: .valueChanged)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), for: .touchUpInside)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.hidePopupUI), for: .touchUpOutside)
+		self.scrubberSlider.addTarget(self, action: #selector(VideoVC.unhidePopupUI), for: .touchDown)
 
 		self.filmStripView.delegate = self
 		
@@ -94,20 +96,20 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         }
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
         Analytics.setScreenName("videoVC", screenClass: "VideoVC")
 
 		self.prepareToPlay()
 	}
 	
-	override func viewWillDisappear(animated: Bool) {
+	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
-		self.togglePlaybackButton.selected = false
+		self.togglePlaybackButton.isSelected = false
 		self.pause()
 	}
 	
-	override func viewDidDisappear(animated: Bool) {
+	override func viewDidDisappear(_ animated: Bool) {
 		self.unprepare()
 		super.viewDidDisappear(animated)
 	}
@@ -126,9 +128,9 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		
 	}
 	
-	func createTagView(tagModel:TagMark,percentage:NSNumber,color:UIColor,animated:Bool = false) -> UIView {
+	func createTagView(_ tagModel:TagMark,percentage:NSNumber,color:UIColor,animated:Bool = false) -> UIView {
 		let tagView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-		tagView.userInteractionEnabled = true
+		tagView.isUserInteractionEnabled = true
 		tagView.image = UIImage(named: "tag_mark")
 		tagView.tintColor = color
 //		tagView.frame = CGRect(x: self.filmStripView.frame.origin.x - tagView.frame.width / 2, y: self.filmStripView.frame.origin.y - tagView.frame.height, width: tagView.frame.width, height: tagView.frame.height)
@@ -140,37 +142,37 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		tagView.addGestureRecognizer(tapGesture)
 		
 		let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(VideoVC.swipingOutTagMark(_:)))
-		swipeUp.direction = .Up
+		swipeUp.direction = .up
 		swipeUp.delegate = self
 		tagView.addGestureRecognizer(swipeUp)
 		
 		tagView.translatesAutoresizingMaskIntoConstraints = false
 		
 		let displacement = self.filmStripView.frame.width * CGFloat(percentage)
-		let centerConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Leading, multiplier: 1, constant: displacement)
+		let centerConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.leading, multiplier: 1, constant: displacement)
 		self.view.addConstraint(centerConstraint)
 		self.tagViewConstraints[tagView] = centerConstraint
 		
-		let baselineConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+		let baselineConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.lastBaseline, relatedBy: NSLayoutRelation.equal, toItem: self.filmStripView, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 0)
 		baselineConstraint.identifier = "baselineConstraint"
 		self.view.addConstraint(baselineConstraint)
 
-		tagView.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal
-			, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 50))
-		tagView.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal
-			, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: 50))
+		tagView.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal
+			, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 50))
+		tagView.addConstraint(NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal
+			, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 50))
 		
 		self.tagViewModels[tagView] = tagModel
 		
 		if animated {
-			let initialConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+			let initialConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.lastBaseline, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 0)
 			self.view.addConstraint(initialConstraint)
-			baselineConstraint.active = false
+			baselineConstraint.isActive = false
 			self.view.layoutIfNeeded()
 			
-			UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+			UIView.animate(withDuration: 0.2, delay: 0, options: UIViewAnimationOptions(), animations: { () -> Void in
 				self.view.removeConstraint(initialConstraint)
-				baselineConstraint.active = true
+				baselineConstraint.isActive = true
 				self.view.layoutIfNeeded()
 			}, completion: nil)
 		}
@@ -178,24 +180,24 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		return tagView
 	}
 	
-	func swipingOutTagMark(recognizer:UISwipeGestureRecognizer) {
+	func swipingOutTagMark(_ recognizer:UISwipeGestureRecognizer) {
 		let state = recognizer.state
-		if state == UIGestureRecognizerState.Recognized {
+		if state == UIGestureRecognizerState.recognized {
 			let tagView = recognizer.view!
 			if let tagModel = self.tagViewModels[tagView] {
 				for constraint in self.view.constraints as [NSLayoutConstraint] {
 					if constraint.identifier != nil && constraint.identifier! == "baselineConstraint" && constraint.firstItem as! NSObject == tagView {
-						constraint.active = false
+						constraint.isActive = false
 					}
 				}
 				self.view.layoutIfNeeded()
 				
-				UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
-					let finalConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.LastBaseline, relatedBy: NSLayoutRelation.Equal, toItem: self.view, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+				UIView.animate(withDuration: 0.2, delay: 0, options: UIViewAnimationOptions(), animations: { () -> Void in
+					let finalConstraint = NSLayoutConstraint(item: tagView, attribute: NSLayoutAttribute.lastBaseline, relatedBy: NSLayoutRelation.equal, toItem: self.view, attribute: NSLayoutAttribute.top, multiplier: 1, constant: 0)
 					self.view.addConstraint(finalConstraint)
 					self.view.layoutIfNeeded()
 				}, completion: { (completed) -> Void in
-					self.context.deleteObject(tagModel)
+					self.context.delete(tagModel)
 					
 					do {
 						try self.context.save()
@@ -208,8 +210,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 	}
 	
-	func tappedTagMark(recognizer:UITapGestureRecognizer) {
-		if recognizer.state == .Recognized {
+	func tappedTagMark(_ recognizer:UITapGestureRecognizer) {
+		if recognizer.state == .recognized {
 			let tagView = recognizer.view!
 			if let tagModel = self.tagViewModels[tagView] {
 				self.filmstrip(self.filmStripView, didChangeScrubbing: Float(tagModel.time!))
@@ -218,27 +220,27 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		
 	}
 	
-	func panningTagMark(recognizer:UIPanGestureRecognizer) {
+	func panningTagMark(_ recognizer:UIPanGestureRecognizer) {
 		let state = recognizer.state
 		let tagView = recognizer.view!
 		if let tagModel = self.tagViewModels[tagView] {
 			switch state {
-				case .Began:
+				case .began:
 					self.filmstrip(self.filmStripView, didStartScrubbing: Float(tagModel.time!))
 				
-				case .Changed:
-					let translation = recognizer.translationInView(self.filmStripView)
+				case .changed:
+					let translation = recognizer.translation(in: self.filmStripView)
 					let newCenterX = tagView.center.x + translation.x
 					let filmStripOriginX = self.filmStripView.frame.origin.x
 					if filmStripOriginX < newCenterX && newCenterX < (filmStripOriginX + self.filmStripView.frame.width) {
 						let centerConstraint = self.tagViewConstraints[tagView]
 						centerConstraint!.constant += translation.x
-						tagModel.time = centerConstraint!.constant / self.filmStripView.frame.width
+                        tagModel.time = NSNumber(value: Float(centerConstraint!.constant / self.filmStripView.frame.width))
 						self.filmstrip(self.filmStripView, didChangeScrubbing: Float(tagModel.time!))
 					}
-					recognizer.setTranslation(CGPointZero, inView: self.filmStripView)
+					recognizer.setTranslation(CGPoint.zero, in: self.filmStripView)
 
-				case .Ended:
+				case .ended:
 					self.filmstrip(self.filmStripView, didEndScrubbing: Float(tagModel.time!))
 
 					do {
@@ -252,12 +254,12 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 	}
 	
-	@IBAction func createTagTapped(sender:UIButton?) {
-		let newTag = NSEntityDescription.insertNewObjectForEntityForName("TagMark", inManagedObjectContext: self.context) as! TagMark
+	@IBAction func createTagTapped(_ sender:UIButton?) {
+		let newTag = NSEntityDescription.insertNewObject(forEntityName: "TagMark", into: self.context) as! TagMark
 		newTag.color = sender!.tintColor
-		let tags = self.video!.mutableOrderedSetValueForKey("tags")
-		tags.addObject(newTag)
-		newTag.time! = self.scrubberSlider.value / self.scrubberSlider.maximumValue
+		let tags = self.video!.mutableOrderedSetValue(forKey: "tags")
+		tags.add(newTag)
+        newTag.time! = NSNumber(value: self.scrubberSlider.value / self.scrubberSlider.maximumValue)
 		self.createTagView(newTag, percentage:newTag.time!,color: newTag.color as! UIColor, animated:true)
 		
 		do {
@@ -276,13 +278,13 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 //	}
 	
 	func unprepare() {
-		self.playerItem?.removeObserver(self, forKeyPath: STATUS_KEYPATH, context: self.observerContext)
+		self.playerItem?.removeObserver(self, forKeyPath: STATUS_KEYPATH, context: &VideoVC.observerContext)
 		if let observer = self.timeObserver {
 			self.player!.removeTimeObserver(observer)
 			self.timeObserver = nil
 		}
 		if let observer = self.itemEndObserver {
-			NSNotificationCenter.defaultCenter().removeObserver(observer)
+			NotificationCenter.default.removeObserver(observer)
 			self.itemEndObserver = nil
 		}
 		
@@ -309,7 +311,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
             
             self.playerItem = AVPlayerItem(asset: asset!, automaticallyLoadedAssetKeys: keys)
             
-            self.playerItem?.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: self.observerContext)
+            self.playerItem?.addObserver(self, forKeyPath: STATUS_KEYPATH, options: NSKeyValueObservingOptions(rawValue: 0), context: &VideoVC.observerContext)
             
             self.player = AVPlayer(playerItem: self.playerItem!)
             
@@ -321,12 +323,12 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         })
     }
 	
-	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change:
-		[String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-			if context == self.observerContext && (object as! AVPlayerItem) == self.playerItem! {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change:
+		[NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+			if context == &VideoVC.observerContext && (object as! AVPlayerItem) == self.playerItem! {
+				DispatchQueue.main.async(execute: { () -> Void in
 					
-					if self.playerItem?.status == AVPlayerItemStatus.ReadyToPlay {
+					if self.playerItem?.status == AVPlayerItemStatus.readyToPlay {
 						self.addPlayerItemTimeObserver()
 						self.addItemEndObserverForPlayerItem()
 					
@@ -340,27 +342,27 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			}
 	}
 
-	func filmstrip(filmstripView:FilmstripView,tappedOnTime time:NSTimeInterval) {
+	func filmstrip(_ filmstripView:FilmstripView,tappedOnTime time:TimeInterval) {
 		self.jumpedToTime(time)
 		self.updateFilmstripScrubber()
 	}
 	
-	func filmstrip(filmstripView:FilmstripView,didStartScrubbing percentage:Float) {
+	func filmstrip(_ filmstripView:FilmstripView,didStartScrubbing percentage:Float) {
 		self.unhidePopupUI()
 	}
 
-	func filmstrip(filmstripView:FilmstripView,didChangeScrubbing percentage:Float) {
+	func filmstrip(_ filmstripView:FilmstripView,didChangeScrubbing percentage:Float) {
 		self.scrubberSlider.value = percentage / 100 * self.scrubberSlider.maximumValue
 		self.scrubberSlider.setNeedsDisplay()
 		self.showPopupUI()
 	}
 	
-	func filmstrip(filmstripView:FilmstripView,didEndScrubbing percentage:Float) {
+	func filmstrip(_ filmstripView:FilmstripView,didEndScrubbing percentage:Float) {
 		self.hidePopupUI()
 	}
 	
-	func filmstrip(filmstripView: FilmstripView, didChangeStartPoint percentage: Float) {
-		self.video!.startPoint = percentage
+	func filmstrip(_ filmstripView: FilmstripView, didChangeStartPoint percentage: Float) {
+		self.video!.startPoint = percentage as NSNumber?
         do {
             try self.context.save()
         } catch let error as NSError {
@@ -368,8 +370,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         }
 	}
 	
-	func filmstrip(filmstripView: FilmstripView, didChangeEndPoint percentage: Float) {
-		self.video!.endPoint = percentage
+	func filmstrip(_ filmstripView: FilmstripView, didChangeEndPoint percentage: Float) {
+		self.video!.endPoint = percentage as NSNumber?
         do {
             try self.context.save()
         } catch let error as NSError {
@@ -377,21 +379,21 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         }
 	}
 	
-	func setCurrentTime(time:NSTimeInterval, duration:NSTimeInterval) {
+	func setCurrentTime(_ time:TimeInterval, duration:TimeInterval) {
 		self.updateLabels(time,duration: duration)
 		self.scrubberSlider.minimumValue = 0
 		self.scrubberSlider.maximumValue = Float(duration)
 		self.scrubberSlider.value = Float(time)
 	}
 	
-	func updateLabels(time:NSTimeInterval, duration:NSTimeInterval) {
+	func updateLabels(_ time:TimeInterval, duration:TimeInterval) {
 		let currentSeconds = ceil(time)
 		let remainingTime = duration - time
 		self.currentTimeLabel.text = self.formatSeconds(currentSeconds)
 		self.remainingTimeLabel.text = self.formatSeconds(remainingTime)
 	}
 	
-	func formatSeconds(interval:NSTimeInterval) -> String {
+	func formatSeconds(_ interval:TimeInterval) -> String {
 //		let seconds = value % 60;
 //		let minutes = value / 60;
 //		return NSString(format: "%02ld:%02ld",  minutes, seconds) as String
@@ -408,39 +410,39 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	
 	func playBackComplete() {
 		self.scrubberSlider.value = 0.0
-		self.togglePlaybackButton.selected = false
+		self.togglePlaybackButton.isSelected = false
 	}
 	
-	@IBAction func togglePlayback(sender:UIButton) {
-		sender.selected = !sender.selected
-		if (sender.selected) {
+	@IBAction func togglePlayback(_ sender:UIButton) {
+		sender.isSelected = !sender.isSelected
+		if (sender.isSelected) {
 			self.play()
 		} else {
 			self.pause()
 		}
 	}
 	
-	@IBAction func deleteVideo(sender:UIButton) {
-		let alertController = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.Alert)
+	@IBAction func deleteVideo(_ sender:UIButton) {
+		let alertController = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.alert)
         
-		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-            alertController.dismissViewControllerAnimated(false, completion: nil)
-            self.navigationController?.popViewControllerAnimated(true)
+		alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive, handler: { (action) -> Void in
+            alertController.dismiss(animated: false, completion: nil)
+            self.navigationController?.popViewController(animated: true)
 			self.delegate?.storyElementVC(self, elementDeleted: self.video!)
 		}))
         
-		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-			alertController.dismissViewControllerAnimated(true, completion: nil)
+		alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
+			alertController.dismiss(animated: true, completion: nil)
 		}))
         
-		self.presentViewController(alertController, animated: true, completion: nil)
+		self.present(alertController, animated: true, completion: nil)
 	}
 	
 	func showPopupUI() {
-		self.infoView.hidden = false
+		self.infoView.isHidden = false
         
-		let trackRect = self.scrubberSlider.trackRectForBounds(self.scrubberSlider.bounds)
-		let thumbRect = self.scrubberSlider.thumbRectForBounds(self.scrubberSlider.bounds, trackRect: trackRect, value: self.scrubberSlider.value)
+		let trackRect = self.scrubberSlider.trackRect(forBounds: self.scrubberSlider.bounds)
+		let thumbRect = self.scrubberSlider.thumbRect(forBounds: self.scrubberSlider.bounds, trackRect: trackRect, value: self.scrubberSlider.value)
 		
 		self.infoViewConstraint.constant = self.scrubberSlider.frame.origin.x + 12 + thumbRect.origin.x
 	
@@ -456,11 +458,11 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 	
 	func unhidePopupUI() {
-		self.infoView.hidden = false
+		self.infoView.isHidden = false
 		self.infoView.alpha = 0.0
-		UIView.animateWithDuration(0.2) { () -> Void in
+		UIView.animate(withDuration: 0.2, animations: { () -> Void in
 			self.infoView.alpha	= 1.0
-		}
+		}) 
 
 		self.scrubbing = true
 
@@ -468,12 +470,12 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	}
 	
 	func hidePopupUI() {
-		UIView.animateWithDuration(0.3, animations: { () -> Void in
+		UIView.animate(withDuration: 0.3, animations: { () -> Void in
 			self.infoView.alpha = 0.0
-			}) { (finished) -> Void in
+			}, completion: { (finished) -> Void in
 				self.infoView.alpha = 1.0
-				self.infoView.hidden = true
-		}
+				self.infoView.isHidden = true
+		}) 
 		self.scrubbing = false
 		self.scrubbingDidEnd()
 	}
@@ -485,7 +487,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		let interval = CMTimeMakeWithSeconds(REFRESH_INTERVAL, Int32(NSEC_PER_SEC))
 		
 		// Main dispatch queue
-		let queue = dispatch_get_main_queue()
+		let queue = DispatchQueue.main
 		
 		// Create callback block for time observer
 		weak var weakSelf:VideoVC! = self
@@ -499,14 +501,14 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 		
 		// Add observer and store pointer for future use
-		self.timeObserver = self.player!.addPeriodicTimeObserverForInterval(interval, queue: queue, usingBlock:callback)
+		self.timeObserver = self.player!.addPeriodicTimeObserver(forInterval: interval, queue: queue, using:callback) as AnyObject?
 	}
 	
 	func addItemEndObserverForPlayerItem() {
 		weak var weakSelf:VideoVC! = self
 
-		self.itemEndObserver = NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: self.playerItem!, queue: NSOperationQueue.mainQueue(), usingBlock: { (notification) -> Void in
-			weakSelf.player?.seekToTime(kCMTimeZero, completionHandler: { (finished) -> Void in
+		self.itemEndObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.playerItem!, queue: OperationQueue.main, using: { (notification) -> Void in
+			weakSelf.player?.seek(to: kCMTimeZero, completionHandler: { (finished) -> Void in
 				weakSelf.playBackComplete()
 			})
 		})
@@ -528,8 +530,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		self.playBackComplete()
 	}
 	
-	func jumpedToTime(time:NSTimeInterval) {
-		self.player!.seekToTime(CMTimeMakeWithSeconds(Float64(time), Int32(NSEC_PER_SEC)))
+	func jumpedToTime(_ time:TimeInterval) {
+		self.player!.seek(to: CMTimeMakeWithSeconds(Float64(time), Int32(NSEC_PER_SEC)))
 	}
 	
 	func scrubbingDidStart() {
@@ -549,9 +551,9 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 		}
 	}
 	
-	func scrubbedToTime(time:NSTimeInterval) {
+	func scrubbedToTime(_ time:TimeInterval) {
 		self.playerItem?.cancelPendingSeeks()
-		self.player?.seekToTime(CMTimeMakeWithSeconds(time, Int32(NSEC_PER_SEC)), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+		self.player?.seek(to: CMTimeMakeWithSeconds(time, Int32(NSEC_PER_SEC)), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
 	}
 	
 	func updateFilmstripScrubber() {
@@ -565,12 +567,12 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
         self.filmStripView.generateThumbnails(self.video!,asset:self.playerItem!.asset,startPercentage: self.video!.startPoint!,endPercentage: self.video!.endPoint!)
 	}
 	
-	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+	func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
 		return true
 	}
 	
-	override func shouldRecognizeSwiping(locationInView: CGPoint) -> Bool {
-		return locationInView.y > (self.filmStripView.frame.origin.y + self.filmStripView.frame.height)  && !CGRectContainsPoint(self.playerToolbar.frame, locationInView)
+	override func shouldRecognizeSwiping(_ locationInView: CGPoint) -> Bool {
+		return locationInView.y > (self.filmStripView.frame.origin.y + self.filmStripView.frame.height)  && !self.playerToolbar.frame.contains(locationInView)
 	}
 	
 }

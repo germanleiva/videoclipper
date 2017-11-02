@@ -16,8 +16,8 @@ extension StoryElement {
 
     @NSManaged var name: String?
     @NSManaged var storyLine: StoryLine?
-    @NSManaged private var snapshot: NSData?
-    var snapshotData:NSData? {
+    @NSManaged fileprivate var snapshot: Data?
+    var snapshotData:Data? {
         get {
             return self.snapshot
         }
@@ -27,8 +27,8 @@ extension StoryElement {
         }
     }
 
-    @NSManaged private var thumbnail: NSData?
-    var thumbnailData:NSData? {
+    @NSManaged fileprivate var thumbnail: Data?
+    var thumbnailData:Data? {
         get {
             return self.thumbnail
         }

@@ -24,4 +24,5 @@ extension VideoClip {
     @NSManaged var thumbnailImages: NSOrderedSet?
     @NSManaged var segments: NSOrderedSet?
     
+    @NSManaged var isRotated: NSNumber?
 }

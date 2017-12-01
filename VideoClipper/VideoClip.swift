@@ -161,7 +161,7 @@ class VideoClip: StoryElement {
                     videoCompositionInstruction.timeRange = CMTimeRange(start: time, duration: assetTrack!.timeRange.duration);
                     
                     let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
-                    //                        layerInstruction.setTransform(assetTrack!.preferredTransform, atTime: kCMTimeZero)
+                    //                        layerInstruction.setTransform(assetTrack!.preferredTransform, at: kCMTimeZero)
                     
                     videoCompositionInstruction.layerInstructions = [layerInstruction]
                     instructions.append(videoCompositionInstruction)

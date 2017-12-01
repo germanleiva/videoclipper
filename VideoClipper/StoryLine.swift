@@ -189,6 +189,13 @@ class StoryLine: NSManagedObject {
                 
                 layerInstruction.setTransform(transformation, at: kCMTimeZero)
                 
+                if (eachElement is VideoClip) && (eachElement as! VideoClip).isRotated!.boolValue {
+                    let translate = CGAffineTransform(translationX: 1280, y: 720)
+                    let rotate = translate.rotated(by: CGFloat(Double.pi))
+                    
+                    layerInstruction.setTransform(rotate, at: kCMTimeZero)
+                }
+                
                 // create the composition instructions for the range of this clip
                 let videoTrackInstruction = AVMutableVideoCompositionInstruction()
                 videoTrackInstruction.timeRange = CMTimeRange(start:cursorTime, duration:assetDuration)

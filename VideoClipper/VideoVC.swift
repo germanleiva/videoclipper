@@ -58,6 +58,8 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	@IBOutlet weak var filmstripScrubber:UIView!
 	@IBOutlet weak var filmstripScrubberLeadingConstraint:NSLayoutConstraint!
 	
+    @IBOutlet weak var rotationSwitch:UISwitch!
+    
 	var infoViewOffset = CGFloat(0)
 	var sliderOffset = CGFloat(0)
 
@@ -80,6 +82,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 
 		self.filmStripView.delegate = self
 		
+        rotationSwitch.isOn = video!.isRotated!.boolValue
 //		self.prepareToPlay()
 	}
 	
@@ -253,6 +256,15 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 			}
 		}
 	}
+    
+    @IBAction func rotatePressed(_ sender:UISwitch) {
+        video?.isRotated = NSNumber(value: sender.isOn)
+        do {
+            try context.save()
+        } catch let error as NSError {
+            print("Couldn't change rotation on the video clip: \(error.localizedDescription)")
+        }
+    }
 	
 	@IBAction func createTagTapped(_ sender:UIButton?) {
 		let newTag = NSEntityDescription.insertNewObject(forEntityName: "TagMark", into: self.context) as! TagMark

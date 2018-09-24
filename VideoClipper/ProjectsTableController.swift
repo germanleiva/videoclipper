@@ -93,7 +93,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
         guard let selectedProject = self.fetchedResultsController.object(at: projectIndexPath) as? Project else {
             return false
         }
-        
+        return false
         //The selectedProject was created before the thresholdDate so it is protected
         return ((selectedProject.createdAt! as NSDate).earlierDate(ProjectsTableController.dateThresholdToProtect) == selectedProject.createdAt!)
     }

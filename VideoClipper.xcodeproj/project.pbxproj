@@ -71,6 +71,7 @@
 		A478D5BE1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */; };
 		A481EFD31B5D42940051ED93 /* TextWidget+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */; };
 		A481EFD41B5D42940051ED93 /* TextWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A481EFD21B5D42940051ED93 /* TextWidget.swift */; };
+		A488ADDB1FD154F400DE9E43 /* gingerbread.json in Resources */ = {isa = PBXBuildFile; fileRef = A488ADCC1FD154F400DE9E43 /* gingerbread.json */; };
 		A48F8B171B9C5F240091D607 /* KPCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B161B9C5F240091D607 /* KPCameraButton.m */; };
 		A48F8B191B9C63A10091D607 /* CaptureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48F8B181B9C63A10091D607 /* CaptureVC.swift */; };
 		A497B5441B94CDF6002BE93C /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A497B5431B94CDF6002BE93C /* VideoPlayerView.swift */; };
@@ -243,6 +244,7 @@
 		A478D5BD1BCCDFEA00A04936 /* VideoSegmentCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoSegmentCollectionCell.swift; sourceTree = "<group>"; };
 		A481EFD11B5D42940051ED93 /* TextWidget+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TextWidget+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A481EFD21B5D42940051ED93 /* TextWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextWidget.swift; sourceTree = "<group>"; };
+		A488ADCC1FD154F400DE9E43 /* gingerbread.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gingerbread.json; sourceTree = "<group>"; };
 		A48F8B151B9C5F240091D607 /* KPCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KPCameraButton.h; sourceTree = "<group>"; };
 		A48F8B161B9C5F240091D607 /* KPCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KPCameraButton.m; sourceTree = "<group>"; };
 		A48F8B181B9C63A10091D607 /* CaptureVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureVC.swift; sourceTree = "<group>"; };
@@ -561,6 +563,14 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		A488ADCB1FD154F400DE9E43 /* gingerbread */ = {
+			isa = PBXGroup;
+			children = (
+				A488ADCC1FD154F400DE9E43 /* gingerbread.json */,
+			);
+			path = gingerbread;
+			sourceTree = "<group>";
+		};
 		A48F8B141B9C5F180091D607 /* KPCCameraButton */ = {
 			isa = PBXGroup;
 			children = (
@@ -652,6 +662,7 @@
 		A4FF6FA41F90F55200C209D3 /* Templates */ = {
 			isa = PBXGroup;
 			children = (
+				A488ADCB1FD154F400DE9E43 /* gingerbread */,
 				A40D74861FA6505B00764429 /* intro */,
 				A4FF6FA51F90F55200C209D3 /* brainstorm */,
 				A4FF6FAB1F90F55200C209D3 /* interview */,
@@ -819,7 +830,7 @@
 				TargetAttributes = {
 					A4664AB51B444BA80095B27D = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = NJZSW7J9AZ;
+						DevelopmentTeam = 7HVPEZWBRD;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Manual;
 					};
@@ -886,6 +897,7 @@
 				A4FF6FC71F91086D00C209D3 /* brainstorm_00006.png in Resources */,
 				A40D74B81FA666F700764429 /* intro_00002.png in Resources */,
 				A40D74AD1FA6631900764429 /* prototype_00009.png in Resources */,
+				A488ADDB1FD154F400DE9E43 /* gingerbread.json in Resources */,
 				A4FF6FB51F90F55200C209D3 /* prototype.json in Resources */,
 				A4FF6FC51F91086D00C209D3 /* brainstorm_00004.png in Resources */,
 				A4DA9CE21B973F0F00839F28 /* Overlay.png in Resources */,
@@ -1311,7 +1323,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = NJZSW7J9AZ;
+				DEVELOPMENT_TEAM = 7HVPEZWBRD;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
@@ -1321,10 +1333,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-D DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.lri.ex-situ.VideoClipper";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "f24fd1cd-48fa-4c30-aef9-1a888b753d2e";
-				PROVISIONING_PROFILE_SPECIFIER = VideoClipperDev;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "VideoClipper-Dev-ParisSud";
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
@@ -1339,8 +1351,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = NJZSW7J9AZ;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 7HVPEZWBRD;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
@@ -1349,10 +1361,10 @@
 				INFOPLIST_FILE = VideoClipper/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = fr.lri.exsitu.VideoClipper;
+				PRODUCT_BUNDLE_IDENTIFIER = "fr.lri.ex-situ.VideoClipper";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d0e01b17-2f5d-4c09-8ed2-82f8fc725784";
-				PROVISIONING_PROFILE_SPECIFIER = VideoClipperAdHoc;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "VideoClipper-Dev-ParisSud";
 				SWIFT_OBJC_BRIDGING_HEADER = "VideoClipper/VideoClipper-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 2;

@@ -1,0 +1,238 @@
+{
+    "storyLines": [
+    {
+        "hidden": false,
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": -260,
+                "distanceYFromCenter": -160,
+                "width": 180,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -92,
+                "width": 315,
+                "height": 116,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "ShapeMe Workshop 1\n30 November 2017\n––––––––––––––––\nGroup members:",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 40,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member1",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 80,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member2",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 120,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member3",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 160,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "#member4",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": -260,
+                "distanceYFromCenter": -160,
+                "width": 180,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -50,
+                "width": 315,
+                "height": 116,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "Phase 1\nIdeation",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 80,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "from: #time",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 120,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "to: #time",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": -260,
+                "distanceYFromCenter": -160,
+                "width": 180,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -50,
+                "width": 315,
+                "height": 116,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "Phase 2\nPhysical Prototyping",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 80,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "from: #time",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 120,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "to: #time",
+                "locked": true
+            }]
+        }]
+    },
+    {
+        "titleCards": [
+        {
+            "duration": 2,
+            "backgroundColor": "#ffffff",
+            "imageWidgets": [],
+            "textWidgets": [
+            {
+                "distanceXFromCenter": -260,
+                "distanceYFromCenter": -160,
+                "width": 180,
+                "height": 50,
+                "alignment": 0,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "#group",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": -50,
+                "width": 315,
+                "height": 116,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 30,
+                "content": "Phase 3\nDigital - Physical prototyping",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 80,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "from: #time",
+                "locked": true
+            },
+            {
+                "distanceXFromCenter": 0,
+                "distanceYFromCenter": 120,
+                "width": 500,
+                "height": 40,
+                "alignment": 1,
+                "color": "#000000",
+                "fontSize": 20,
+                "content": "to: #time",
+                "locked": true
+            }]
+        }]
+    }]
+}

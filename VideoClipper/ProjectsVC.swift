@@ -61,7 +61,7 @@ class ProjectsVC: UIViewController {
         
         let alert = UIAlertController(title: "New project", message: "Please, select an appropiate template for your new project", preferredStyle: UIAlertControllerStyle.alert)
         
-        for templateName in ["interview","brainstorm","prototype"] {
+        for templateName in ["interview","brainstorm","prototype","gingerbread"] {
             alert.addAction(UIAlertAction(title: templateName.capitalized, style: UIAlertActionStyle.default, handler: { (action) in
                 //Start activity indicator
                 let window = UIApplication.shared.delegate!.window!

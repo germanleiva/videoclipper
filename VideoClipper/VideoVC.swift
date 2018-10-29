@@ -49,7 +49,7 @@ class VideoVC: StoryElementVC, FilmstripViewDelegate, UIGestureRecognizerDelegat
 	@IBOutlet weak var togglePlaybackButton:UIButton!
 	@IBOutlet weak var currentTimeLabel:UILabel!
 	@IBOutlet weak var remainingTimeLabel:UILabel!
-	@IBOutlet weak var playerToolbar:UIToolbar!
+	@IBOutlet weak var playerToolbar:UIView!
     @IBOutlet weak var tagButtonPanel: UIStackView!
     
 	var scrubbing = false

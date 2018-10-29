@@ -10,7 +10,6 @@ import UIKit
 import CoreData
 import MobileCoreServices
 import Photos
-import FirebaseAnalytics
 
 extension UIGestureRecognizer {
 	func cancel() {
@@ -234,7 +233,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Analytics.setScreenName("titleCardVC", screenClass: "TitleCardVC")
+//        Analytics.setScreenName("titleCardVC", screenClass: "TitleCardVC")
     }
 	
     override func viewDidLoad() {
@@ -369,6 +368,7 @@ class TitleCardVC: StoryElementVC, UITextViewDelegate, UIGestureRecognizerDelega
     }
     
     func saveButtonPressed(_ sender:UIBarButtonItem?) {
+        view.endEditing(true)
         if !needsToSave {
             completionBlock()
             return

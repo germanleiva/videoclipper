@@ -9,7 +9,7 @@
 import UIKit
 import AVKit
 import CoreData
-import FirebaseAnalytics
+
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
@@ -171,7 +171,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-        Analytics.setScreenName("captureVC", screenClass: "CaptureVC")
+//        Analytics.setScreenName("captureVC", screenClass: "CaptureVC")
 		
         if self.orphanVideoSegmentModelHolder == nil {
             self.orphanVideoSegmentModelHolder = createNewVideoSegmentModelHolder(shouldSaveInDB:true)
@@ -198,7 +198,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 	
 	func dismissController() {
-        Analytics.logEvent("capture_view_closed", parameters: [:])
+//        Analytics.logEvent("capture_view_closed", parameters: [:])
 
 		self.dismiss(animated: true) { () -> Void in
             self._captureSessionCoordinator.stopRecording()
@@ -377,7 +377,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.layout().changeMode()
         self.updateStopMotionWidgets()
         
-        Analytics.logEvent("capture_view_append_mode", parameters: ["on" : self.layout().isCentered])
+//        Analytics.logEvent("capture_view_append_mode", parameters: ["on" : self.layout().isCentered])
 	}
 	
 	func updateStopMotionWidgets(){
@@ -631,7 +631,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	//-MARK: private start/stop helper methods
 	
 	func startCapture() {
-        Analytics.logEvent("capture_view_start_capture", parameters: [:])
+//        Analytics.logEvent("capture_view_start_capture", parameters: [:])
 
         if self.shutterLock.isOn {
             self.shutterButton.setTitle("", for: UIControlState())
@@ -716,7 +716,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	}
 
 	func stopCapture() {
-        Analytics.logEvent("capture_view_stop_capture", parameters: [:])
+//        Analytics.logEvent("capture_view_stop_capture", parameters: [:])
 
         //Remember to check coordinator:didFinishRecordingToOutputFileURL:
         
@@ -1026,7 +1026,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
 	
 	@IBAction func addStoryLinePressed(_ sender:UIButton) {
-        Analytics.logEvent("capture_view_created_line", parameters: [:])
+//        Analytics.logEvent("capture_view_created_line", parameters: [:])
 
         self.currentlyRecordedVideo = nil
         
@@ -1087,7 +1087,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
             let alert = UIAlertController(title: "Non-recoverable operation", message: "Are you sure you want to permanently remove this video clip?" , preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive, handler: { (action) -> Void in
                 
-                Analytics.logEvent("capture_view_delete_video", parameters: [:])
+//                Analytics.logEvent("capture_view_delete_video", parameters: [:])
 
                 self.deleteVideo(atIndexPath:indexPath)
             }))

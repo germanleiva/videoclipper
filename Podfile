@@ -7,7 +7,6 @@ target 'VideoClipper' do
 
   # Pods for VideoClipper
   pod 'BackButtonHandler'
-  pod 'Firebase/Core'
 
   target 'VideoClipperTests' do
     inherit! :search_paths

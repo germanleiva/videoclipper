@@ -11,7 +11,6 @@ import CoreData
 import Fabric
 import Crashlytics
 import Photos
-import Firebase
 
 struct Globals {
 //	static var globalTint = UIColor(hexString: "#117AFF")!
@@ -112,9 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         SettingsTableController.createDictionaryOfVariables()
         
-        FirebaseApp.configure()
-        
-        Analytics.setUserProperty(UIDevice.current.name, forName: "deviceName")
+//        Analytics.setUserProperty(UIDevice.current.name, forName: "deviceName")
         
 		return true
 	}

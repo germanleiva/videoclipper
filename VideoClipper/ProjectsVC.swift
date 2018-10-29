@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import Crashlytics
-import FirebaseAnalytics
 
 enum Order:Int {
     case recent = 0
@@ -25,7 +24,7 @@ class ProjectsVC: UIViewController {
 	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Analytics.setScreenName("projectsVC", screenClass: "ProjectsVC")
+//        Analytics.setScreenName("projectsVC", screenClass: "ProjectsVC")
     }
     
     override func viewDidLoad() {

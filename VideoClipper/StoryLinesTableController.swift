@@ -15,7 +15,6 @@ import ImageIO
 import AVKit
 import Photos
 import Crashlytics
-import FirebaseAnalytics
 
 struct Bundle {
 	var offset = CGPoint.zero
@@ -87,7 +86,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
-        Analytics.setScreenName("storyLinesTableController", screenClass: "StoryLinesTableController")
+//        Analytics.setScreenName("storyLinesTableController", screenClass: "StoryLinesTableController")
 
 		self.tableView.selectRow(at: self.selectedLinePath, animated: true, scrollPosition: UITableViewScrollPosition.none)
 	}
@@ -174,7 +173,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		captureController.delegate = self
 		captureController.currentLine = self.currentStoryLine()
         
-        Analytics.logEvent("capture_view_opened", parameters: [:])
+//        Analytics.logEvent("capture_view_opened", parameters: [:])
         
         self.present(captureController, animated: true) { () -> Void in
             captureController.scrollCollectionViewToEnd()
@@ -642,7 +641,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			let dragPointOnCanvas = gesture.location(in: self.view)
 			
 			if gesture.state == UIGestureRecognizerState.began {
-                Analytics.logEvent("dragged_element", parameters: ["indexPath":self.bundle?.currentIndexPath.description ?? "not_available"])
+//                Analytics.logEvent("dragged_element", parameters: ["indexPath":self.bundle?.currentIndexPath.description ?? "not_available"])
 
 				self.bundle!.sourceCell!.isHidden = true
 				self.view.addSubview(self.bundle!.representationImageView)
@@ -753,7 +752,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                         cellIndexPath = self.bundle?.currentIndexPath
                     }
                     
-                    Analytics.logEvent("dropped_element", parameters: ["indexPath":cellIndexPath?.description ?? "not available"])
+//                    Analytics.logEvent("dropped_element", parameters: ["indexPath":cellIndexPath?.description ?? "not available"])
                     
                     self.bundle = nil
                     potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
@@ -806,7 +805,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				
 			case UIGestureRecognizerState.began:
                 
-                Analytics.logEvent("dragged_line", parameters: ["indexPath":indexPath?.description ?? "not available"])
+//                Analytics.logEvent("dragged_line", parameters: ["indexPath":indexPath?.description ?? "not available"])
 
 				self.sourceIndexPath = indexPath
 				let cell = tableView.cellForRow(at: indexPath!)!

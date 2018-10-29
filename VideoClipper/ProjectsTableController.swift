@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import Crashlytics
-import FirebaseAnalytics
 
 let TO_PROJECT_VC_SEGUE = "toProjectVC"
 
@@ -68,7 +67,7 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
     
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-        Analytics.setScreenName("projectsTableController", screenClass: "ProjectsTableController")
+//        Analytics.setScreenName("projectsTableController", screenClass: "ProjectsTableController")
 
 		self.clearsSelectionOnViewWillAppear = false
         for eachProject in self.fetchedResultsController.fetchedObjects! {

@@ -174,7 +174,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		captureController.currentLine = self.currentStoryLine()
         
 //        Analytics.logEvent("capture_view_opened", parameters: [:])
-        
+        UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "recordTappedOnSelectedLine", operation: "openCaptureVC")
+
         self.present(captureController, animated: true) { () -> Void in
             captureController.scrollCollectionViewToEnd()
         }
@@ -269,6 +270,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 		
 		do {
 			try self.context.save()
+            UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "hideButtonPressed", operation: "hideLine", extras: [String(line.shouldHide!.boolValue)])
 		} catch {
 			print("Couldn't save line shouldHide \(error)")
 		}
@@ -291,7 +293,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 	
 	func deleteStoryLine(_ indexPath:IndexPath) {
         Answers.logCustomEvent(withName: "Line deleted", customAttributes: nil)
-
+        UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "deleteStoryLine", operation: "deleteLine",extras: [indexPath.description])
+        
 		let storyLines = self.project?.mutableOrderedSetValue(forKey: "storyLines")
 //		let previousSelectedLineWasDeleted = self.selectedLineIndexPath! == indexPath
 		
@@ -392,6 +395,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				do {
 					try self.context.save()
                     Answers.logCustomEvent(withName: "Line cloned", customAttributes: nil)
+                    UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "cloneAction", operation: "cloneLine")
                     
                     for eachElement in clonedLine.elements! {
                         (eachElement as! StoryElement).copyVideoFile()
@@ -577,12 +581,14 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                         videoController.delegate = self
                         videoController.element = element
                         self.navigationController?.pushViewController(videoController, animated: true)
+                        UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "selectedVideo", operation: "openVideo")
                     } else {
                         if element.isTitleCard() {
                             let titleCardController = self.storyboard?.instantiateViewController(withIdentifier: "titleCardController") as! TitleCardVC
                             titleCardController.delegate = self
                             titleCardController.element = element
                             self.navigationController?.pushViewController(titleCardController, animated: true)
+                            UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "selectedTitleCard", operation: "openTitleCard")
                         } else {
                             print("Who are you!?")
                         }
@@ -642,6 +648,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			
 			if gesture.state == UIGestureRecognizerState.began {
 //                Analytics.logEvent("dragged_element", parameters: ["indexPath":self.bundle?.currentIndexPath.description ?? "not_available"])
+                UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "draggedElement", operation: "draggedFrom",extras: [self.bundle?.currentIndexPath.description ?? "-"])
 
 				self.bundle!.sourceCell!.isHidden = true
 				self.view.addSubview(self.bundle!.representationImageView)
@@ -753,6 +760,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                     }
                     
 //                    Analytics.logEvent("dropped_element", parameters: ["indexPath":cellIndexPath?.description ?? "not available"])
+                    UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "droppedElement", operation: "droppedAt",extras: [cellIndexPath?.description ?? "-"])
+
                     
                     self.bundle = nil
                     potentiallyNewCollectionView!.performBatchUpdates({ () -> Void in
@@ -806,7 +815,8 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 			case UIGestureRecognizerState.began:
                 
 //                Analytics.logEvent("dragged_line", parameters: ["indexPath":indexPath?.description ?? "not available"])
-
+                UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "draggedLine", operation: "draggedFrom",extras: [indexPath?.description ?? "-"])
+                
 				self.sourceIndexPath = indexPath
 				let cell = tableView.cellForRow(at: indexPath!)!
 				rowSnapshot = customSnapshotFromView(cell)
@@ -871,6 +881,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
                         
                         do {
                             try self.context.save()
+                            UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "droppedLine", operation: "droppedAt",extras: [selectedIndexPath.description])
                         } catch {
                             print("Couldn't reorder lines: \(error)")
                         }

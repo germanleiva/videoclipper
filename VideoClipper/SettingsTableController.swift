@@ -77,6 +77,7 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        UserActionLogger.shared.log(screenName: "Settings", userAction: "settingsPressed", operation: "openSettings")
 //        Analytics.setScreenName("settingsTableController", screenClass: "SettingsTableController")
     }
     

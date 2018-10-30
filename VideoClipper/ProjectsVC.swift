@@ -74,6 +74,7 @@ class ProjectsVC: UIViewController {
                     if let newProject = newProject {
                         self.projectsTableController?.insertNewProject(newProject)
                         Answers.logCustomEvent(withName: "Project added", customAttributes: nil)
+                        UserActionLogger.shared.log(screenName: "ProjectsVC", userAction: "plusPressed", operation: "createNewProject")
                     }
                 }
             }))
@@ -230,12 +231,25 @@ class ProjectsVC: UIViewController {
             if let newProject = newProject {
                 self.projectsTableController?.insertNewProject(newProject,quickStarted:true)
                 Answers.logCustomEvent(withName: "Project quick started", customAttributes: nil)
+                UserActionLogger.shared.log(screenName: "ProjectsVC", userAction: "quickStartPressed", operation: "createNewProject")
             }
         }
     }
     
     @IBAction func changedSegment(_ sender:UISegmentedControl) {
         guard let order = Order(rawValue: sender.selectedSegmentIndex) else { return }
+        
+        let orderName:String
+        switch order {
+        case Order.alphabeticalAscending:
+            orderName = "alphabeticalAscending"
+        case Order.alphabeticalDescending:
+            orderName = "alphabeticalDescending"
+        case Order.recent:
+            orderName = "recent"
+        }
+        
+        UserActionLogger.shared.log(screenName: "ProjectsVC", userAction: "changedSegment", operation: "changeSorting",extras: [orderName])
         self.projectsTableController?.sortOrder = order
     }
 }

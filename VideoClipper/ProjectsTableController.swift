@@ -123,6 +123,8 @@ class ProjectsTableController: UITableViewController, NSFetchedResultsController
 			self.creatingNewProject = false
             self.creatingWithQuickstart = false
             
+            let projectName = selectedProject.name ?? ""
+            UserActionLogger.shared.log(screenName: "ProjectsVC", userAction: "projectSelected", operation: "openProject",extras:[projectName])
 //            print("PRINTING PROJECT")
 //            projectVC.project?.projectToText()
 		}

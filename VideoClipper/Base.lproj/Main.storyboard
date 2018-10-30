@@ -330,7 +330,7 @@
                         <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" title="Settings" id="y1z-oE-aFY">
                             <connections>
-                                <segue destination="gbV-f4-DqK" kind="show" id="Ggv-Qv-PVz"/>
+                                <segue destination="gbV-f4-DqK" kind="show" identifier="" id="Ggv-Qv-PVz"/>
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="aE3-dj-FfW">

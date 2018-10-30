@@ -433,6 +433,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     @IBAction func donePressed(_ sender: AnyObject) {
         self.dismissController()
         self.currentlyRecordedVideo?.consolidate()
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "closePressed", operation: "closedCaptureVC")
     }
 	
 	@IBAction func createTagTapped(_ sender:UIButton?) {
@@ -632,6 +633,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	func startCapture() {
 //        Analytics.logEvent("capture_view_start_capture", parameters: [:])
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "startCapture", operation: "startCapture")
 
         if self.shutterLock.isOn {
             self.shutterButton.setTitle("", for: UIControlState())
@@ -717,7 +719,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 
 	func stopCapture() {
 //        Analytics.logEvent("capture_view_stop_capture", parameters: [:])
-
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "stopCapture", operation: "stopCapture")
+        
         //Remember to check coordinator:didFinishRecordingToOutputFileURL:
         
 		if self.shutterLock.isOn {
@@ -909,6 +912,9 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
     }
     
     func playVideo(_ tappedVideo:VideoClip?) {
+        
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "playVideo", operation: "playVideo")
+        
         let window = UIApplication.shared.delegate!.window!
         
         let progressBar = MBProgressHUD.showAdded(to: window, animated: true)
@@ -980,6 +986,7 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		if self.selectedLineIndexPath! == indexPath {
 			self.performSegue(withIdentifier: "modalTitleCardVC", sender: self)
+            UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "selectedTitleCard", operation: "openTitleCard")
             return
 		}
 
@@ -990,6 +997,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
         self.updateCollectionView()
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: Globals.notificationSelectedLineChanged), object: self.currentLine)
+        
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "selectedLine", operation: "changeCurrentLine")
     }
     
     func updateCollectionView(){
@@ -1027,7 +1036,8 @@ class CaptureVC: UIViewController, IDCaptureSessionCoordinatorDelegate, UICollec
 	
 	@IBAction func addStoryLinePressed(_ sender:UIButton) {
 //        Analytics.logEvent("capture_view_created_line", parameters: [:])
-
+        UserActionLogger.shared.log(screenName: "CaptureVC", userAction: "addStoryLinePressed", operation: "createNewLine")
+        
         self.currentlyRecordedVideo = nil
         
 		let project = self.currentLine!.project!

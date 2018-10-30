@@ -40,7 +40,78 @@ struct Globals {
         )
         presenter.present(alert, animated: true, completion: completion)
     }
+    
+    static var userLogQueue = DispatchQueue(label: "fr.lri.VideoClipper.UserLogQueue")
+
+    
+    static func log() {
+        
+    }
 }
+
+class UserActionLogger {
+    
+    static let shared = UserActionLogger()
+    
+    lazy var logFileURL:URL = {
+        let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        return documentsDirectory.appendingPathComponent("\(dateFormatter.string(from: Date())).log")
+    }()
+    
+    lazy var dateFormatterHHmmss:DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss"
+        return dateFormatter
+    }()
+    
+    //Initializer access level change now
+    private init(){}
+    
+    func append(data:Data,fileURL: URL) throws {
+        if let fileHandle = try? FileHandle(forWritingTo: fileURL) {
+            //If the FileHandle is created then the file exists
+            defer {
+                fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+        } else {
+            //This is to create the file for the first time
+            try data.write(to: fileURL, options: Data.WritingOptions.atomicWrite)
+//            try data.writeToURL(fileURL, options: .DataWritingAtomic)
+        }
+    }
+    
+    func log(screenName:String,userAction:String, operation:String, extras:[String] = []) {
+        let timestamp = dateFormatterHHmmss.string(from: Date())
+
+        let concatenatedExtras = extras.reduce("") { (result, anExtra) -> String in
+            result + anExtra + ";"
+        }
+        
+        let line = timestamp + ";" + screenName + ";" + userAction + ";" + operation + ";" + concatenatedExtras + "\n"
+        
+        guard let data = line.data(using: String.Encoding.utf8) else {
+            print("Could not transform line (String) to data (Data)")
+            print(line)
+            return
+        }
+
+        do {
+            try append(data: data, fileURL: logFileURL)
+        } catch let error as NSError {
+            print("Could not append line \(line) to log file \(error.localizedDescription)")
+        }
+
+    }
+    
+}
+////Access class function in a single line
+//UserLogger.shared.log()
 
 extension UIImage {
     func resize(_ newSize:CGSize) -> UIImage {

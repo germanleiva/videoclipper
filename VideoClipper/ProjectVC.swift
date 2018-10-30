@@ -183,6 +183,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             
             Answers.logCustomEvent(withName: "New line",
                 customAttributes: nil)
+            UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "addStoryLinePressed", operation: "createNewLine")
 		} catch {
 			print("Couldn't save the new story line: \(error)")
 		}
@@ -191,10 +192,14 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
 	@IBAction func exportProjectPressed(_ sender:AnyObject?) {
         var elements = [Any]()
 		
+        var videoCount = 0
 		for eachLine in self.project!.storyLines! {
 			let line = eachLine as! StoryLine
 			if !line.shouldHide!.boolValue {
                 for eachElement in line.elements! {
+                    if (eachElement as! StoryElement).isVideo() {
+                        videoCount += 1
+                    }
                     elements.append(eachElement)
                 }
 			}
@@ -204,6 +209,7 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
         
         Answers.logCustomEvent(withName: "Export project pressed",
             customAttributes: nil)
+        UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "exportProjectPressed", operation: "exportProject", extras: [String(self.project?.storyLines?.count ?? 0),String(videoCount)])
 	}
     
     func exportToPhotoAlbum(_ elements:NSOrderedSet){
@@ -417,6 +423,10 @@ class ProjectVC: UIViewController, UITextFieldDelegate, StoryLinesTableControlle
             self.present(playerVC, animated: true, completion: { () -> Void in
                 Answers.logCustomEvent(withName: "Play project success", customAttributes: nil)
                 
+                let lineIndex = self.currentLineIndexPath?.section ?? -1
+                let lineCount = self.project?.storyLines?.count ?? 0
+                UserActionLogger.shared.log(screenName: "StoryboardVC", userAction: "playProjectPressed", operation: "playFromLine",extras: ["\(lineIndex) / \(lineCount)"])
+
                 playerVC.player?.play()
                 
                 for eachLine in self.project!.storyLines! {

@@ -435,7 +435,7 @@ class StoryLinesTableController: UITableViewController, NSFetchedResultsControll
 				return
 			}
 			
-			let alertController = UIAlertController(title: "Delete line", message: "Videos will remain in your Photo Album. Do you want to delete this line?", preferredStyle: UIAlertControllerStyle.alert)
+			let alertController = UIAlertController(title: "Delete line", message: "Do you want to delete this line?", preferredStyle: UIAlertControllerStyle.alert)
 			
 			alertController.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive, handler: { (action) -> Void in
 				self.deleteStoryLine(indexPath)

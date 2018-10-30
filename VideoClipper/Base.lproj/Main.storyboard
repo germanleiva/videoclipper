@@ -269,7 +269,20 @@
                             <outlet property="delegate" destination="gbV-f4-DqK" id="kdh-UV-RJU"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Settings" id="sTw-Qz-P2L"/>
+                    <navigationItem key="navigationItem" title="Settings" id="sTw-Qz-P2L">
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="trash" id="nlO-SO-vry">
+                                <connections>
+                                    <action selector="deleteButtonPressed:" destination="gbV-f4-DqK" id="UXb-pU-eZT"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="action" id="j4O-CK-5Ve">
+                                <connections>
+                                    <action selector="shareButtonPressed:" destination="gbV-f4-DqK" id="MvF-TQ-WFg"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
                     <connections>
                         <outlet property="groupField" destination="j9Q-Og-PnH" id="rAj-SV-mhc"/>
                         <outlet property="keyboardAutocompletionSwitch" destination="aF8-Xe-5tT" id="g0a-H7-Cga"/>

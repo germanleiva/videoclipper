@@ -181,6 +181,32 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
         defaults.synchronize()
     }
 
+    @IBAction func shareButtonPressed(_ sender:UIBarButtonItem) {
+            // text to share
+            let logFileURL = UserActionLogger.shared.logFileURL
+            
+            // set up activity view controller
+            let objectsToShare = [logFileURL]
+        
+            let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            activityViewController.popoverPresentationController?.barButtonItem = sender
+        
+            // exclude some activity types from the list (optional)
+//            activityViewController.excludedActivityTypes = [ UIActivityType.airDrop, UIActivityType.postToFacebook ]
+        
+            // present the view controller
+            self.present(activityViewController, animated: true, completion: nil)
+    }
+    @IBAction func deleteButtonPressed(_ sender:UIBarButtonItem) {
+        let alert = UIAlertController(title: "Delete logs", message: "Are you sure you want to permanently delete the logs?", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.destructive, handler: { (action) -> Void in
+            UserActionLogger.shared.deleteLogs()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
+            alert.dismiss(animated: true, completion: nil)
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
     /*
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)

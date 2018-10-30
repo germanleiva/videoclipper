@@ -108,6 +108,14 @@ class UserActionLogger {
         }
 
     }
+    func deleteLogs() {
+        let fileManager = FileManager()
+        do {
+            try fileManager.removeItem(at: logFileURL)
+        } catch let error as NSError {
+            print("Could not delete the log files \(error.localizedDescription)")
+        }
+    }
     
 }
 ////Access class function in a single line

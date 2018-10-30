@@ -64,7 +64,7 @@ class UserActionLogger {
     
     lazy var dateFormatterHHmmss:DateFormatter = {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss"
+        dateFormatter.dateFormat = "HH:mm:ss.SSSS"
         return dateFormatter
     }()
     

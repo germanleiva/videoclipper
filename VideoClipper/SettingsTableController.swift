@@ -183,19 +183,27 @@ class SettingsTableController: UITableViewController, UITextFieldDelegate {
 
     @IBAction func shareButtonPressed(_ sender:UIBarButtonItem) {
             // text to share
-            let logFileURL = UserActionLogger.shared.logFileURL
-            
-            // set up activity view controller
-            let objectsToShare = [logFileURL]
+//            let logFileURL = UserActionLogger.shared.logFileURL
         
+            // set up activity view controller
+//            let objectsToShare = [logFileURL]
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        do {
+            let objectsToShare = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil).filter{ $0.pathExtension == "log" }
+            // process files
             let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             activityViewController.popoverPresentationController?.barButtonItem = sender
-        
+            
             // exclude some activity types from the list (optional)
-//            activityViewController.excludedActivityTypes = [ UIActivityType.airDrop, UIActivityType.postToFacebook ]
-        
+            //            activityViewController.excludedActivityTypes = [ UIActivityType.airDrop, UIActivityType.postToFacebook ]
+            
             // present the view controller
             self.present(activityViewController, animated: true, completion: nil)
+        } catch {
+            print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
+        }
+        
     }
     @IBAction func deleteButtonPressed(_ sender:UIBarButtonItem) {
         let alert = UIAlertController(title: "Delete logs", message: "Are you sure you want to permanently delete the logs?", preferredStyle: UIAlertControllerStyle.alert)

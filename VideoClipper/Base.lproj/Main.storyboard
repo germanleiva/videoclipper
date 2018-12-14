@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8nJ-LI-FZ9">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8nJ-LI-FZ9">
     <device id="ipad9_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -311,7 +307,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P2e-NX-aZ8">
-                                <rect key="frame" x="0.0" y="64" width="1024" height="704"/>
+                                <rect key="frame" x="0.0" y="70" width="1024" height="698"/>
                                 <connections>
                                     <segue destination="gbt-th-fzd" kind="embed" identifier="embeddedProjectsTableController" id="frb-0f-aar"/>
                                 </connections>
@@ -347,7 +343,7 @@
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="aE3-dj-FfW">
-                            <rect key="frame" x="307.5" y="7" width="409" height="30"/>
+                            <rect key="frame" x="307.5" y="10" width="409" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <segments>
                                 <segment title="Recent"/>
@@ -377,7 +373,7 @@
             <objects>
                 <tableViewController id="gbt-th-fzd" customClass="ProjectsTableController" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" id="jPC-Fk-PD3">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="704"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
@@ -455,7 +451,7 @@
             <objects>
                 <tableViewController id="QhK-HD-P2x" customClass="StoryLinesTableController" customModule="VideoClipper" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="119" sectionHeaderHeight="22" sectionFooterHeight="22" id="06K-8F-gde">
-                        <rect key="frame" x="0.0" y="0.0" width="974" height="640"/>
+                        <rect key="frame" x="0.0" y="0.0" width="974" height="628"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
@@ -1544,7 +1540,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5g6-qt-8Ri">
-                                <rect key="frame" x="0.0" y="20" width="1024" height="44"/>
+                                <rect key="frame" x="0.0" y="20" width="1024" height="50"/>
                                 <items>
                                     <navigationItem id="Adl-Jc-Xhn">
                                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="7uK-Ug-Y0D">
@@ -1561,7 +1557,7 @@
                                 </items>
                             </navigationBar>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x2v-1S-QoX">
-                                <rect key="frame" x="0.0" y="64" width="1024" height="704"/>
+                                <rect key="frame" x="0.0" y="70" width="1024" height="698"/>
                                 <connections>
                                     <segue destination="IbS-bj-HKR" kind="embed" identifier="embeddedTitleCardVC" id="IXu-ou-wXq"/>
                                 </connections>
@@ -1638,20 +1634,20 @@
                         <viewControllerLayoutGuide type="bottom" id="nQi-w3-Jbb"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="IhS-4E-uqn">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="704"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8xU-TI-nOK">
-                                <rect key="frame" x="0.0" y="64" width="974" height="640"/>
+                                <rect key="frame" x="0.0" y="70" width="974" height="628"/>
                                 <connections>
                                     <segue destination="QhK-HD-P2x" kind="embed" identifier="tableContainerSegue" id="nSF-YQ-GA7"/>
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7pH-g7-kGs">
-                                <rect key="frame" x="974" y="64" width="50" height="640"/>
+                                <rect key="frame" x="974" y="70" width="50" height="628"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="100" translatesAutoresizingMaskIntoConstraints="NO" id="jhf-vo-pl9">
-                                        <rect key="frame" x="0.0" y="145" width="50" height="350"/>
+                                        <rect key="frame" x="0.0" y="139" width="50" height="350"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oUK-rP-zy7">
                                                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -1733,7 +1729,7 @@
                     <navigationItem key="navigationItem" id="WYC-zQ-O4g">
                         <nil key="title"/>
                         <textField key="titleView" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Unnamed Project" textAlignment="center" minimumFontSize="17" id="KMs-gd-H2y">
-                            <rect key="frame" x="392" y="7" width="240" height="30"/>
+                            <rect key="frame" x="392" y="10" width="240" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                             <textInputTraits key="textInputTraits"/>
@@ -1777,7 +1773,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="8nJ-LI-FZ9" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="id1-4H-Yo3">
-                        <rect key="frame" x="0.0" y="20" width="1024" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="1024" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -1854,7 +1850,7 @@
     <resources>
         <image name="blackbox" width="21" height="23"/>
         <image name="center-align" width="57" height="57"/>
-        <image name="eye" width="32" height="32"/>
+        <image name="eye" width="32.5" height="32.5"/>
         <image name="fontSize-icon" width="33" height="33"/>
         <image name="ghost-selected" width="43" height="43"/>
         <image name="ghost-unselected" width="42" height="42"/>
